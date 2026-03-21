@@ -323,6 +323,42 @@ Request: $prompt
       'pork': {'name_ar': 'لحم خنزير', 'name_en': 'Pork', 'kcal': 242, 'protein_g': 27.0, 'carbs_g': 0.0, 'fat_g': 14.0, 'halal': false},
       'خنزير': {'name_ar': 'لحم خنزير', 'name_en': 'Pork', 'kcal': 242, 'protein_g': 27.0, 'carbs_g': 0.0, 'fat_g': 14.0, 'halal': false},
     };
+    // Extended local database — works offline instantly
+    const extraFoods = {
+      'كشري': {'name_ar': 'كشري', 'name_en': 'Koshari', 'kcal': 430, 'protein_g': 15.0, 'carbs_g': 85.0, 'fat_g': 5.0, 'halal': true},
+      'koshari': {'name_ar': 'كشري', 'name_en': 'Koshari', 'kcal': 430, 'protein_g': 15.0, 'carbs_g': 85.0, 'fat_g': 5.0, 'halal': true},
+      'falafel': {'name_ar': 'فلافل', 'name_en': 'Falafel', 'kcal': 180, 'protein_g': 7.0, 'carbs_g': 18.0, 'fat_g': 9.0, 'halal': true},
+      'فلافل': {'name_ar': 'فلافل', 'name_en': 'Falafel', 'kcal': 180, 'protein_g': 7.0, 'carbs_g': 18.0, 'fat_g': 9.0, 'halal': true},
+      'hummus': {'name_ar': 'حمص', 'name_en': 'Hummus', 'kcal': 166, 'protein_g': 8.0, 'carbs_g': 14.0, 'fat_g': 10.0, 'halal': true},
+      'حمص': {'name_ar': 'حمص', 'name_en': 'Hummus', 'kcal': 166, 'protein_g': 8.0, 'carbs_g': 14.0, 'fat_g': 10.0, 'halal': true},
+      'shawarma': {'name_ar': 'شاورما دجاج', 'name_en': 'Chicken Shawarma', 'kcal': 440, 'protein_g': 30.0, 'carbs_g': 45.0, 'fat_g': 14.0, 'halal': true},
+      'شاورما': {'name_ar': 'شاورما دجاج', 'name_en': 'Chicken Shawarma', 'kcal': 440, 'protein_g': 30.0, 'carbs_g': 45.0, 'fat_g': 14.0, 'halal': true},
+      'kabsa': {'name_ar': 'كبسة', 'name_en': 'Kabsa', 'kcal': 580, 'protein_g': 38.0, 'carbs_g': 68.0, 'fat_g': 16.0, 'halal': true},
+      'كبسة': {'name_ar': 'كبسة', 'name_en': 'Kabsa', 'kcal': 580, 'protein_g': 38.0, 'carbs_g': 68.0, 'fat_g': 16.0, 'halal': true},
+      'lamb': {'name_ar': 'لحم غنم', 'name_en': 'Lamb', 'kcal': 258, 'protein_g': 25.0, 'carbs_g': 0.0, 'fat_g': 17.0, 'halal': true},
+      'لحم غنم': {'name_ar': 'لحم غنم', 'name_en': 'Lamb', 'kcal': 258, 'protein_g': 25.0, 'carbs_g': 0.0, 'fat_g': 17.0, 'halal': true},
+      'shrimp': {'name_ar': 'جمبري', 'name_en': 'Shrimp', 'kcal': 99, 'protein_g': 24.0, 'carbs_g': 0.0, 'fat_g': 1.0, 'halal': true},
+      'جمبري': {'name_ar': 'جمبري', 'name_en': 'Shrimp', 'kcal': 99, 'protein_g': 24.0, 'carbs_g': 0.0, 'fat_g': 1.0, 'halal': true},
+      'labneh': {'name_ar': 'لبنة', 'name_en': 'Labneh', 'kcal': 150, 'protein_g': 10.0, 'carbs_g': 6.0, 'fat_g': 10.0, 'halal': true},
+      'لبنة': {'name_ar': 'لبنة', 'name_en': 'Labneh', 'kcal': 150, 'protein_g': 10.0, 'carbs_g': 6.0, 'fat_g': 10.0, 'halal': true},
+      'pomegranate': {'name_ar': 'رمان', 'name_en': 'Pomegranate', 'kcal': 83, 'protein_g': 1.7, 'carbs_g': 19.0, 'fat_g': 1.2, 'halal': true},
+      'رمان': {'name_ar': 'رمان', 'name_en': 'Pomegranate', 'kcal': 83, 'protein_g': 1.7, 'carbs_g': 19.0, 'fat_g': 1.2, 'halal': true},
+      'fig': {'name_ar': 'تين', 'name_en': 'Fig', 'kcal': 74, 'protein_g': 1.0, 'carbs_g': 19.0, 'fat_g': 0.3, 'halal': true},
+      'تين': {'name_ar': 'تين', 'name_en': 'Fig', 'kcal': 74, 'protein_g': 1.0, 'carbs_g': 19.0, 'fat_g': 0.3, 'halal': true},
+      'strawberry': {'name_ar': 'فراولة', 'name_en': 'Strawberry', 'kcal': 32, 'protein_g': 0.7, 'carbs_g': 8.0, 'fat_g': 0.3, 'halal': true},
+      'فراولة': {'name_ar': 'فراولة', 'name_en': 'Strawberry', 'kcal': 32, 'protein_g': 0.7, 'carbs_g': 8.0, 'fat_g': 0.3, 'halal': true},
+      'green tea': {'name_ar': 'شاي أخضر', 'name_en': 'Green Tea', 'kcal': 2, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 0.0, 'halal': true},
+      'شاي أخضر': {'name_ar': 'شاي أخضر', 'name_en': 'Green Tea', 'kcal': 2, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 0.0, 'halal': true},
+      'coffee': {'name_ar': 'قهوة', 'name_en': 'Coffee', 'kcal': 2, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 0.0, 'halal': true},
+      'قهوة': {'name_ar': 'قهوة', 'name_en': 'Coffee', 'kcal': 2, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 0.0, 'halal': true},
+    };
+    // Check extra foods first
+    if (extraFoods.containsKey(n)) return Map<String, dynamic>.from(extraFoods[n]!);
+    for (final key in extraFoods.keys) {
+      if (n.contains(key) || key.contains(n)) {
+        return Map<String, dynamic>.from(extraFoods[key]!);
+      }
+    }
     // Check exact match first
     if (foods.containsKey(n)) return Map<String, dynamic>.from(foods[n]!);
     // Check partial match
