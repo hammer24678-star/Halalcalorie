@@ -351,6 +351,33 @@ Request: $prompt
       'شاي أخضر': {'name_ar': 'شاي أخضر', 'name_en': 'Green Tea', 'kcal': 2, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 0.0, 'halal': true},
       'coffee': {'name_ar': 'قهوة', 'name_en': 'Coffee', 'kcal': 2, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 0.0, 'halal': true},
       'قهوة': {'name_ar': 'قهوة', 'name_en': 'Coffee', 'kcal': 2, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 0.0, 'halal': true},
+
+      // Gulf & Saudi
+      'kabsa': {'name_ar': 'كبسة', 'name_en': 'Kabsa', 'kcal': 580, 'protein_g': 38.0, 'carbs_g': 68.0, 'fat_g': 16.0, 'halal': true},
+      'كبسة': {'name_ar': 'كبسة', 'name_en': 'Kabsa', 'kcal': 580, 'protein_g': 38.0, 'carbs_g': 68.0, 'fat_g': 16.0, 'halal': true},
+      'mandi': {'name_ar': 'مندي', 'name_en': 'Mandi', 'kcal': 620, 'protein_g': 42.0, 'carbs_g': 65.0, 'fat_g': 18.0, 'halal': true},
+      'مندي': {'name_ar': 'مندي', 'name_en': 'Mandi', 'kcal': 620, 'protein_g': 42.0, 'carbs_g': 65.0, 'fat_g': 18.0, 'halal': true},
+      'saleeg': {'name_ar': 'سليق', 'name_en': 'Saleeg', 'kcal': 520, 'protein_g': 30.0, 'carbs_g': 62.0, 'fat_g': 14.0, 'halal': true},
+      'قهوة عربية': {'name_ar': 'قهوة عربية', 'name_en': 'Arabic Coffee', 'kcal': 5, 'protein_g': 0.0, 'carbs_g': 1.0, 'fat_g': 0.0, 'halal': true},
+      'arabic coffee': {'name_ar': 'قهوة عربية', 'name_en': 'Arabic Coffee', 'kcal': 5, 'protein_g': 0.0, 'carbs_g': 1.0, 'fat_g': 0.0, 'halal': true},
+      // Western
+      'pizza': {'name_ar': 'بيتزا', 'name_en': 'Pizza slice', 'kcal': 272, 'protein_g': 12.0, 'carbs_g': 34.0, 'fat_g': 10.0, 'halal': true},
+      'بيتزا': {'name_ar': 'بيتزا', 'name_en': 'Pizza', 'kcal': 272, 'protein_g': 12.0, 'carbs_g': 34.0, 'fat_g': 10.0, 'halal': true},
+      'burger': {'name_ar': 'برجر', 'name_en': 'Burger', 'kcal': 490, 'protein_g': 30.0, 'carbs_g': 44.0, 'fat_g': 20.0, 'halal': true},
+      'برجر': {'name_ar': 'برجر', 'name_en': 'Burger', 'kcal': 490, 'protein_g': 30.0, 'carbs_g': 44.0, 'fat_g': 20.0, 'halal': true},
+      'pasta': {'name_ar': 'باستا', 'name_en': 'Pasta', 'kcal': 350, 'protein_g': 14.0, 'carbs_g': 58.0, 'fat_g': 8.0, 'halal': true},
+      'باستا': {'name_ar': 'باستا', 'name_en': 'Pasta', 'kcal': 350, 'protein_g': 14.0, 'carbs_g': 58.0, 'fat_g': 8.0, 'halal': true},
+      'salmon': {'name_ar': 'سالمون', 'name_en': 'Salmon', 'kcal': 280, 'protein_g': 34.0, 'carbs_g': 0.0, 'fat_g': 16.0, 'halal': true},
+      'سالمون': {'name_ar': 'سالمون', 'name_en': 'Salmon', 'kcal': 280, 'protein_g': 34.0, 'carbs_g': 0.0, 'fat_g': 16.0, 'halal': true},
+      'nutella': {'name_ar': 'نوتيلا', 'name_en': 'Nutella (2 tbsp)', 'kcal': 200, 'protein_g': 2.0, 'carbs_g': 23.0, 'fat_g': 11.0, 'halal': true},
+      'نوتيلا': {'name_ar': 'نوتيلا', 'name_en': 'Nutella', 'kcal': 200, 'protein_g': 2.0, 'carbs_g': 23.0, 'fat_g': 11.0, 'halal': true},
+      'whey protein': {'name_ar': 'بروتين واي', 'name_en': 'Whey protein', 'kcal': 120, 'protein_g': 25.0, 'carbs_g': 3.0, 'fat_g': 2.0, 'halal': true},
+      'protein': {'name_ar': 'بروتين واي', 'name_en': 'Whey protein', 'kcal': 120, 'protein_g': 25.0, 'carbs_g': 3.0, 'fat_g': 2.0, 'halal': true},
+      'latte': {'name_ar': 'لاتيه', 'name_en': 'Latte', 'kcal': 190, 'protein_g': 7.0, 'carbs_g': 18.0, 'fat_g': 7.0, 'halal': true},
+      'cappuccino': {'name_ar': 'كابوتشينو', 'name_en': 'Cappuccino', 'kcal': 120, 'protein_g': 5.0, 'carbs_g': 10.0, 'fat_g': 5.0, 'halal': true},
+      'smoothie': {'name_ar': 'سموذي', 'name_en': 'Smoothie', 'kcal': 200, 'protein_g': 4.0, 'carbs_g': 45.0, 'fat_g': 1.0, 'halal': true},
+      'dark chocolate': {'name_ar': 'شوكولاتة داكنة', 'name_en': 'Dark chocolate', 'kcal': 170, 'protein_g': 2.0, 'carbs_g': 13.0, 'fat_g': 12.0, 'halal': true},
+      'شوكولاتة': {'name_ar': 'شوكولاتة داكنة', 'name_en': 'Dark chocolate', 'kcal': 170, 'protein_g': 2.0, 'carbs_g': 13.0, 'fat_g': 12.0, 'halal': true},
     };
     // Check extra foods first
     if (extraFoods.containsKey(n)) return Map<String, dynamic>.from(extraFoods[n]!);
