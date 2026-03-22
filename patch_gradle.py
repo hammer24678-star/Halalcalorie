@@ -31,6 +31,41 @@ with open(strings_path, 'w') as sf:
     <string name="app_name">HalalCalorie</string>
 </resources>''')
 print("App name set: HalalCalorie")
+# ── Android permissions ────────────────────────────────────
+manifest_path = 'android/app/src/main/AndroidManifest.xml'
+if os.path.exists(manifest_path):
+    with open(manifest_path, 'r') as mf:
+        manifest = mf.read()
+
+    permissions = [
+        '<uses-permission android:name="android.permission.INTERNET"/>',
+        '<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>',
+        '<uses-permission android:name="android.permission.CAMERA"/>',
+        '<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>',
+        '<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>',
+        '<uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>',
+        '<uses-permission android:name="android.permission.BODY_SENSORS"/>',
+    ]
+
+    for perm in permissions:
+        perm_name = perm.split('"')[1]
+        if perm_name not in manifest:
+            manifest = manifest.replace(
+                '<application',
+                perm + '\n    <application',
+                1
+            )
+            print(f"  Added: {perm_name.split('.')[-1]}")
+        else:
+            print(f"  Already has: {perm_name.split('.')[-1]}")
+
+    with open(manifest_path, 'w') as mf:
+        mf.write(manifest)
+    print("  ✓ AndroidManifest.xml updated")
+else:
+    print(f"  WARNING: {manifest_path} not found yet (created during flutter create)")
+    print("  Permissions will be injected after flutter create")
+
 
 # ── Generate app icons from logo.png ──────────────────────
 logo_src = 'assets/logo.png'
