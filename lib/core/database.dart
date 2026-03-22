@@ -82,8 +82,18 @@ class AppDatabase {
     required String name, required int kcal,
     double proteinG = 0, double carbsG = 0, double fatG = 0,
   }) async {
-    final d = await db; return d.insert('meal_entries', { 'name': name, 'kcal': kcal, 'protein_g': proteinG, 'carbs_g': carbsG, 'fat_g': fatG, 'date_key': _today(), 'created': DateTime.now().toIso8601String(),
-    });
+    try {
+      final d = await db;
+      return d.insert('meal_entries', {
+        'name': name, 'kcal': kcal,
+        'protein_g': proteinG, 'carbs_g': carbsG, 'fat_g': fatG,
+        'date_key': _today(),
+        'created': DateTime.now().toIso8601String(),
+      });
+    } catch (e) {
+      debugPrint('insertMeal error: $e');
+      return -1;
+    }
   }
 
   static Future<void> deleteMeal(int id) async {
