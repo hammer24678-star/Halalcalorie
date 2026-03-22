@@ -10,17 +10,14 @@ class _ScannerState extends ConsumerState<ScannerScreen>
     with SingleTickerProviderStateMixin {
   final _barcodeCtrl = TextEditingController();
   ScanResult? _result;
-  late AnimationController _scanAnim;
-  late Animation<double>   _scanLine;
 
   @override
   void initState() {
     super.initState();
-    _scanAnim = AnimationController(vsync: this, duration: const Duration(seconds: 2))..repeat();
-    _scanLine = Tween(begin: 0.0, end: 1.0).animate(_scanAnim);
+    // Real camera scanner handles animation internally
   }
 
-  @override void dispose() { _scanAnim.dispose(); _barcodeCtrl.dispose(); super.dispose(); }
+  @override void dispose() { _barcodeCtrl.dispose(); super.dispose(); }
 
   void _scan(String barcode) {
     final scan      = ref.read(scanProvider);
@@ -131,47 +128,45 @@ class _ScannerState extends ConsumerState<ScannerScreen>
         ]),
         const SizedBox(height: 14),
 
-        // ── Viewfinder ────────────────────────────────────
+                // ── Real Camera Scanner ───────────────────────────
         Container(
-          height: 180,
+          height: 260,
           decoration: BoxDecoration(
-            color: Colors.black87,
             borderRadius: BorderRadius.circular(16),
+            boxShadow: [BoxShadow(
+              color: AppColors.sunnahGreen.withOpacity(0.2),
+              blurRadius: 16, offset: const Offset(0, 4),
+            )],
           ),
           child: Stack(children: [
-            Center(child: Container(
-              width: 150, height: 150,
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.halalGreen, width: 2.5),
-                borderRadius: BorderRadius.circular(10),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: BarcodeScannerWidget(
+                isActive: true,
+                onDetected: (barcode) {
+                  if (!isPremium && scan.todayCount >= 10) {
+                    _showLimitDialog(isAr);
+                    return;
+                  }
+                  _scan(barcode);
+                },
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: AnimatedBuilder(
-                  animation: _scanLine,
-                  builder: (_, __) => Stack(children: [
-                    Positioned(
-                      top: 150 * _scanLine.value - 2,
-                      left: 0, right: 0,
-                      child: Container(height: 3, decoration: const BoxDecoration(
-                        gradient: LinearGradient(colors: [
-                          Colors.transparent, AppColors.halalGreen, Colors.transparent,
-                        ]),
-                      )),
-                    ),
-                  ]),
-                ),
-              ),
-            )),
-            Positioned(top: 10, left: 10, child: Container(
+            ),
+            // Scan counter badge
+            Positioned(top: 12, right: 12, child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
-                color: AppColors.halalGreen.withOpacity(0.85),
+                color: Colors.black54,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                isPremium ? (isAr ?'♾️ غير محدود' : '♾️ Unlimited') :'${t("متبقي", "Left")}: ${(10 - scan.todayCount).clamp(0, 10)}/10', style: const TextStyle(fontFamily:'Cairo', fontSize: 11,
-                    color: Colors.white, fontWeight: FontWeight.w700)),
+                isPremium
+                    ? (isAr ? '♾️ غير محدود' : '♾️ Unlimited')
+                    : '${t("متبقي", "Left")}: ${(10 - scan.todayCount).clamp(0, 10)}/10',
+                style: const TextStyle(
+                    fontFamily: 'Cairo', fontSize: 11,
+                    color: Colors.white, fontWeight: FontWeight.w700),
+              ),
             )),
           ]),
         ),
