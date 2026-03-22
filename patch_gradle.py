@@ -6,6 +6,7 @@ if os.path.exists(gradle):
     f = open(gradle).read()
     # minSdk
     f = re.sub(r'minSdk\s*=?\s*\d+', 'minSdk = 21', f)
+    f = re.sub(r'applicationId\s+["\'][^"\']+["\']', 'applicationId "{NEW_ID}"', f)
     f = re.sub(r'minSdkVersion\s+\d+', 'minSdkVersion 21', f)
     # desugaring
     if 'coreLibraryDesugaringEnabled' not in f:
@@ -153,3 +154,15 @@ if os.path.exists(manifest_path):
 else:
     print("Creating AndroidManifest with health permissions")
     # Will be created by flutter create, then patched
+
+# ── Set applicationId ──────────────────────────────────────
+gradle_path = 'android/app/build.gradle'
+if os.path.exists(gradle_path):
+    g = open(gradle_path).read()
+    g = re.sub(r'applicationId\s+["\'"][^\"\'"]+["\'"]',
+               'applicationId "com.halalcalorie.app"', g)
+    if 'applicationId' not in g:
+        g = g.replace('defaultConfig {',
+                      'defaultConfig {\n        applicationId "com.halalcalorie.app"')
+    open(gradle_path, 'w').write(g)
+    print(f"applicationId set to com.halalcalorie.app")
