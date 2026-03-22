@@ -892,4 +892,64 @@ final kProductsDB = [
   ScanResult(barcode: '6281003001012', name: 'لاكتالس جبنة مثلثات', brand: 'Laughing Cow', status: HalalStatus.halal, certs: ['SFDA']),
   ScanResult(barcode: '6224009012345', name: 'مياه سيوة ٠٫٥ لتر', brand: 'سيوة', status: HalalStatus.halal),
   ScanResult(barcode: '6224000123456', name: 'مياه بارادايس', brand: 'بارادايس', status: HalalStatus.halal),
+
+  // ── UK Halal brands ────────────────────────────────────
+  ScanResult(barcode: '5000169105893', name: 'Cadbury Dairy Milk', brand: 'Cadbury UK', status: HalalStatus.halal, certs: ['HFA UK'], notes: 'Halal certified in UK'),
+  ScanResult(barcode: '5000159461023', name: 'Cadbury Roses', brand: 'Cadbury', status: HalalStatus.doubtful, notes: 'Check local certification'),
+  ScanResult(barcode: '5010477330068', name: 'Walkers Crisps Plain', brand: 'Walkers', status: HalalStatus.halal),
+  ScanResult(barcode: '5000188921898', name: 'McVities Digestive', brand: 'McVities', status: HalalStatus.halal, certs: ['HFA UK']),
+  ScanResult(barcode: '5000393003468', name: 'Heinz Baked Beans', brand: 'Heinz', status: HalalStatus.halal),
+  ScanResult(barcode: '5000167023762', name: 'Kelloggs Corn Flakes', brand: 'Kelloggs', status: HalalStatus.halal),
+  ScanResult(barcode: '5000183700012', name: 'Hovis Wholemeal Bread', brand: 'Hovis', status: HalalStatus.halal),
+  ScanResult(barcode: '5010251011392', name: 'Cathedral City Cheddar', brand: 'Cathedral City', status: HalalStatus.halal, certs: ['HFA']),
+  ScanResult(barcode: '5000315621236', name: 'Flora Margarine', brand: 'Flora', status: HalalStatus.halal),
+  ScanResult(barcode: '0000000016458', name: 'Twix Bar', brand: 'Mars', status: HalalStatus.halal, certs: ['HFA UK']),
+  ScanResult(barcode: '5000159372700', name: 'Maltesers', brand: 'Mars', status: HalalStatus.halal, certs: ['HFA UK']),
+  ScanResult(barcode: '5000159376043', name: 'Bounty Bar', brand: 'Mars', status: HalalStatus.halal, certs: ['HFA UK']),
+  ScanResult(barcode: '5000159376012', name: 'Snickers Bar', brand: 'Mars', status: HalalStatus.halal, certs: ['HFA UK']),
+
+  // ── US Halal brands ────────────────────────────────────
+  ScanResult(barcode: '0016000275287', name: 'Cheerios Original', brand: 'General Mills', status: HalalStatus.halal),
+  ScanResult(barcode: '0038000845604', name: 'Kelloggs Special K', brand: 'Kelloggs', status: HalalStatus.halal),
+  ScanResult(barcode: '0044000032029', name: 'Oreo Original', brand: 'Nabisco', status: HalalStatus.doubtful, notes: 'US version — check ingredients'),
+  ScanResult(barcode: '0010700504208', name: 'Pepperidge Farm Goldfish', brand: 'Pepperidge', status: HalalStatus.doubtful),
+  ScanResult(barcode: '0041196870066', name: 'Lay's Classic Chips', brand: 'PepsiCo US', status: HalalStatus.halal),
+  ScanResult(barcode: '0028400090094', name: 'Doritos Nacho Cheese', brand: 'PepsiCo', status: HalalStatus.doubtful, notes: 'May contain non-halal enzymes'),
+  ScanResult(barcode: '0019200043304', name: 'Tropicana Orange Juice', brand: 'Tropicana', status: HalalStatus.halal),
+  ScanResult(barcode: '0078742098937', name: 'Sam's Choice Water', brand: 'Walmart', status: HalalStatus.halal),
+  ScanResult(barcode: '0012000161155', name: 'Pepsi Can 330ml', brand: 'PepsiCo US', status: HalalStatus.halal),
+  ScanResult(barcode: '0049000028911', name: 'Coca-Cola Can 330ml', brand: 'Coca-Cola US', status: HalalStatus.halal),
+
+  // ── EU Halal brands ────────────────────────────────────
+  ScanResult(barcode: '8711000300022', name: 'Knorr Chicken Stock', brand: 'Knorr EU', status: HalalStatus.doubtful, notes: 'Check halal version'),
+  ScanResult(barcode: '8710398520067', name: 'Lipton Yellow Label Tea', brand: 'Lipton', status: HalalStatus.halal),
+  ScanResult(barcode: '8000500310427', name: 'Nutella 200g', brand: 'Ferrero', status: HalalStatus.halal, certs: ['IFANCA'], notes: 'Halal certified globally'),
+  ScanResult(barcode: '3017620422003', name: 'Nutella 400g FR', brand: 'Ferrero FR', status: HalalStatus.halal, certs: ['IFANCA']),
+  ScanResult(barcode: '7613035349988', name: 'Nescafe Original', brand: 'Nestle', status: HalalStatus.halal),
+  ScanResult(barcode: '7613033383991', name: 'KitKat 4 Finger', brand: 'Nestle EU', status: HalalStatus.halal, certs: ['HFA']),
+  ScanResult(barcode: '8076809513388', name: 'Barilla Spaghetti', brand: 'Barilla', status: HalalStatus.halal),
+  ScanResult(barcode: '4005556011308', name: 'Haribo Gold Bears', brand: 'Haribo', status: HalalStatus.haram, notes: 'Contains pork gelatin — HARAM'),
+  ScanResult(barcode: '4014400914001', name: 'Haribo Halal Bears', brand: 'Haribo Halal', status: HalalStatus.halal, certs: ['IFANCA'], notes: 'Special halal range'),
+  ScanResult(barcode: '3046920022637', name: 'Milka Alpine Milk', brand: 'Milka', status: HalalStatus.doubtful, notes: 'Not halal certified in all regions'),
+  ScanResult(barcode: '7622300441937', name: 'Toblerone 100g', brand: 'Mondelez', status: HalalStatus.doubtful, notes: 'Check local certification'),
+
+  // ── Saudi / Gulf brands ────────────────────────────────
+  ScanResult(barcode: '6281003016015', name: 'Almarai Full Fat Milk', brand: 'Almarai', status: HalalStatus.halal, certs: ['SFDA']),
+  ScanResult(barcode: '6281003016022', name: 'Almarai Low Fat Milk', brand: 'Almarai', status: HalalStatus.halal, certs: ['SFDA']),
+  ScanResult(barcode: '6281003016039', name: 'Almarai Orange Juice', brand: 'Almarai', status: HalalStatus.halal, certs: ['SFDA']),
+  ScanResult(barcode: '6281003016046', name: 'Almarai Yogurt', brand: 'Almarai', status: HalalStatus.halal, certs: ['SFDA']),
+  ScanResult(barcode: '6281006112229', name: 'Al Nada Juice Mango', brand: 'Al Nada', status: HalalStatus.halal),
+  ScanResult(barcode: '6294003553008', name: 'Baladna Laban', brand: 'Baladna', status: HalalStatus.halal, certs: ['Qatar']),
+  ScanResult(barcode: '6291003030009', name: 'Al Ain Water 500ml', brand: 'Al Ain', status: HalalStatus.halal),
+  ScanResult(barcode: '6281055550001', name: 'Nadec Butter', brand: 'Nadec', status: HalalStatus.halal, certs: ['SFDA']),
+  ScanResult(barcode: '6281006890001', name: 'Saudia Cream', brand: 'Saudia', status: HalalStatus.halal, certs: ['SFDA']),
+  ScanResult(barcode: '6911988023099', name: 'Indomie Mi Goreng', brand: 'Indomie', status: HalalStatus.halal, certs: ['MUI Indonesia']),
+  ScanResult(barcode: '8993001901002', name: 'Indomie Chicken', brand: 'Indomie', status: HalalStatus.halal, certs: ['MUI']),
+
+  // ── Known HARAM products ───────────────────────────────
+  ScanResult(barcode: '0037466065099', name: 'Jack Daniel's Whiskey', brand: 'Jack Daniel's', status: HalalStatus.haram, notes: 'Alcohol — HARAM'),
+  ScanResult(barcode: '5010148002849', name: 'Budweiser Beer', brand: 'AB InBev', status: HalalStatus.haram, notes: 'Alcohol — HARAM'),
+  ScanResult(barcode: '0049695001023', name: 'Spam Classic', brand: 'Hormel', status: HalalStatus.haram, notes: 'Pork — HARAM'),
+  ScanResult(barcode: '0017000097985', name: 'Oscar Mayer Bacon', brand: 'Kraft', status: HalalStatus.haram, notes: 'Pork — HARAM'),
 ];
+
