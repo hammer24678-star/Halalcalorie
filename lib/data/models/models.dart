@@ -812,6 +812,117 @@ const kQuickFoods = [
   QuickFood(name: 'لاتيه بالحليب',       nameEn: 'Latte with milk',         kcal: 190, proteinG: 7,  carbsG: 18,  fatG: 7.0),
   QuickFood(name: 'كابوتشينو',           nameEn: 'Cappuccino',              kcal: 120, proteinG: 5,  carbsG: 10,  fatG: 5.0),
   QuickFood(name: 'سموذي فراولة موز',   nameEn: 'Strawberry banana smoothie',kcal:200, proteinG: 4,  carbsG: 45,  fatG: 1.0),
+  // ═══ PAKISTANI & INDIAN HALAL ═══════════════════════════════════
+  QuickFood(name: 'بيريانى دجاج (طبق)',    nameEn: 'Chicken biryani',         kcal: 490, proteinG: 32, carbsG: 58,  fatG: 12.0),
+  QuickFood(name: 'بيريانى لحم (طبق)',     nameEn: 'Beef biryani',            kcal: 540, proteinG: 36, carbsG: 58,  fatG: 16.0),
+  QuickFood(name: 'كاري دجاج (طبق)',       nameEn: 'Chicken curry',           kcal: 320, proteinG: 28, carbsG: 12,  fatG: 18.0),
+  QuickFood(name: 'كاري لحم (طبق)',        nameEn: 'Lamb curry',              kcal: 380, proteinG: 30, carbsG: 10,  fatG: 22.0),
+  QuickFood(name: 'داهل عدس (طبق)',        nameEn: 'Dal lentils',             kcal: 220, proteinG: 12, carbsG: 32,  fatG: 5.0),
+  QuickFood(name: 'سموسة دجاج (٢ حبة)',   nameEn: 'Chicken samosa (2)',      kcal: 280, proteinG: 12, carbsG: 26,  fatG: 14.0),
+  QuickFood(name: 'نان (رغيف)',            nameEn: 'Naan bread',              kcal: 262, proteinG: 9,  carbsG: 45,  fatG: 5.0),
+  QuickFood(name: 'رغيف باراثا',           nameEn: 'Paratha bread',           kcal: 300, proteinG: 7,  carbsG: 42,  fatG: 12.0),
+  QuickFood(name: 'تشاباتي (رغيف)',        nameEn: 'Chapati',                 kcal: 120, proteinG: 4,  carbsG: 22,  fatG: 2.0),
+  QuickFood(name: 'لسي مانجو (كوب)',       nameEn: 'Mango lassi',             kcal: 180, proteinG: 5,  carbsG: 32,  fatG: 4.0),
+  QuickFood(name: 'خبز بوري (١ حبة)',      nameEn: 'Puri bread',              kcal: 145, proteinG: 3,  carbsG: 18,  fatG: 7.0),
+  QuickFood(name: 'كفتة هندية (٢ قطعة)',  nameEn: 'Indian kofta (2)',        kcal: 290, proteinG: 22, carbsG: 8,   fatG: 18.0),
+  QuickFood(name: 'بالاك باناير',          nameEn: 'Palak paneer',            kcal: 260, proteinG: 14, carbsG: 10,  fatG: 18.0),
+  QuickFood(name: 'تكا دجاج (٣ قطع)',     nameEn: 'Chicken tikka (3pc)',     kcal: 220, proteinG: 30, carbsG: 4,   fatG: 9.0),
+  QuickFood(name: 'تشاي حليب هندي',        nameEn: 'Masala chai',             kcal: 90,  proteinG: 3,  carbsG: 14,  fatG: 3.0),
+  QuickFood(name: 'رز بسمتي (١ كوب)',     nameEn: 'Basmati rice (1 cup)',    kcal: 210, proteinG: 4,  carbsG: 46,  fatG: 0.5),
+  QuickFood(name: 'كاري حمص (داهل)',       nameEn: 'Chickpea curry',          kcal: 240, proteinG: 10, carbsG: 34,  fatG: 8.0),
+  QuickFood(name: 'حلوى قلاب جامون',      nameEn: 'Gulab jamun (2pc)',       kcal: 250, proteinG: 4,  carbsG: 38,  fatG: 9.0),
+  QuickFood(name: 'خير حلوى أرز',         nameEn: 'Kheer rice pudding',      kcal: 200, proteinG: 6,  carbsG: 32,  fatG: 6.0),
+  QuickFood(name: 'هاليم لحم (طبق)',       nameEn: 'Haleem (meat & lentils)', kcal: 350, proteinG: 28, carbsG: 28,  fatG: 12.0),
+  QuickFood(name: 'نهاري لحم (طبق)',       nameEn: 'Nihari beef stew',        kcal: 420, proteinG: 34, carbsG: 14,  fatG: 24.0),
+  QuickFood(name: 'تشولي بطاطس (طبق)',    nameEn: 'Aloo chana',              kcal: 230, proteinG: 9,  carbsG: 38,  fatG: 6.0),
+
+  // ═══ INDONESIAN & MALAYSIAN HALAL ═══════════════════════════════
+  QuickFood(name: 'ناسي غورنج (طبق)',      nameEn: 'Nasi goreng',             kcal: 440, proteinG: 14, carbsG: 68,  fatG: 14.0),
+  QuickFood(name: 'ميي غورنج (طبق)',       nameEn: 'Mee goreng',              kcal: 420, proteinG: 12, carbsG: 64,  fatG: 14.0),
+  QuickFood(name: 'ساتيه دجاج (٤ أسياخ)', nameEn: 'Chicken satay (4 skewers)',kcal:220, proteinG: 22, carbsG: 8,   fatG: 10.0),
+  QuickFood(name: 'ريندانج لحم (١٠٠ج)',   nameEn: 'Beef rendang (100g)',     kcal: 195, proteinG: 20, carbsG: 4,   fatG: 11.0),
+  QuickFood(name: 'لاكسا (كوب كبير)',     nameEn: 'Laksa soup',              kcal: 380, proteinG: 18, carbsG: 42,  fatG: 16.0),
+  QuickFood(name: 'باكسو (كوب)',           nameEn: 'Bakso meatball soup',     kcal: 280, proteinG: 16, carbsG: 28,  fatG: 10.0),
+  QuickFood(name: 'غادو غادو (طبق)',       nameEn: 'Gado gado salad',         kcal: 300, proteinG: 12, carbsG: 28,  fatG: 16.0),
+  QuickFood(name: 'ناسي ليماك (طبق)',     nameEn: 'Nasi lemak',              kcal: 480, proteinG: 14, carbsG: 58,  fatG: 22.0),
+  QuickFood(name: 'روتي كاناي',            nameEn: 'Roti canai',              kcal: 301, proteinG: 8,  carbsG: 42,  fatG: 12.0),
+  QuickFood(name: 'تمبه (١٠٠ج)',          nameEn: 'Tempeh (100g)',           kcal: 193, proteinG: 19, carbsG: 8,   fatG: 11.0),
+  QuickFood(name: 'توفو مقلي (١٠٠ج)',    nameEn: 'Fried tofu (100g)',       kcal: 175, proteinG: 11, carbsG: 4,   fatG: 13.0),
+  QuickFood(name: 'سيوتو دجاج',           nameEn: 'Soto ayam chicken soup',  kcal: 230, proteinG: 18, carbsG: 18,  fatG: 8.0),
+  QuickFood(name: 'إينداومي (كيس)',        nameEn: 'Indomie instant noodles', kcal: 350, proteinG: 8,  carbsG: 50,  fatG: 13.0),
+  QuickFood(name: 'مارتاباك لحم',         nameEn: 'Martabak meat pancake',   kcal: 380, proteinG: 18, carbsG: 38,  fatG: 16.0),
+  QuickFood(name: 'أيام بنيك (١٠٠ج)',    nameEn: 'Ayam bakar (grilled chicken)',kcal:165,proteinG:28, carbsG: 0,   fatG: 6.0),
+
+  // ═══ FAMOUS RESTAURANT — McDONALD'S HALAL ═════════════════════
+  QuickFood(name: 'ماكدونالدز: برجر دجاج حلال',   nameEn: "McDonald's McChicken",       kcal: 430, proteinG: 20, carbsG: 40, fatG: 20.0),
+  QuickFood(name: 'ماكدونالدز: ماك كريسبي',        nameEn: "McDonald's McCrispy",         kcal: 530, proteinG: 28, carbsG: 50, fatG: 22.0),
+  QuickFood(name: 'ماكدونالدز: فيلية-أو-فيش',     nameEn: "McDonald's Filet-O-Fish",     kcal: 390, proteinG: 16, carbsG: 39, fatG: 18.0),
+  QuickFood(name: 'ماكدونالدز: بطاطس وسط',        nameEn: "McDonald's Medium Fries",     kcal: 320, proteinG: 4,  carbsG: 43, fatG: 15.0),
+  QuickFood(name: 'ماكدونالدز: بطاطس كبير',       nameEn: "McDonald's Large Fries",      kcal: 445, proteinG: 6,  carbsG: 59, fatG: 21.0),
+  QuickFood(name: 'ماكدونالدز: آبل باي',          nameEn: "McDonald's Apple Pie",        kcal: 240, proteinG: 3,  carbsG: 35, fatG: 11.0),
+  QuickFood(name: 'ماكدونالدز: ماك فلوري',        nameEn: "McDonald's McFlurry Oreo",    kcal: 510, proteinG: 11, carbsG: 80, fatG: 17.0),
+  QuickFood(name: 'ماكدونالدز: عصير برتقال',      nameEn: "McDonald's Orange Juice",     kcal: 140, proteinG: 2,  carbsG: 33, fatG: 0.0),
+  QuickFood(name: 'ماكدونالدز: مشروب كوكا كولا وسط', nameEn: "McDonald's Medium Coke",  kcal: 210, proteinG: 0,  carbsG: 56, fatG: 0.0),
+  QuickFood(name: 'ماكدونالدز: هاش براون',        nameEn: "McDonald's Hash Brown",       kcal: 150, proteinG: 1,  carbsG: 15, fatG: 9.0),
+  QuickFood(name: 'ماكدونالدز: باني كيك إفطار',   nameEn: "McDonald's Hotcakes",         kcal: 580, proteinG: 13, carbsG: 98, fatG: 15.0),
+
+  // ═══ FAMOUS RESTAURANT — KFC HALAL ══════════════════════════════
+  QuickFood(name: 'كنتاكي: قطعة دجاج أصلية',    nameEn: 'KFC Original Chicken (1pc)',  kcal: 320, proteinG: 28, carbsG: 11, fatG: 19.0),
+  QuickFood(name: 'كنتاكي: قطعة دجاج مقرمش',    nameEn: 'KFC Crispy Chicken (1pc)',    kcal: 400, proteinG: 30, carbsG: 18, fatG: 24.0),
+  QuickFood(name: 'كنتاكي: زنجر برجر',           nameEn: 'KFC Zinger Burger',           kcal: 490, proteinG: 24, carbsG: 44, fatG: 22.0),
+  QuickFood(name: 'كنتاكي: تواستر برجر',         nameEn: 'KFC Twister Wrap',            kcal: 480, proteinG: 22, carbsG: 48, fatG: 20.0),
+  QuickFood(name: 'كنتاكي: بوبكورن دجاج (وسط)', nameEn: 'KFC Popcorn Chicken Medium',  kcal: 370, proteinG: 22, carbsG: 28, fatG: 18.0),
+  QuickFood(name: 'كنتاكي: ماش بوتيتو',          nameEn: 'KFC Mashed Potatoes',         kcal: 130, proteinG: 2,  carbsG: 20, fatG: 5.0),
+  QuickFood(name: 'كنتاكي: كول سلو',             nameEn: 'KFC Coleslaw',                kcal: 170, proteinG: 1,  carbsG: 22, fatG: 9.0),
+  QuickFood(name: 'كنتاكي: وجبة باكت (٨ قطع)',  nameEn: 'KFC 8pc Bucket',             kcal:2560, proteinG:220, carbsG:88, fatG:152.0),
+  QuickFood(name: 'كنتاكي: بسكويت',              nameEn: 'KFC Biscuit',                 kcal: 220, proteinG: 4,  carbsG: 26, fatG: 11.0),
+
+  // ═══ FAMOUS RESTAURANT — SUBWAY HALAL ═══════════════════════════
+  QuickFood(name: 'صب واي: ساندوتش دجاج تيريياكي', nameEn: 'Subway Chicken Teriyaki 6"',kcal: 350, proteinG: 24, carbsG: 46, fatG: 6.0),
+  QuickFood(name: 'صب واي: ساندوتش تونا ٦ إنش',   nameEn: 'Subway Tuna 6"',            kcal: 480, proteinG: 20, carbsG: 44, fatG: 24.0),
+  QuickFood(name: 'صب واي: ساندوتش فلافل',         nameEn: 'Subway Falafel 6"',          kcal: 380, proteinG: 14, carbsG: 56, fatG: 12.0),
+  QuickFood(name: 'صب واي: كوكيز شوكولاتة',        nameEn: 'Subway Chocolate Cookie',    kcal: 210, proteinG: 2,  carbsG: 30, fatG: 10.0),
+
+  // ═══ FAMOUS RESTAURANT — PIZZA HUT HALAL ════════════════════════
+  QuickFood(name: 'بيتزا هت: بيتزا دجاج سوبريم (شريحة)', nameEn: 'Pizza Hut Chicken Supreme slice', kcal: 290, proteinG: 16, carbsG: 32, fatG: 10.0),
+  QuickFood(name: 'بيتزا هت: بيتزا مارغريتا (شريحة)',   nameEn: 'Pizza Hut Margherita slice',      kcal: 240, proteinG: 11, carbsG: 30, fatG: 8.0),
+  QuickFood(name: 'بيتزا هت: عيدان خبز بالثوم',        nameEn: 'Pizza Hut Garlic Bread Sticks',   kcal: 180, proteinG: 5,  carbsG: 28, fatG: 6.0),
+  QuickFood(name: 'بيتزا هت: أجنحة دجاج (٤ قطع)',     nameEn: 'Pizza Hut Chicken Wings (4)',     kcal: 280, proteinG: 22, carbsG: 8,  fatG: 18.0),
+
+  // ═══ FAMOUS RESTAURANT — BURGER KING HALAL ══════════════════════
+  QuickFood(name: 'برجر كينج: وبر دجاج حلال',     nameEn: 'Burger King Chicken Whopper', kcal: 660, proteinG: 38, carbsG: 52, fatG: 32.0),
+  QuickFood(name: 'برجر كينج: كريسبي دجاج',       nameEn: 'Burger King Crispy Chicken',  kcal: 520, proteinG: 28, carbsG: 46, fatG: 24.0),
+  QuickFood(name: 'برجر كينج: أونيون رينجز (وسط)',nameEn: 'Burger King Onion Rings Med', kcal: 320, proteinG: 4,  carbsG: 38, fatG: 17.0),
+
+  // ═══ FAMOUS RESTAURANT — HARDEE'S / CARL'S JR HALAL ═══════════
+  QuickFood(name: 'هارديز: برجر دجاج مقرمش',    nameEn: "Hardee's Crispy Chicken",    kcal: 550, proteinG: 30, carbsG: 50, fatG: 24.0),
+  QuickFood(name: 'هارديز: ثيك بيرجر دجاج',     nameEn: "Hardee's Thickburger Chicken",kcal:620, proteinG: 34, carbsG: 52, fatG: 28.0),
+
+  // ═══ FAMOUS RESTAURANT — POPEYES HALAL ══════════════════════════
+  QuickFood(name: 'بوبايز: دجاج مقرمش (قطعة)',  nameEn: "Popeyes Spicy Chicken (1pc)", kcal: 360, proteinG: 22, carbsG: 17, fatG: 22.0),
+  QuickFood(name: 'بوبايز: بسكويت',              nameEn: "Popeyes Biscuit",             kcal: 260, proteinG: 4,  carbsG: 26, fatG: 15.0),
+  QuickFood(name: 'بوبايز: ساندوتش دجاج',        nameEn: "Popeyes Chicken Sandwich",    kcal: 700, proteinG: 28, carbsG: 50, fatG: 42.0),
+
+  // ═══ FAMOUS RESTAURANT — STARBUCKS HALAL ════════════════════════
+  QuickFood(name: 'ستاربكس: لاتيه وسط',         nameEn: 'Starbucks Latte (Grande)',    kcal: 190, proteinG: 11, carbsG: 19, fatG: 7.0),
+  QuickFood(name: 'ستاربكس: كابوتشينو وسط',     nameEn: 'Starbucks Cappuccino Grande', kcal: 120, proteinG: 7,  carbsG: 12, fatG: 4.0),
+  QuickFood(name: 'ستاربكس: موكا فراباتشينو',    nameEn: 'Starbucks Mocha Frappuccino', kcal: 380, proteinG: 5,  carbsG: 61, fatG: 13.0),
+  QuickFood(name: 'ستاربكس: كيكة شوكولاتة',     nameEn: 'Starbucks Chocolate Cake',    kcal: 380, proteinG: 6,  carbsG: 50, fatG: 18.0),
+  QuickFood(name: 'ستاربكس: كروسان',             nameEn: 'Starbucks Croissant',         kcal: 260, proteinG: 5,  carbsG: 29, fatG: 14.0),
+
+  // ═══ FAMOUS RESTAURANT — SHAWARMA CHAINS ════════════════════════
+  QuickFood(name: 'شاورمر: شاورما دجاج (ساندوتش)', nameEn: 'Shawarmer Chicken Sandwich', kcal: 480, proteinG: 32, carbsG: 44, fatG: 18.0),
+  QuickFood(name: 'أسياخ: مشوى دجاج (طبق)',      nameEn: 'Grilled chicken plate',       kcal: 520, proteinG: 42, carbsG: 48, fatG: 14.0),
+  QuickFood(name: 'كبسة روف (طبق)',               nameEn: 'Kabsa Roof restaurant',       kcal: 680, proteinG: 44, carbsG: 72, fatG: 18.0),
+
+  // ═══ COFFEE & BAKERY ════════════════════════════════════════════
+  QuickFood(name: 'كروسان زبدة',                  nameEn: 'Butter croissant',            kcal: 272, proteinG: 5,  carbsG: 31, fatG: 14.0),
+  QuickFood(name: 'دونات سكر (حبة)',              nameEn: 'Glazed donut',                kcal: 250, proteinG: 4,  carbsG: 34, fatG: 12.0),
+  QuickFood(name: 'مافن بلوبيري',                 nameEn: 'Blueberry muffin',            kcal: 340, proteinG: 5,  carbsG: 48, fatG: 14.0),
+  QuickFood(name: 'باغيل سادة',                   nameEn: 'Plain bagel',                 kcal: 270, proteinG: 10, carbsG: 53, fatG: 2.0),
+  QuickFood(name: 'وافل (قطعة)',                  nameEn: 'Waffle',                      kcal: 218, proteinG: 6,  carbsG: 25, fatG: 11.0),
+  QuickFood(name: 'فطيرة تفاح (شريحة)',           nameEn: 'Apple pie slice',             kcal: 296, proteinG: 2,  carbsG: 43, fatG: 14.0),
+
 ];
 
 final kProductsDB = [
