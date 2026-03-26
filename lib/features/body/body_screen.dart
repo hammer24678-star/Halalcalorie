@@ -662,7 +662,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
       ),
       actions: [
         TextButton(
-          onPressed: () => if (context.mounted) Navigator.pop(context),
+          onPressed: () { if (context.mounted) Navigator.pop(context); },
           child: Text(isAr ? 'إلغاء' : 'Cancel',
               style: const TextStyle(fontFamily: 'Cairo')),
         ),
