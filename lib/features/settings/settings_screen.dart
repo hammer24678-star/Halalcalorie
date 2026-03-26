@@ -127,7 +127,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             tog( emoji:'🔔', title: t('تفعيل الإشعارات', 'Enable Notifications'), subtitle: t('ذكريات الماء والتمرين والوجبات', 'Water, workout & meal reminders'),
               value: notifsOn,
               onChanged: (v) {
-                ref.read(notificationsEnabledProvider.notifier).toggle();
+                ref.watch(notificationsEnabledProvider.notifier).toggle();
                 if (v) NotificationService.requestPermissions();
               },
             ),

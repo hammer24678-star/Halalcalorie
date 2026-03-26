@@ -229,7 +229,7 @@ class ProfileScreen extends ConsumerWidget {
                   : (planName == 'lifetime' ? 'Lifetime' : planName == 'yearly' ? 'Yearly active' : 'Monthly active'),
                 () async {
                   // Refresh from RC then show management options
-                  await ref.read(premiumProvider.notifier).refresh();
+                  await ref.watch(premiumProvider.notifier).refresh();
                   if (context.mounted) _showManageSubSheet(context, isAr, planName);
                 }),
             if (!isPremium)
@@ -381,6 +381,7 @@ class ProfileScreen extends ConsumerWidget {
 
   Future<void> _signOut(BuildContext context, WidgetRef ref, bool isAr) async {
     final ok = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
+      if (!mounted) return;
       title: Text(isAr ? 'تسجيل الخروج' : 'Sign Out', style: const TextStyle(fontFamily: 'Cairo')),
       content: Text(isAr ? 'هل أنت متأكد؟' : 'Are you sure?', style: const TextStyle(fontFamily: 'Cairo')),
       actions: [
