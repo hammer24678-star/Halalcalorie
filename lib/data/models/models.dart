@@ -994,6 +994,67 @@ const kQuickFoods = [
   QuickFood(name: 'جوز (٧ حبات)',            nameEn: 'Walnuts (7 halves)',       kcal: 185, proteinG: 4,  carbsG: 4,   fatG: 18.0),
   QuickFood(name: 'لوز (٢٣ حبة)',            nameEn: 'Almonds (23)',             kcal: 164, proteinG: 6,  carbsG: 6,   fatG: 14.0),
 
+  // ═══ BREAKFAST FOODS ════════════════════════════════════════════
+  QuickFood(name: 'بيض عيون (٢ بيضة)',       nameEn: 'Fried eggs (2)',           kcal: 185, proteinG: 12, carbsG: 1,   fatG: 14.0),
+  QuickFood(name: 'فطور إنجليزي كامل',        nameEn: 'Full English breakfast',   kcal: 760, proteinG: 40, carbsG: 32,  fatG: 48.0),
+  QuickFood(name: 'شوفان بالحليب (كوب)',      nameEn: 'Oatmeal with milk (cup)',  kcal: 250, proteinG: 10, carbsG: 36,  fatG: 7.0),
+  QuickFood(name: 'فلاح فطور (طبق مصري)',    nameEn: 'Fallah breakfast plate',   kcal: 520, proteinG: 22, carbsG: 62,  fatG: 18.0),
+  QuickFood(name: 'فول بزيت وليمون',          nameEn: 'Foul with oil & lemon',   kcal: 200, proteinG: 10, carbsG: 28,  fatG: 7.0),
+  QuickFood(name: 'عجة فيتة (٢ بيضة)',       nameEn: 'Feta omelette (2 eggs)',   kcal: 240, proteinG: 16, carbsG: 2,   fatG: 18.0),
+  QuickFood(name: 'بانكيك (٣ قطع)',           nameEn: 'Pancakes (3)',             kcal: 360, proteinG: 8,  carbsG: 56,  fatG: 10.0),
+  QuickFood(name: 'توست فرنسي (٢ شريحة)',    nameEn: 'French toast (2 slices)',  kcal: 280, proteinG: 8,  carbsG: 36,  fatG: 11.0),
+  QuickFood(name: 'موسلي بالزبادي (كوب)',    nameEn: 'Muesli with yogurt',       kcal: 320, proteinG: 12, carbsG: 48,  fatG: 8.0),
+  QuickFood(name: 'أكل الحبوب مع حليب (كوب)',nameEn: 'Cereal with milk (cup)',   kcal: 240, proteinG: 8,  carbsG: 44,  fatG: 4.0),
+
+  // ═══ SNACKS & STREET FOOD ═══════════════════════════════════════
+  QuickFood(name: 'ذرة مشوية بالزبدة',       nameEn: 'Grilled corn with butter', kcal: 180, proteinG: 4,  carbsG: 30,  fatG: 6.0),
+  QuickFood(name: 'بطاطا مشوية بالزعتر',     nameEn: 'Roasted potatoes za'atar', kcal: 200, proteinG: 4,  carbsG: 38,  fatG: 4.0),
+  QuickFood(name: 'بطاطس شيبس محلي (كيس)',  nameEn: 'Local potato chips (bag)',  kcal: 150, proteinG: 2,  carbsG: 18,  fatG: 8.0),
+  QuickFood(name: 'فشار (كوب)',               nameEn: 'Popcorn (cup)',             kcal: 55,  proteinG: 1,  carbsG: 11,  fatG: 1.0),
+  QuickFood(name: 'فشار بالزبدة (كوب)',      nameEn: 'Buttered popcorn (cup)',   kcal: 90,  proteinG: 1,  carbsG: 10,  fatG: 5.0),
+  QuickFood(name: 'ترمس (١٠٠ج)',             nameEn: 'Lupin beans (100g)',        kcal: 370, proteinG: 36, carbsG: 40,  fatG: 10.0),
+  QuickFood(name: 'سوبيا (كوب)',              nameEn: 'Sobia drink (cup)',         kcal: 120, proteinG: 2,  carbsG: 28,  fatG: 1.0),
+  QuickFood(name: 'بليلة قمح (كوب)',         nameEn: 'Wheat baleela (cup)',       kcal: 280, proteinG: 8,  carbsG: 56,  fatG: 2.0),
+  QuickFood(name: 'حمص محمص (٣٠ج)',         nameEn: 'Roasted chickpeas (30g)',  kcal: 120, proteinG: 6,  carbsG: 18,  fatG: 3.0),
+  QuickFood(name: 'بسبوسة تمر (قطعة)',       nameEn: 'Date basbousa',            kcal: 200, proteinG: 3,  carbsG: 36,  fatG: 6.0),
+  QuickFood(name: 'حلاوة طحينية (٣٠ج)',     nameEn: 'Tahini halva (30g)',       kcal: 155, proteinG: 4,  carbsG: 18,  fatG: 8.0),
+  QuickFood(name: 'كعك بالسمسم (حبة)',       nameEn: 'Sesame ring cookie',       kcal: 90,  proteinG: 2,  carbsG: 12,  fatG: 4.0),
+
+  // ═══ DRINKS & BEVERAGES ═════════════════════════════════════════
+  QuickFood(name: 'عصير برتقال طبيعي (٢٥٠مل)', nameEn: 'Fresh orange juice 250ml', kcal: 112, proteinG: 2, carbsG: 26, fatG: 0.5),
+  QuickFood(name: 'عصير مانجو طازج (٢٥٠مل)', nameEn: 'Fresh mango juice 250ml',  kcal: 130, proteinG: 1,  carbsG: 32,  fatG: 0.4),
+  QuickFood(name: 'عصير جزر وتفاح',           nameEn: 'Carrot apple juice',       kcal: 90,  proteinG: 1,  carbsG: 22,  fatG: 0.3),
+  QuickFood(name: 'ماء جوز الهند (٢٥٠مل)',   nameEn: 'Coconut water 250ml',      kcal: 46,  proteinG: 2,  carbsG: 9,   fatG: 0.5),
+  QuickFood(name: 'حليب لوز (٢٠٠مل)',        nameEn: 'Almond milk 200ml',        kcal: 60,  proteinG: 1,  carbsG: 8,   fatG: 3.0),
+  QuickFood(name: 'حليب كامل الدسم (٢٠٠مل)', nameEn: 'Whole milk 200ml',        kcal: 122, proteinG: 6,  carbsG: 9,   fatG: 7.0),
+  QuickFood(name: 'شاي أسود بدون سكر',        nameEn: 'Black tea no sugar',       kcal: 2,   proteinG: 0,  carbsG: 0.5, fatG: 0.0),
+  QuickFood(name: 'شاي أسود بسكر وحليب',     nameEn: 'Tea with milk & sugar',    kcal: 55,  proteinG: 1,  carbsG: 10,  fatG: 1.0),
+  QuickFood(name: 'عرق سوس بارد (كوب)',      nameEn: 'Licorice drink cold',      kcal: 45,  proteinG: 0,  carbsG: 11,  fatG: 0.0),
+  QuickFood(name: 'مشروب طاقة حلال (علبة)', nameEn: 'Halal energy drink (can)', kcal: 110, proteinG: 0,  carbsG: 28,  fatG: 0.0),
+  QuickFood(name: 'ماء عادي (٢٥٠مل)',        nameEn: 'Water (250ml)',             kcal: 0,   proteinG: 0,  carbsG: 0,   fatG: 0.0),
+  QuickFood(name: 'ماء بفوز (علبة)',          nameEn: 'Sparkling water (can)',     kcal: 0,   proteinG: 0,  carbsG: 0,   fatG: 0.0),
+
+  // ═══ RAMADAN SPECIAL FOODS ══════════════════════════════════════
+  QuickFood(name: 'حساء حريرة رمضان',        nameEn: 'Ramadan harira soup',      kcal: 200, proteinG: 12, carbsG: 28,  fatG: 5.0),
+  QuickFood(name: 'قطايف محشية بالجوز (٢)', nameEn: 'Qatayef with walnuts (2)', kcal: 320, proteinG: 6,  carbsG: 44,  fatG: 14.0),
+  QuickFood(name: 'تمر بالطحينة (٣ حبات)',  nameEn: 'Dates with tahini (3)',    kcal: 120, proteinG: 2,  carbsG: 20,  fatG: 4.0),
+  QuickFood(name: 'إفطار رمضاني كامل',       nameEn: 'Full Ramadan iftar plate', kcal: 800, proteinG: 38, carbsG: 96,  fatG: 24.0),
+  QuickFood(name: 'شربات رمضان (كوب)',       nameEn: 'Ramadan sherbet (cup)',     kcal: 120, proteinG: 0,  carbsG: 30,  fatG: 0.0),
+  QuickFood(name: 'صمون رمضاني (رغيف)',     nameEn: 'Ramadan bread loaf',       kcal: 320, proteinG: 10, carbsG: 64,  fatG: 4.0),
+  QuickFood(name: 'كنافة رمضان بالقشطة',    nameEn: 'Ramadan kunafa with cream',kcal: 420, proteinG: 8,  carbsG: 58,  fatG: 18.0),
+  QuickFood(name: 'زلابية (٥ حبات)',         nameEn: 'Zalabia fritters (5)',     kcal: 300, proteinG: 4,  carbsG: 42,  fatG: 13.0),
+  QuickFood(name: 'بريوات باللوز (٣ حبات)', nameEn: 'Almond briouat (3)',       kcal: 280, proteinG: 5,  carbsG: 30,  fatG: 16.0),
+
+  // ═══ CONDIMENTS & SAUCES ════════════════════════════════════════
+  QuickFood(name: 'طحينة (٢ م.ك)',           nameEn: 'Tahini (2 tbsp)',           kcal: 178, proteinG: 6,  carbsG: 6,   fatG: 16.0),
+  QuickFood(name: 'صلصة طرطور (٢ م.ك)',     nameEn: 'Tartour sauce (2 tbsp)',   kcal: 100, proteinG: 2,  carbsG: 4,   fatG: 9.0),
+  QuickFood(name: 'مربى مشمش (١ م.ك)',       nameEn: 'Apricot jam (1 tbsp)',     kcal: 48,  proteinG: 0,  carbsG: 13,  fatG: 0.0),
+  QuickFood(name: 'عسل طبيعي (١ م.ك)',       nameEn: 'Natural honey (1 tbsp)',   kcal: 64,  proteinG: 0,  carbsG: 17,  fatG: 0.0),
+  QuickFood(name: 'كاتشب (١ م.ك)',           nameEn: 'Ketchup (1 tbsp)',         kcal: 20,  proteinG: 0,  carbsG: 5,   fatG: 0.0),
+  QuickFood(name: 'مايونيز حلال (١ م.ك)',   nameEn: 'Halal mayo (1 tbsp)',      kcal: 90,  proteinG: 0,  carbsG: 1,   fatG: 10.0),
+  QuickFood(name: 'صلصة تاكو حلال (١ م.ك)',nameEn: 'Halal taco sauce (1 tbsp)',kcal: 15,  proteinG: 0,  carbsG: 3,   fatG: 0.0),
+  QuickFood(name: 'ثومية (١ م.ك)',           nameEn: 'Toum garlic sauce (1 tbsp)',kcal: 90, proteinG: 0,  carbsG: 2,   fatG: 9.0),
+
 ];
 
 final kProductsDB = [
