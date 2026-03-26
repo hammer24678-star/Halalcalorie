@@ -234,7 +234,7 @@ class ProfileScreen extends ConsumerWidget {
                 }),
             if (!isPremium)
               _settingTile('🔓', t('ترقية إلى بريميوم','Upgrade to Premium'), t('افتح كل الميزات','Unlock all features'),
-                () => if (context.mounted) context.push('/paywall')),
+                () { if (context.mounted) context.push('/paywall'); }),
             _settingTile('🔒', t('سياسة الخصوصية','Privacy Policy'), '', () {}),
             _settingTile('ℹ️', t('حول التطبيق','About App'), 'v1.0', () => showAboutDialog(
               context: context, applicationName: 'HalalCalorie / HalalCalorie',

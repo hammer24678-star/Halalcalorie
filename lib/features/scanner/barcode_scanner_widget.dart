@@ -5,7 +5,7 @@
 // ============================================================
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import '../core/theme.dart';
+import '../../core/theme.dart';
 
 class BarcodeScannerWidget extends StatefulWidget {
   final void Function(String barcode) onDetected;

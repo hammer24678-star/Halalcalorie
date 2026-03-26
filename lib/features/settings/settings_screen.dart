@@ -244,7 +244,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
         autofocus: true,
       ),
       actions: [
-        TextButton(onPressed: () => if (context.mounted) Navigator.pop(context), child: Text(isAr ?'إلغاء' : 'Cancel', style: const TextStyle(fontFamily:'Cairo'))),
+        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(isAr ?'إلغاء' : 'Cancel', style: const TextStyle(fontFamily:'Cairo'))),
         ElevatedButton(
           onPressed: () {
             final n = int.tryParse(ctrl.text.trim()) ?? 8;
@@ -268,7 +268,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
         autofocus: true,
       ),
       actions: [
-        TextButton(onPressed: () => if (context.mounted) Navigator.pop(context), child: Text(isAr ?'إلغاء' : 'Cancel', style: const TextStyle(fontFamily:'Cairo'))),
+        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(isAr ?'إلغاء' : 'Cancel', style: const TextStyle(fontFamily:'Cairo'))),
         ElevatedButton(
           onPressed: () { final h = double.tryParse(ctrl.text.trim().replaceAll(',', '.')) ?? 8.0;
             ref.read(sleepProvider.notifier).set(h.clamp(4.0, 12.0));
@@ -284,7 +284,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
       content: Text(
         isAr ?'سيُمسح سجل الوجبات والخطوات والماء لليوم فقط. لا يمكن التراجع.' :'Today\'s meals, steps, and water will be cleared. Cannot be undone.', style: const TextStyle(fontFamily:'Cairo', fontSize: 13, height: 1.5)),
       actions: [
-        TextButton(onPressed: () => if (context.mounted) Navigator.pop(context), child: Text(isAr ?'إلغاء' : 'Cancel', style: const TextStyle(fontFamily:'Cairo'))),
+        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(isAr ?'إلغاء' : 'Cancel', style: const TextStyle(fontFamily:'Cairo'))),
         ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: AppColors.haramRed),
           onPressed: () async {

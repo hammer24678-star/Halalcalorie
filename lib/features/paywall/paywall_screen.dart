@@ -107,7 +107,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
           backgroundColor: Colors.transparent, elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.close, color: isDark ? AppColors.darkText : AppColors.lightText),
-            onPressed: () => if (context.mounted) Navigator.pop(context),
+            onPressed: () { if (context.mounted) Navigator.pop(context); },
           ),
           actions: [
             TextButton(

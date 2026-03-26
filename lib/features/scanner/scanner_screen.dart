@@ -36,7 +36,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
   void _showLimitDialog(bool isAr) {
     showDialog(context: context, builder: (_) => AlertDialog( title: Text(isAr ?'وصلت الحد اليومي' : 'Daily Limit Reached', style: const TextStyle(fontFamily:'Cairo')), content: Text(isAr ?'استخدمت ١٠ ماسحات اليوم.\nترقّ للبريميوم للمزيد.' : 'You\'ve used 10 scans today.\nUpgrade for unlimited.', style: const TextStyle(fontFamily:'Cairo')),
       actions: [
-        TextButton(onPressed: () => if (context.mounted) Navigator.pop(context), child: Text(isAr ?'إغلاق' : 'Close', style: const TextStyle(fontFamily: 'Cairo'))), ElevatedButton(onPressed: () { if (context.mounted) Navigator.pop(context); context.push('/paywall'); }, child: Text(isAr ?'⭐ ترقية' : '⭐ Upgrade', style: const TextStyle(fontFamily: 'Cairo'))),
+        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(isAr ?'إغلاق' : 'Close', style: const TextStyle(fontFamily: 'Cairo'))), ElevatedButton(onPressed: () { if (context.mounted) Navigator.pop(context); context.push('/paywall'); }, child: Text(isAr ?'⭐ ترقية' : '⭐ Upgrade', style: const TextStyle(fontFamily: 'Cairo'))),
       ],
     ));
   }
