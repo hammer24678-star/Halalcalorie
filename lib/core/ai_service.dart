@@ -351,7 +351,6 @@ Request: $prompt
       'قهوة': {'name_ar': 'قهوة', 'name_en': 'Coffee', 'kcal': 2, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 0.0, 'halal': true},
 
       // Gulf & Saudi
-            'كبسة': {'name_ar': 'كبسة', 'name_en': 'Kabsa', 'kcal': 580, 'protein_g': 38.0, 'carbs_g': 68.0, 'fat_g': 16.0, 'halal': true},
        'مندي': {'name_ar': 'مندي', 'name_en': 'Mandi', 'kcal': 620, 'protein_g': 42.0, 'carbs_g': 65.0, 'fat_g': 18.0, 'halal': true},
       'saleeg': {'name_ar': 'سليق', 'name_en': 'Saleeg', 'kcal': 520, 'protein_g': 30.0, 'carbs_g': 62.0, 'fat_g': 14.0, 'halal': true},
       'قهوة عربية': {'name_ar': 'قهوة عربية', 'name_en': 'Arabic Coffee', 'kcal': 5, 'protein_g': 0.0, 'carbs_g': 1.0, 'fat_g': 0.0, 'halal': true},
