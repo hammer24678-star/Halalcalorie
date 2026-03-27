@@ -953,7 +953,7 @@ const kQuickFoods = [
   QuickFood(name: 'مقلوبة لحم (طبق)',         nameEn: 'Meat maqlouba',           kcal: 580, proteinG: 36, carbsG: 64,  fatG: 18.0),
   QuickFood(name: 'كنافة نابلسية (١٠٠ج)',    nameEn: 'Nablus kunafa (100g)',    kcal: 360, proteinG: 10, carbsG: 48,  fatG: 16.0),
   QuickFood(name: 'قطايف بالقشطة (٢ حبة)',   nameEn: 'Qatayef with cream (2)', kcal: 280, proteinG: 6,  carbsG: 38,  fatG: 12.0),
-  QuickFood(name: 'مناقيش زعتر (رغيف)',      nameEn: 'Za'atar manaqeesh',       kcal: 240, proteinG: 6,  carbsG: 36,  fatG: 8.0),
+  QuickFood(name: 'مناقيش زعتر (رغيف)',      nameEn: 'Zaatar manaqeesh',       kcal: 240, proteinG: 6,  carbsG: 36,  fatG: 8.0),
   QuickFood(name: 'مناقيش جبنة (رغيف)',      nameEn: 'Cheese manaqeesh',        kcal: 320, proteinG: 12, carbsG: 36,  fatG: 14.0),
 
   // ═══ DEEPER SUNNAH FOODS ════════════════════════════════════════
@@ -1008,7 +1008,7 @@ const kQuickFoods = [
 
   // ═══ SNACKS & STREET FOOD ═══════════════════════════════════════
   QuickFood(name: 'ذرة مشوية بالزبدة',       nameEn: 'Grilled corn with butter', kcal: 180, proteinG: 4,  carbsG: 30,  fatG: 6.0),
-  QuickFood(name: 'بطاطا مشوية بالزعتر',     nameEn: 'Roasted potatoes za'atar', kcal: 200, proteinG: 4,  carbsG: 38,  fatG: 4.0),
+  QuickFood(name: 'بطاطا مشوية بالزعتر',     nameEn: 'Roasted potatoes zaatar', kcal: 200, proteinG: 4,  carbsG: 38,  fatG: 4.0),
   QuickFood(name: 'بطاطس شيبس محلي (كيس)',  nameEn: 'Local potato chips (bag)',  kcal: 150, proteinG: 2,  carbsG: 18,  fatG: 8.0),
   QuickFood(name: 'فشار (كوب)',               nameEn: 'Popcorn (cup)',             kcal: 55,  proteinG: 1,  carbsG: 11,  fatG: 1.0),
   QuickFood(name: 'فشار بالزبدة (كوب)',      nameEn: 'Buttered popcorn (cup)',   kcal: 90,  proteinG: 1,  carbsG: 10,  fatG: 5.0),
@@ -1111,10 +1111,10 @@ final kProductsDB = [
   ScanResult(barcode: '0038000845604', name: 'Kelloggs Special K', brand: 'Kelloggs', status: HalalStatus.halal),
   ScanResult(barcode: '0044000032029', name: 'Oreo Original', brand: 'Nabisco', status: HalalStatus.doubtful, notes: 'US version — check ingredients'),
   ScanResult(barcode: '0010700504208', name: 'Pepperidge Farm Goldfish', brand: 'Pepperidge', status: HalalStatus.doubtful),
-  ScanResult(barcode: '0041196870066', name: 'Lay's Classic Chips', brand: 'PepsiCo US', status: HalalStatus.halal),
+  ScanResult(barcode: '0041196870066', name: 'Lays Classic Chips', brand: 'PepsiCo US', status: HalalStatus.halal),
   ScanResult(barcode: '0028400090094', name: 'Doritos Nacho Cheese', brand: 'PepsiCo', status: HalalStatus.doubtful, notes: 'May contain non-halal enzymes'),
   ScanResult(barcode: '0019200043304', name: 'Tropicana Orange Juice', brand: 'Tropicana', status: HalalStatus.halal),
-  ScanResult(barcode: '0078742098937', name: 'Sam's Choice Water', brand: 'Walmart', status: HalalStatus.halal),
+  ScanResult(barcode: '0078742098937', name: 'Sams Choice Water', brand: 'Walmart', status: HalalStatus.halal),
   ScanResult(barcode: '0012000161155', name: 'Pepsi Can 330ml', brand: 'PepsiCo US', status: HalalStatus.halal),
   ScanResult(barcode: '0049000028911', name: 'Coca-Cola Can 330ml', brand: 'Coca-Cola US', status: HalalStatus.halal),
 
