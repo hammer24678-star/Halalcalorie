@@ -1921,7 +1921,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
             child: _result == 'error'
                 ? Center(child: Column(children: [
                     const Text('😔',
-                        style: TextStyle(fontSize: 36)),
+                        style: TextStyle(fontSize: 40)),
                     const SizedBox(height: 8),
                     Text(
                         isAr ? 'حدث خطأ، حاول مجدداً'

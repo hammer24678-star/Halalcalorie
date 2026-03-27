@@ -252,7 +252,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen> with SingleTickerPr
       ]),
       const SizedBox(height: 12),
       Wrap(spacing: 4, runSpacing: 4, children: List.generate(water.goal, (i) => GestureDetector(
-        onTap: () => ref.read(waterProvider.notifier).set(i + 1), child: Text('💧', style: TextStyle(fontSize: 26, color: i < water.cups ? null : Colors.grey.withOpacity(0.35))),
+        onTap: () => ref.read(waterProvider.notifier).set(i + 1), child: Text('💧', style: TextStyle(fontSize: 28, color: i < water.cups ? null : Colors.grey.withOpacity(0.35))),
       ))),
       const SizedBox(height: 12),
       LinearProgressIndicator(value: water.percent.clamp(0.0, 1.0), backgroundColor: Colors.grey.shade200,

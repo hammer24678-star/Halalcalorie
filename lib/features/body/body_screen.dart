@@ -789,7 +789,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: AppColors.barakahGold.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: AppColors.barakahGold.withOpacity(0.4)),
       ),
       child: Row(children: [
@@ -840,7 +840,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(12),
+      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16),
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8)]),
       child: Row(children: [
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
