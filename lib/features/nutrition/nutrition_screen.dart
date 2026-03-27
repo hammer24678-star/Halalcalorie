@@ -350,9 +350,9 @@ class _NutritionState extends ConsumerState<NutritionScreen>
             indicatorWeight: 3,
             indicatorSize: TabBarIndicatorSize.label,
             labelStyle: const TextStyle(fontFamily: 'Cairo',
-                fontWeight: FontWeight.w700, fontSize: 13),
+                fontWeight: FontWeight.w700, fontSize: 14),
             unselectedLabelStyle: const TextStyle(
-                fontFamily: 'Cairo', fontSize: 13),
+                fontFamily: 'Cairo', fontSize: 14),
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white54,
             tabs: [

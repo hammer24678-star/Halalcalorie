@@ -142,7 +142,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
           boxShadow: [BoxShadow(color: AppColors.sunnahGreen.withOpacity(0.3), blurRadius: 20, offset: const Offset(0,8))],
         ),
         child: Column(children: [
-          const Text('🌟', style: TextStyle(fontSize: 64)),
+          const Text('🌟', style: TextStyle(fontSize: 72)),
           const SizedBox(height: 10),
           Text(t('HalalCalorie بريميوم', 'HalalCalorie Premium'),
             style: const TextStyle(fontFamily: 'Cairo', fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white)),

@@ -68,7 +68,7 @@ class ProfileScreen extends ConsumerWidget {
           decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16),
             boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 14, offset: const Offset(0, 3))]),
           child: Column(children: [
-            Container(width: 88, height: 88,
+            Container(width: 96, height: 96,
               decoration: BoxDecoration(shape: BoxShape.circle,
                 color: isSis ? AppColors.barakahGold.withOpacity(0.15) : AppColors.sunnahGreen.withOpacity(0.12)),
               child: Center(child: Text(isSis ? '🧕' : '🧔', style: const TextStyle(fontSize: 44)))),
@@ -242,7 +242,7 @@ class ProfileScreen extends ConsumerWidget {
               children: [const Text('© 2026 HalalCalorie — Halal • Sunnah • Privacy',
                   style: TextStyle(fontFamily: 'Cairo'))])),
             ListTile(
-              leading: const Text('🚪', style: TextStyle(fontSize: 18)),
+              leading: const Text('🚪', style: TextStyle(fontSize: 20)),
               title: Text(t('تسجيل الخروج','Sign Out'),
                   style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.haramRed)),
               onTap: () => _signOut(context, ref, isAr),
@@ -273,7 +273,7 @@ class ProfileScreen extends ConsumerWidget {
       child: Column(children: [
         Text(emoji, style: const TextStyle(fontSize: 28)),
         const SizedBox(height: 2),
-        Text(val, style: const TextStyle(fontFamily: 'Cairo', fontSize: 18, fontWeight: FontWeight.w900)),
+        Text(val, style: const TextStyle(fontFamily: 'Cairo', fontSize: 20, fontWeight: FontWeight.w900)),
         Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, color: AppColors.lightMuted)),
       ]),
     ));
@@ -288,7 +288,7 @@ class ProfileScreen extends ConsumerWidget {
 
   Widget _settingTile(String emoji, String title, String sub, VoidCallback onTap) {
     return ListTile(
-      leading: Text(emoji, style: const TextStyle(fontSize: 18)),
+      leading: Text(emoji, style: const TextStyle(fontSize: 20)),
       title: Text(title, style: const TextStyle(fontFamily: 'Cairo', fontSize: 13)),
       subtitle: sub.isNotEmpty ? Text(sub, style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.lightMuted)) : null,
       trailing: const Icon(Icons.arrow_back_ios, size: 14, color: AppColors.lightMuted),
@@ -307,7 +307,7 @@ class ProfileScreen extends ConsumerWidget {
     const cities = ['Cairo', 'Alexandria', 'Giza', 'Riyadh', 'Jeddah', 'Dubai', 'Abu Dhabi', 'Jakarta', 'Kuala Lumpur', 'Istanbul', 'London'];
     showModalBottomSheet(context: context, builder: (_) => ListView(padding: const EdgeInsets.all(16), children: [
       Text(isAr ? 'اختر مدينتك' : 'Choose Your City',
-          style: const TextStyle(fontFamily: 'Cairo', fontSize: 18, fontWeight: FontWeight.w700)),
+          style: const TextStyle(fontFamily: 'Cairo', fontSize: 20, fontWeight: FontWeight.w700)),
       const SizedBox(height: 12),
       ...cities.map((c) => ListTile(
         title: Text(c, style: TextStyle(fontFamily: 'Cairo',
