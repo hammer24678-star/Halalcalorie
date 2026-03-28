@@ -166,3 +166,64 @@ if os.path.exists(gradle_path):
                       'defaultConfig {\n        applicationId "com.halalcalorie.app"')
     open(gradle_path, 'w').write(g)
     print(f"applicationId set to com.halalcalorie.app")
+
+
+# ── Signing config ─────────────────────────────────────────────────
+# Keystore is uploaded to Codemagic as environment file
+# Path: /home/builder/clone/android/app/halalcalorie.keystore
+key_props = 'android/key.properties'
+if not os.path.exists(key_props):
+    # Create key.properties from environment variables set in Codemagic
+    key_store   = os.environ.get('CM_KEYSTORE_PATH', '')
+    key_pass    = os.environ.get('CM_KEY_PASSWORD',  '')
+    store_pass  = os.environ.get('CM_KEYSTORE_PASSWORD', '')
+    key_alias   = os.environ.get('CM_KEY_ALIAS', 'halalcalorie')
+    if key_store:
+        with open(key_props, 'w') as kf:
+            kf.write(f"""storePassword={store_pass}
+keyPassword={key_pass}
+keyAlias={key_alias}
+storeFile={key_store}
+""")
+        print(f"key.properties created: alias={key_alias}")
+
+# Patch build.gradle for release signing
+gradle = 'android/app/build.gradle'
+if os.path.exists(gradle):
+    g = open(gradle).read()
+    if 'signingConfigs' not in g:
+        signing_config = """
+    signingConfigs {
+        release {
+            if (project.hasProperty('KEYSTORE_PATH')) {
+                storeFile file(KEYSTORE_PATH)
+                storePassword project.KEYSTORE_PASSWORD
+                keyAlias project.KEY_ALIAS
+                keyPassword project.KEY_PASSWORD
+            } else {
+                def keystorePropertiesFile = rootProject.file("key.properties")
+                if (keystorePropertiesFile.exists()) {
+                    def keystoreProperties = new Properties()
+                    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+                    storeFile file(keystoreProperties['storeFile'])
+                    storePassword keystoreProperties['storePassword']
+                    keyAlias keystoreProperties['keyAlias']
+                    keyPassword keystoreProperties['keyPassword']
+                }
+            }
+        }
+    }"""
+        g = g.replace(
+            'buildTypes {',
+            signing_config + '
+    buildTypes {'
+        )
+        g = g.replace(
+            'buildTypes {
+        release {',
+            'buildTypes {
+        release {
+            signingConfig signingConfigs.release'
+        )
+        open(gradle, 'w').write(g)
+        print("build.gradle: signing config added")
