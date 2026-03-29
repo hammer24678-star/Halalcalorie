@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
+import 'prayer_card.dart';
 import '../../core/health_service.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/models/models.dart';
