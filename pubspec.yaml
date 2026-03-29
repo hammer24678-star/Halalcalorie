@@ -24,6 +24,8 @@ dependencies:
   package_info_plus: ^6.0.0
   uuid: ^4.3.3
   purchases_flutter: ^8.0.0
+  flutter_local_notifications: ^17.0.0
+  timezone: ^0.9.4
   cloud_firestore: ^4.15.0
   google_sign_in: ^6.2.1
   firebase_auth: ^4.17.0
