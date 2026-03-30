@@ -38,21 +38,12 @@ workflows:
 
           echo "$CM_KEYSTORE" | base64 --decode > /tmp/keystore.jks
 
-          cat >> "$GRADLE_FILE" << 'SIGNING'
-
-android.signingConfigs {
-    release {
-        storeFile file('/tmp/keystore.jks')
-        storePassword System.getenv('CM_KEYSTORE_PASSWORD')
-        keyAlias System.getenv('CM_KEY_ALIAS')
-        keyPassword System.getenv('CM_KEY_PASSWORD')
-    }
-}
-android.buildTypes.release.signingConfig = android.signingConfigs.release
-SIGNING
-
           flutter build apk --release --no-shrink \
-            --dart-define=ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
+            --dart-define=ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
+            --dart-define=CM_KEYSTORE_PATH=/tmp/keystore.jks \
+            --dart-define=CM_KEYSTORE_PASSWORD=$CM_KEYSTORE_PASSWORD \
+            --dart-define=CM_KEY_ALIAS=$CM_KEY_ALIAS \
+            --dart-define=CM_KEY_PASSWORD=$CM_KEY_PASSWORD
 
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
