@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
+import '../../core/regional_pricing.dart';
 import '../../core/revenuecat_service.dart';
 
 class PaywallScreen extends ConsumerStatefulWidget {
