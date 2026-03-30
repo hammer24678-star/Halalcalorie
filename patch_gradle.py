@@ -227,3 +227,19 @@ if os.path.exists(gradle):
         )
         open(gradle, 'w').write(g)
         print("build.gradle: signing config added")
+
+# ── Google services (Firebase) ─────────────────────────────────────
+import shutil
+gservices_src = os.environ.get('GOOGLE_SERVICES_JSON', '')
+gservices_dst = 'android/app/google-services.json'
+if gservices_src and os.path.exists(gservices_src):
+    shutil.copy(gservices_src, gservices_dst)
+    print("google-services.json copied from env")
+elif not os.path.exists(gservices_dst):
+    # Create placeholder so build doesn't fail without Firebase
+    with open(gservices_dst, 'w') as gsf:
+        gsf.write('''{
+  "project_info": {"project_id": "halalcalorie-app"},
+  "client": [{"client_info": {"mobilesdk_app_id": "1:0:android:placeholder"}}]
+}''')
+    print("google-services.json placeholder created")

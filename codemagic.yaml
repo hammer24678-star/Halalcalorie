@@ -1,17 +1,43 @@
 workflows:
   android-release:
-    name: Android APK
+    name: HalalCalorie Android Release
     max_build_duration: 60
     environment:
-      flutter: stable
-      java: 17
+      flutter: 3.19.0
+      vars:
+        PACKAGE_NAME: "com.halalcalorie.app"
+      groups:
+        - keystore_credentials  # CM_KEYSTORE, CM_KEYSTORE_PASSWORD, CM_KEY_PASSWORD, CM_KEY_ALIAS
     scripts:
-      - name: Build
+      - name: Set up keystore
         script: |
-          rm -rf android
-          flutter create --platforms=android .
-          flutter pub get
-          python3 patch_gradle.py
-          flutter build apk --release --no-shrink
+          echo \$CM_KEYSTORE | base64 --decode > android/app/halalcalorie.keystore
+          cat >> android/key.properties << EOF2
+          storePassword=\$CM_KEYSTORE_PASSWORD
+          keyPassword=\$CM_KEY_PASSWORD
+          keyAlias=\$CM_KEY_ALIAS
+          storeFile=halalcalorie.keystore
+          EOF2
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Patch Android
+        script: python3 patch_gradle.py
+      - name: Build release APK
+        script: |
+          flutter build apk --release \
+            --dart-define=ANTHROPIC_API_KEY=\$ANTHROPIC_API_KEY \
+            --dart-define=REVENUECAT_KEY=\$REVENUECAT_KEY
+      - name: Build release AAB (Play Store)
+        script: |
+          flutter build appbundle --release \
+            --dart-define=ANTHROPIC_API_KEY=\$ANTHROPIC_API_KEY \
+            --dart-define=REVENUECAT_KEY=\$REVENUECAT_KEY
     artifacts:
       - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/bundle/release/app-release.aab
+      - flutter_drive.log
+    publishing:
+      google_play:
+        credentials: \$GPLAY_SERVICE_ACCOUNT_KEY
+        track: internal
+        submit_as_draft: true
