@@ -16,54 +16,9 @@ workflows:
         script: |
           rm -rf android
           flutter create --org com.halalcalorie --project-name halalcalorie .
-          echo "Flutter create done"
-          ls android/app/src/main/
 
       - name: Patch android config
-        script: |
-          python3 - << 'PYEOF'
-import re, os
-
-# build.gradle
-g = open('android/app/build.gradle').read()
-g = re.sub(r'applicationId\s+"[^"]+"', 'applicationId "com.halalcalorie.app"', g)
-g = re.sub(r'minSdk\s+\d+', 'minSdk 21', g)
-g = re.sub(r'minSdkVersion\s+\d+', 'minSdkVersion 21', g)
-g = re.sub(r'targetSdk\s+\d+', 'targetSdk 34', g)
-g = re.sub(r'targetSdkVersion\s+\d+', 'targetSdkVersion 34', g)
-g = re.sub(r'compileSdk\s+\d+', 'compileSdk 34', g)
-g = re.sub(r'compileSdkVersion\s+\d+', 'compileSdkVersion 34', g)
-g = re.sub(r'versionCode\s+\d+', 'versionCode 1', g)
-g = re.sub(r'versionName\s+"[^"]+"', 'versionName "1.0.0"', g)
-open('android/app/build.gradle', 'w').write(g)
-print("Patched build.gradle: applicationId=com.halalcalorie.app minSdk=21")
-
-# AndroidManifest.xml
-m_path = 'android/app/src/main/AndroidManifest.xml'
-m = open(m_path).read()
-perms = [
-    '<uses-permission android:name="android.permission.INTERNET"/>',
-    '<uses-permission android:name="android.permission.CAMERA"/>',
-    '<uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>',
-    '<uses-permission android:name="android.permission.BODY_SENSORS"/>',
-    '<uses-permission android:name="android.permission.VIBRATE"/>',
-]
-for p in perms:
-    if p not in m:
-        m = m.replace('<application', p + '\n    <application', 1)
-open(m_path, 'w').write(m)
-print("Patched AndroidManifest.xml permissions")
-
-# strings.xml - set app name
-strings_path = 'android/app/src/main/res/values/strings.xml'
-if os.path.exists(strings_path):
-    s = open(strings_path).read()
-    s = re.sub(r'<string name="app_name">[^<]*</string>', '<string name="app_name">HalalCalorie</string>', s)
-    open(strings_path, 'w').write(s)
-    print("Patched strings.xml app name")
-
-print("All patches applied")
-PYEOF
+        script: python3 patch_android.py
 
       - name: Build APK
         script: |
