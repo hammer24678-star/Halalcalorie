@@ -381,7 +381,6 @@ class ProfileScreen extends ConsumerWidget {
 
   Future<void> _signOut(BuildContext context, WidgetRef ref, bool isAr) async {
     final ok = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
-      if (!mounted) return;
       title: Text(isAr ? 'تسجيل الخروج' : 'Sign Out', style: const TextStyle(fontFamily: 'Cairo')),
       content: Text(isAr ? 'هل أنت متأكد؟' : 'Are you sure?', style: const TextStyle(fontFamily: 'Cairo')),
       actions: [
