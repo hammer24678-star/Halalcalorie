@@ -296,7 +296,6 @@ class _HealthScreenState extends ConsumerState<HealthScreen> with SingleTickerPr
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: sleep.hours >= h ? AppColors.sleepPurple : Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(8),
           ), child: Center(child: Text('$h', style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
               fontWeight: FontWeight.w700, color: sleep.hours >= h ? Colors.white : muted))),
         ),

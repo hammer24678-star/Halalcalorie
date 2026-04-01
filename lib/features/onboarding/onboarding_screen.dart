@@ -3,6 +3,7 @@
 //  Beautiful modern onboarding — 8.5/10 UI quality
 // ============================================================
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
@@ -61,7 +62,8 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
   }
 
   void _finish() async {
-    await ref.read(onboardingProvider.notifier).complete();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('onboarding_complete', true);
     if (!mounted) return;
     context.go('/home');
   }

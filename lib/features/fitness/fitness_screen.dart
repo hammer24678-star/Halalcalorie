@@ -118,7 +118,6 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                         ? [const Color(0xFF1A0F00), const Color(0xFF3D2000)]
                         : [AppColors.sunnahGreen, AppColors.darkGreen],
                     begin: Alignment.topLeft, end: Alignment.bottomRight,
-                    begin: Alignment.topLeft, end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16),
                 ),

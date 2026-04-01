@@ -6,7 +6,7 @@
 //    • Sleep log
 //    • Daily summaries (water, steps, mood)
 // ============================================================
-import 'package:sqflite/sqflite.dart'; import'package:path/path.dart'as p;
+import 'package:flutter/foundation.dart'; import 'package:sqflite/sqflite.dart'; import'package:path/path.dart'as p;
 
 class AppDatabase {
   static Database? _db;
