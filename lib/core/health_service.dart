@@ -1,195 +1,58 @@
-// ============================================================
-//  health_service.dart — HalalCalorie
-//  Real steps, heart rate, sleep from Google Fit / Health Connect
-// ============================================================
 import 'package:health/health.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'providers.dart';
 
 class HealthService {
-  static final _health = Health();
-
-  // ── Data types we want ─────────────────────────────────
+  static final HealthFactory _health = HealthFactory();
   static const _types = [
     HealthDataType.STEPS,
     HealthDataType.HEART_RATE,
     HealthDataType.SLEEP_ASLEEP,
-    HealthDataType.SLEEP_IN_BED,
-    HealthDataType.ACTIVE_ENERGY_BURNED,
   ];
 
-  static const _permissions = [
-    HealthDataAccess.READ,
-    HealthDataAccess.READ,
-    HealthDataAccess.READ,
-    HealthDataAccess.READ,
-    HealthDataAccess.READ,
-  ];
-
-  // ── Request permissions ────────────────────────────────
   static Future<bool> requestPermissions() async {
     try {
-      // Request activity recognition permission
-      await Permission.activityRecognition.request();
-      await Permission.sensors.request();
-
-      // Configure health
-      await _health.configure(useHealthConnectIfAvailable: true);
-
-      // Request health permissions
-      final granted = await _health.requestAuthorization(
-        _types,
-        permissions: _permissions,
-      );
-      return granted;
-    } catch (e) {
-      return false;
-    }
+      return await _health.requestAuthorization(_types);
+    } catch (_) { return false; }
   }
 
-  // ── Check if authorized ────────────────────────────────
-  static Future<bool> isAuthorized() async {
+  static Future<int> getSteps() async {
     try {
-      await _health.configure(useHealthConnectIfAvailable: true);
-      return await _health.hasPermissions(_types) ?? false;
-    } catch (e) {
-      return false;
-    }
+      final now = DateTime.now();
+      final midnight = DateTime(now.year, now.month, now.day);
+      final data = await _health.getHealthDataFromTypes(midnight, now, [HealthDataType.STEPS]);
+      return data.fold(0, (sum, e) => sum + (e.value as NumericHealthValue).numericValue.toInt());
+    } catch (_) { return 0; }
   }
 
-  // ── Get today steps ───────────────────────────────────
-  static Future<int> getTodaySteps() async {
+  static Future<double> getSleep() async {
     try {
-      final now   = DateTime.now();
-      final start = DateTime(now.year, now.month, now.day);
-      final steps = await _health.getTotalStepsInInterval(start, now);
-      return steps ?? 0;
-    } catch (e) {
-      return 0;
-    }
+      final now = DateTime.now();
+      final yesterday = now.subtract(const Duration(hours: 16));
+      final data = await _health.getHealthDataFromTypes(yesterday, now, [HealthDataType.SLEEP_ASLEEP]);
+      final mins = data.fold(0.0, (sum, e) => sum + (e.value as NumericHealthValue).numericValue.toDouble());
+      return mins / 60;
+    } catch (_) { return 0; }
   }
 
-  // ── Get latest heart rate ─────────────────────────────
-  static Future<int> getLatestHeartRate() async {
+  static Future<int> getHeartRate() async {
     try {
-      final now   = DateTime.now();
-      final start = now.subtract(const Duration(hours: 24));
-
-      final data = await _health.getHealthDataFromTypes(
-        startTime: start,
-        endTime: now,
-        types: [HealthDataType.HEART_RATE],
-      );
-
+      final now = DateTime.now();
+      final hour = now.subtract(const Duration(hours: 1));
+      final data = await _health.getHealthDataFromTypes(hour, now, [HealthDataType.HEART_RATE]);
       if (data.isEmpty) return 0;
-
-      // Get most recent reading
-      data.sort((a, b) => b.dateFrom.compareTo(a.dateFrom));
-      final latest = data.first.value;
-      if (latest is NumericHealthValue) {
-        return latest.numericValue.round();
-      }
-      return 0;
-    } catch (e) {
-      return 0;
-    }
+      return (data.last.value as NumericHealthValue).numericValue.toInt();
+    } catch (_) { return 0; }
   }
 
-  // ── Get last night sleep hours ────────────────────────
-  static Future<double> getLastNightSleep() async {
+  static Future<void> syncToday(WidgetRef ref) async {
     try {
-      final now   = DateTime.now();
-      final start = DateTime(now.year, now.month, now.day - 1, 18); // 6pm yesterday
-      final end   = DateTime(now.year, now.month, now.day, 12);     // noon today
-
-      final data = await _health.getHealthDataFromTypes(
-        startTime: start,
-        endTime: end,
-        types: [HealthDataType.SLEEP_ASLEEP, HealthDataType.SLEEP_IN_BED],
-      );
-
-      if (data.isEmpty) return 0;
-
-      // Sum all sleep segments in minutes then convert to hours
-      double totalMinutes = 0;
-      for (final d in data) {
-        if (d.type == HealthDataType.SLEEP_ASLEEP) {
-          final duration = d.dateTo.difference(d.dateFrom).inMinutes;
-          totalMinutes += duration;
-        }
-      }
-
-      return double.parse((totalMinutes / 60).toStringAsFixed(1));
-    } catch (e) {
-      return 0;
-    }
+      final steps = await getSteps();
+      final sleep = await getSleep();
+      final hr    = await getHeartRate();
+      if (steps > 0) await ref.read(healthProvider.notifier).setSteps(steps);
+      if (sleep > 0) await ref.read(sleepProvider.notifier).set(sleep);
+      if (hr > 0) ref.read(healthProvider.notifier).setHeartRate(hr);
+    } catch (_) {}
   }
-
-  // ── Get active calories burned today ──────────────────
-  static Future<int> getActiveCaloriesToday() async {
-    try {
-      final now   = DateTime.now();
-      final start = DateTime(now.year, now.month, now.day);
-
-      final data = await _health.getHealthDataFromTypes(
-        startTime: start,
-        endTime: now,
-        types: [HealthDataType.ACTIVE_ENERGY_BURNED],
-      );
-
-      double total = 0;
-      for (final d in data) {
-        if (d.value is NumericHealthValue) {
-          total += (d.value as NumericHealthValue).numericValue;
-        }
-      }
-      return total.round();
-    } catch (e) {
-      return 0;
-    }
-  }
-
-  // ── Full today snapshot ───────────────────────────────
-  static Future<HealthSnapshot> getTodaySnapshot() async {
-    final authorized = await isAuthorized();
-    if (!authorized) {
-      return HealthSnapshot.empty();
-    }
-
-    final results = await Future.wait([
-      getTodaySteps(),
-      getLatestHeartRate(),
-      getLastNightSleep(),
-      getActiveCaloriesToday(),
-    ]);
-
-    return HealthSnapshot(
-      steps:          results[0] as int,
-      heartRate:      results[1] as int,
-      sleepHours:     results[2] as double,
-      activeCalories: results[3] as int,
-      isReal:         true,
-    );
-  }
-}
-
-// ── Snapshot model ────────────────────────────────────────
-class HealthSnapshot {
-  final int    steps;
-  final int    heartRate;
-  final double sleepHours;
-  final int    activeCalories;
-  final bool   isReal;
-
-  const HealthSnapshot({
-    required this.steps,
-    required this.heartRate,
-    required this.sleepHours,
-    required this.activeCalories,
-    required this.isReal,
-  });
-
-  factory HealthSnapshot.empty() => const HealthSnapshot(
-    steps: 0, heartRate: 0, sleepHours: 0,
-    activeCalories: 0, isReal: false,
-  );
 }
