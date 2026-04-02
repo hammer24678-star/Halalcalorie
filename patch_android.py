@@ -2,55 +2,75 @@ import re, os, sys
 
 print("=== patch_android.py starting ===")
 
-# 1. settings.gradle — new Flutter 3.22 style, Kotlin version lives here
+# ── 1. Write app/build.gradle from scratch ───────────────────
+# No regex — just overwrite with exact known-good content
+build_gradle = """plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+android {
+    namespace "com.halalcalorie.app"
+    compileSdk 35
+
+    defaultConfig {
+        applicationId "com.halalcalorie.app"
+        minSdk 21
+        targetSdk 35
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+            minifyEnabled false
+            shrinkResources false
+        }
+    }
+}
+
+flutter {
+    source "../.."
+}
+"""
+
+g_path = 'android/app/build.gradle'
+if os.path.exists(g_path):
+    open(g_path, 'w').write(build_gradle)
+    print("Wrote app/build.gradle from scratch")
+else:
+    print(f"ERROR: {g_path} not found — flutter create may have failed")
+    sys.exit(1)
+
+# ── 2. Patch settings.gradle — bump Kotlin to 1.9.22 ────────
 s_path = 'android/settings.gradle'
 if os.path.exists(s_path):
     s = open(s_path).read()
-    print("settings.gradle kotlin line:")
-    for line in s.split('\n'):
-        if 'kotlin' in line.lower():
-            print(f"  {line.strip()}")
-    # Bump kotlin android plugin to 1.9.22
     s = re.sub(
         r'id\s+"org\.jetbrains\.kotlin\.android"\s+version\s+"[^"]+"',
         'id "org.jetbrains.kotlin.android" version "1.9.22"',
         s
     )
     open(s_path, 'w').write(s)
-    print("Patched settings.gradle: kotlin 1.9.22")
+    # Verify
+    for line in open(s_path).read().split('\n'):
+        if 'kotlin' in line.lower():
+            print(f"  settings.gradle: {line.strip()}")
 else:
-    print("settings.gradle not found - skipping")
+    print("WARNING: settings.gradle not found")
 
-# 2. app/build.gradle
-g_path = 'android/app/build.gradle'
-if not os.path.exists(g_path):
-    print("ERROR: app/build.gradle not found")
-    sys.exit(1)
-
-g = open(g_path).read()
-g = re.sub(r'applicationId\s+"[^"]+"', 'applicationId "com.halalcalorie.app"', g)
-g = re.sub(r'minSdkVersion\s+flutter\.minSdkVersion', 'minSdkVersion 21', g)
-g = re.sub(r'minSdk\s+flutter\.minSdkVersion', 'minSdk 21', g)
-g = re.sub(r'minSdkVersion\s+\d+', 'minSdkVersion 21', g)
-g = re.sub(r'minSdk\s+\d+', 'minSdk 21', g)
-g = re.sub(r'targetSdkVersion\s+flutter\.targetSdkVersion', 'targetSdkVersion 35', g)
-g = re.sub(r'targetSdk\s+flutter\.targetSdkVersion', 'targetSdk 35', g)
-g = re.sub(r'targetSdkVersion\s+\d+', 'targetSdkVersion 35', g)
-g = re.sub(r'targetSdk\s+\d+', 'targetSdk 35', g)
-g = re.sub(r'compileSdkVersion\s+flutter\.compileSdkVersion', 'compileSdkVersion 35', g)
-g = re.sub(r'compileSdk\s+flutter\.compileSdkVersion', 'compileSdk 35', g)
-g = re.sub(r'compileSdkVersion\s+\d+', 'compileSdkVersion 35', g)
-g = re.sub(r'compileSdk\s+\d+', 'compileSdk 35', g)
-g = re.sub(r'versionCode\s+\d+', 'versionCode 1', g)
-g = re.sub(r'versionName\s+"[^"]+"', 'versionName "1.0.0"', g)
-open(g_path, 'w').write(g)
-print("Patched app/build.gradle")
-
-for line in open(g_path).read().split('\n'):
-    if any(x in line for x in ['minSdk', 'targetSdk', 'compileSdk', 'applicationId']):
-        print(f"  {line.strip()}")
-
-# 3. AndroidManifest.xml
+# ── 3. AndroidManifest.xml ───────────────────────────────────
 m_path = 'android/app/src/main/AndroidManifest.xml'
 if os.path.exists(m_path):
     m = open(m_path).read()
@@ -67,12 +87,13 @@ if os.path.exists(m_path):
     open(m_path, 'w').write(m)
     print("Patched AndroidManifest.xml")
 
-# 4. strings.xml
-s_path2 = 'android/app/src/main/res/values/strings.xml'
-if os.path.exists(s_path2):
-    s2 = open(s_path2).read()
-    s2 = re.sub(r'<string name="app_name">[^<]*</string>', '<string name="app_name">HalalCalorie</string>', s2)
-    open(s_path2, 'w').write(s2)
+# ── 4. strings.xml ───────────────────────────────────────────
+s2 = 'android/app/src/main/res/values/strings.xml'
+if os.path.exists(s2):
+    c = open(s2).read()
+    c = re.sub(r'<string name="app_name">[^<]*</string>',
+               '<string name="app_name">HalalCalorie</string>', c)
+    open(s2, 'w').write(c)
     print("Patched strings.xml")
 
 print("=== patch_android.py done ===")
