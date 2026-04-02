@@ -4,7 +4,6 @@
 
 import 'dart:async';
 import 'package:health/health.dart';
-import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class HealthService {
