@@ -32,6 +32,21 @@ jobs:
       - name: Patch android config
         run: python3 patch_android.py
 
+      - name: Set app logo
+        run: |
+          sudo apt-get install -y imagemagick
+          LOGO="assets/logo.png"
+          if [ -f "$LOGO" ]; then
+            convert "$LOGO" -resize 48x48   android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+            convert "$LOGO" -resize 72x72   android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+            convert "$LOGO" -resize 96x96   android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+            convert "$LOGO" -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+            convert "$LOGO" -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+            echo "Logo applied to all mipmap sizes"
+          else
+            echo "WARNING: assets/logo.png not found"
+          fi
+
       - name: Build APK
         run: |
           flutter build apk --release --no-shrink \
