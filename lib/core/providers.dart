@@ -458,11 +458,6 @@ class NotifNotifier extends StateNotifier<bool> {
 
 
 // ── Real Health Data (Google Fit / Health Connect) ────────
-final healthSnapshotProvider = FutureProvider<HealthSnapshot>((ref) async {
-  // Auto-refresh every 5 minutes
-  return HealthService.getTodaySnapshot();
-});
-
 final healthPermissionProvider = StateNotifierProvider<HealthPermNotifier, bool>(
   (ref) => HealthPermNotifier(),
 );

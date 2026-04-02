@@ -1144,7 +1144,7 @@ final kProductsDB = [
   ScanResult(barcode: '8993001901002', name: 'Indomie Chicken', brand: 'Indomie', status: HalalStatus.halal, certs: ['MUI']),
 
   // ── Known HARAM products ───────────────────────────────
-  ScanResult(barcode: '0037466065099', name: 'Jack Daniel's Whiskey', brand: 'Jack Daniel's', status: HalalStatus.haram, notes: 'Alcohol — HARAM'),
+  ScanResult(barcode: '0037466065099', name: 'Jack Daniels Whiskey', brand: 'Jack Daniels', status: HalalStatus.haram, notes: 'Alcohol — HARAM'),
   ScanResult(barcode: '5010148002849', name: 'Budweiser Beer', brand: 'AB InBev', status: HalalStatus.haram, notes: 'Alcohol — HARAM'),
   ScanResult(barcode: '0049695001023', name: 'Spam Classic', brand: 'Hormel', status: HalalStatus.haram, notes: 'Pork — HARAM'),
   ScanResult(barcode: '0017000097985', name: 'Oscar Mayer Bacon', brand: 'Kraft', status: HalalStatus.haram, notes: 'Pork — HARAM'),
