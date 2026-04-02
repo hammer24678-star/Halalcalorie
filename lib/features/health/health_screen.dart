@@ -54,7 +54,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen> with SingleTickerPr
 
   // ── TRACKING ──────────────────────────────────────────────
   Widget _buildTrack(bool isAr, bool isDark) {
-    final snapshot   = ref.watch(healthSnapshotProvider);
+    final snapshot   = ref.watch(healthProvider);
     final hasPerms   = ref.watch(healthPermissionProvider);
 
     // Auto-sync real data when available
@@ -90,7 +90,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen> with SingleTickerPr
                 backgroundColor: AppColors.sunnahGreen,
                 behavior: SnackBarBehavior.floating,
               ));
-              ref.invalidate(healthSnapshotProvider);
+              ref.invalidate(healthProvider);
             }
           },
           child: Container(
@@ -148,7 +148,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen> with SingleTickerPr
             ),
             const Spacer(),
             GestureDetector(
-              onTap: () => ref.invalidate(healthSnapshotProvider),
+              onTap: () => ref.invalidate(healthProvider),
               child: const Icon(Icons.refresh, color: AppColors.sunnahGreen, size: 18),
             ),
           ]),
@@ -274,7 +274,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen> with SingleTickerPr
 
   Widget _sleepCard(SleepState sleep, bool isAr, bool isDark) {
     // Show real sleep data indicator
-    final snapshot = ref.watch(healthSnapshotProvider);
+    final snapshot = ref.watch(healthProvider);
     final bg    = isDark ? AppColors.darkCard : Colors.white;
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     String t(String ar, String en) => isAr ? ar : en;
@@ -318,7 +318,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen> with SingleTickerPr
               fontFamily: 'Cairo', fontSize: 28,
               fontWeight: FontWeight.w900, color: AppColors.halalGreen)),
           const SizedBox(width: 6),
-          ref.watch(healthSnapshotProvider).maybeWhen(
+          ref.watch(healthProvider).maybeWhen(
             data: (snap) => snap.isReal && snap.steps > 0
                 ? Container(
                     margin: const EdgeInsets.only(bottom: 6),
@@ -388,7 +388,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen> with SingleTickerPr
             Text('${health.heartRate}',
                 style: const TextStyle(fontFamily: 'Cairo', fontSize: 32,
                     fontWeight: FontWeight.w900, color: AppColors.haramRed)),
-            ref.watch(healthSnapshotProvider).maybeWhen(
+            ref.watch(healthProvider).maybeWhen(
               data: (snap) => snap.isReal && snap.heartRate > 0
                   ? Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
