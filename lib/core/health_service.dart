@@ -1,21 +1,17 @@
 // health_service.dart — HalalCalorie v1.0
-// Full implementation using health + pedometer packages
-// Works on Flutter 3.22+ / Android API 21+
+// Uses health package only (no pedometer)
 
-import 'dart:async';
 import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class HealthService {
   static final Health _health = Health();
-  static StreamSubscription<StepCount>? _stepSub;
   static int _steps = 0;
   static double _heartRate = 72;
   static double _sleepHours = 7;
 
   static Future<bool> requestPermissions() async {
     await Permission.activityRecognition.request();
-    await Permission.sensors.request();
     final types = [
       HealthDataType.STEPS,
       HealthDataType.HEART_RATE,
@@ -30,8 +26,8 @@ class HealthService {
 
   static Future<bool> isAuthorized() async {
     try {
-      final types = [HealthDataType.STEPS];
-      return await _health.requestAuthorization(types, permissions: [HealthDataAccess.READ]);
+      return await _health.requestAuthorization([HealthDataType.STEPS],
+          permissions: [HealthDataAccess.READ]);
     } catch (_) {
       return false;
     }
@@ -66,7 +62,8 @@ class HealthService {
         types: [HealthDataType.HEART_RATE],
       );
       if (data.isNotEmpty) {
-        _heartRate = (data.last.value as NumericHealthValue).numericValue.toDouble();
+        _heartRate =
+            (data.last.value as NumericHealthValue).numericValue.toDouble();
       }
       return _heartRate;
     } catch (_) {
@@ -74,15 +71,7 @@ class HealthService {
     }
   }
 
-  static void startStepTracking(void Function(int) onStep) {
-    _stepSub?.cancel();
-    _stepSub = Pedometer.stepCountStream.listen(
-      (e) { _steps = e.steps; onStep(_steps); },
-      onError: (_) {},
-    );
-  }
-
-  static void stopTracking() => _stepSub?.cancel();
+  static void stopTracking() {}
   static void setManualHeartRate(double bpm) => _heartRate = bpm;
   static void setManualSleep(double hours) => _sleepHours = hours;
   static int get currentSteps => _steps;
