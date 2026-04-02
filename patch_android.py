@@ -22,6 +22,8 @@ if os.path.exists(g_path):
     g = re.sub(r'applicationId\s+"[^"]+"', 'applicationId "com.halalcalorie.app"', g)
     g = re.sub(r'minSdk\s+\d+', 'minSdk 21', g)
     g = re.sub(r'minSdkVersion\s+\d+', 'minSdkVersion 21', g)
+    g = re.sub(r'minSdkVersion\s+flutter\.minSdkVersion', 'minSdkVersion 21', g)
+    g = re.sub(r'minSdk\s+flutter\.minSdkVersion', 'minSdk 21', g)
     g = re.sub(r'targetSdk\s+\d+', 'targetSdk 34', g)
     g = re.sub(r'targetSdkVersion\s+\d+', 'targetSdkVersion 34', g)
     g = re.sub(r'compileSdk\s+\d+', 'compileSdk 34', g)
