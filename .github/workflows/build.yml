@@ -19,9 +19,14 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install Android SDK 35
+      - name: Fix Android SDK 35 (delete broken jar, reinstall clean)
         run: |
-          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0"
+          rm -rf $ANDROID_SDK_ROOT/platforms/android-35
+          yes | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager \
+            "platforms;android-35" \
+            "build-tools;34.0.0"
+          echo "SDK 35 reinstalled:"
+          ls $ANDROID_SDK_ROOT/platforms/android-35/
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
