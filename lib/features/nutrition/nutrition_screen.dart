@@ -1149,6 +1149,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                 icon: const Icon(Icons.close_rounded),
                 color: muted,
                 onPressed: () { if (context.mounted) Navigator.pop(context); },
+            ),
           ]),
         ),
         // Tabs
