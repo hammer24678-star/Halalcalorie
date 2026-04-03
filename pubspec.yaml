@@ -23,7 +23,6 @@ dependencies:
   url_launcher: ^6.2.5
   package_info_plus: ^6.0.0
   uuid: ^4.3.3
-  purchases_flutter: ^8.0.0
   timezone: ^0.9.4
   mobile_scanner: ^5.0.0
   flutter_local_notifications: ^18.0.1

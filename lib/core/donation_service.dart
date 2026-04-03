@@ -2,7 +2,6 @@
 //  donation_service.dart — HalalCalorie
 //  One-time "Sadaqah Jariyah" donation support button
 // ============================================================
-import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:flutter/foundation.dart';
 
 class DonationService {
