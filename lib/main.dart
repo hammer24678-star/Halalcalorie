@@ -54,8 +54,8 @@ class HalalCalorieApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'HalalCalorie',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
       routerConfig: router,
       localizationsDelegates: const [
