@@ -1,61 +1,97 @@
+// main.dart — HalalCalorie v1.0
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-// Keep original imports but add error handling
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/theme.dart';
 import 'core/providers.dart';
 import 'core/revenuecat_service.dart';
 import 'core/notifications.dart';
 import 'core/database.dart';
-import 'core/health_service.dart';
 
 void main() {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    
+
     FlutterError.onError = (FlutterErrorDetails details) {
-      FlutterError.presentError(details);
+      runApp(_ErrorApp(details.exceptionAsString()));
     };
 
+    await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.light,
+    ));
+
     try {
-      // Try to run the real app
-      await _initAndRun();
-    } catch (e, st) {
-      // Show error on screen instead of crashing silently
-      runApp(ErrorApp(error: e.toString(), stack: st.toString()));
-    }
+      await AppDatabase.db.timeout(const Duration(seconds: 5));
+    } catch (e) { debugPrint('DB: $e'); }
+
+    try {
+      await NotificationService.init().timeout(const Duration(seconds: 5));
+    } catch (e) { debugPrint('Notif: $e'); }
+
+    try {
+      await RCConfig.configure().timeout(const Duration(seconds: 5));
+    } catch (e) { debugPrint('RC: $e'); }
+
+    runApp(const ProviderScope(child: HalalCalorieApp()));
   }, (error, stack) {
-    runApp(ErrorApp(error: error.toString(), stack: stack.toString()));
+    runApp(_ErrorApp('$error\n\n$stack'));
   });
 }
 
-class ErrorApp extends StatelessWidget {
-  final String error;
-  final String stack;
-  const ErrorApp({super.key, required this.error, required this.stack});
+// ── HalalCalorieApp ───────────────────────────────────────
+class HalalCalorieApp extends ConsumerWidget {
+  const HalalCalorieApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+    final isDark  = ref.watch(themeProvider);
+
+    return MaterialApp.router(
+      title: 'HalalCalorie',
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.light(),
+      darkTheme: AppTheme.dark(),
+      themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+      routerConfig: router,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [Locale('ar'), Locale('en')],
+    );
+  }
+}
+
+// ── Error display ────────────────────────────────────────
+class _ErrorApp extends StatelessWidget {
+  final String message;
+  const _ErrorApp(this.message);
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        backgroundColor: Colors.red[900],
+        backgroundColor: const Color(0xFF8B0000),
         body: SafeArea(
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text('CRASH DETAILS',
-                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                const Text('CRASH', style: TextStyle(
+                    color: Colors.white, fontSize: 22,
+                    fontWeight: FontWeight.bold)),
                 const SizedBox(height: 12),
-                Text(error,
-                    style: const TextStyle(color: Colors.yellow, fontSize: 13)),
-                const SizedBox(height: 12),
-                Text(stack.length > 800 ? stack.substring(0, 800) : stack,
-                    style: const TextStyle(color: Colors.white70, fontSize: 11)),
+                Text(
+                  message.length > 1500 ? message.substring(0, 1500) : message,
+                  style: const TextStyle(color: Colors.yellow, fontSize: 12),
+                ),
               ],
             ),
           ),
@@ -63,44 +99,4 @@ class ErrorApp extends StatelessWidget {
       ),
     );
   }
-}
-
-Future<void> _initAndRun() async {
-  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.light,
-  ));
-
-  // Init SQLite with timeout
-  try {
-    await AppDatabase.db.timeout(
-      const Duration(seconds: 5),
-      onTimeout: () => throw Exception('DB timeout'),
-    );
-  } catch (e) {
-    debugPrint('DB init failed: $e');
-  }
-
-  // Init notifications with timeout
-  try {
-    await NotificationService.init().timeout(
-      const Duration(seconds: 5),
-      onTimeout: () => throw Exception('Notifications timeout'),
-    );
-  } catch (e) {
-    debugPrint('Notifications init failed: $e');
-  }
-
-  // Init RevenueCat with timeout
-  try {
-    await RCConfig.configure().timeout(
-      const Duration(seconds: 5),
-      onTimeout: () => throw Exception('RevenueCat timeout'),
-    );
-  } catch (e) {
-    debugPrint('RevenueCat init failed: $e');
-  }
-
-  runApp(const ProviderScope(child: HalalCalorieApp()));
 }
