@@ -1,84 +1,31 @@
-// ============================================================
-//  regional_pricing.dart — HalalCalorie
-//  Smart regional pricing: Egypt (EGP) vs Gulf/World (USD)
-// ============================================================
-import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
+// regional_pricing.dart — HalalCalorie v1.0
+// Regional pricing logic — RevenueCat activated when key is ready
 
 class RegionalPricing {
-  // ── Detect if user is in Egypt ─────────────────────────────
-  static bool get isEgypt {
-    try {
-      final locale = Platform.localeName.toLowerCase();
-      return locale.contains('_eg') ||
-             locale.contains('ar_eg') ||
-             locale == 'ar';
-    } catch (_) {
-      return false;
-    }
-  }
+  // Egypt pricing
+  static const egyptMonthly  = 'EGP 99';
+  static const egyptYearly   = 'EGP 799';
+  static const egyptLifetime = 'EGP 1,999';
 
-  // ── Gulf countries ─────────────────────────────────────────
-  static bool get isGulf {
-    try {
-      final locale = Platform.localeName.toLowerCase();
-      return locale.contains('_sa') ||  // Saudi
-             locale.contains('_ae') ||  // UAE
-             locale.contains('_kw') ||  // Kuwait
-             locale.contains('_qa') ||  // Qatar
-             locale.contains('_bh') ||  // Bahrain
-             locale.contains('_om');    // Oman
-    } catch (_) {
-      return false;
-    }
-  }
+  // Gulf / international pricing
+  static const gulfMonthly  = '\$4.99';
+  static const gulfYearly   = '\$34.99';
+  static const gulfLifetime = '\$99.99';
 
-  // ── Get correct RevenueCat offering ────────────────────────
-  static Future<Offering?> getOffering() async {
-    try {
-      final offerings = await Purchases.getOfferings();
-      if (isEgypt && offerings.all.containsKey('egypt')) {
-        return offerings.all['egypt'];
-      }
-      if (isGulf && offerings.all.containsKey('gulf')) {
-        return offerings.all['gulf'];
-      }
-      return offerings.current;
-    } catch (e) {
-      debugPrint('RegionalPricing error: \$e');
-      return null;
-    }
-  }
+  static bool isEgypt(String? countryCode) =>
+      countryCode?.toUpperCase() == 'EG';
 
-  // ── Price display strings ───────────────────────────────────
-  static String get monthlyPrice {
-    if (isEgypt) return '99 ج.م / شهر';
-    if (isGulf)  return '\$4.99 / month';
-    return '\$2.99 / month';
-  }
+  static String monthlyPrice(String? countryCode) =>
+      isEgypt(countryCode) ? egyptMonthly : gulfMonthly;
 
-  static String get annualPrice {
-    if (isEgypt) return '799 ج.م / سنة';
-    if (isGulf)  return '\$34.99 / year';
-    return '\$19.99 / year';
-  }
+  static String yearlyPrice(String? countryCode) =>
+      isEgypt(countryCode) ? egyptYearly : gulfYearly;
 
-  static String get annualMonthly {
-    if (isEgypt) return '67 ج.م / شهر';
-    if (isGulf)  return '\$2.91 / month';
-    return '\$1.67 / month';
-  }
+  static String lifetimePrice(String? countryCode) =>
+      isEgypt(countryCode) ? egyptLifetime : gulfLifetime;
 
-  static String get savingPercent {
-    if (isEgypt) return 'وفر 33%';
-    return 'Save 33%';
-  }
+  // Stub — real offering from RevenueCat when key is configured
+  static Future<dynamic> getOffering() async => null;
 
-  // ── Currency symbol ─────────────────────────────────────────
-  static String get currency {
-    if (isEgypt) return 'EGP';
-    if (isGulf)  return 'USD';
-    return 'USD';
-  }
+  static Future<String?> getCountryCode() async => null;
 }
