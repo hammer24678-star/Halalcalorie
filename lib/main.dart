@@ -9,6 +9,7 @@ import 'core/providers.dart';
 import 'core/revenuecat_service.dart';
 import 'core/notifications.dart';
 import 'core/database.dart';
+import 'core/auth_service.dart';
 
 void main() {
   runZonedGuarded(() async {
@@ -31,6 +32,8 @@ void main() {
     try {
       await NotificationService.init().timeout(const Duration(seconds: 5));
     } catch (e) { debugPrint('Notif: $e'); }
+
+    try { await AuthService.init(); } catch (e) { debugPrint('Auth: \$e'); }
 
     try {
       await RCConfig.configure().timeout(const Duration(seconds: 5));

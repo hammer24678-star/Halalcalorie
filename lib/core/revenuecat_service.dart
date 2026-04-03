@@ -33,12 +33,14 @@ class RCConfig {
 
   // ── Configure RevenueCat (call once from main.dart) ───────
   static Future<void> configure() async {
-    // Enable verbose logging in debug builds only
+    // Skip if keys are still placeholders — prevents native crash
+    if (googleApiKey.contains('REPLACE') || appleApiKey.contains('REPLACE')) {
+      return;
+    }
     assert(() {
       Purchases.setLogLevel(LogLevel.debug);
       return true;
     }());
-
     final apiKey = Platform.isIOS ? appleApiKey : googleApiKey;
     final config = PurchasesConfiguration(apiKey);
     await Purchases.configure(config);

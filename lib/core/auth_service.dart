@@ -13,17 +13,21 @@ class AuthService {
   static String? _photoUrl;
 
   static Future<void> init() async {
-    // Restore saved profile
-    final prefs = await SharedPreferences.getInstance();
-    _userId   = prefs.getString('auth_user_id');
-    _email    = prefs.getString('auth_email');
-    _name     = prefs.getString('auth_name');
-    _photoUrl = prefs.getString('auth_photo');
-
-    // Try silent sign-in
     try {
-      final account = await _google.signInSilently();
-      if (account != null) await _saveAccount(account);
+      // Restore saved profile
+      final prefs = await SharedPreferences.getInstance();
+      _userId   = prefs.getString('auth_user_id');
+      _email    = prefs.getString('auth_email');
+      _name     = prefs.getString('auth_name');
+      _photoUrl = prefs.getString('auth_photo');
+
+      // Try silent sign-in (may fail if google-services.json not configured)
+      try {
+        final account = await _google.signInSilently();
+        if (account != null) await _saveAccount(account);
+      } catch (_) {
+        // google-services.json not set up yet — silent fail
+      }
     } catch (_) {}
   }
 
