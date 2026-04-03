@@ -38,10 +38,14 @@ class NotificationService {
         tz.TZDateTime.from(scheduled, tz.local),
         const NotificationDetails(android: android),
         androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation:
+            UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.time,
       );
     }
   }
 
+  static Future<void> scheduleWorkoutReminder() async {}
+  static Future<void> scheduleMealReminder() async {}
   static Future<void> cancelAll() => _plugin.cancelAll();
 }
