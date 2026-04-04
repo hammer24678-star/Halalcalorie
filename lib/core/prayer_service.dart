@@ -19,7 +19,7 @@ class PrayerService {
     try {
       final now = DateTime.now();
       final url = Uri.parse(
-        '\$_base/timings/\${now.day}-\${now.month}-\${now.year}'
+        '$_base/timings/${now.day}-${now.month}-${now.year}'
         '?latitude=\$lat&longitude=\$lng&method=\$method'
       );
 
@@ -49,7 +49,7 @@ class PrayerService {
     try {
       final now = DateTime.now();
       final url = Uri.parse(
-        '\$_base/timingsByCity/\${now.day}-\${now.month}-\${now.year}'
+        '$_base/timingsByCity/${now.day}-${now.month}-${now.year}'
         '?city=\${Uri.encodeComponent(city)}'
         '&country=\${Uri.encodeComponent(country)}'
         '&method=\$method'

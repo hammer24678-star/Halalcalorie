@@ -1,3 +1,4 @@
+import 'dart:math';
 // ============================================================
 //  user_profile.dart — HalalCalorie v1.0
 //  Complete user profile with body metrics engine
@@ -285,7 +286,7 @@ class UserProfile {
     }
   }
 
-  static double _log10(double x) => x > 0 ? (x == 0 ? 0 : (x / 2.302585092994046)) : 0;
+  static double _log10(double x) => x > 0 ? log(x) / ln10 : 0;
 
   String get bodyFatCategory {
     final bf = bodyFatPercent;

@@ -27,6 +27,13 @@ class AppRouter {
 
 class _OnboardingNotifier extends ChangeNotifier {
   _OnboardingNotifier(Ref ref) {
-    ref.listen(onboardingDoneProvider, (_, __) => notifyListeners());
+    try {
+      ref.listen(onboardingDoneProvider, (_, __) {
+        if (!disposed) notifyListeners();
+      });
+    } catch (_) {}
   }
+  bool disposed = false;
+  @override
+  void dispose() { disposed = true; super.dispose(); }
 }

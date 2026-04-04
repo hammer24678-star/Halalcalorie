@@ -465,12 +465,16 @@ final healthPermissionProvider = StateNotifierProvider<HealthPermNotifier, bool>
 class HealthPermNotifier extends StateNotifier<bool> {
   HealthPermNotifier() : super(false) { _check(); }
   Future<void> _check() async {
-    state = await HealthService.requestPermissions();
+    try {
+      state = await HealthService.requestPermissions();
+    } catch (_) { state = false; }
   }
   Future<bool> request() async {
-    final granted = await HealthService.requestPermissions();
-    state = granted;
-    return granted;
+    try {
+      final granted = await HealthService.requestPermissions();
+      state = granted;
+      return granted;
+    } catch (_) { return false; }
   }
 }
 
