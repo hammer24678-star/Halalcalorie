@@ -1,84 +1,52 @@
-// barcode_scanner_widget.dart — stub (mobile_scanner removed for stability)
-// Real camera scanner restored in v2
+// barcode_scanner_widget.dart — HalalCalorie v1.0
 import 'package:flutter/material.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../core/theme.dart';
 
-class BarcodeScannerWidget extends StatelessWidget {
+class BarcodeScannerWidget extends StatefulWidget {
   final bool isActive;
   final void Function(String barcode) onDetected;
-
   const BarcodeScannerWidget({
-    super.key,
-    required this.isActive,
-    required this.onDetected,
-  });
+    super.key, required this.isActive, required this.onDetected});
+  @override State<BarcodeScannerWidget> createState() => _BarcodeScannerWidgetState();
+}
+
+class _BarcodeScannerWidgetState extends State<BarcodeScannerWidget> {
+  late MobileScannerController _ctrl;
 
   @override
-  Widget build(BuildContext context) {
-    if (!isActive) return const SizedBox.shrink();
-    return Container(
-      color: Colors.black,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.qr_code_scanner, color: Colors.white, size: 80),
-            const SizedBox(height: 16),
-            const Text('Camera scanner coming in v2',
-              style: TextStyle(color: Colors.white70, fontSize: 12)),
-            const SizedBox(height: 24),
-            // Manual barcode entry
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: _ManualEntry(onDetected: onDetected),
-            ),
-          ],
-        ),
-      ),
+  void initState() {
+    super.initState();
+    _ctrl = MobileScannerController(
+      detectionSpeed: DetectionSpeed.normal,
+      facing: CameraFacing.back,
     );
   }
-}
-
-class _ManualEntry extends StatefulWidget {
-  final void Function(String) onDetected;
-  const _ManualEntry({required this.onDetected});
-
-  @override
-  State<_ManualEntry> createState() => _ManualEntryState();
-}
-
-class _ManualEntryState extends State<_ManualEntry> {
-  final _ctrl = TextEditingController();
 
   @override
   void dispose() { _ctrl.dispose(); super.dispose(); }
 
+  void _onDetect(BarcodeCapture capture) {
+    final barcode = capture.barcodes.firstOrNull;
+    if (barcode?.rawValue != null) widget.onDetected(barcode!.rawValue!);
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      Expanded(
-        child: TextField(
-          controller: _ctrl,
-          keyboardType: TextInputType.number,
-          style: const TextStyle(color: Colors.white),
-          decoration: const InputDecoration(
-            hintText: 'Enter barcode manually',
-            hintStyle: TextStyle(color: Colors.white38),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: Colors.white30)),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColors.sunnahGreen)),
-          ),
-        ),
-      ),
-      const SizedBox(width: 8),
-      ElevatedButton(
-        onPressed: () {
-          if (_ctrl.text.isNotEmpty) widget.onDetected(_ctrl.text.trim());
-        },
-        style: ElevatedButton.styleFrom(backgroundColor: AppColors.sunnahGreen),
-        child: const Text('Scan'),
-      ),
-    ]);
+    if (!widget.isActive) return const SizedBox.shrink();
+    return MobileScanner(
+      controller: _ctrl,
+      onDetect: _onDetect,
+      errorBuilder: (context, err, _) {
+        if (err.errorCode == MobileScannerErrorCode.permissionDenied) {
+          return Center(child: Text(
+            'Camera permission denied',
+            style: const TextStyle(color: AppColors.haramRed, fontFamily: 'Cairo'),
+          ));
+        }
+        return const Center(child: Text('Camera error',
+          style: TextStyle(color: Colors.white)));
+      },
+    );
   }
 }

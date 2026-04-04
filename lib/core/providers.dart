@@ -463,12 +463,8 @@ final healthPermissionProvider = StateNotifierProvider<HealthPermNotifier, bool>
 );
 
 class HealthPermNotifier extends StateNotifier<bool> {
-  HealthPermNotifier() : super(false) { _check(); }
-  Future<void> _check() async {
-    try {
-      state = await HealthService.requestPermissions();
-    } catch (_) { state = false; }
-  }
+  // Don't request permissions on init - causes crash before UI shows
+  HealthPermNotifier() : super(false);
   Future<bool> request() async {
     try {
       final granted = await HealthService.requestPermissions();
