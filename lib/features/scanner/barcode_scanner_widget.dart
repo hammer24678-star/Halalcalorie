@@ -1,3 +1,4 @@
+import 'package:mobile_scanner/mobile_scanner.dart';
 // ============================================================
 //  barcode_scanner_widget.dart — HalalCalorie
 //  Real camera barcode scanner using mobile_scanner
