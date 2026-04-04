@@ -80,6 +80,10 @@ if os.path.exists(m_path):
         '<uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>',
         '<uses-permission android:name="android.permission.BODY_SENSORS"/>',
         '<uses-permission android:name="android.permission.VIBRATE"/>',
+        '<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>',
+        '<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>',
+        '<uses-permission android:name="android.permission.USE_EXACT_ALARM"/>',
+        '<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>',
     ]
     for p in perms:
         if p not in m:
