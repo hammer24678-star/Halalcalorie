@@ -4,7 +4,6 @@
 //  Drop-in replacement for the fake viewfinder
 // ============================================================
 import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../core/theme.dart';
 
 class BarcodeScannerWidget extends StatefulWidget {
