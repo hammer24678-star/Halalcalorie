@@ -1,17 +1,15 @@
-// ============================================================
-//  auth_provider.dart — Riverpod auth state
-// ============================================================
+// auth_provider.dart — HalalCalorie v1.0
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'auth_service.dart';
 
-// Stream of auth state changes
-final authStateProvider = StreamProvider<User?>((ref) {
-  return AuthService.authStateChanges;
+// Whether user is signed in
+final isSignedInProvider = Provider<bool>((ref) {
+  return AuthService.isSignedIn;
 });
 
-// Current user (null if not signed in)
-final currentUserProvider = Provider<User?>((ref) {
-  return ref.watch(authStateProvider).value;
+// Current user name
+final userNameProvider = Provider<String?>((ref) {
+  return AuthService.userName;
 });
 
 // Sign-in notifier
@@ -24,9 +22,9 @@ class AuthNotifier extends StateNotifier<bool> {
 
   Future<bool> signInWithGoogle() async {
     state = true;
-    final user = await AuthService.signInWithGoogle();
+    final success = await AuthService.signInWithGoogle();
     state = false;
-    return user != null;
+    return success;
   }
 
   Future<void> signOut() async {
