@@ -4,7 +4,8 @@
 //  Usage: L.of(context).appName
 // ============================================================
 
-import 'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/material.dart';
+import 'providers.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:shared_preferences/shared_preferences.dart';
 
 // ── Language Provider ──────────────────────────────────────
 final languageProvider = StateNotifierProvider<LanguageNotifier, String>(
