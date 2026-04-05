@@ -35,7 +35,7 @@ class PrayerService {
       final timings = data['data']['timings'] as Map<String, dynamic>;
       return PrayerTimes.fromMap(timings, now);
     } catch (e) {
-      debugPrint('PrayerService error: \$e');
+      debugPrint('PrayerService error: $e');
       return null;
     }
   }
@@ -50,8 +50,8 @@ class PrayerService {
       final now = DateTime.now();
       final url = Uri.parse(
         '$_base/timingsByCity/${now.day}-${now.month}-${now.year}'
-        '?city=\${Uri.encodeComponent(city)}'
-        '&country=\${Uri.encodeComponent(country)}'
+        '?city=${Uri.encodeComponent(city)}'
+        '&country=${Uri.encodeComponent(country)}'
         '&method=$method'
       );
 
@@ -65,7 +65,7 @@ class PrayerService {
       final timings = data['data']['timings'] as Map<String, dynamic>;
       return PrayerTimes.fromMap(timings, now);
     } catch (e) {
-      debugPrint('PrayerService city error: \$e');
+      debugPrint('PrayerService city error: $e');
       return null;
     }
   }
