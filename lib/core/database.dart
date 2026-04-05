@@ -15,16 +15,22 @@ class AppDatabase {
     final dbPath = await getDatabasesPath();
     return openDatabase(
       p.join(dbPath, 'halalcalorie.db'),
-      version: 3,
+      version: 4,
       onCreate: _create,
-      onUpgrade: _upgrade,
+      onUpgrade: (db, oldV, newV) async {
+        // Drop and recreate everything — fixes old corrupted schema
+        await db.execute('DROP TABLE IF EXISTS meal_entries');
+        await db.execute('DROP TABLE IF EXISTS weight_log');
+        await db.execute('DROP TABLE IF EXISTS daily_summary');
+        await db.execute('DROP TABLE IF EXISTS workout_log');
+        await _create(db, newV);
+      },
     );
   }
 
   static Future<void> _create(Database db, int version) async {
-    // meal_entries — NO inline SQL comments (they break column definitions)
     await db.execute('''
-      CREATE TABLE meal_entries (
+      CREATE TABLE IF NOT EXISTS meal_entries (
         id        INTEGER PRIMARY KEY AUTOINCREMENT,
         name      TEXT    NOT NULL,
         kcal      INTEGER NOT NULL,
@@ -35,19 +41,16 @@ class AppDatabase {
         created   TEXT    NOT NULL
       )
     ''');
-
     await db.execute('''
-      CREATE TABLE weight_log (
+      CREATE TABLE IF NOT EXISTS weight_log (
         id        INTEGER PRIMARY KEY AUTOINCREMENT,
         weight_kg REAL    NOT NULL,
         note      TEXT,
         created   TEXT    NOT NULL
       )
     ''');
-
-    // daily_summary — NO inline SQL comments
     await db.execute('''
-      CREATE TABLE daily_summary (
+      CREATE TABLE IF NOT EXISTS daily_summary (
         date_key   TEXT    PRIMARY KEY,
         water_cups INTEGER DEFAULT 0,
         sleep_hrs  REAL    DEFAULT 0,
@@ -55,9 +58,8 @@ class AppDatabase {
         mood       TEXT
       )
     ''');
-
     await db.execute('''
-      CREATE TABLE workout_log (
+      CREATE TABLE IF NOT EXISTS workout_log (
         id         INTEGER PRIMARY KEY AUTOINCREMENT,
         workout_id TEXT    NOT NULL,
         minutes    INTEGER NOT NULL,
@@ -67,38 +69,17 @@ class AppDatabase {
     ''');
   }
 
-  static Future<void> _upgrade(Database db, int oldV, int newV) async {
-    if (oldV < 2) {
-      try { await db.execute('ALTER TABLE meal_entries ADD COLUMN protein_g REAL DEFAULT 0'); } catch (_) {}
-      try { await db.execute('ALTER TABLE meal_entries ADD COLUMN carbs_g REAL DEFAULT 0'); } catch (_) {}
-      try { await db.execute('ALTER TABLE meal_entries ADD COLUMN fat_g REAL DEFAULT 0'); } catch (_) {}
-    }
-    if (oldV < 3) {
-      try {
-        await db.execute('''
-          CREATE TABLE IF NOT EXISTS workout_log (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            workout_id TEXT NOT NULL,
-            minutes INTEGER NOT NULL,
-            date_key TEXT NOT NULL,
-            created TEXT NOT NULL
-          )
-        ''');
-      } catch (_) {}
-    }
-  }
-
   static String _today() {
     final n = DateTime.now();
-    return '${n.year}-${n.month.toString().padLeft(2, '0')}-${n.day.toString().padLeft(2, '0')}';
+    return '${n.year}-${n.month.toString().padLeft(2,'0')}-${n.day.toString().padLeft(2,'0')}';
   }
 
-  static Future<List<Map<String, dynamic>>> getMealsForDate(String dateKey) async {
+  static Future<List<Map<String,dynamic>>> getMealsForDate(String dateKey) async {
     final d = await db;
     return d.query('meal_entries', where: 'date_key = ?', whereArgs: [dateKey], orderBy: 'id ASC');
   }
 
-  static Future<List<Map<String, dynamic>>> getTodayMeals() => getMealsForDate(_today());
+  static Future<List<Map<String,dynamic>>> getTodayMeals() => getMealsForDate(_today());
 
   static Future<int> insertMeal({
     required String name,
@@ -110,11 +91,8 @@ class AppDatabase {
     try {
       final d = await db;
       return d.insert('meal_entries', {
-        'name': name,
-        'kcal': kcal,
-        'protein_g': proteinG,
-        'carbs_g': carbsG,
-        'fat_g': fatG,
+        'name': name, 'kcal': kcal,
+        'protein_g': proteinG, 'carbs_g': carbsG, 'fat_g': fatG,
         'date_key': _today(),
         'created': DateTime.now().toIso8601String(),
       });
@@ -132,27 +110,21 @@ class AppDatabase {
   static Future<List<_DailyKcal>> getWeeklyKcal() async {
     final d = await db;
     final rows = await d.rawQuery('''
-      SELECT date_key, SUM(kcal) as total
-      FROM meal_entries
+      SELECT date_key, SUM(kcal) as total FROM meal_entries
       WHERE date_key >= date('now', '-6 days')
-      GROUP BY date_key
-      ORDER BY date_key ASC
+      GROUP BY date_key ORDER BY date_key ASC
     ''');
     return rows.map((r) => _DailyKcal(r['date_key'] as String, (r['total'] as int?) ?? 0)).toList();
   }
 
-  static Future<List<Map<String, dynamic>>> getWeightLog({int limit = 30}) async {
+  static Future<List<Map<String,dynamic>>> getWeightLog({int limit = 30}) async {
     final d = await db;
     return d.query('weight_log', orderBy: 'created ASC', limit: limit);
   }
 
   static Future<int> insertWeight(double kg, {String? note}) async {
     final d = await db;
-    return d.insert('weight_log', {
-      'weight_kg': kg,
-      'note': note,
-      'created': DateTime.now().toIso8601String(),
-    });
+    return d.insert('weight_log', {'weight_kg': kg, 'note': note, 'created': DateTime.now().toIso8601String()});
   }
 
   static Future<void> deleteWeight(int id) async {
@@ -160,34 +132,27 @@ class AppDatabase {
     await d.delete('weight_log', where: 'id = ?', whereArgs: [id]);
   }
 
-  static Future<Map<String, dynamic>?> getSummary(String dateKey) async {
+  static Future<Map<String,dynamic>?> getSummary(String dateKey) async {
     final d = await db;
     final rows = await d.query('daily_summary', where: 'date_key = ?', whereArgs: [dateKey]);
     return rows.isNotEmpty ? rows.first : null;
   }
 
-  static Future<Map<String, dynamic>?> getTodaySummary() => getSummary(_today());
+  static Future<Map<String,dynamic>?> getTodaySummary() => getSummary(_today());
 
   static Future<void> upsertSummary({
-    String? dateKey,
-    int? waterCups,
-    double? sleepHrs,
-    int? steps,
-    String? mood,
+    String? dateKey, int? waterCups, double? sleepHrs, int? steps, String? mood,
   }) async {
     final d = await db;
     final key = dateKey ?? _today();
     final existing = await getSummary(key);
     if (existing == null) {
       await d.insert('daily_summary', {
-        'date_key':   key,
-        'water_cups': waterCups ?? 0,
-        'sleep_hrs':  sleepHrs ?? 0,
-        'steps':      steps ?? 0,
-        'mood':       mood,
+        'date_key': key, 'water_cups': waterCups ?? 0,
+        'sleep_hrs': sleepHrs ?? 0, 'steps': steps ?? 0, 'mood': mood,
       });
     } else {
-      final updates = <String, dynamic>{};
+      final updates = <String,dynamic>{};
       if (waterCups != null) updates['water_cups'] = waterCups;
       if (sleepHrs  != null) updates['sleep_hrs']  = sleepHrs;
       if (steps     != null) updates['steps']       = steps;
@@ -201,10 +166,8 @@ class AppDatabase {
   static Future<void> logWorkout(String workoutId, int minutes) async {
     final d = await db;
     await d.insert('workout_log', {
-      'workout_id': workoutId,
-      'minutes': minutes,
-      'date_key': _today(),
-      'created': DateTime.now().toIso8601String(),
+      'workout_id': workoutId, 'minutes': minutes,
+      'date_key': _today(), 'created': DateTime.now().toIso8601String(),
     });
   }
 
@@ -218,10 +181,10 @@ class AppDatabase {
   static Future<void> deleteOlderThan(int days) async {
     final d = await db;
     final cutoff = DateTime.now().subtract(Duration(days: days));
-    final cutoffStr = '${cutoff.year}-${cutoff.month.toString().padLeft(2, '0')}-${cutoff.day.toString().padLeft(2, '0')}';
-    await d.delete('meal_entries',  where: 'date_key < ?', whereArgs: [cutoffStr]);
-    await d.delete('daily_summary', where: 'date_key < ?', whereArgs: [cutoffStr]);
-    await d.delete('workout_log',   where: 'date_key < ?', whereArgs: [cutoffStr]);
+    final s = '${cutoff.year}-${cutoff.month.toString().padLeft(2,'0')}-${cutoff.day.toString().padLeft(2,'0')}';
+    await d.delete('meal_entries',  where: 'date_key < ?', whereArgs: [s]);
+    await d.delete('daily_summary', where: 'date_key < ?', whereArgs: [s]);
+    await d.delete('workout_log',   where: 'date_key < ?', whereArgs: [s]);
   }
 }
 
