@@ -17,7 +17,19 @@ void main() {
 
     // Show any Flutter framework errors on screen
     FlutterError.onError = (FlutterErrorDetails details) {
-      runApp(_ErrorApp('Flutter Error:\n${details.exceptionAsString()}\n\n${details.stack}'));
+      // Log error but don't destroy widget tree with runApp
+      debugPrint('FlutterError: ${details.exceptionAsString()}');
+      FlutterError.presentError(details);
+    };
+    ErrorWidget.builder = (FlutterErrorDetails details) {
+      return Material(
+        child: Container(
+          color: const Color(0xFF8B0000),
+          padding: const EdgeInsets.all(16),
+          child: Text(details.exceptionAsString(),
+            style: const TextStyle(color: Colors.yellow, fontSize: 11)),
+        ),
+      );
     };
 
     await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);

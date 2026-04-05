@@ -20,7 +20,7 @@ class PrayerService {
       final now = DateTime.now();
       final url = Uri.parse(
         '$_base/timings/${now.day}-${now.month}-${now.year}'
-        '?latitude=\$lat&longitude=\$lng&method=\$method'
+        '?latitude=$lat&longitude=$lng&method=$method'
       );
 
       final resp = await http.get(url,
@@ -52,7 +52,7 @@ class PrayerService {
         '$_base/timingsByCity/${now.day}-${now.month}-${now.year}'
         '?city=\${Uri.encodeComponent(city)}'
         '&country=\${Uri.encodeComponent(country)}'
-        '&method=\$method'
+        '&method=$method'
       );
 
       final resp = await http.get(url)

@@ -5,25 +5,9 @@
 // ============================================================
 
 import 'package:flutter/material.dart';
-import 'providers.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:shared_preferences/shared_preferences.dart';
+import 'providers.dart';  
 
-// ── Language Provider ──────────────────────────────────────
-final languageProvider = StateNotifierProvider<LanguageNotifier, String>(
-  (ref) => LanguageNotifier(),
-);
-
-class LanguageNotifier extends StateNotifier<String> { LanguageNotifier() : super('ar') {
-    _load();
-  }
-
-  Future<void> _load() async {
-    final p = await SharedPreferences.getInstance(); state = p.getString('language') ?? 'ar';
-  }
-
-  Future<void> set(String lang) async {
-    state = lang;
-    final p = await SharedPreferences.getInstance(); await p.setString('language', lang);
-  } bool get isArabic => state =='ar';
+ bool get isArabic => state =='ar';
 }
 
 // ── L shortcut ─────────────────────────────────────────────

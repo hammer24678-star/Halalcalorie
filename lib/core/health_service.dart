@@ -15,6 +15,7 @@ class HealthService {
   static double _heartRate = 72;
   static double _sleepHours = 7;
   static void Function(int)? _onStep;
+  static Timer? _saveTimer;
 
   static Future<bool> requestPermissions() async {
     try {
@@ -53,6 +54,11 @@ class HealthService {
         _lastMagnitude = magnitude;
       });
     } catch (_) {}
+  }
+
+  static void _throttledSave() {
+    if (_saveTimer?.isActive ?? false) return;
+    _saveTimer = Timer(const Duration(seconds: 10), () => _saveSteps());
   }
 
   static Future<void> _saveSteps() async {
