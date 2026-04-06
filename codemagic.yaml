@@ -2,29 +2,44 @@ workflows:
   android-release:
     name: HalalCalorie Android Release
     max_build_duration: 60
-    instance_type: mac_mini_m2
     environment:
-      flutter: 3.19.6
+      flutter: 3.22.3
+      java: 17
       groups:
         - keystore_credentials
         - app_secrets
     scripts:
-      - name: Get packages
-        script: flutter pub get
-
       - name: Regenerate android folder
         script: |
-          rm -rf android
-          flutter create --org com.halalcalorie --project-name halalcalorie .
+          flutter create --platforms=android .
 
       - name: Patch android config
-        script: python3 patch_android.py
+        script: |
+          python3 patch_android.py
 
-      - name: Build APK
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+
+      - name: Build release APK
         script: |
           flutter build apk --release \
             --dart-define=ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
-            --no-shrink
+            --no-tree-shake-icons
+
+      - name: Sign APK
+        script: |
+          echo $CM_KEYSTORE | base64 --decode > ~/release.keystore
+          zipalign -v -p 4 \
+            build/app/outputs/flutter-apk/app-release.apk \
+            build/app/outputs/flutter-apk/app-release-aligned.apk
+          apksigner sign \
+            --ks ~/release.keystore \
+            --ks-pass pass:$CM_KEYSTORE_PASSWORD \
+            --ks-key-alias $CM_KEY_ALIAS \
+            --key-pass pass:$CM_KEY_PASSWORD \
+            --out build/app/outputs/flutter-apk/HalalCalorie-signed.apk \
+            build/app/outputs/flutter-apk/app-release-aligned.apk
 
     artifacts:
-      - build/app/outputs/flutter-apk/app-release.apk
+      - build/app/outputs/flutter-apk/HalalCalorie-signed.apk
