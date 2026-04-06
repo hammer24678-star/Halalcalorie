@@ -29,17 +29,20 @@ workflows:
 
       - name: Sign APK
         script: |
-          echo $CM_KEYSTORE | base64 --decode > ~/release.keystore
-          zipalign -v -p 4 \
-            build/app/outputs/flutter-apk/app-release.apk \
-            build/app/outputs/flutter-apk/app-release-aligned.apk
-          apksigner sign \
-            --ks ~/release.keystore \
-            --ks-pass pass:$CM_KEYSTORE_PASSWORD \
-            --ks-key-alias $CM_KEY_ALIAS \
-            --key-pass pass:$CM_KEY_PASSWORD \
-            --out build/app/outputs/flutter-apk/HalalCalorie-signed.apk \
-            build/app/outputs/flutter-apk/app-release-aligned.apk
-
-    artifacts:
-      - build/app/outputs/flutter-apk/HalalCalorie-signed.apk
+          APK=$(find build/app/outputs/flutter-apk -name "app-release.apk" | head -1)
+          echo "Signing: $APK"
+          
+          # Decode keystore
+          echo "$CM_KEYSTORE" | base64 --decode > /tmp/keystore.jks
+          
+          # Sign with jarsigner (simpler, no --out issues)
+          jarsigner -verbose \
+            -keystore /tmp/keystore.jks \
+            -storepass "$CM_KEYSTORE_PASSWORD" \
+            -keypass "$CM_KEY_PASSWORD" \
+            -signedjar build/app/outputs/flutter-apk/app-release-signed.apk \
+            "$APK" \
+            "$CM_KEY_ALIAS"
+          
+          echo "Signed APK ready"
+          ls -lh build/app/outputs/flutter-apk/
