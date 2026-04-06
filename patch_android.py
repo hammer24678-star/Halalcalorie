@@ -10,12 +10,12 @@ android {
     ndkVersion flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = '11'
     }
 
     defaultConfig {
@@ -40,18 +40,19 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.22"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.7.21"
 }
 """
 
 PROJECT_BUILD_GRADLE = """buildscript {
+    ext.kotlin_version = '1.7.21'
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.22"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
