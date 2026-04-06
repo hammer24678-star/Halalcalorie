@@ -1,10 +1,13 @@
-import re, os, sys
+import os, re
 
-print("=== patch_android.py starting ===")
+ROOT = os.path.dirname(os.path.abspath(__file__))
+ANDROID = os.path.join(ROOT, 'android')
 
-# ── 1. Write app/build.gradle from scratch ───────────────────
-# No regex — just overwrite with exact known-good content
-build_gradle = """plugins {
+# ── app/build.gradle (write from scratch) ───────────────────
+app_gradle = os.path.join(ANDROID, 'app', 'build.gradle')
+os.makedirs(os.path.dirname(app_gradle), exist_ok=True)
+with open(app_gradle, 'w') as f:
+    f.write("""plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
@@ -13,14 +16,7 @@ build_gradle = """plugins {
 android {
     namespace "com.halalcalorie.app"
     compileSdk 34
-
-    defaultConfig {
-        applicationId "com.halalcalorie.app"
-        minSdk 26
-        targetSdk 34
-        versionCode 1
-        versionName "1.0.0"
-    }
+    ndkVersion flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -29,6 +25,14 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+
+    defaultConfig {
+        applicationId "com.halalcalorie.app"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
     }
 
     buildTypes {
@@ -43,61 +47,50 @@ android {
 flutter {
     source "../.."
 }
-"""
+""")
+print("Wrote app/build.gradle (compileSdk 34)")
 
-g_path = 'android/app/build.gradle'
-if os.path.exists(g_path):
-    open(g_path, 'w').write(build_gradle)
-    print("Wrote app/build.gradle from scratch")
-else:
-    print(f"ERROR: {g_path} not found — flutter create may have failed")
-    sys.exit(1)
-
-# ── 2. Patch settings.gradle — bump Kotlin to 1.9.22 ────────
-s_path = 'android/settings.gradle'
-if os.path.exists(s_path):
-    s = open(s_path).read()
-    s = re.sub(
-        r'id\s+"org\.jetbrains\.kotlin\.android"\s+version\s+"[^"]+"',
+# ── settings.gradle (kotlin 1.9.22) ─────────────────────────
+settings = os.path.join(ANDROID, 'settings.gradle')
+if os.path.exists(settings):
+    content = open(settings).read()
+    content = re.sub(
+        r'id "org\.jetbrains\.kotlin\.android" version "[^"]*"',
         'id "org.jetbrains.kotlin.android" version "1.9.22"',
-        s
+        content
     )
-    open(s_path, 'w').write(s)
-    # Verify
-    for line in open(s_path).read().split('\n'):
-        if 'kotlin' in line.lower():
-            print(f"  settings.gradle: {line.strip()}")
-else:
-    print("WARNING: settings.gradle not found")
+    open(settings, 'w').write(content)
+    print("Patched settings.gradle: kotlin 1.9.22")
 
-# ── 3. AndroidManifest.xml ───────────────────────────────────
-m_path = 'android/app/src/main/AndroidManifest.xml'
-if os.path.exists(m_path):
-    m = open(m_path).read()
+# ── AndroidManifest.xml ──────────────────────────────────────
+manifest = os.path.join(ANDROID, 'app', 'src', 'main', 'AndroidManifest.xml')
+if os.path.exists(manifest):
+    content = open(manifest).read()
     perms = [
-        '<uses-permission android:name="android.permission.INTERNET"/>',
-        '<uses-permission android:name="android.permission.CAMERA"/>',
-        '<uses-permission android:name="android.permission.ACTIVITY_RECOGNITION"/>',
-        '<uses-permission android:name="android.permission.BODY_SENSORS"/>',
-        '<uses-permission android:name="android.permission.VIBRATE"/>',
-        '<uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>',
-        '<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>',
-        '<uses-permission android:name="android.permission.USE_EXACT_ALARM"/>',
-        '<uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>',
+        'android.permission.INTERNET',
+        'android.permission.CAMERA',
+        'android.permission.ACTIVITY_RECOGNITION',
+        'android.permission.BODY_SENSORS',
+        'android.permission.READ_EXTERNAL_STORAGE',
+        'android.permission.WRITE_EXTERNAL_STORAGE',
     ]
     for p in perms:
-        if p not in m:
-            m = m.replace('<application', p + '\n    <application', 1)
-    open(m_path, 'w').write(m)
+        tag = f'<uses-permission android:name="{p}"/>'
+        if tag not in content:
+            content = content.replace(
+                '<application', tag + '\n    <application', 1)
+    open(manifest, 'w').write(content)
     print("Patched AndroidManifest.xml")
 
-# ── 4. strings.xml ───────────────────────────────────────────
-s2 = 'android/app/src/main/res/values/strings.xml'
-if os.path.exists(s2):
-    c = open(s2).read()
-    c = re.sub(r'<string name="app_name">[^<]*</string>',
-               '<string name="app_name">HalalCalorie</string>', c)
-    open(s2, 'w').write(c)
-    print("Patched strings.xml")
+# ── strings.xml (app name) ───────────────────────────────────
+strings_dir = os.path.join(ANDROID, 'app', 'src', 'main', 'res', 'values')
+os.makedirs(strings_dir, exist_ok=True)
+strings_file = os.path.join(strings_dir, 'strings.xml')
+with open(strings_file, 'w') as f:
+    f.write('<?xml version="1.0" encoding="utf-8"?>\n')
+    f.write('<resources>\n')
+    f.write('    <string name="app_name">HalalCalorie</string>\n')
+    f.write('</resources>\n')
+print("Wrote strings.xml")
 
-print("=== patch_android.py done ===")
+print("patch_android.py done.")
