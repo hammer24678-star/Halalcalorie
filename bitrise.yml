@@ -1,0 +1,54 @@
+format_version: "13"
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+project_type: flutter
+
+app:
+  envs:
+    - FLUTTER_VERSION: "3.22.3"
+    - JAVA_VERSION: "17"
+
+workflows:
+  build-apk:
+    steps:
+      - activate-ssh-key@4: {}
+
+      - git-clone@8: {}
+
+      - set-java-version@1:
+          inputs:
+            - set_java_version: "$JAVA_VERSION"
+
+      - flutter-installer@0:
+          inputs:
+            - version: "$FLUTTER_VERSION"
+            - is_update: "false"
+
+      - script@1:
+          title: Regenerate android folder
+          inputs:
+            - content: |
+                #!/usr/bin/env bash
+                set -euo pipefail
+                flutter create --platforms=android .
+
+      - script@1:
+          title: Patch android config
+          inputs:
+            - content: |
+                #!/usr/bin/env bash
+                set -euo pipefail
+                python3 patch_android.py
+
+      - flutter-build@0:
+          inputs:
+            - platform: android
+            - android_output_type: apk
+            - additional_params: >-
+                --dart-define=ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
+                --release
+
+      - sign-apk@1:
+          inputs:
+            - android_app: "$BITRISE_APK_PATH"
+
+      - deploy-to-bitrise-io@2: {}
