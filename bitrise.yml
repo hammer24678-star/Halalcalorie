@@ -8,21 +8,17 @@ app:
     - JAVA_VERSION: "17"
 
 workflows:
-  build-apk:
+  primary:
     steps:
       - activate-ssh-key@4: {}
-
       - git-clone@8: {}
-
       - set-java-version@1:
           inputs:
             - set_java_version: "$JAVA_VERSION"
-
       - flutter-installer@0:
           inputs:
             - version: "$FLUTTER_VERSION"
             - is_update: "false"
-
       - script@1:
           title: Regenerate android folder
           inputs:
@@ -30,7 +26,6 @@ workflows:
                 #!/usr/bin/env bash
                 set -euo pipefail
                 flutter create --platforms=android .
-
       - script@1:
           title: Patch android config
           inputs:
@@ -38,17 +33,13 @@ workflows:
                 #!/usr/bin/env bash
                 set -euo pipefail
                 python3 patch_android.py
-
       - flutter-build@0:
           inputs:
             - platform: android
             - android_output_type: apk
-            - additional_params: >-
-                --dart-define=ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
-                --release
-
+            - is_debug_app: "false"
+            - additional_params: "--dart-define=ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY"
       - sign-apk@1:
           inputs:
             - android_app: "$BITRISE_APK_PATH"
-
       - deploy-to-bitrise-io@2: {}
