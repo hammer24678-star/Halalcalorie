@@ -19,13 +19,8 @@ dependencies:
   http: ^1.2.0
   intl: any
   fl_chart: ^0.68.0
-  image_picker: ^1.0.7
   url_launcher: ^6.2.5
-  package_info_plus: ^6.0.0
   uuid: ^4.3.3
-  mobile_scanner: ^5.0.0
-  sensors_plus: ^4.0.0
-  permission_handler: ^11.3.0
 
 dev_dependencies:
   flutter_test:

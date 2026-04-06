@@ -1,4 +1,3 @@
-import 'package:image_picker/image_picker.dart';
 // ============================================================
 //  body_photo_screen.dart — HalalCalorie v1.0
 //  AI Body Composition Photo Analyzer — Premium Feature
