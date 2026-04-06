@@ -10,23 +10,29 @@ import 'core/notifications.dart';
 import 'core/database.dart';
 import 'core/auth_service.dart';
 
-// Global error string - shown on screen if crash occurs
-String _crashInfo = '';
-
 void main() {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
+    // Use ErrorWidget.builder - does NOT destroy widget tree
     FlutterError.onError = (FlutterErrorDetails details) {
-      final msg = 'FLUTTER ERROR:\n${details.exceptionAsString()}\n\nSTACK:\n${details.stack}';
-      debugPrint(msg);
-      _crashInfo = msg;
-      // Show error widget in place - don't call runApp here
+      debugPrint('FlutterError: ${details.exceptionAsString()}');
       FlutterError.presentError(details);
     };
 
     ErrorWidget.builder = (FlutterErrorDetails details) {
-      return _buildErrorScreen('WIDGET ERROR:\n${details.exceptionAsString()}');
+      return Material(
+        child: Container(
+          color: const Color(0xFF8B0000),
+          padding: const EdgeInsets.all(16),
+          child: SingleChildScrollView(
+            child: Text(
+              'Error: ${details.exceptionAsString()}',
+              style: const TextStyle(color: Colors.yellow, fontSize: 11),
+            ),
+          ),
+        ),
+      );
     };
 
     await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -35,76 +41,23 @@ void main() {
       statusBarIconBrightness: Brightness.light,
     ));
 
-    // Step 1 - DB
     try {
-      debugPrint('STEP 1: Opening database...');
       await AppDatabase.db.timeout(const Duration(seconds: 5));
-      debugPrint('STEP 1: Database OK');
-    } catch (e, st) {
-      runApp(_buildErrorApp('STEP 1 DB FAILED:\n$e\n\n$st'));
-      return;
-    }
+    } catch (e) { debugPrint('DB init: $e'); }
 
-    // Step 2 - Notifications
     try {
-      debugPrint('STEP 2: Init notifications...');
       await NotificationService.init();
-      debugPrint('STEP 2: Notifications OK');
-    } catch (e) {
-      debugPrint('STEP 2 FAILED (non-fatal): $e');
-    }
+    } catch (e) { debugPrint('Notif init: $e'); }
 
-    // Step 3 - Auth
     try {
-      debugPrint('STEP 3: Init auth...');
       await AuthService.init();
-      debugPrint('STEP 3: Auth OK');
-    } catch (e) {
-      debugPrint('STEP 3 FAILED (non-fatal): $e');
-    }
+    } catch (e) { debugPrint('Auth init: $e'); }
 
-    debugPrint('STEP 4: Starting app...');
     runApp(const ProviderScope(child: HalalCalorieApp()));
 
   }, (error, stack) {
-    // This catches ALL unhandled errors - show them on screen
-    final msg = 'UNHANDLED CRASH:\n$error\n\nSTACK:\n${stack.toString().substring(0, stack.toString().length.clamp(0, 2000))}';
-    debugPrint(msg);
-    // Call runApp here - this is the right place for fatal errors
-    runApp(_buildErrorApp(msg));
+    debugPrint('Unhandled: $error\n$stack');
   });
-}
-
-Widget _buildErrorScreen(String message) {
-  return Material(
-    color: const Color(0xFF8B0000),
-    child: SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(12),
-        child: SelectableText(
-          message,
-          style: const TextStyle(color: Colors.yellow, fontSize: 11, fontFamily: 'monospace'),
-        ),
-      ),
-    ),
-  );
-}
-
-Widget _buildErrorApp(String message) {
-  return MaterialApp(
-    home: Scaffold(
-      backgroundColor: const Color(0xFF8B0000),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(12),
-          child: SelectableText(
-            message,
-            style: const TextStyle(color: Colors.yellow, fontSize: 11, fontFamily: 'monospace'),
-          ),
-        ),
-      ),
-    ),
-  );
 }
 
 class HalalCalorieApp extends ConsumerWidget {

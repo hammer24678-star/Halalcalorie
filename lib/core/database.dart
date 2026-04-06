@@ -1,3 +1,4 @@
+// database.dart — HalalCalorie v1.0
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart' as p;
@@ -36,16 +37,14 @@ class AppDatabase {
       'carbs_g REAL DEFAULT 0,'
       'fat_g REAL DEFAULT 0,'
       'date_key TEXT NOT NULL,'
-      'created TEXT NOT NULL'
-      ')'
+      'created TEXT NOT NULL)'
     );
     await db.execute(
       'CREATE TABLE IF NOT EXISTS weight_log ('
       'id INTEGER PRIMARY KEY AUTOINCREMENT,'
       'weight_kg REAL NOT NULL,'
       'note TEXT,'
-      'created TEXT NOT NULL'
-      ')'
+      'created TEXT NOT NULL)'
     );
     await db.execute(
       'CREATE TABLE IF NOT EXISTS daily_summary ('
@@ -53,8 +52,7 @@ class AppDatabase {
       'water_cups INTEGER DEFAULT 0,'
       'sleep_hrs REAL DEFAULT 0,'
       'steps INTEGER DEFAULT 0,'
-      'mood TEXT'
-      ')'
+      'mood TEXT)'
     );
     await db.execute(
       'CREATE TABLE IF NOT EXISTS workout_log ('
@@ -62,19 +60,18 @@ class AppDatabase {
       'workout_id TEXT NOT NULL,'
       'minutes INTEGER NOT NULL,'
       'date_key TEXT NOT NULL,'
-      'created TEXT NOT NULL'
-      ')'
+      'created TEXT NOT NULL)'
     );
   }
 
   static String _today() {
     final n = DateTime.now();
-    return '${n.year}-${n.month.toString().padLeft(2,'0')}-${n.day.toString().padLeft(2,'0')}';
+    return '${n.year}-${n.month.toString().padLeft(2,"0")}-${n.day.toString().padLeft(2,"0")}';
   }
 
   static Future<List<Map<String,dynamic>>> getTodayMeals() async {
     final d = await db;
-    return d.query('meal_entries', where: 'date_key = ?', whereArgs: [_today()], orderBy: 'id ASC');
+    return d.query('meal_entries', where: 'date_key=?', whereArgs: [_today()], orderBy: 'id ASC');
   }
 
   static Future<int> insertMeal({required String name, required int kcal, double proteinG=0, double carbsG=0, double fatG=0}) async {
@@ -84,7 +81,10 @@ class AppDatabase {
     } catch(e) { debugPrint('insertMeal: $e'); return -1; }
   }
 
-  static Future<void> deleteMeal(int id) async { final d = await db; await d.delete('meal_entries', where:'id=?', whereArgs:[id]); }
+  static Future<void> deleteMeal(int id) async {
+    final d = await db;
+    await d.delete('meal_entries', where:'id=?', whereArgs:[id]);
+  }
 
   static Future<List<_DailyKcal>> getWeeklyKcal() async {
     final d = await db;
@@ -92,9 +92,20 @@ class AppDatabase {
     return rows.map((r) => _DailyKcal(r['date_key'] as String, (r['total'] as int?) ?? 0)).toList();
   }
 
-  static Future<List<Map<String,dynamic>>> getWeightLog({int limit=30}) async { final d = await db; return d.query('weight_log', orderBy:'created ASC', limit:limit); }
-  static Future<int> insertWeight(double kg, {String? note}) async { final d = await db; return d.insert('weight_log', {'weight_kg':kg,'note':note,'created':DateTime.now().toIso8601String()}); }
-  static Future<void> deleteWeight(int id) async { final d = await db; await d.delete('weight_log', where:'id=?', whereArgs:[id]); }
+  static Future<List<Map<String,dynamic>>> getWeightLog({int limit=30}) async {
+    final d = await db;
+    return d.query('weight_log', orderBy:'created ASC', limit:limit);
+  }
+
+  static Future<int> insertWeight(double kg, {String? note}) async {
+    final d = await db;
+    return d.insert('weight_log', {'weight_kg':kg,'note':note,'created':DateTime.now().toIso8601String()});
+  }
+
+  static Future<void> deleteWeight(int id) async {
+    final d = await db;
+    await d.delete('weight_log', where:'id=?', whereArgs:[id]);
+  }
 
   static Future<Map<String,dynamic>?> getTodaySummary() async {
     final d = await db;
