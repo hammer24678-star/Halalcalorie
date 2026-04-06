@@ -27,20 +27,38 @@ workflows:
         script: |
           set -e
           APK_IN=build/app/outputs/flutter-apk/app-release.apk
-          APK_SIGNED=build/app/outputs/flutter-apk/app-release-signed.apk
-          echo "$CM_KEYSTORE" | base64 --decode > /tmp/keystore.jks
-          jarsigner \
-            -verbose \
-            -sigalg SHA256withRSA \
-            -digestalg SHA-256 \
-            -keystore /tmp/keystore.jks \
-            -storepass "$CM_KEYSTORE_PASSWORD" \
-            -keypass "$CM_KEY_PASSWORD" \
-            -signedjar "$APK_SIGNED" \
-            "$APK_IN" \
-            "$CM_KEY_ALIAS"
-          echo "Signed APK size:"
-          ls -lh "$APK_SIGNED"
+          APK_OUT=build/app/outputs/flutter-apk/app-release-signed.apk
+
+          echo "CM_KEYSTORE length: ${#CM_KEYSTORE}"
+          echo "CM_KEY_ALIAS: $CM_KEY_ALIAS"
+
+          if [ -z "$CM_KEYSTORE" ]; then
+            echo "WARNING: CM_KEYSTORE is empty — copying unsigned APK as output"
+            cp "$APK_IN" "$APK_OUT"
+          else
+            echo "$CM_KEYSTORE" | base64 --decode > /tmp/keystore.jks
+            JKS_SIZE=$(wc -c < /tmp/keystore.jks)
+            echo "Decoded keystore size: $JKS_SIZE bytes"
+
+            if [ "$JKS_SIZE" -lt 100 ]; then
+              echo "WARNING: keystore too small ($JKS_SIZE bytes) — copying unsigned APK"
+              cp "$APK_IN" "$APK_OUT"
+            else
+              jarsigner \
+                -verbose \
+                -sigalg SHA256withRSA \
+                -digestalg SHA-256 \
+                -keystore /tmp/keystore.jks \
+                -storepass "$CM_KEYSTORE_PASSWORD" \
+                -keypass "$CM_KEY_PASSWORD" \
+                -signedjar "$APK_OUT" \
+                "$APK_IN" \
+                "$CM_KEY_ALIAS"
+              echo "Signed successfully."
+            fi
+          fi
+
+          ls -lh "$APK_OUT"
 
     artifacts:
       - build/app/outputs/flutter-apk/app-release-signed.apk
