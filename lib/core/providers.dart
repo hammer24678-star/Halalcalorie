@@ -1,339 +1,210 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'package:go_router/go_router.dart';
-import '../data/models/models.dart';
-import '../data/models/user_profile.dart';
-import 'router.dart';
-import 'database.dart';
-import 'health_service.dart';
-import 'revenuecat_service.dart';
+// providers.dart
+import 'package:flutter_riverpod/flutter_riverpod.dart'; import'package:shared_preferences/shared_preferences.dart'; import'package:go_router/go_router.dart'; import'../data/models/models.dart'; import'../data/models/user_profile.dart'; import'router.dart'; import'revenuecat_service.dart'; import'database.dart'; import'health_service.dart';
 
-// Language
-final languageProvider = StateNotifierProvider<LanguageNotifier, String>(
-  (ref) => LanguageNotifier(),
-);
-class LanguageNotifier extends StateNotifier<String> {
-  LanguageNotifier() : super('ar') { _load(); }
-  Future<void> _load() async {
-    try {
-      final p = await SharedPreferences.getInstance();
-      state = p.getString('language') ?? 'ar';
-    } catch (_) {}
-  }
-  Future<void> set(String lang) async {
-    state = lang;
-    final p = await SharedPreferences.getInstance();
-    await p.setString('language', lang);
-  }
+final languageProvider = StateNotifierProvider<LanguageNotifier, String>((ref) => LanguageNotifier());
+class LanguageNotifier extends StateNotifier<String> { LanguageNotifier() : super('ar') { _load(); }
+  Future<void> _load() async { final p = await SharedPreferences.getInstance(); state = p.getString('language') ?? 'ar'; }
+  Future<void> set(String lang) async { state = lang; final p = await SharedPreferences.getInstance(); await p.setString('language', lang); }
 }
 
-// Theme
-final themeProvider = StateNotifierProvider<ThemeNotifier, bool>(
-  (ref) => ThemeNotifier(),
-);
-class ThemeNotifier extends StateNotifier<bool> {
-  ThemeNotifier() : super(true) { _load(); }
-  Future<void> _load() async {
-    try {
-      final p = await SharedPreferences.getInstance();
-      state = p.getBool('dark_mode') ?? true;
-    } catch (_) {}
-  }
-  Future<void> toggle() async {
-    state = !state;
-    final p = await SharedPreferences.getInstance();
-    await p.setBool('dark_mode', state);
-  }
+final themeProvider = StateNotifierProvider<ThemeNotifier, bool>((ref) => ThemeNotifier());
+class ThemeNotifier extends StateNotifier<bool> { ThemeNotifier() : super(true) { _load(); }
+  Future<void> _load() async { final p = await SharedPreferences.getInstance(); state = p.getBool('dark_mode') ?? true; }
+  Future<void> toggle() async { state = !state; final p = await SharedPreferences.getInstance(); await p.setBool('dark_mode', state); }
 }
 
-// Onboarding
-final onboardingDoneProvider = StateNotifierProvider<OnboardingNotifier, bool>(
-  (ref) => OnboardingNotifier(),
-);
-class OnboardingNotifier extends StateNotifier<bool> {
-  OnboardingNotifier() : super(true) {}
-  Future<void> complete() async {
-    state = true;
-    final p = await SharedPreferences.getInstance();
-    await p.setBool('onboarding_done', true);
-  }
-  Future<void> reset() async {
-    state = false;
-    final p = await SharedPreferences.getInstance();
-    await p.setBool('onboarding_done', false);
-  }
+final onboardingDoneProvider = StateNotifierProvider<OnboardingNotifier, bool>((ref) => OnboardingNotifier());
+class OnboardingNotifier extends StateNotifier<bool> { OnboardingNotifier() : super(false) { _load(); }
+  Future<void> _load() async { final p = await SharedPreferences.getInstance(); state = p.getBool('onboarding_done') ?? false; }
+  Future<void> complete() async { state = true; final p = await SharedPreferences.getInstance(); await p.setBool('onboarding_done', true); }
+  Future<void> reset() async { state = false; final p = await SharedPreferences.getInstance(); await p.setBool('onboarding_done', false); }
 }
 
-// Router
-final routerProvider = Provider<GoRouter>((ref) => AppRouter.router(ref));
-
-// Gender
-final genderProvider = StateNotifierProvider<GenderNotifier, String>(
-  (ref) => GenderNotifier(),
-);
-class GenderNotifier extends StateNotifier<String> {
-  GenderNotifier() : super('brothers') { _load(); }
-  Future<void> _load() async {
-    try {
-      final p = await SharedPreferences.getInstance();
-      state = p.getString('gender') ?? 'brothers';
-    } catch (_) {}
-  }
-  Future<void> set(String g) async {
-    state = g;
-    final p = await SharedPreferences.getInstance();
-    await p.setString('gender', g);
-  }
+final genderProvider = StateNotifierProvider<GenderNotifier, String>((ref) => GenderNotifier());
+class GenderNotifier extends StateNotifier<String> { GenderNotifier() : super('brothers') { _load(); }
+  Future<void> _load() async { final p = await SharedPreferences.getInstance(); state = p.getString('gender') ?? 'brothers'; }
+  Future<void> set(String g) async { state = g; final p = await SharedPreferences.getInstance(); await p.setString('gender', g); }
 }
 
-// User Profile
-final userProfileProvider = StateNotifierProvider<UserProfileNotifier, UserProfile?>(
-  (ref) => UserProfileNotifier(),
-);
-class UserProfileNotifier extends StateNotifier<UserProfile?> {
-  UserProfileNotifier() : super(null) { _load(); }
-  Future<void> _load() async {
-    try { state = await UserProfileRepository.load(); } catch (_) {}
-  }
-  Future<void> save(UserProfile profile) async {
-    await UserProfileRepository.save(profile); state = profile;
-  }
+final userProfileProvider = StateNotifierProvider<UserProfileNotifier, UserProfile?>((ref) => UserProfileNotifier());
+class UserProfileNotifier extends StateNotifier<UserProfile?> { UserProfileNotifier() : super(null) { _load(); }
+  Future<void> _load() async { state = await UserProfileRepository.load(); }
+  Future<void> save(UserProfile profile) async { await UserProfileRepository.save(profile); state = profile; }
   Future<void> clear() async { await UserProfileRepository.clear(); state = null; }
 }
 
-// Premium
-final premiumProvider = StateNotifierProvider<PremiumNotifier, bool>(
-  (ref) => PremiumNotifier(),
-);
-class PremiumNotifier extends StateNotifier<bool> {
-  PremiumNotifier() : super(false) { _load(); }
+final premiumProvider = StateNotifierProvider<PremiumNotifier, bool>((ref) => PremiumNotifier());
+class PremiumNotifier extends StateNotifier<bool> { PremiumNotifier() : super(false) { _load(); }
   Future<void> _load() async {
-    try {
-      final p = await SharedPreferences.getInstance();
-      state = p.getBool('is_premium') ?? false;
-    } catch (_) {}
+    final p = await SharedPreferences.getInstance(); state = p.getBool('is_premium') ?? false;
+    try { final live = await RevenueCatService.isPremium(); if (live != state) { state = live; await p.setBool('is_premium', live); } } catch (_) {}
   }
-  Future<void> onPurchaseSuccess() async {
-    state = true;
-    final p = await SharedPreferences.getInstance();
-    await p.setBool('is_premium', true);
-  }
-  Future<void> refresh() async {}
-  Future<void> unlock() async {
-    state = true;
-    final p = await SharedPreferences.getInstance();
-    await p.setBool('is_premium', true);
-  }
-  Future<void> revoke() async {
-    state = false;
-    final p = await SharedPreferences.getInstance();
-    await p.setBool('is_premium', false);
-  }
+  Future<void> onPurchaseSuccess() async { state = true; final p = await SharedPreferences.getInstance(); await p.setBool('is_premium', true); }
+  Future<void> refresh() async { try { final live = await RevenueCatService.isPremium(); state = live; final p = await SharedPreferences.getInstance(); await p.setBool('is_premium', live); } catch (_) {} }
+  Future<void> unlock() async { state = true; final p = await SharedPreferences.getInstance(); await p.setBool('is_premium', true); }
+  Future<void> revoke() async { state = false; final p = await SharedPreferences.getInstance(); await p.setBool('is_premium', false); }
 }
 
-final planNameProvider = FutureProvider<String>((ref) async => 'free');
-final rcOfferingsProvider = FutureProvider<List<RCOffering>>((ref) async => []);
+final planNameProvider = FutureProvider<String>((ref) async { final isPrem = ref.watch(premiumProvider); if (!isPrem) return 'free'; return RevenueCatService.getActivePlanId(); });
+final rcOfferingsProvider = FutureProvider<List<RCOffering>>((ref) async { return RevenueCatService.getOfferings(); });
 
-// Streak
-final streakProvider = StateNotifierProvider<StreakNotifier, int>(
-  (ref) => StreakNotifier(),
-);
-class StreakNotifier extends StateNotifier<int> {
-  StreakNotifier() : super(0) { _load(); }
+final streakProvider = StateNotifierProvider<StreakNotifier, int>((ref) => StreakNotifier());
+class StreakNotifier extends StateNotifier<int> { StreakNotifier() : super(0) { _load(); }
   Future<void> _load() async {
-    try {
-      final p = await SharedPreferences.getInstance();
-      state = p.getInt('streak') ?? 0;
-    } catch (_) {}
+    final p = await SharedPreferences.getInstance(); final lastDate = p.getString('streak_last_date') ?? '';
+    final today = _dateKey(); final streak = p.getInt('streak') ?? 0;
+    if (lastDate == today) { state = streak; } else if (lastDate == _yesterday()) { state = streak; } else if (lastDate.isEmpty) { state = 0; } else { state = 0; await p.setInt('streak', 0); }
   }
   Future<void> increment() async {
-    final newStreak = state + 1;
-    state = newStreak;
-    final p = await SharedPreferences.getInstance();
-    await p.setInt('streak', newStreak);
+    final p = await SharedPreferences.getInstance(); final today = _dateKey(); final lastDate = p.getString('streak_last_date') ?? '';
+    if (lastDate == today) return;
+    final newStreak = (lastDate == _yesterday()) ? state + 1 : 1;
+    state = newStreak; await p.setInt('streak', newStreak); await p.setString('streak_last_date', today);
   }
-  Future<void> reset() async {
-    state = 0;
-    final p = await SharedPreferences.getInstance();
-    await p.setInt('streak', 0);
-  }
+  String _dateKey() { final n = DateTime.now(); return '${n.year}-${n.month.toString().padLeft(2,'0')}-${n.day.toString().padLeft(2,'0')}'; }
+  String _yesterday() { final y = DateTime.now().subtract(const Duration(days: 1)); return '${y.year}-${y.month.toString().padLeft(2,'0')}-${y.day.toString().padLeft(2,'0')}'; }
 }
 
-// Health Permission — no platform calls in constructor
-final healthPermProvider = StateNotifierProvider<HealthPermNotifier, bool>(
-  (ref) => HealthPermNotifier(),
-);
-class HealthPermNotifier extends StateNotifier<bool> {
-  HealthPermNotifier() : super(false);
-  Future<void> request() async {
-    try {
-      final svc = HealthService();
-      state = await svc.requestPermission();
-    } catch (_) { state = false; }
-  }
-}
-
-// Steps
-final stepsProvider = StateNotifierProvider<StepsNotifier, int>(
-  (ref) => StepsNotifier(),
-);
-class StepsNotifier extends StateNotifier<int> {
-  StepsNotifier() : super(0) { _load(); }
-  Future<void> _load() async {
-    try {
-      final p = await SharedPreferences.getInstance();
-      state = p.getInt('steps_today') ?? 0;
-    } catch (_) {}
-  }
-  Future<void> update(int steps) async {
-    state = steps;
-    final p = await SharedPreferences.getInstance();
-    await p.setInt('steps_today', steps);
-  }
-}
-
-// Calories
+final caloriesProvider = StateNotifierProvider<CaloriesNotifier, CaloriesState>((ref) => CaloriesNotifier(ref));
 class CaloriesState {
-  final int total, goal;
-  final double percent;
-  final List<FoodEntry> entries;
-  final double proteinTotal, carbsTotal, fatTotal;
-  const CaloriesState({
-    this.total = 0, this.goal = 2000, this.percent = 0,
-    this.entries = const [], this.proteinTotal = 0,
-    this.carbsTotal = 0, this.fatTotal = 0,
-  });
+  final int goal;
+  final List<MealEntry> entries;
+  CaloriesState({required this.goal, required this.entries});
+  int get total => entries.fold(0, (s, e) => s + e.kcal);
+  int get remaining => (goal - total).clamp(0, 99999);
+  double get percent => goal > 0 ? (total / goal).clamp(0.0, 1.0) : 0.0;
+  double get proteinTotal => entries.fold(0.0, (s, e) => s + e.proteinG);
+  double get carbsTotal   => entries.fold(0.0, (s, e) => s + e.carbsG);
+  double get fatTotal     => entries.fold(0.0, (s, e) => s + e.fatG);
 }
-
-final caloriesProvider = StateNotifierProvider<CaloriesNotifier, CaloriesState>(
-  (ref) => CaloriesNotifier(),
-);
 class CaloriesNotifier extends StateNotifier<CaloriesState> {
-  CaloriesNotifier() : super(const CaloriesState()) { _load(); }
-  Future<void> _load() async {
-    try {
-      final entries = await AppDatabase.getTodayEntries();
-      final goal = await _loadGoal();
-      _update(entries, goal);
-    } catch (_) {}
+  final Ref _ref;
+  CaloriesNotifier(this._ref) : super(CaloriesState(goal: 2000, entries: [])) {
+    _init();
+    _ref.listen(userProfileProvider, (_, profile) { if (profile != null) syncWithProfile(profile); });
   }
-  Future<int> _loadGoal() async {
-    try {
-      final p = await SharedPreferences.getInstance();
-      return p.getInt('calorie_goal') ?? 2000;
-    } catch (_) { return 2000; }
+  Future<void> _init() async {
+    final p = _ref.read(userProfileProvider); final goal = p?.calorieGoalKcal.toInt() ?? 2000;
+    final rows = await AppDatabase.getTodayMeals();
+    final entries = rows.map((e) => MealEntry(id: e['id'] as int, name: e['name'] as String, kcal: e['kcal'] as int, proteinG: (e['protein_g'] as num?)?.toDouble() ?? 0, carbsG: (e['carbs_g'] as num?)?.toDouble() ?? 0, fatG: (e['fat_g'] as num?)?.toDouble() ?? 0, time: DateTime.tryParse(e['created'] as String? ?? '') ?? DateTime.now())).toList();
+    state = CaloriesState(goal: goal, entries: entries);
   }
-  void _update(List<FoodEntry> entries, int goal) {
-    final total = entries.fold(0, (s, e) => s + e.kcal);
-    final protein = entries.fold(0.0, (s, e) => s + e.proteinG);
-    final carbs = entries.fold(0.0, (s, e) => s + e.carbsG);
-    final fat = entries.fold(0.0, (s, e) => s + e.fatG);
-    state = CaloriesState(
-      total: total, goal: goal,
-      percent: goal > 0 ? (total / goal).clamp(0.0, 1.0) : 0,
-      entries: entries, proteinTotal: protein,
-      carbsTotal: carbs, fatTotal: fat,
-    );
+  void syncWithProfile(UserProfile p) => state = CaloriesState(goal: p.calorieGoalKcal.toInt(), entries: state.entries);
+  void setGoal(int g) => state = CaloriesState(goal: g.clamp(500, 9999), entries: state.entries);
+  Future<void> addEntry(String name, int kcal, {double proteinG = 0, double carbsG = 0, double fatG = 0}) async {
+    if (kcal <= 0) return;
+    final id = await AppDatabase.insertMeal(name: name, kcal: kcal.clamp(1, 9999), proteinG: proteinG, carbsG: carbsG, fatG: fatG);
+    final entry = MealEntry(id: id, name: name, kcal: kcal.clamp(1, 9999), time: DateTime.now(), proteinG: proteinG, carbsG: carbsG, fatG: fatG);
+    state = CaloriesState(goal: state.goal, entries: [...state.entries, entry]);
   }
-  Future<void> addEntry(FoodEntry entry) async {
-    try {
-      await AppDatabase.insertEntry(entry);
-      await _load();
-    } catch (_) {}
+  Future<void> reloadFromDb() async {
+    final rows = await AppDatabase.getTodayMeals();
+    final entries = rows.map((e) => MealEntry(id: e['id'] as int, name: e['name'] as String, kcal: e['kcal'] as int, proteinG: (e['protein_g'] as num?)?.toDouble() ?? 0, carbsG: (e['carbs_g'] as num?)?.toDouble() ?? 0, fatG: (e['fat_g'] as num?)?.toDouble() ?? 0, time: DateTime.tryParse(e['created'] as String? ?? '') ?? DateTime.now())).toList();
+    state = CaloriesState(goal: state.goal, entries: entries);
   }
   Future<void> removeEntry(int id) async {
-    try {
-      await AppDatabase.deleteEntry(id);
-      await _load();
-    } catch (_) {}
-  }
-  Future<void> reloadFromDb() async { await _load(); }
-  Future<void> setGoal(int goal) async {
-    final p = await SharedPreferences.getInstance();
-    await p.setInt('calorie_goal', goal);
-    await _load();
-  }
-  Future<void> syncWithProfile(UserProfile profile) async {
-    final p = await SharedPreferences.getInstance();
-    await p.setInt('calorie_goal', profile.dailyCalorieGoal);
-    await _load();
+    await AppDatabase.deleteMeal(id);
+    state = CaloriesState(goal: state.goal, entries: state.entries.where((x) => x.id != id).toList());
   }
 }
 
 final weeklyKcalProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
-  try { return await AppDatabase.getWeeklyKcal(); } catch (_) { return []; }
+  ref.watch(caloriesProvider);
+  final rows = await AppDatabase.getWeeklyKcal(); return rows.map((r) => {'date': r.dateKey, 'kcal': r.kcal}).toList();
 });
 
-// Water
-final waterProvider = StateNotifierProvider<WaterNotifier, int>(
-  (ref) => WaterNotifier(),
-);
-class WaterNotifier extends StateNotifier<int> {
-  WaterNotifier() : super(0) { _load(); }
-  Future<void> _load() async {
-    try {
-      final p = await SharedPreferences.getInstance();
-      state = p.getInt('water_today') ?? 0;
-    } catch (_) {}
+final waterProvider = StateNotifierProvider<WaterNotifier, WaterState>((ref) => WaterNotifier(ref));
+class WaterState { final int cups, goal; WaterState({required this.cups, required this.goal}); double get percent => goal > 0 ? (cups / goal).clamp(0, 1) : 0; }
+class WaterNotifier extends StateNotifier<WaterState> {
+  final Ref _ref;
+  WaterNotifier(this._ref) : super(WaterState(cups: 0, goal: 8)) { _init(); }
+  Future<void> _init() async {
+    final p = _ref.read(userProfileProvider); final goal = p?.waterCupsGoal ?? 8;
+    final row = await AppDatabase.getTodaySummary(); final cups = (row?['water_cups'] as int?) ?? 0;
+    state = WaterState(cups: cups, goal: goal);
   }
-  Future<void> add(int ml) async {
-    state += ml;
-    final p = await SharedPreferences.getInstance();
-    await p.setInt('water_today', state);
-  }
-  Future<void> reset() async {
-    state = 0;
-    final p = await SharedPreferences.getInstance();
-    await p.setInt('water_today', 0);
-  }
+  Future<void> add() async { final cups = (state.cups + 1).clamp(0, 20); state = WaterState(cups: cups, goal: state.goal); await AppDatabase.upsertSummary(waterCups: cups); }
+  Future<void> remove() async { final cups = (state.cups - 1).clamp(0, 20); state = WaterState(cups: cups, goal: state.goal); await AppDatabase.upsertSummary(waterCups: cups); }
+  void setGoal(int g) => state = WaterState(cups: state.cups, goal: g);
+  Future<void> set(int cups) async { final c = cups.clamp(0, 20); state = WaterState(cups: c, goal: state.goal); await AppDatabase.upsertSummary(waterCups: c); }
 }
 
-// Sleep
-final sleepProvider = StateNotifierProvider<SleepNotifier, double>(
-  (ref) => SleepNotifier(),
-);
-class SleepNotifier extends StateNotifier<double> {
-  SleepNotifier() : super(0) { _load(); }
-  Future<void> _load() async {
-    try {
-      final p = await SharedPreferences.getInstance();
-      state = p.getDouble('sleep_hours') ?? 0;
-    } catch (_) {}
+final sleepProvider = StateNotifierProvider<SleepNotifier, SleepState>((ref) => SleepNotifier(ref));
+class SleepState { final double hours, goal; SleepState({required this.hours, required this.goal}); double get percent => goal > 0 ? (hours / goal).clamp(0, 1) : 0; String qualityAr() { if (hours >= 8) return 'ideal'; if (hours >= 6) return 'adequate'; return 'insufficient'; } String qualityEn() { if (hours >= 8) return 'Ideal'; if (hours >= 6) return 'Adequate'; return 'Insufficient'; } }
+class SleepNotifier extends StateNotifier<SleepState> {
+  final Ref _ref;
+  SleepNotifier(this._ref) : super(SleepState(hours: 7, goal: 8)) { _init(); }
+  Future<void> _init() async {
+    final row = await AppDatabase.getTodaySummary(); final hrs = (row?['sleep_hrs'] as num?)?.toDouble() ?? 7.0;
+    final p = _ref.read(userProfileProvider);
+    state = SleepState(hours: hrs, goal: p?.sleepHours ?? 8);
   }
-  Future<void> set(double hours) async {
-    state = hours;
-    final p = await SharedPreferences.getInstance();
-    await p.setDouble('sleep_hours', hours);
+  Future<void> set(double h) async { state = SleepState(hours: h.clamp(0, 24), goal: state.goal); await AppDatabase.upsertSummary(sleepHrs: h.clamp(0, 24)); }
+}
+
+final healthProvider = StateNotifierProvider<HealthNotifier, HealthState>((ref) => HealthNotifier());
+class HealthState { final int steps, stepsGoal, heartRate; final String? mood; final double? quickBmi; HealthState({this.steps = 0, this.stepsGoal = 10000, this.heartRate = 72, this.mood, this.quickBmi}); }
+class HealthNotifier extends StateNotifier<HealthState> {
+  HealthNotifier() : super(HealthState()) { _init(); }
+  Future<void> _init() async {
+    final row = await AppDatabase.getTodaySummary(); if (row == null) return;
+    state = HealthState(steps: (row['steps'] as int?) ?? 0, stepsGoal: state.stepsGoal, heartRate: state.heartRate, mood: row['mood'] as String?);
   }
+  Future<void> setSteps(int n) async { state = HealthState(steps: n.clamp(0, 99999), stepsGoal: state.stepsGoal, heartRate: state.heartRate, mood: state.mood, quickBmi: state.quickBmi); await AppDatabase.upsertSummary(steps: n.clamp(0, 99999)); }
+  Future<void> addSteps(int n) => setSteps(state.steps + n);
+  void setHeartRate(int hr) => state = HealthState(steps: state.steps, stepsGoal: state.stepsGoal, heartRate: hr.clamp(30, 250), mood: state.mood, quickBmi: state.quickBmi);
+  Future<void> setMood(String m) async { state = HealthState(steps: state.steps, stepsGoal: state.stepsGoal, heartRate: state.heartRate, mood: m, quickBmi: state.quickBmi); await AppDatabase.upsertSummary(mood: m); }
+  void setBMI(double w, double h) { if (h <= 0) return; final bmi = w / ((h / 100) * (h / 100)); state = HealthState(steps: state.steps, stepsGoal: state.stepsGoal, heartRate: state.heartRate, mood: state.mood, quickBmi: bmi); }
 }
 
-// Health data
-final healthProvider = StateNotifierProvider<HealthNotifier, Map<String, dynamic>>(
-  (ref) => HealthNotifier(),
-);
-class HealthNotifier extends StateNotifier<Map<String, dynamic>> {
-  HealthNotifier() : super({
-    'steps': 0, 'heartRate': 0, 'sleepHours': 0.0,
-    'activeMinutes': 0, 'caloriesBurned': 0,
-  });
-  Future<void> refresh() async {}
-  void update(Map<String, dynamic> data) { state = {...state, ...data}; }
+final healthPermissionProvider = StateNotifierProvider<HealthPermNotifier, bool>((ref) => HealthPermNotifier());
+class HealthPermNotifier extends StateNotifier<bool> {
+  HealthPermNotifier() : super(false);
+  Future<bool> request() async { try { final granted = await HealthService.requestPermissions(); state = granted; return granted; } catch (_) { return false; } }
 }
 
-// Referral
-final referralProvider = StateNotifierProvider<ReferralNotifier, Map<String, dynamic>>(
-  (ref) => ReferralNotifier(),
-);
-class ReferralNotifier extends StateNotifier<Map<String, dynamic>> {
-  ReferralNotifier() : super({'code': 'HALAL2024', 'count': 0, 'freeMonths': 0});
-  Future<void> load() async {}
-  Future<bool> applyCode(String code) async { return false; }
+final workoutMinutesProvider = StateNotifierProvider<WorkoutMinutesNotifier, int>((ref) => WorkoutMinutesNotifier());
+class WorkoutMinutesNotifier extends StateNotifier<int> { WorkoutMinutesNotifier() : super(0) { _init(); }
+  Future<void> _init() async { state = await AppDatabase.getTodayWorkoutMinutes(); }
+  Future<void> add(String workoutId, int minutes) async { await AppDatabase.logWorkout(workoutId, minutes); state = state + minutes; }
 }
 
-// Weekly report
-final weeklyReportProvider = FutureProvider<Map<String, dynamic>>((ref) async {
-  return {
-    'avgCalories': 0, 'totalWorkouts': 0, 'avgSteps': 0,
-    'avgSleep': 0.0, 'avgWater': 0,
-  };
-});
+final scanProvider = StateNotifierProvider<ScanNotifier, ScanState>((ref) => ScanNotifier());
+class ScanState { final List<ScanResult> history; final int todayCount; ScanState({required this.history, required this.todayCount}); }
+class ScanNotifier extends StateNotifier<ScanState> { ScanNotifier() : super(ScanState(history: [], todayCount: 0));
+  void addScan(ScanResult r) => state = ScanState(history: [r, ...state.history.take(49)], todayCount: state.todayCount + 1);
+}
+
+final zakatProvider = StateNotifierProvider<ZakatNotifier, double>((ref) => ZakatNotifier());
+class ZakatNotifier extends StateNotifier<double> { ZakatNotifier() : super(0) { _load(); }
+  Future<void> _load() async { final p = await SharedPreferences.getInstance(); state = p.getDouble('zakat_amount') ?? 0; }
+  Future<void> add(double amount) async { state += amount; final p = await SharedPreferences.getInstance(); await p.setDouble('zakat_amount', state); }
+}
+
+final cityProvider = StateNotifierProvider<CityNotifier, String>((ref) => CityNotifier());
+class CityNotifier extends StateNotifier<String> { CityNotifier() : super('\u0627\u0644\u0642\u0627\u0647\u0631\u0629') { _load(); }
+  Future<void> _load() async { final p = await SharedPreferences.getInstance(); state = p.getString('city') ?? '\u0627\u0644\u0642\u0627\u0647\u0631\u0629'; }
+  Future<void> set(String city) async { state = city; final p = await SharedPreferences.getInstance(); await p.setString('city', city); }
+}
+
+final weightLogProvider = StateNotifierProvider<WeightLogNotifier, List<WeightEntry>>((ref) => WeightLogNotifier());
+class WeightEntry { final int id; final DateTime date; final double weightKg; final String? note; WeightEntry({required this.id, required this.date, required this.weightKg, this.note}); }
+class WeightLogNotifier extends StateNotifier<List<WeightEntry>> { WeightLogNotifier() : super([]) { _load(); }
+  Future<void> _load() async { final rows = await AppDatabase.getWeightLog(limit: 60); state = rows.map((r) => WeightEntry(id: r['id'] as int, date: DateTime.tryParse(r['created'] as String? ?? '') ?? DateTime.now(), weightKg: (r['weight_kg'] as num).toDouble(), note: r['note'] as String?)).toList(); }
+  Future<void> add(double kg, {String? note}) async { final id = await AppDatabase.insertWeight(kg, note: note); final entry = WeightEntry(id: id, date: DateTime.now(), weightKg: kg, note: note); state = [...state, entry]; }
+  Future<void> remove(int id) async { await AppDatabase.deleteWeight(id); state = state.where((e) => e.id != id).toList(); }
+}
+
+final ramadanModeProvider = StateNotifierProvider<RamadanNotifier, bool>((ref) => RamadanNotifier());
+class RamadanNotifier extends StateNotifier<bool> { RamadanNotifier() : super(false) { _load(); }
+  Future<void> _load() async { final p = await SharedPreferences.getInstance(); state = p.getBool('ramadan_mode') ?? false; }
+  Future<void> toggle() async { state = !state; final p = await SharedPreferences.getInstance(); await p.setBool('ramadan_mode', state); }
+}
+
+final notificationsEnabledProvider = StateNotifierProvider<NotifNotifier, bool>((ref) => NotifNotifier());
+class NotifNotifier extends StateNotifier<bool> { NotifNotifier() : super(true) { _load(); }
+  Future<void> _load() async { final p = await SharedPreferences.getInstance(); state = p.getBool('notifications_on') ?? true; }
+  Future<void> toggle() async { state = !state; final p = await SharedPreferences.getInstance(); await p.setBool('notifications_on', state); }
+}
+
+final routerProvider = Provider<GoRouter>((ref) => AppRouter.router(ref));
