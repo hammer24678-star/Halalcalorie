@@ -94,8 +94,7 @@ class _DonationCardState extends ConsumerState<DonationCard> {
           const SizedBox(height: 8),
           Text(
             widget.isAr
-                ? 'دعمك يجعل هذا التطبيق صدقة جارية
-تستمر في خدمة المسلمين'
+                ? 'دعمك يجعل هذا التطبيق صدقة جارية\nتستمر في خدمة المسلمين'
                 : 'Your support keeps this app as Sadaqah Jariyah',
             textAlign: TextAlign.center,
             style: TextStyle(
