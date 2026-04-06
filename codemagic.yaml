@@ -6,8 +6,6 @@ workflows:
       groups:
         - keystore_credentials
         - app_secrets
-      vars:
-        FLUTTER_VERSION: "3.19.6"
       flutter: 3.19.6
       java: 17
     scripts:
@@ -30,10 +28,7 @@ workflows:
           set -e
           APK_IN=build/app/outputs/flutter-apk/app-release.apk
           APK_SIGNED=build/app/outputs/flutter-apk/app-release-signed.apk
-
           echo "$CM_KEYSTORE" | base64 --decode > /tmp/keystore.jks
-
-          # Use jarsigner (universally available)
           jarsigner \
             -verbose \
             -sigalg SHA256withRSA \
@@ -44,14 +39,9 @@ workflows:
             -signedjar "$APK_SIGNED" \
             "$APK_IN" \
             "$CM_KEY_ALIAS"
-
-          echo "Signed APK at: $APK_SIGNED"
+          echo "Signed APK size:"
           ls -lh "$APK_SIGNED"
 
     artifacts:
       - build/app/outputs/flutter-apk/app-release-signed.apk
       - build/app/outputs/flutter-apk/app-release.apk
-
-    publishing:
-      email:
-        recipients: []

@@ -1,16 +1,3 @@
-import os, re
-
-KEYSTORE_BLOCK = """
-    signingConfigs {
-        release {
-            storeFile file('/tmp/keystore.jks')
-            storePassword System.getenv('CM_KEYSTORE_PASSWORD')
-            keyAlias System.getenv('CM_KEY_ALIAS')
-            keyPassword System.getenv('CM_KEY_PASSWORD')
-        }
-    }
-"""
-
 APP_BUILD_GRADLE = """plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -95,7 +82,6 @@ zipStorePath=wrapper/dists
 distributionUrl=https\\://services.gradle.org/distributions/gradle-7.6.3-all.zip
 """
 
-# Write files
 with open('android/app/build.gradle', 'w') as f:
     f.write(APP_BUILD_GRADLE)
 print("Wrote android/app/build.gradle")
