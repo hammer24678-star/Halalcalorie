@@ -1,48 +1,57 @@
 workflows:
   android-release:
-    name: HalalCalorie Android Release
-    max_build_duration: 60
+    name: Android Release
+    max_build_duration: 30
     environment:
-      flutter: 3.22.3
-      java: 17
       groups:
         - keystore_credentials
         - app_secrets
+      vars:
+        FLUTTER_VERSION: "3.19.6"
+      flutter: 3.19.6
+      java: 17
     scripts:
       - name: Regenerate android folder
         script: |
           flutter create --platforms=android .
+          echo "Wrote $(find android -type f | wc -l) files."
 
       - name: Patch android config
-        script: |
-          python3 patch_android.py
+        script: python3 patch_android.py
 
       - name: Get Flutter packages
-        script: |
-          flutter pub get
+        script: flutter pub get
 
       - name: Build release APK
-        script: |
-          flutter build apk --release \
-            --dart-define=ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
-            --no-tree-shake-icons
+        script: flutter build apk --release --no-tree-shake-icons
 
       - name: Sign APK
         script: |
-          APK=$(find build/app/outputs/flutter-apk -name "app-release.apk" | head -1)
-          echo "Signing: $APK"
-          
-          # Decode keystore
+          set -e
+          APK_IN=build/app/outputs/flutter-apk/app-release.apk
+          APK_SIGNED=build/app/outputs/flutter-apk/app-release-signed.apk
+
           echo "$CM_KEYSTORE" | base64 --decode > /tmp/keystore.jks
-          
-          # Sign with jarsigner (simpler, no --out issues)
-          jarsigner -verbose \
+
+          # Use jarsigner (universally available)
+          jarsigner \
+            -verbose \
+            -sigalg SHA256withRSA \
+            -digestalg SHA-256 \
             -keystore /tmp/keystore.jks \
             -storepass "$CM_KEYSTORE_PASSWORD" \
             -keypass "$CM_KEY_PASSWORD" \
-            -signedjar build/app/outputs/flutter-apk/app-release-signed.apk \
-            "$APK" \
+            -signedjar "$APK_SIGNED" \
+            "$APK_IN" \
             "$CM_KEY_ALIAS"
-          
-          echo "Signed APK ready"
-          ls -lh build/app/outputs/flutter-apk/
+
+          echo "Signed APK at: $APK_SIGNED"
+          ls -lh "$APK_SIGNED"
+
+    artifacts:
+      - build/app/outputs/flutter-apk/app-release-signed.apk
+      - build/app/outputs/flutter-apk/app-release.apk
+
+    publishing:
+      email:
+        recipients: []
