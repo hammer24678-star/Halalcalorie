@@ -96,3 +96,22 @@ with open('android/gradle/wrapper/gradle-wrapper.properties', 'w') as f:
 print("Wrote gradle-wrapper.properties")
 
 print("Patch complete.")
+
+# ── Fix MainActivity package mismatch ─────────────────────
+import os
+
+kt_dir = "android/app/src/main/kotlin/com/halalcalorie/app"
+os.makedirs(kt_dir, exist_ok=True)
+
+# Remove wrong package directory flutter create generates
+import shutil
+wrong_dir = "android/app/src/main/kotlin/com/example"
+if os.path.exists(wrong_dir):
+    shutil.rmtree(wrong_dir)
+
+with open(kt_dir + "/MainActivity.kt", "w") as f:
+    f.write("package com.halalcalorie.app\n\n")
+    f.write("import io.flutter.embedding.android.FlutterActivity\n\n")
+    f.write("class MainActivity: FlutterActivity()\n")
+
+print("MainActivity.kt written with correct package: com.halalcalorie.app")
