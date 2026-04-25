@@ -1,8 +1,7 @@
 name: Build APK
 on:
   push:
-    branches: [ master ]
-  workflow_dispatch:
+    branches: [master]
 
 jobs:
   build:
@@ -12,47 +11,28 @@ jobs:
 
       - uses: actions/setup-java@v4
         with:
-          distribution: temurin
           java-version: '17'
+          distribution: 'temurin'
 
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.22.3'
-          channel: stable
 
-      - name: Get packages
-        run: flutter pub get
+      - run: flutter pub get
 
-      - name: Regenerate android folder
-        run: |
-          rm -rf android
-          flutter create --platforms=android --project-name halalcalorie --org com.halalcalorie .
-          flutter pub get
+      - run: flutter create --platforms=android .
 
-      - name: Patch android config
-        run: python3 patch_android.py
+      - run: python3 patch_android.py
 
-      - name: Set app logo
-        run: |
-          sudo apt-get install -y imagemagick
-          LOGO="assets/logo.png"
-          if [ -f "$LOGO" ]; then
-            convert "$LOGO" -resize 48x48   android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-            convert "$LOGO" -resize 72x72   android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-            convert "$LOGO" -resize 96x96   android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-            convert "$LOGO" -resize 144x144 android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-            convert "$LOGO" -resize 192x192 android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-            echo "Logo applied to all mipmap sizes"
-          else
-            echo "WARNING: assets/logo.png not found"
-          fi
+      - run: flutter build apk --release --no-tree-shake-icons
+              --dart-define=ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
 
-      - name: Build APK
-        run: |
-          flutter build apk --release --no-shrink \
-            --dart-define=ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
-
-      - uses: actions/upload-artifact@v4
+      - name: Release APK
+        uses: softprops/action-gh-release@v1
         with:
-          name: HalalCalorie-APK
-          path: build/app/outputs/flutter-apk/app-release.apk
+          tag_name: latest
+          name: HalalCalorie Latest
+          files: build/app/outputs/flutter-apk/app-release.apk
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
