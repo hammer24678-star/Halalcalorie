@@ -3,6 +3,9 @@ on:
   push:
     branches: [master]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -33,6 +36,5 @@ jobs:
           tag_name: latest
           name: HalalCalorie Latest
           files: build/app/outputs/flutter-apk/app-release.apk
-          prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
