@@ -70,13 +70,27 @@ class HomeScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: isSis ? AppColors.barakahGold : AppColors.sunnahGreen,
-        title: Text(
-          isSis
-            ? (isAr ? 'السلام عليكم أختي 👋' : 'Peace be upon you, sister 👋')
-            : (isAr ? 'السلام عليكم أخي 👋' : 'Peace be upon you, brother 👋'),
-          style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w700),
-        ),
+        backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
+        elevation: 0,
+        title: Row(children: [
+          Container(
+            width: 30, height: 30,
+            decoration: BoxDecoration(
+              gradient: AppColors.gradientGreen,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [BoxShadow(color: AppColors.sunnahGreen.withOpacity(0.3), blurRadius: 8)],
+            ),
+            child: const Center(child: Text('🌿', style: TextStyle(fontSize: 14))),
+          ),
+          const SizedBox(width: 8),
+          RichText(text: TextSpan(
+            style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w900),
+            children: [
+              TextSpan(text: 'Halal', style: TextStyle(color: isDark ? AppColors.darkText : AppColors.lightText)),
+              const TextSpan(text: 'Calorie', style: TextStyle(color: AppColors.halalGreen)),
+            ],
+          )),
+        ]),
         actions: [
           // Settings
           IconButton(
