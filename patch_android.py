@@ -115,3 +115,24 @@ with open(kt_dir + "/MainActivity.kt", "w") as f:
     f.write("class MainActivity: FlutterActivity()\n")
 
 print("MainActivity.kt written with correct package: com.halalcalorie.app")
+
+# ── App launcher icon ──────────────────────────────────────
+icon_sizes = {
+    "mipmap-mdpi":    48,
+    "mipmap-hdpi":    72,
+    "mipmap-xhdpi":   96,
+    "mipmap-xxhdpi":  144,
+    "mipmap-xxxhdpi": 192,
+}
+
+# Simple green circle with crescent as placeholder icon
+# Replace assets/logo.png with your real logo before building
+import shutil, os
+for folder in icon_sizes:
+    path = f"android/app/src/main/res/{folder}"
+    os.makedirs(path, exist_ok=True)
+    # Copy logo.png as launcher icon
+    if os.path.exists("assets/logo.png"):
+        shutil.copy("assets/logo.png", f"{path}/ic_launcher.png")
+
+print("Launcher icons written")
