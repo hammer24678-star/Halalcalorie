@@ -373,7 +373,7 @@ class UserProfile {
         activityLevel == ActivityLevel.extraActive) {
       base += 0.5;
     }
-    return double.parse(base.toStringAsFixed(1));
+    return (base * 10).round() / 10.0;
   }
 
   int get waterCupsGoal => (waterLiters / 0.25).ceil().clamp(6, 16);

@@ -95,7 +95,7 @@ class PrayerTimes {
     DateTime parse(String time) {
       final parts = time.split(':');
       return DateTime(date.year, date.month, date.day,
-          int.parse(parts[0]), int.parse(parts[1].split(' ')[0]));
+          int.tryParse(parts[0]) ?? 0, int.tryParse(parts[1].split(' ')[0]) ?? 0);
     }
     return PrayerTimes(
       fajr:    parse(t['Fajr']    as String),
@@ -143,7 +143,7 @@ class PrayerTimes {
     final h = dt.hour > 12 ? dt.hour - 12 : dt.hour == 0 ? 12 : dt.hour;
     final m = dt.minute.toString().padLeft(2, '0');
     final ampm = dt.hour >= 12 ? 'م' : 'ص';
-    return '\$h:\$m \$ampm';
+    return '$h:$m $ampm';
   }
 }
 

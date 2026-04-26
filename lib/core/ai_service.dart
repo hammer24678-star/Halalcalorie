@@ -13,7 +13,7 @@ import '../data/models/models.dart';
 class AIService {
   static const _endpoint = 'https://api.anthropic.com/v1/messages';
   static const _apiKey = String.fromEnvironment('ANTHROPIC_API_KEY', defaultValue: '');
-  static const _model    = 'claude-opus-4-5-20251101';
+  static const _model    = 'claude-sonnet-4-20250514';
   static const _version  = '2023-06-01';
 
   // ── Convert image file to base64 ──────────────

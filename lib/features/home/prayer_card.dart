@@ -77,8 +77,8 @@ class _PrayerTimesCardState extends ConsumerState<PrayerTimesCard> {
                   children: [
                     Text(
                       widget.isAr
-                          ? 'الصلاة القادمة: \${next.nameAr}'
-                          : 'Next Prayer: \${next.nameEn}',
+                          ? 'الصلاة القادمة: ${next.nameAr}'
+                          : 'Next Prayer: ${next.nameEn}',
                       style: const TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 12, fontWeight: FontWeight.w800,
@@ -102,7 +102,7 @@ class _PrayerTimesCardState extends ConsumerState<PrayerTimesCard> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
-                    '\${h}س \${m}د',
+                    '${h}س ${m}د',
                     style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 13, fontWeight: FontWeight.w900,

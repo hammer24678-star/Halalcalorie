@@ -272,7 +272,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
     );
   }
 
-  Color _hexColor(String hex) { final h = hex.replaceAll('#', ''); return Color(int.parse('FF$h', radix: 16));
+  Color _hexColor(String hex) { final h = hex.replaceAll('#', ''); return Color(int.tryParse('FF$h', radix: 16) ?? 0xFF00A86B);
   }
 }
 
