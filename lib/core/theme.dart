@@ -69,7 +69,7 @@ class AppTheme {
         elevation: 4,
       ),
     ),
-    cardTheme: CardThemeData(
+    cardTheme: CardTheme(
       elevation: 0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ),
@@ -125,7 +125,7 @@ class AppTheme {
         elevation: 4,
       ),
     ),
-    cardTheme: CardThemeData(
+    cardTheme: CardTheme(
       elevation: 0,
       color: AppColors.darkCard,
       shape: RoundedRectangleBorder(
