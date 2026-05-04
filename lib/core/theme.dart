@@ -1,193 +1,190 @@
 import 'package:flutter/material.dart';
 
 class AppColors {
-  static const sunnahGreen  = Color(0xFF0A6B4A);
-  static const darkGreen    = Color(0xFF054D34);
-  static const barakahGold  = Color(0xFFD4A017);
-  static const halalGreen   = Color(0xFF00A86B);
-  static const haramRed     = Color(0xFFC62828);
-  static const doubtOrange  = Color(0xFFF57C00);
-  static const waterBlue    = Color(0xFF2196F3);
-  static const sleepPurple  = Color(0xFF7C4DFF);
+  // Brand
+  static const sunnahGreen = Color(0xFF238636);
+  static const halalGreen  = Color(0xFF3FB950);
+  static const darkGreen   = Color(0xFF196127);
+  static const barakahGold = Color(0xFFD29922);
+  static const haramRed    = Color(0xFFF85149);
+  static const doubtOrange = Color(0xFFD1812A);
+  static const waterBlue   = Color(0xFF58A6FF);
+  static const sleepPurple = Color(0xFFBC8CFF);
+
+  // GitHub-dark canvas
+  static const darkBg      = Color(0xFF0D1117);
+  static const darkCard    = Color(0xFF161B22);
+  static const darkCardAlt = Color(0xFF1C2128);
+  static const darkBorder  = Color(0xFF30363D);
+  static const darkBorder2 = Color(0xFF21262D);
+  static const darkText    = Color(0xFFE6EDF3);
+  static const darkMuted   = Color(0xFF8B949E);
+  static const darkDimmed  = Color(0xFF484F58);
+
+  // Light canvas
+  static const lightBg     = Color(0xFFFFFFFF);
+  static const lightCard   = Color(0xFFF6F8FA);
+  static const lightBorder = Color(0xFFD0D7DE);
+  static const lightText   = Color(0xFF24292F);
+  static const lightMuted  = Color(0xFF656D76);
 
   static const gradientGreen = LinearGradient(
-    colors: [Color(0xFF0A6B4A), Color(0xFF00A86B)],
+    colors: [Color(0xFF238636), Color(0xFF3FB950)],
     begin: Alignment.topLeft, end: Alignment.bottomRight,
   );
   static const gradientGold = LinearGradient(
-    colors: [Color(0xFFD4A017), Color(0xFFFFB300)],
+    colors: [Color(0xFFD29922), Color(0xFFE3B341)],
     begin: Alignment.topLeft, end: Alignment.bottomRight,
   );
-
-  // Light
-  static const lightBg     = Color(0xFFF0F4F8);
-  static const lightCard   = Color(0xFFFFFFFF);
-  static const lightNav    = Color(0xFFFFFFFF);
-  static const lightText   = Color(0xFF1F2A1F);
-  static const lightMuted  = Color(0xFF6B7A8D);
-  static const lightBorder = Color(0xFFE8E4DF);
-
-  // Dark — GitHub-style deep dark
-  static const darkBg     = Color(0xFF0D1117);
-  static const darkCard   = Color(0xFF161B22);
-  static const darkNav    = Color(0xFF161B22);
-  static const darkText   = Color(0xFFE8F0E8);
-  static const darkMuted  = Color(0xFF7D8590);
-  static const darkBorder = Color(0xFF21262D);
 }
 
 class AppTheme {
-  static ThemeData get lightTheme => ThemeData(
+  static ThemeData get dark => ThemeData(
     useMaterial3: true,
-    brightness: Brightness.light, fontFamily: 'Cairo',
-    colorScheme: ColorScheme.light(
-      primary: AppColors.sunnahGreen,
-      secondary: AppColors.barakahGold,
-      surface: AppColors.lightCard,
-      onPrimary: Colors.white,
-      onSurface: AppColors.lightText,
-    ),
-    scaffoldBackgroundColor: AppColors.lightBg,
-    cardColor: AppColors.lightCard,
-    appBarTheme: const AppBarTheme(
-      backgroundColor: AppColors.lightBg,
-      foregroundColor: AppColors.lightText,
-      elevation: 0,
-      centerTitle: false,
-      titleTextStyle: TextStyle(
-        fontFamily: 'Cairo', fontSize: 18,
-        fontWeight: FontWeight.w700, color: AppColors.lightText,
-      ),
-    ),
-    elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.sunnahGreen,
-        foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        textStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w700),
-        elevation: 4,
-      ),
-    ),
-    cardTheme: CardTheme(
-      elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    ),
-    inputDecorationTheme: InputDecorationTheme(
-      filled: true, fillColor: AppColors.lightCard,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.sunnahGreen.withOpacity(0.2))),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.sunnahGreen.withOpacity(0.2))),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.sunnahGreen, width: 2)),
-      hintStyle: const TextStyle(fontFamily: 'Cairo', color: AppColors.lightMuted),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-    ),
-    textTheme: const TextTheme(
-      headlineLarge: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, color: AppColors.lightText),
-      headlineMedium: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: AppColors.lightText),
-      titleLarge: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: AppColors.lightText),
-      bodyLarge: TextStyle(fontFamily: 'Cairo', color: AppColors.lightText),
-      bodyMedium: TextStyle(fontFamily: 'Cairo', color: AppColors.lightMuted),
-    ),
-  );
-
-  static ThemeData get darkTheme => ThemeData(
-    useMaterial3: true,
-    brightness: Brightness.dark, fontFamily: 'Cairo',
-    colorScheme: ColorScheme.dark(
+    brightness: Brightness.dark,
+    fontFamily: 'Cairo',
+    scaffoldBackgroundColor: AppColors.darkBg,
+    colorScheme: const ColorScheme.dark(
       primary: AppColors.sunnahGreen,
       secondary: AppColors.barakahGold,
       surface: AppColors.darkCard,
       onPrimary: Colors.white,
       onSurface: AppColors.darkText,
     ),
-    scaffoldBackgroundColor: AppColors.darkBg,
     cardColor: AppColors.darkCard,
     appBarTheme: const AppBarTheme(
       backgroundColor: AppColors.darkBg,
       foregroundColor: AppColors.darkText,
       elevation: 0,
-      centerTitle: false,
-      titleTextStyle: TextStyle(
-        fontFamily: 'Cairo', fontSize: 18,
-        fontWeight: FontWeight.w700, color: AppColors.darkText,
-      ),
+      surfaceTintColor: Colors.transparent,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.sunnahGreen,
         foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.symmetric(vertical: 14),
-        textStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w700),
-        elevation: 4,
+        textStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700),
+        elevation: 0,
       ),
     ),
     cardTheme: CardTheme(
       elevation: 0,
       color: AppColors.darkCard,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-        side: const BorderSide(color: AppColors.darkBorder, width: 0.5),
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: AppColors.darkBorder2, width: 0.5),
       ),
     ),
+    dividerColor: AppColors.darkBorder2,
     inputDecorationTheme: InputDecorationTheme(
-      filled: true, fillColor: AppColors.darkCard,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.halalGreen.withOpacity(0.25))),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: AppColors.halalGreen.withOpacity(0.25))),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppColors.sunnahGreen, width: 2)),
+      filled: true,
+      fillColor: AppColors.darkCard,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: AppColors.darkBorder, width: 0.5)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: AppColors.darkBorder, width: 0.5)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: AppColors.sunnahGreen, width: 1.5)),
       hintStyle: const TextStyle(fontFamily: 'Cairo', color: AppColors.darkMuted),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     ),
     textTheme: const TextTheme(
-      headlineLarge: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, color: AppColors.darkText),
+      headlineLarge:  TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, color: AppColors.darkText),
       headlineMedium: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: AppColors.darkText),
-      titleLarge: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: AppColors.darkText),
-      bodyLarge: TextStyle(fontFamily: 'Cairo', color: AppColors.darkText),
-      bodyMedium: TextStyle(fontFamily: 'Cairo', color: AppColors.darkMuted),
+      titleLarge:     TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: AppColors.darkText),
+      bodyLarge:      TextStyle(fontFamily: 'Cairo', color: AppColors.darkText),
+      bodyMedium:     TextStyle(fontFamily: 'Cairo', color: AppColors.darkMuted),
     ),
-    dividerColor: AppColors.darkBorder,
   );
+
+  static ThemeData get light => ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+    fontFamily: 'Cairo',
+    scaffoldBackgroundColor: AppColors.lightBg,
+    colorScheme: const ColorScheme.light(
+      primary: AppColors.sunnahGreen,
+      secondary: AppColors.barakahGold,
+      surface: AppColors.lightCard,
+      onPrimary: Colors.white,
+      onSurface: AppColors.lightText,
+    ),
+    cardColor: AppColors.lightCard,
+    appBarTheme: const AppBarTheme(
+      backgroundColor: AppColors.lightBg,
+      foregroundColor: AppColors.lightText,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.sunnahGreen,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        textStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700),
+        elevation: 0,
+      ),
+    ),
+    cardTheme: CardTheme(
+      elevation: 0,
+      color: AppColors.lightCard,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: AppColors.lightBorder, width: 0.5),
+      ),
+    ),
+    dividerColor: AppColors.lightBorder,
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true, fillColor: AppColors.lightCard,
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: AppColors.lightBorder, width: 0.5)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: AppColors.lightBorder, width: 0.5)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: AppColors.sunnahGreen, width: 1.5)),
+      hintStyle: const TextStyle(fontFamily: 'Cairo', color: AppColors.lightMuted),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    ),
+    textTheme: const TextTheme(
+      headlineLarge:  TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, color: AppColors.lightText),
+      headlineMedium: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: AppColors.lightText),
+      titleLarge:     TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: AppColors.lightText),
+      bodyLarge:      TextStyle(fontFamily: 'Cairo', color: AppColors.lightText),
+      bodyMedium:     TextStyle(fontFamily: 'Cairo', color: AppColors.lightMuted),
+    ),
+  );
+
+  // Legacy compat
+  static ThemeData get lightTheme => light;
+  static ThemeData get darkTheme  => dark;
 }
 
-class AppCard extends StatelessWidget {
+// Reusable glass card
+class GlassCard extends StatelessWidget {
   final Widget child;
-  final EdgeInsets? padding;
-  final Color? color;
+  final EdgeInsets padding;
   final double radius;
+  final Color? borderColor;
   final VoidCallback? onTap;
-  final bool hasBorder;
-
-  const AppCard({
-    super.key, required this.child,
-    this.padding, this.color, this.radius = 14,
-    this.onTap, this.hasBorder = true,
-  });
+  const GlassCard({super.key, required this.child,
+    this.padding = const EdgeInsets.all(16), this.radius = 12,
+    this.borderColor, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final bg = color ?? (isDark ? AppColors.darkCard : Colors.white);
+    final bg     = isDark ? AppColors.darkCard : AppColors.lightCard;
+    final border = borderColor ?? (isDark ? AppColors.darkBorder2 : AppColors.lightBorder);
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: padding ?? const EdgeInsets.all(14),
+        padding: padding,
         decoration: BoxDecoration(
           color: bg,
           borderRadius: BorderRadius.circular(radius),
-          border: hasBorder ? Border.all(
-            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-            width: 0.5,
-          ) : null,
-          boxShadow: isDark ? null : [
-            BoxShadow(color: Colors.black.withOpacity(0.05),
-                blurRadius: 8, offset: const Offset(0, 2)),
-          ],
+          border: Border.all(color: border, width: 0.5),
         ),
         child: child,
       ),

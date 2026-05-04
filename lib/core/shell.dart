@@ -1,3 +1,4 @@
+// shell.dart — HalalCalorie — Premium animated shell
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,20 +14,29 @@ class AppShell extends ConsumerStatefulWidget {
 
 class _AppShellState extends ConsumerState<AppShell>
     with SingleTickerProviderStateMixin {
+  late AnimationController _slideIn;
 
-  late AnimationController _navAnim;
+  @override
+  void initState() {
+    super.initState();
+    _slideIn = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: 420));
+    _slideIn.forward();
+  }
+
+  @override void dispose() { _slideIn.dispose(); super.dispose(); }
 
   static const _tabs = [
-    _NavTab('/home',      '🏠', 'Home',      'الرئيسية'),
-    _NavTab('/nutrition', '🌿', 'Nutrition', 'تغذية'),
-    _NavTab('/fitness',   '🏃', 'Fitness',   'لياقة'),
-    _NavTab('/health',    '🩺', 'Health',    'صحة'),
-    _NavTab('/profile',   '👤', 'Profile',   'ملفي'),
+    _T('/home',      '⌂',  'Home',      'الرئيسية'),
+    _T('/nutrition', '◈',  'Nutrition', 'تغذية'),
+    _T('/fitness',   '◉',  'Fitness',   'لياقة'),
+    _T('/health',    '♡',  'Health',    'صحة'),
+    _T('/profile',   '◯',  'Profile',   'ملفي'),
   ];
 
   int _idx(String loc) {
-    if (loc.startsWith('/body'))    return 3;
-    if (loc.startsWith('/scanner')) return 0;
+    if (loc.startsWith('/body') || loc.startsWith('/health')) return 3;
+    if (loc.startsWith('/scanner')) return 1;
     for (int i = 0; i < _tabs.length; i++) {
       if (loc.startsWith(_tabs[i].path)) return i;
     }
@@ -34,39 +44,25 @@ class _AppShellState extends ConsumerState<AppShell>
   }
 
   @override
-  void initState() {
-    super.initState();
-    _navAnim = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 300));
-    _navAnim.forward();
-  }
-
-  @override
-  void dispose() { _navAnim.dispose(); super.dispose(); }
-
-  @override
   Widget build(BuildContext context) {
     final loc    = GoRouterState.of(context).matchedLocation;
     final idx    = _idx(loc);
     final isDark = ref.watch(themeProvider);
     final isAr   = ref.watch(languageProvider) == 'ar';
-    final water  = ref.watch(waterProvider);
-    final cals   = ref.watch(caloriesProvider);
 
     return Scaffold(
-      body: SlideTransition(
-        position: Tween<Offset>(
-          begin: const Offset(0, 0.02), end: Offset.zero,
-        ).animate(CurvedAnimation(parent: _navAnim, curve: Curves.easeOut)),
-        child: FadeTransition(opacity: _navAnim, child: widget.child),
+      body: FadeTransition(
+        opacity: CurvedAnimation(parent: _slideIn, curve: Curves.easeOut),
+        child: SlideTransition(
+          position: Tween<Offset>(
+            begin: const Offset(0, 0.015), end: Offset.zero,
+          ).animate(CurvedAnimation(parent: _slideIn, curve: Curves.easeOutCubic)),
+          child: widget.child,
+        ),
       ),
-      bottomNavigationBar: _AnimatedNavBar(
-        tabs: _tabs,
-        activeIdx: idx,
-        isDark: isDark,
-        isAr: isAr,
-        nutritionBadge: cals.entries.isEmpty,
-        healthBadge: water.cups == 0,
+      bottomNavigationBar: _PremiumNav(
+        tabs: _tabs, activeIdx: idx,
+        isDark: isDark, isAr: isAr,
         onTap: (path) {
           HapticFeedback.lightImpact();
           context.go(path);
@@ -76,132 +72,92 @@ class _AppShellState extends ConsumerState<AppShell>
   }
 }
 
-class _AnimatedNavBar extends StatefulWidget {
-  final List<_NavTab> tabs;
+class _PremiumNav extends StatefulWidget {
+  final List<_T> tabs;
   final int activeIdx;
-  final bool isDark, isAr, nutritionBadge, healthBadge;
+  final bool isDark, isAr;
   final void Function(String) onTap;
-  const _AnimatedNavBar({
-    required this.tabs, required this.activeIdx,
-    required this.isDark, required this.isAr,
-    required this.nutritionBadge, required this.healthBadge,
-    required this.onTap,
-  });
-  @override State<_AnimatedNavBar> createState() => _AnimatedNavBarState();
+  const _PremiumNav({required this.tabs, required this.activeIdx,
+    required this.isDark, required this.isAr, required this.onTap});
+  @override State<_PremiumNav> createState() => _PremiumNavState();
 }
 
-class _AnimatedNavBarState extends State<_AnimatedNavBar>
+class _PremiumNavState extends State<_PremiumNav>
     with SingleTickerProviderStateMixin {
-  late AnimationController _pillCtrl;
-  late Animation<double> _pillAnim;
-  int _prevIdx = 0;
+  late AnimationController _ctrl;
+  late Animation<double> _spring;
+  int _prev = 0;
 
   @override
   void initState() {
     super.initState();
-    _prevIdx = widget.activeIdx;
-    _pillCtrl = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 280));
-    _pillAnim = CurvedAnimation(parent: _pillCtrl, curve: Curves.easeOutBack);
-    _pillCtrl.forward();
+    _prev = widget.activeIdx;
+    _ctrl = AnimationController(
+      vsync: this, duration: const Duration(milliseconds: 350));
+    _spring = CurvedAnimation(parent: _ctrl, curve: Curves.easeOutBack);
+    _ctrl.forward();
   }
 
   @override
-  void didUpdateWidget(_AnimatedNavBar old) {
+  void didUpdateWidget(_PremiumNav old) {
     super.didUpdateWidget(old);
     if (old.activeIdx != widget.activeIdx) {
-      _prevIdx = old.activeIdx;
-      _pillCtrl.forward(from: 0);
+      _prev = old.activeIdx;
+      _ctrl.forward(from: 0);
     }
   }
 
-  @override void dispose() { _pillCtrl.dispose(); super.dispose(); }
+  @override void dispose() { _ctrl.dispose(); super.dispose(); }
 
   @override
   Widget build(BuildContext context) {
     final bg     = widget.isDark ? const Color(0xFF161B22) : Colors.white;
-    final border = widget.isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF);
+    final border = widget.isDark ? const Color(0xFF21262D) : const Color(0xFFD0D7DE);
 
     return Container(
       decoration: BoxDecoration(
         color: bg,
         border: Border(top: BorderSide(color: border, width: 0.5)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(widget.isDark ? 0.3 : 0.08),
-            blurRadius: 20, offset: const Offset(0, -4),
-          ),
-        ],
       ),
       child: SafeArea(
         top: false,
         child: SizedBox(
-          height: 62,
+          height: 58,
           child: Row(
             children: widget.tabs.asMap().entries.map((e) {
               final i      = e.key;
               final tab    = e.value;
               final active = i == widget.activeIdx;
-              final label  = widget.isAr ? tab.labelAr : tab.labelEn;
-              final showBadge =
-                (tab.path == '/nutrition' && widget.nutritionBadge) ||
-                (tab.path == '/health'    && widget.healthBadge);
-
               return Expanded(
                 child: GestureDetector(
                   onTap: () => widget.onTap(tab.path),
                   behavior: HitTestBehavior.opaque,
                   child: AnimatedBuilder(
-                    animation: _pillAnim,
+                    animation: _spring,
                     builder: (_, __) {
-                      final scale = active
-                        ? 0.9 + 0.1 * _pillAnim.value
-                        : 1.0;
+                      final scale = active ? (0.88 + 0.12 * _spring.value) : 1.0;
                       return Transform.scale(
                         scale: scale,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            // Pill container
+                            // Pill bg
                             AnimatedContainer(
-                              duration: const Duration(milliseconds: 250),
-                              curve: Curves.easeOutBack,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 14, vertical: 5),
+                              duration: const Duration(milliseconds: 280),
+                              curve: Curves.easeOutCubic,
+                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                               decoration: BoxDecoration(
                                 color: active
-                                  ? AppColors.halalGreen.withOpacity(0.15)
+                                  ? AppColors.sunnahGreen.withOpacity(0.15)
                                   : Colors.transparent,
-                                borderRadius: BorderRadius.circular(22),
+                                borderRadius: BorderRadius.circular(24),
                               ),
-                              child: Stack(
-                                clipBehavior: Clip.none,
-                                children: [
-                                  AnimatedDefaultTextStyle(
-                                    duration: const Duration(milliseconds: 200),
-                                    style: TextStyle(fontSize: active ? 22 : 19),
-                                    child: Text(tab.emoji),
-                                  ),
-                                  if (showBadge)
-                                    Positioned(
-                                      right: -4, top: -4,
-                                      child: TweenAnimationBuilder<double>(
-                                        tween: Tween(begin: 0, end: 1),
-                                        duration: const Duration(milliseconds: 400),
-                                        builder: (_, v, __) => Transform.scale(
-                                          scale: v,
-                                          child: Container(
-                                            width: 8, height: 8,
-                                            decoration: const BoxDecoration(
-                                              color: AppColors.haramRed,
-                                              shape: BoxShape.circle,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
+                              child: Text(tab.icon, style: TextStyle(
+                                fontSize: active ? 20 : 18,
+                                color: active
+                                  ? AppColors.halalGreen
+                                  : (widget.isDark ? AppColors.darkDimmed : AppColors.lightMuted),
+                              )),
                             ),
                             const SizedBox(height: 1),
                             // Label
@@ -210,26 +166,23 @@ class _AnimatedNavBarState extends State<_AnimatedNavBar>
                               style: TextStyle(
                                 fontFamily: 'Cairo',
                                 fontSize: 9,
-                                fontWeight: active
-                                    ? FontWeight.w800 : FontWeight.w400,
+                                fontWeight: active ? FontWeight.w800 : FontWeight.w400,
                                 color: active
-                                    ? AppColors.halalGreen
-                                    : (widget.isDark
-                                        ? const Color(0xFF7D8590)
-                                        : const Color(0xFF6B7A8D)),
+                                  ? AppColors.halalGreen
+                                  : (widget.isDark ? AppColors.darkDimmed : AppColors.lightMuted),
                               ),
-                              child: Text(label),
+                              child: Text(widget.isAr ? tab.ar : tab.en),
                             ),
-                            // Active dot
+                            // Active bar
                             AnimatedContainer(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeOutBack,
-                              margin: const EdgeInsets.only(top: 2),
-                              width: active ? 18 : 0,
-                              height: 3,
+                              margin: const EdgeInsets.only(top: 3),
+                              width: active ? 20 : 0,
+                              height: 2.5,
                               decoration: BoxDecoration(
                                 color: AppColors.halalGreen,
-                                borderRadius: BorderRadius.circular(3),
+                                borderRadius: BorderRadius.circular(2),
                               ),
                             ),
                           ],
@@ -247,7 +200,7 @@ class _AnimatedNavBarState extends State<_AnimatedNavBar>
   }
 }
 
-class _NavTab {
-  final String path, emoji, labelEn, labelAr;
-  const _NavTab(this.path, this.emoji, this.labelEn, this.labelAr);
+class _T {
+  final String path, icon, en, ar;
+  const _T(this.path, this.icon, this.en, this.ar);
 }

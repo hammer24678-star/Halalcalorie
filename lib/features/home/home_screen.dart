@@ -1,551 +1,1048 @@
-// ============================================================
-//  home_screen.dart — HalalCalorie v1.1 — Bilingual + Profile
-// ============================================================
+// home_screen.dart — HalalCalorie — Ultra-polished v4
+// Staggered entrance · Animated calorie ring · Live prayer · Glass cards
+import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
-import 'prayer_card.dart';
-import '../../core/health_service.dart';
-import '../../data/models/user_profile.dart';
 import '../../data/models/models.dart';
+import '../../data/models/user_profile.dart';
 
-class HomeScreen extends ConsumerWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends ConsumerStatefulWidget {
+const HomeScreen({super.key});
+@override ConsumerState<HomeScreen> createState() => _HomeState();
+}
 
-  // ── Prayer times (Cairo static) ─────────────────────────
-  static const _prayers = [
-    {'n': 'الفجر / Fajr',   'na': 'الفجر',   'ne': 'Fajr',   'h': 5,  'm': 12},
-    {'n': 'الظهر / Dhuhr',  'na': 'الظهر',   'ne': 'Dhuhr',  'h': 12, 'm': 18},
-    {'n': 'العصر / Asr',    'na': 'العصر',   'ne': 'Asr',    'h': 15, 'm': 42},
-    {'n': 'المغرب / Maghrib','na': 'المغرب', 'ne': 'Maghrib', 'h': 18, 'm': 5},
-    {'n': 'العشاء / Isha',  'na': 'العشاء',  'ne': 'Isha',   'h': 19, 'm': 28},
-  ];
+class _HomeState extends ConsumerState<HomeScreen>
+with TickerProviderStateMixin {
 
-  String _nextPrayer(bool isAr) {
-    final now = DateTime.now();
-    final cur = now.hour * 60 + now.minute;
-    for (final p in _prayers) {
-      final t = ((p['h'] as num?)?.toInt() ?? 0) * 60 + ((p['m'] as num?)?.toInt() ?? 0);
-      if (t > cur) {
-        final diff  = t - cur;
-        final name  = isAr ? (p['na'] as String? ?? '') : (p['ne'] as String? ?? '');
-        final timeStr = '${((p['h'] as num?)?.toInt() ?? 0).toString().padLeft(2,'0')}:${(p['m'] as int).toString().padLeft(2,'0')}';
-        if (diff >= 60) return '$name  $timeStr  (${diff ~/ 60}h ${diff % 60}m)';
-        return '$name  $timeStr  (${diff}min)';
-      }
-    }
-    return isAr ? 'الفجر غداً' : 'Fajr Tomorrow';
-  }
+// ── Stagger controller — drives ALL entrance animations ──
+late AnimationController _stagger;
 
+// ── Calorie ring fill ────────────────────────────────────
+late AnimationController _ringCtrl;
+late Animation<double> _ringVal;
+int _lastCals = 0;
 
-  // ── Daily Hadith (rotates by day-of-year) ───────────────
-  Map<String, String> _todayHadith() {
-    final dayIdx = DateTime.now().difference(DateTime(DateTime.now().year)).inDays;
-    return kDailyHadiths[dayIdx % kDailyHadiths.length];
-  }
+// ── Mosque pulse ─────────────────────────────────────────
+late AnimationController _mosqueCtrl;
+late Animation<double> _mosqueScale;
 
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final lang    = ref.watch(languageProvider);
-    final isAr    = lang == 'ar';
-    final isDark  = ref.watch(themeProvider);
-    final gender  = ref.watch(genderProvider);
-    final streak  = ref.watch(streakProvider);
-    final zakat   = ref.watch(zakatProvider);
-    final cals    = ref.watch(caloriesProvider);
-    final water   = ref.watch(waterProvider);
-    final sleep   = ref.watch(sleepProvider);
-    final profile    = ref.watch(userProfileProvider);
-    final isSis      = gender == 'sisters';
-    final isRamadan  = ref.watch(ramadanModeProvider);
-    final workoutMin = ref.watch(workoutMinutesProvider);
+// ── Hadith breathing dot ─────────────────────────────────
+late AnimationController _dotCtrl;
 
-    final muted   = isDark ? AppColors.darkMuted : AppColors.lightMuted;
-    final cardBg  = isDark ? AppColors.darkCard  : Colors.white;
-    final calCol  = cals.total > cals.goal
-        ? AppColors.haramRed
-        : cals.percent > 0.85 ? AppColors.doubtOrange : AppColors.halalGreen;
+// ── Clock ────────────────────────────────────────────────
+Timer? _clock;
+DateTime _now = DateTime.now();
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
-        elevation: 0,
-        title: Row(children: [
-          Container(
-            width: 30, height: 30,
-            decoration: BoxDecoration(
-              gradient: AppColors.gradientGreen,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [BoxShadow(color: AppColors.sunnahGreen.withOpacity(0.3), blurRadius: 8)],
-            ),
-            child: const Center(child: Text('🌿', style: TextStyle(fontSize: 14))),
-          ),
-          const SizedBox(width: 8),
-          RichText(text: TextSpan(
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w900),
-            children: [
-              TextSpan(text: 'Halal', style: TextStyle(color: isDark ? AppColors.darkText : AppColors.lightText)),
-              const TextSpan(text: 'Calorie', style: TextStyle(color: AppColors.halalGreen)),
-            ],
-          )),
-        ]),
-        actions: [
-          // Settings
-          IconButton(
-            icon: const Icon(Icons.settings_outlined, color: Colors.white, size: 20),
-            onPressed: () => context.push('/settings'),
-          ),
-          // Dark mode toggle
-          GestureDetector(
-            onTap: () => ref.read(themeProvider.notifier).toggle(),
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 12),
-              width: 42, height: 24,
-              decoration: BoxDecoration(
-                color: isDark ? AppColors.sunnahGreen : Colors.white.withOpacity(0.3),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: AnimatedAlign(
-                duration: const Duration(milliseconds: 250),
-                alignment: isDark ? Alignment.centerLeft : Alignment.centerRight,
-                child: Container(
-                  width: 18, height: 18,
-                  margin: const EdgeInsets.all(3),
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.white : AppColors.barakahGold,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(child: Text(isDark ? '🌙' : '☀️', style: const TextStyle(fontSize: 9))),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          // Language toggle
-          GestureDetector(
-            onTap: () => ref.read(languageProvider.notifier).set(isAr ? 'en' : 'ar'),
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(isAr ? 'EN' : 'ع',
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
-            ),
-          ),
-          const SizedBox(width: 8),
-          // Gender badge
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text(
-              isSis ? (isAr ? '🧕 للنساء' : '🧕 Sisters') : (isAr ? '🧔 للرجال' : '🧔 Brothers'),
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: Colors.white, fontWeight: FontWeight.w600)),
-          ),
-          const SizedBox(width: 10),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(14),
-        children: [
-          // ── Personalized greeting from profile ────────────
-          if (profile != null)
-            Container(
-              margin: const EdgeInsets.only(bottom: 13),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-              decoration: BoxDecoration(
-                color: (isSis ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(isDark ? 0.15 : 0.08),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: (isSis ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.2)),
-              ),
-              child: Text(isAr ? profile.greetingAr() : profile.greetingEn(),
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 13, color: isDark ? AppColors.darkText : AppColors.lightText)),
-            ),
+static const _prayers = [
+{'ar': 'الفجر', 'en': 'Fajr', 'h': 5, 'm': 12},
+{'ar': 'الظهر', 'en': 'Dhuhr', 'h': 12, 'm': 18},
+{'ar': 'العصر', 'en': 'Asr', 'h': 15, 'm': 42},
+{'ar': 'المغرب', 'en': 'Maghrib', 'h': 18, 'm': 5},
+{'ar': 'العشاء', 'en': 'Isha', 'h': 19, 'm': 28},
+ ];
 
-          // ── Prayer card ──────────────────────────────────
-          _prayerCard(isAr, isDark),
-          const SizedBox(height: 13),
+Map<String, dynamic> _next() {
+final cur = _now.hour * 60 + _now.minute;
+for (final p in _prayers) {
+if ((p['h'] as int) * 60 + (p['m'] as int) > cur) return p;
+}
+return _prayers[0];
+}
 
-          // ── Calorie card ─────────────────────────────────
-          GestureDetector(
-            onTap: () => context.go('/nutrition'),
-            child: _calorieCard(cals, calCol, muted, cardBg, isAr, profile),
-          ),
-          const SizedBox(height: 13),
+String _countdown() {
+final cur = _now.hour * 60 + _now.minute;
+for (final p in _prayers) {
+final t = (p['h'] as int) * 60 + (p['m'] as int);
+if (t > cur) {
+final d = t - cur;
+return d >= 60 ? ' {d % 60}د' : '$`{d}د';
+}
+}
+return '--';
+}
 
-          // ── Water + Sleep mini cards ──────────────────────
-          Row(children: [
-            Expanded(child: GestureDetector(
-              onTap: () => context.go('/health'),
-              child: _miniTrack('💧', isAr ? 'الماء' : 'Water',
-                  water.cups, water.goal, AppColors.waterBlue, cardBg),
-            )),
-            const SizedBox(width: 11),
-            Expanded(child: GestureDetector(
-              onTap: () => context.go('/health'),
-              child: _miniTrack('😴', isAr ? 'النوم' : 'Sleep',
-                  sleep.hours.toInt(), sleep.goal.toInt(), AppColors.sleepPurple, cardBg),
-            )),
-          ]),
-          const SizedBox(height: 13),
+String _fmtPrayerTime(int h, int m) {
+final hh = h > 12 ? h - 12 : h == 0 ? 12 : h;
+return '$hh:${m.toString().padLeft(2,'0')}';
+}
 
-          // ── Daily Hadith ─────────────────────────────────
-          _hadithCard(isAr, isDark, cardBg),
-          const SizedBox(height: 13),
+Map<String, String> get _hadith {
+final i = _now.difference(DateTime(_now.year)).inDays;
+return {
+'ar': kDailyHadiths[i % kDailyHadiths.length]['ar']!,
+'en': kDailyHadiths[i % kDailyHadiths.length]['en']!,
+};
+}
 
-          // ── Today's Progress Rings ────────────────────────
-          _todayRings(cals, water, sleep, workoutMin, isDark, cardBg, muted, isAr),
-          const SizedBox(height: 13),
+// Staggered fade+slide for each card
+Animation<double> _fade(int i) => CurvedAnimation(
+parent: _stagger,
+curve: Interval(i * 0.1, i * 0.1 + 0.55, curve: Curves.easeOut),
+);
+Animation<Offset> _slide(int i) => Tween<Offset>(
+begin: const Offset(0, 0.18), end: Offset.zero,
+).animate(CurvedAnimation(
+parent: _stagger,
+curve: Interval(i * 0.1, i * 0.1 + 0.55, curve: Curves.easeOutCubic),
+));
 
-          // ── Streak ───────────────────────────────────────
-          _streakCard(streak, isDark, cardBg, isAr),
-          const SizedBox(height: 13),
+Widget _anim(int i, Widget child) => FadeTransition(
+opacity: _fade(i),
+child: SlideTransition(position: _slide(i), child: child),
+);
 
-          // ── Body metrics quick peek ───────────────────────
-          if (profile != null) ...[
-            GestureDetector(
-              onTap: () => context.go('/body'),
-              child: _bodyMiniCard(profile, isDark, cardBg, isAr),
-            ),
-            const SizedBox(height: 13),
-          ],
+@override
+void initState() {
+super.initState();
 
-          // ── Quick actions ─────────────────────────────────
-          Text(isAr ? 'ابدأ الآن' : 'Start Now',
-            style: TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700,
-              color: isDark ? AppColors.darkText : AppColors.lightText)),
-          const SizedBox(height: 10),
-          _quickAction(context, '📸', isAr ? 'صوّر طعامك 🤖' : 'Photo Your Food 🤖', isAr ? 'AI يحلل السعرات والحلال فوراً' : 'AI calculates calories & halal status instantly', AppColors.sunnahGreen, '/food-photo', cardBg: cardBg, isDark: isDark),
-          _quickAction(context, '📷', isAr ? 'امسح باركود' : 'Scan Barcode', isAr ? 'تحقق من الحلال فوراً' : 'Check halal instantly', AppColors.halalGreen, '/scanner', cardBg: cardBg, isDark: isDark),
-          _quickAction(context, '🏃', isAr ? 'ابدأ تمرين سني' : 'Start Sunnah Workout', isAr ? 'مشي ولياقة بدون موسيقى' : 'Walking & fitness without music', AppColors.sunnahGreen, '/fitness', cardBg: cardBg, isDark: isDark),
-          _quickAction(context, '🌿', isAr ? 'وصفات سنية' : 'Sunnah Recipes', isAr ? 'تمر وعسل وزيت زيتون' : 'Dates, honey & olive oil', AppColors.barakahGold, '/nutrition', cardBg: cardBg, isDark: isDark),
-          _quickAction(context, '💪', isAr ? 'مقاييس جسمي' : 'Body Metrics', isAr ? 'BMI، دهون، عضلات، أيض' : 'BMI, fat%, muscle, metabolism', AppColors.sunnahGreen, '/body', cardBg: cardBg, isDark: isDark),
-          _quickAction(context, '🩺', isAr ? 'معلومات صحية' : 'Health Info', isAr ? 'مقالات وحاسبات صحية' : 'Articles & health calculators', const Color(0xFF009688), '/health', cardBg: cardBg, isDark: isDark),
+_stagger = AnimationController(
+vsync: this, duration: const Duration(milliseconds: 950));
 
-          // ── Zakat card ────────────────────────────────────
-          if (zakat > 50) ...[
-            const SizedBox(height: 13),
-            _zakatCard(zakat, isDark, cardBg, isAr),
-          ],
-          const SizedBox(height: 16),
-        ],
-      ),
-    );
-  }
+_ringCtrl = AnimationController(
+vsync: this, duration: const Duration(milliseconds: 900));
+_ringVal = CurvedAnimation(parent: _ringCtrl, curve: Curves.easeOutCubic);
 
+_mosqueCtrl = AnimationController(
+vsync: this, duration: const Duration(milliseconds: 2200))
+..repeat(reverse: true);
+_mosqueScale = Tween<double>(begin: 0.92, end: 1.0).animate(
+CurvedAnimation(parent: _mosqueCtrl, curve: Curves.easeInOut));
 
-  Widget _hadithCard(bool isAr, bool isDark, Color cardBg) {
-    final h = _todayHadith();
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isDark
-              ? [const Color(0xFF1A2A1A), const Color(0xFF0E1A0E)]
-              : [AppColors.sunnahGreen.withOpacity(0.06), AppColors.sunnahGreen.withOpacity(0.02)],
-          begin: Alignment.topRight, end: Alignment.bottomLeft,
-        ),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.sunnahGreen.withOpacity(0.25)),
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          const Text('📖', style: TextStyle(fontSize: 16)),
-          const SizedBox(width: 6),
-          Text(isAr ? 'حديث اليوم' : "Today's Hadith",
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
-                  fontWeight: FontWeight.w700, color: AppColors.sunnahGreen)),
-          const Spacer(),
-          Container(
-            width: 6, height: 6,
-            decoration: const BoxDecoration(
-                color: AppColors.sunnahGreen, shape: BoxShape.circle),
-          ),
-        ]),
-        const SizedBox(height: 10),
-        Text(isAr ? h['ar']! : h['en']!,
-            style: TextStyle(
-              fontFamily: 'Cairo', fontSize: isAr ? 13 : 12,
-              height: 1.7, fontStyle: FontStyle.italic,
-              color: isDark ? AppColors.darkText : AppColors.lightText,
-            ),
-            textDirection: isAr ? TextDirection.rtl : TextDirection.ltr),
-      ]),
-    );
-  }
+_dotCtrl = AnimationController(
+vsync: this, duration: const Duration(milliseconds: 1800))
+..repeat(reverse: true);
 
-  Widget _todayRings(
-    CaloriesState cals, WaterState water, SleepState sleep,
-    int workoutMin, bool isDark, Color cardBg, Color muted, bool isAr,
-  ) {
-    final pCals  = cals.percent.clamp(0.0, 1.0);
-    final pWater = water.percent.clamp(0.0, 1.0);
-    final pSleep = sleep.percent.clamp(0.0, 1.0);
-    final pWork  = workoutMin > 0 ? (workoutMin / 30).clamp(0.0, 1.0) : 0.0;
-    final score  = ((pCals + pWater + pSleep + pWork) / 4 * 100).round();
+_stagger.forward();
+_ringCtrl.forward();
 
-    Widget ring(double pct, Color color, String emoji, String label, String value) {
-      return Column(children: [
-        SizedBox(width: 62, height: 62, child: Stack(alignment: Alignment.center, children: [
-          SizedBox.expand(child: CircularProgressIndicator(
-            value: pct, strokeWidth: 7,
-            backgroundColor: color.withOpacity(0.12),
-            valueColor: AlwaysStoppedAnimation(pct >= 1.0 ? AppColors.halalGreen : color),
-            strokeCap: StrokeCap.round,
-          )),
-          Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Text(emoji, style: const TextStyle(fontSize: 16)),
-            if (pct >= 1.0)
-              const Icon(Icons.check, color: AppColors.halalGreen, size: 12),
-          ]),
-        ])),
-        const SizedBox(height: 5),
-        Text(value, style: TextStyle(
-            fontFamily: 'Cairo', fontSize: 11, fontWeight: FontWeight.w800, color: color)),
-        Text(label, style: TextStyle(fontFamily: 'Cairo', fontSize: 9, color: muted)),
-      ]);
-    }
+clock = Timer.periodic(const Duration(seconds: 30), () {
+if (mounted) setState(() => _now = DateTime.now());
+});
+}
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: cardBg, borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 12)],
-      ),
-      child: Column(children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(isAr ? '🎯 إنجازات اليوم' : '🎯 Today\'s Progress',
-              style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 14)),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              color: score >= 75 ? AppColors.halalGreen.withOpacity(0.12)
-                   : score >= 50 ? AppColors.doubtOrange.withOpacity(0.12)
-                   : Colors.grey.shade100,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Text('$score%', style: TextStyle(
-                fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.w900,
-                color: score >= 75 ? AppColors.halalGreen
-                     : score >= 50 ? AppColors.doubtOrange : muted)),
-          ),
-        ]),
-        const SizedBox(height: 16),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-          ring(pCals,  AppColors.haramRed,   '🔥', isAr ? 'سعرات' : 'Cals',
-              '${cals.total}/${cals.goal}'),
-          ring(pWater, AppColors.waterBlue,  '💧', isAr ? 'ماء' : 'Water',
-              '${water.cups}/${water.goal}'),
-          ring(pSleep, AppColors.sleepPurple,'😴', isAr ? 'نوم' : 'Sleep',
-              '${sleep.hours.toInt()}/${sleep.goal.toInt()}h'),
-          ring(pWork,  AppColors.sunnahGreen,'🏃', isAr ? 'تمرين' : 'Workout',
-              workoutMin > 0 ? '${workoutMin}m' : '—'),
-        ]),
-      ]),
-    );
-  }
+@override
+void dispose() {
+_stagger.dispose();
+_ringCtrl.dispose();
+_mosqueCtrl.dispose();
+_dotCtrl.dispose();
+_clock?.cancel();
+super.dispose();
+}
 
-  Widget _prayerCard(bool isAr, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: const LinearGradient(colors: [AppColors.sunnahGreen, AppColors.darkGreen]),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: AppColors.sunnahGreen.withOpacity(0.35), blurRadius: 16, offset: const Offset(0, 6))],
-      ),
-      child: Row(children: [
-        const Text('🕌', style: TextStyle(fontSize: 32)),
-        const SizedBox(width: 14),
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(isAr ? 'الصلاة القادمة' : 'Next Prayer',
-              style: TextStyle(fontFamily: 'Cairo', color: Colors.white.withOpacity(0.75), fontSize: 12)),
-          Text(_nextPrayer(isAr),
-              style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontSize: 16, fontWeight: FontWeight.w900)),
-        ]),
-      ]),
-    );
-  }
+@override
+Widget build(BuildContext context) {
+final isAr = ref.watch(languageProvider) == 'ar';
+final isDark = ref.watch(themeProvider);
+final cals = ref.watch(caloriesProvider);
+final water = ref.watch(waterProvider);
+final sleep = ref.watch(sleepProvider);
+final streak = ref.watch(streakProvider);
+final profile = ref.watch(userProfileProvider);
+final wMin = ref.watch(workoutMinutesProvider);
 
-  Widget _calorieCard(CaloriesState cals, Color calCol, Color muted, Color cardBg, bool isAr, UserProfile? profile) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 14, offset: const Offset(0, 3))]),
-      child: Column(children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Row(children: [
-            const Text('🔥', style: TextStyle(fontSize: 19)),
-            const SizedBox(width: 8),
-            Text(isAr ? 'سعرات اليوم' : "Today's Calories",
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w700)),
-          ]),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-            decoration: BoxDecoration(color: AppColors.sunnahGreen.withOpacity(0.12), borderRadius: BorderRadius.circular(20)),
-            child: Text(isAr ? '+ أضف' : '+ Add',
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, fontWeight: FontWeight.w700, color: AppColors.sunnahGreen)),
-          ),
-        ]),
-        const SizedBox(height: 9),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('${cals.total}',
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 26, fontWeight: FontWeight.w900, color: calCol)),
-          Text('${isAr ? "الهدف" : "Goal"}: ${cals.goal}',
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: muted)),
-        ]),
-        const SizedBox(height: 7),
-        LinearProgressIndicator(value: cals.percent.clamp(0.0, 1.0),
-            backgroundColor: Colors.grey.shade200,
-            valueColor: AlwaysStoppedAnimation(calCol),
-            borderRadius: BorderRadius.circular(8), minHeight: 8),
-        const SizedBox(height: 5),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text('${isAr ? "متبقي" : "Left"}: ${cals.remaining}',
-              style: TextStyle(fontSize: 10, color: muted, fontFamily: 'Cairo')),
-          if (profile != null)
-            Text('${isAr ? "BMR" : "BMR"}: ${profile.bmrKcal.toInt()}',
-                style: TextStyle(fontSize: 10, color: muted, fontFamily: 'Cairo')),
-        ]),
-      ]),
-    );
-  }
+// Animate ring when cals change
+if (cals.total != _lastCals) {
+_lastCals = cals.total;
+_ringCtrl.forward(from: 0.4);
+}
 
-  Widget _miniTrack(String emoji, String label, int val, int goal, Color color, Color cardBg) {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10)]),
-      child: Column(children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(emoji, style: const TextStyle(fontSize: 16)),
-          Text('$val/$goal', style: TextStyle(fontFamily: 'Cairo', fontSize: 11, fontWeight: FontWeight.w700, color: color)),
-        ]),
-        const SizedBox(height: 7),
-        Align(alignment: Alignment.centerRight, child: Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.w700))),
-        const SizedBox(height: 5),
-        LinearProgressIndicator(value: (val / (goal > 0 ? goal : 1)).clamp(0.0, 1.0),
-            backgroundColor: Colors.grey.shade200,
-            valueColor: AlwaysStoppedAnimation(color),
-            borderRadius: BorderRadius.circular(6), minHeight: 6),
-      ]),
-    );
-  }
+final bg = isDark ? AppColors.darkBg : AppColors.lightBg;
+final card = isDark ? AppColors.darkCard : AppColors.lightCard;
+final border = isDark ? AppColors.darkBorder2 : AppColors.lightBorder;
+final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
+final text = isDark ? AppColors.darkText : AppColors.lightText;
+String t(String ar, String en) => isAr ? ar : en;
 
-  Widget _streakCard(int streak, bool isDark, Color cardBg, bool isAr) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 14, offset: const Offset(0, 3))]),
-      child: Row(children: [
-        Text(streak >= 7 ? '🔥' : '⭐', style: const TextStyle(fontSize: 38)),
-        const SizedBox(width: 14),
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('$streak ${isAr ? "يوم متتالي" : "day streak"}',
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 19, fontWeight: FontWeight.w900)),
-          Text(streak >= 7
-            ? (isAr ? 'مبارك! الله يبارك فيك 🤲' : 'Blessed! May Allah reward you 🤲')
-            : (isAr ? 'استمر في السنة والحلال' : 'Keep up the Sunnah & halal'),
-            style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
-              color: isDark ? AppColors.darkMuted : AppColors.lightMuted)),
-        ]),
-      ]),
-    );
-  }
+final calCol = cals.total > cals.goal
+? AppColors.haramRed
+: cals.percent > 0.85
+? AppColors.doubtOrange
+: AppColors.halalGreen;
+final pct = cals.percent.clamp(0.0, 1.0);
+final next = _next();
 
-  Widget _bodyMiniCard(UserProfile p, bool isDark, Color cardBg, bool isAr) {
-    final bmiCol = p.bmi < 18.5 ? AppColors.waterBlue : p.bmi < 25 ? AppColors.halalGreen : p.bmi < 30 ? AppColors.doubtOrange : AppColors.haramRed;
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 14, offset: const Offset(0, 3))]),
-      child: Column(children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(isAr ? '💪 مقاييس جسمك' : '💪 Your Body Metrics',
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.w700)),
-          Text(isAr ? 'التفاصيل ←' : '→ Details',
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.sunnahGreen, fontWeight: FontWeight.w600)),
-        ]),
-        const SizedBox(height: 12),
-        Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-          _miniMetric('BMI', p.bmi.toStringAsFixed(1), bmiCol, isAr ? p.bmiCategoryAr : p.bmiCategoryEn),
-          _miniMetric(isAr ? 'BMR' : 'BMR', '${p.bmrKcal.toInt()}', AppColors.sunnahGreen, 'kcal'),
-          _miniMetric(isAr ? 'الهدف' : 'Goal', '${p.calorieGoalKcal.toInt()}', AppColors.haramRed, 'kcal'),
-          _miniMetric(isAr ? 'الماء' : 'Water', '${p.waterLiters}L', AppColors.waterBlue, isAr ? '/يوم' : '/day'),
-        ]),
-      ]),
-    );
-  }
+return Scaffold(
+backgroundColor: bg,
+body: CustomScrollView(
+physics: const BouncingScrollPhysics(
+parent: AlwaysScrollableScrollPhysics()),
+slivers: [// ── SLIM APP BAR ──────────────────────────────────
+SliverAppBar(
+backgroundColor: bg,
+surfaceTintColor: Colors.transparent,
+elevation: 0,
+pinned: false,
+floating: true,
+snap: true,
+toolbarHeight: 52,
+title: Row(children: [
+// Logo pill
+Container(
+padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+decoration: BoxDecoration(
+gradient: const LinearGradient(
+colors: [Color(0xFF238636), Color(0xFF3FB950)],
+begin: Alignment.topLeft, end: Alignment.bottomRight,
+),
+borderRadius: BorderRadius.circular(20),
+),
+child: Row(mainAxisSize: MainAxisSize.min, children: [
+const Text('🌿', style: TextStyle(fontSize: 12)),
+const SizedBox(width: 5),
+const Text('HalalCalorie', style: TextStyle(
+fontFamily: 'Cairo', fontSize: 13,
+fontWeight: FontWeight.w800, color: Colors.white,
+letterSpacing: 0.2,
+)),
+ ]),
+),
+]),
+actions: [
+_IconBtn(
+icon: isDark ? '☀' : '☾',
+isDark: isDark,
+onTap: () {
+HapticFeedback.lightImpact();
+ref.read(themeProvider.notifier).toggle();
+},
+),
+_IconBtn(
+icon: isAr ? 'EN' : 'ع',
+isDark: isDark,
+isText: true,
+onTap: () {
+HapticFeedback.lightImpact();
+ref.read(languageProvider.notifier).set(isAr ? 'en' : 'ar');
+},
+),
+_IconBtn(
+icon: '⚙',
+isDark: isDark,
+onTap: () => context.push('/settings'),
+),
+const SizedBox(width: 6),
+ ],
+),
 
-  Widget _miniMetric(String label, String value, Color color, String sub) {
-    return Column(children: [
-      Text(value, style: TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w900, color: color)),
-      Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 9, color: AppColors.lightMuted)),
-      Text(sub, style: TextStyle(fontFamily: 'Cairo', fontSize: 8, color: color.withOpacity(0.7))),
-    ]);
-  }
+SliverPadding(
+padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
+sliver: SliverList(delegate: SliverChildListDelegate([
 
-  Widget _quickAction(BuildContext ctx, String emoji, String title, String sub, Color color, String route, {Color? cardBg, bool isDark = false}) {
-    // Routes outside ShellRoute must be pushed
-    final needsPush = route.startsWith('/food-photo') || route.startsWith('/body-photo') || route.startsWith('/paywall');
-    return GestureDetector(
-      onTap: () => needsPush ? ctx.push(route) : ctx.go(route),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 9),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(color: cardBg, borderRadius: BorderRadius.circular(16),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.15 : 0.05), blurRadius: 8)]),
-        child: Row(children: [
-          Container(width: 44, height: 44,
-            decoration: BoxDecoration(color: color.withOpacity(0.12), borderRadius: BorderRadius.circular(12)),
-            child: Center(child: Text(emoji, style: const TextStyle(fontSize: 20)))),
-          const SizedBox(width: 12),
-          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text(title, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 13)),
-            Text(sub, style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.lightMuted)),
-          ])),
-          Icon(Icons.arrow_forward_ios, size: 14, color: isDark ? AppColors.darkMuted : AppColors.lightMuted),
-        ]),
-      ),
-    );
-  }
+// ── 1 PRAYER CARD ───────────────────────────
+_anim(0, _PrayerCard(
+next: next, countdown: _countdown(),
+prayers: _prayers,
+fmtTime: _fmtPrayerTime,
+now: _now,
+isAr: isAr, isDark: isDark,
+card: card, border: border, muted: muted,
+mosqueScale: _mosqueScale,
+)),
+const SizedBox(height: 12),
 
-  Widget _zakatCard(double zakat, bool isDark, Color cardBg, bool isAr) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      decoration: BoxDecoration(
-        color: AppColors.barakahGold.withOpacity(isDark ? 0.08 : 0.1),
-        border: Border.all(color: AppColors.barakahGold.withOpacity(0.35)),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          const Text('🤲', style: TextStyle(fontSize: 20)),
-          const SizedBox(width: 9),
-          Text(isAr ? 'زكاة مقترحة' : 'Suggested Zakat',
-              style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 14)),
-        ]),
-        const SizedBox(height: 8),
-        Text(
-          isAr
-            ? 'وفّرت ${zakat.toInt()} جنيه باختيار الحلال\nزكاتك: ${(zakat * 0.025).toStringAsFixed(1)} جنيه (٢.٥٪)'
-            : 'You saved ${zakat.toInt()} EGP choosing halal\nYour zakat: ${(zakat * 0.025).toStringAsFixed(1)} EGP (2.5%)',
-          style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.lightMuted, height: 1.6)),
-        const SizedBox(height: 11),
-        SizedBox(width: double.infinity, child: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(backgroundColor: AppColors.barakahGold),
-          child: Text(isAr ? 'تبرع الآن' : 'Donate Now',
-              style: const TextStyle(fontFamily: 'Cairo', color: Colors.white)),
-        )),
-      ]),
-    );
-  }
+// ── 2 CALORIE RING ──────────────────────────
+_anim(1, _CalRing(
+eaten: cals.total, goal: cals.goal,
+remaining: cals.remaining,
+pct: pct, calCol: calCol,
+proteinTotal: cals.proteinTotal,
+carbsTotal: cals.carbsTotal,
+fatTotal: cals.fatTotal,
+profile: profile,
+ringAnim: _ringVal,
+isAr: isAr, isDark: isDark,
+card: card, border: border, muted: muted, text: text,
+onAdd: () => context.push('/food-photo'),
+)),
+const SizedBox(height: 12),
+
+// ── 3 STATS ROW ─────────────────────────────
+_anim(2, _StatsRow(
+water: water, sleep: sleep,
+streak: streak, wMin: wMin,
+isAr: isAr, isDark: isDark,
+card: card, border: border, muted: muted,
+onWater: () {
+HapticFeedback.lightImpact();
+ref.read(waterProvider.notifier).add();
+},
+onSleep: () => context.go('/health'),
+onWorkout: () => context.go('/fitness'),
+)),
+const SizedBox(height: 12),
+
+// ── 4 HADITH ────────────────────────────────
+_anim(3, _HadithCard(
+hadith: _hadith, isAr: isAr, isDark: isDark,
+card: card, border: border, muted: muted, text: text,
+dotAnim: _dotCtrl,
+)),
+const SizedBox(height: 12),
+
+// ── 5 QUICK ACTIONS ─────────────────────────
+_anim(4, _QuickGrid(
+isAr: isAr, isDark: isDark,
+card: card, border: border, text: text, muted: muted,
+onTap: (r) {
+HapticFeedback.lightImpact();
+final needsPush = r == '/food-photo' || r == '/body-photo'
+|| r == '/paywall' || r == '/body';
+if (needsPush) context.push(r); else context.go(r);
+},
+)),
+
+])),
+),
+],
+),
+);
+}
+}
+
+// ════════════════════════════════════════════════════════════
+// PRAYER CARD
+// ════════════════════════════════════════════════════════════
+class _PrayerCard extends StatelessWidget {
+final Map next;
+final String countdown;
+final List prayers;
+final String Function(int, int) fmtTime;
+final DateTime now;
+final bool isAr, isDark;
+final Color card, border, muted;
+final Animation<double> mosqueScale;
+const _PrayerCard({
+required this.next, required this.countdown,
+required this.prayers, required this.fmtTime, required this.now,
+required this.isAr, required this.isDark,
+required this.card, required this.border, required this.muted,
+required this.mosqueScale,
+});
+
+bool _isPast(int h, int m) =>
+h * 60 + m < now.hour * 60 + now.minute;
+
+bool _isNext(int h, int m) {
+final cur = now.hour * 60 + now.minute;
+for (final p in prayers) {
+final t = (p['h'] as int) * 60 + (p['m'] as int);
+if (t > cur) return (p['h'] as int) == h && (p['m'] as int) == m;
+}
+return false;
+}
+
+@override
+Widget build(BuildContext context) {
+final h = next['h'] as int;
+final m = next['m'] as int;
+final nm = isAr ? next['ar'] as String : next['en'] as String;
+
+return Container(
+padding: const EdgeInsets.all(16),
+decoration: BoxDecoration(
+color: card,
+borderRadius: BorderRadius.circular(14),
+border: Border.all(color: border, width: 0.5),
+),
+child: Column(children: [
+Row(children: [
+// Pulsing mosque
+ScaleTransition(
+scale: mosqueScale,
+child: Container(
+width: 48, height: 48,
+decoration: BoxDecoration(
+gradient: const LinearGradient(
+colors: [Color(0xFF238636), Color(0xFF3FB950)],
+begin: Alignment.topLeft, end: Alignment.bottomRight,
+),
+borderRadius: BorderRadius.circular(12),
+boxShadow: [BoxShadow(
+color: AppColors.sunnahGreen.withOpacity(0.4),
+blurRadius: 12, spreadRadius: 0,
+)],
+),
+child: const Center(
+child: Text('🕌', style: TextStyle(fontSize: 22))),
+),
+),
+const SizedBox(width: 12),
+Expanded(child: Column(
+crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+Text(isAr ? 'الصلاة القادمة' : 'Next Prayer',
+style: TextStyle(fontFamily: 'Cairo',
+fontSize: 11, color: muted)),
+Text(nm, style: const TextStyle(
+fontFamily: 'Cairo', fontSize: 20,
+fontWeight: FontWeight.w900, color: AppColors.halalGreen,
+)),
+ ],
+)),
+// Countdown chip
+Container(
+padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
+decoration: BoxDecoration(
+color: AppColors.sunnahGreen.withOpacity(0.1),
+borderRadius: BorderRadius.circular(24),
+border: Border.all(
+color: AppColors.sunnahGreen.withOpacity(0.3), width: 0.5),
+),
+child: Text(countdown, style: const TextStyle(
+fontFamily: 'Cairo', fontSize: 14,
+fontWeight: FontWeight.w900, color: AppColors.halalGreen,
+)),
+),
+]),
+
+Padding(
+padding: const EdgeInsets.symmetric(vertical: 12),
+child: Divider(color: border, height: 0.5, thickness: 0.5),
+),
+
+// 5 prayer times
+Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+children: prayers.map((p) {
+final ph = p['h'] as int;
+final pm = p['m'] as int;
+final past = _isPast(ph, pm);
+final active = _isNext(ph, pm);
+final name = isAr ? p['ar'] as String : p['en'] as String;
+final col = active ? AppColors.halalGreen
+: past ? muted.withOpacity(0.35)
+: (isDark ? AppColors.darkText : AppColors.lightText);
+
+return Column(children: [
+Text(name, style: TextStyle(
+fontFamily: 'Cairo', fontSize: 9,
+fontWeight: active ? FontWeight.w800 : FontWeight.w400,
+color: col,
+)),
+const SizedBox(height: 3),
+Text(fmtTime(ph, pm), style: TextStyle(
+fontFamily: 'Cairo', fontSize: 11,
+fontWeight: active ? FontWeight.w900 : FontWeight.w400,
+color: col,
+)),
+const SizedBox(height: 4),
+AnimatedContainer(
+duration: const Duration(milliseconds: 300),
+width: active ? 16 : 3,
+height: 2.5,
+decoration: BoxDecoration(
+color: active ? AppColors.halalGreen : Colors.transparent,
+borderRadius: BorderRadius.circular(2),
+),
+),
+ ]);
+}).toList(),
+),
+]),
+);
+}
+}
+
+// ════════════════════════════════════════════════════════════
+// CALORIE RING
+// ════════════════════════════════════════════════════════════
+class _CalRing extends StatelessWidget {
+final int eaten, goal, remaining;
+final double pct, proteinTotal, carbsTotal, fatTotal;
+final Color calCol, card, border, muted, text;
+final bool isAr, isDark;
+final UserProfile? profile;
+final Animation<double> ringAnim;
+final VoidCallback onAdd;
+const _CalRing({
+required this.eaten, required this.goal, required this.remaining,
+required this.pct, required this.calCol,
+required this.proteinTotal, required this.carbsTotal,
+required this.fatTotal, required this.profile,
+required this.ringAnim, required this.isAr, required this.isDark,
+required this.card, required this.border, required this.muted,
+required this.text, required this.onAdd,
+});
+
+@override
+Widget build(BuildContext context) {
+String t(String ar, String en) => isAr ? ar : en;
+return Container(
+padding: const EdgeInsets.all(18),
+decoration: BoxDecoration(
+color: card,
+borderRadius: BorderRadius.circular(14),
+border: Border.all(color: border, width: 0.5),
+),
+child: Column(children: [
+// Header
+Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+Text(t('سعرات اليوم', "Today's Calories"),
+style: TextStyle(fontFamily: 'Cairo',
+fontSize: 13, fontWeight: FontWeight.w700, color: text)),
+GestureDetector(
+onTap: onAdd,
+child: Container(
+padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
+decoration: BoxDecoration(
+color: AppColors.sunnahGreen,
+borderRadius: BorderRadius.circular(20),
+),
+child: Row(mainAxisSize: MainAxisSize.min, children: [
+const Icon(Icons.add_rounded, color: Colors.white, size: 13),
+const SizedBox(width: 3),
+Text(t('أضف', 'Add'), style: const TextStyle(
+fontFamily: 'Cairo', fontSize: 11,
+fontWeight: FontWeight.w800, color: Colors.white,
+)),
+ ]),
+),
+),
+]),
+const SizedBox(height: 18),
+
+Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+// ── Animated ring ──
+AnimatedBuilder(
+animation: ringAnim,
+builder: (_, __) => CustomPaint(
+size: const Size(120, 120),
+painter: _RingPainter(
+pct: pct * ringAnim.value,
+color: calCol,
+isDark: isDark,
+),
+child: SizedBox(
+width: 120, height: 120,
+child: Column(
+mainAxisAlignment: MainAxisAlignment.center,
+children: [
+TweenAnimationBuilder<int>(
+tween: IntTween(begin: 0, end: eaten),
+duration: const Duration(milliseconds: 800),
+curve: Curves.easeOutCubic,
+builder: (_, v, __) => Text('`$v',
+style: TextStyle(
+fontFamily: 'Cairo', fontSize: 26,
+fontWeight: FontWeight.w900, color: calCol, height: 1,
+)),
+),
+Text(t('مأكول', 'eaten'), style: TextStyle(
+fontFamily: 'Cairo', fontSize: 9, color: muted)),
+ ],
+),
+),
+),
+),
+
+const SizedBox(width: 20),
+
+// ── Right column ──
+Expanded(child: Column(
+crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+_KvRow(t('الهدف','Goal'), ' remaining', calCol, muted),
+const SizedBox(height: 14),
+// Macro bars
+_MacroBar(t('P','P'), proteinTotal,
+profile?.proteinGrams ?? 50, AppColors.halalGreen),
+const SizedBox(height: 5),
+_MacroBar(t('C','C'), carbsTotal,
+(profile?.calorieGoalKcal ?? 2000) / 4, AppColors.waterBlue),
+const SizedBox(height: 5),
+_MacroBar(t('F','F'), fatTotal,
+(profile?.calorieGoalKcal ?? 2000) / 9 * 0.3, AppColors.barakahGold),
+ ],
+)),
+]),
+]),
+);
+}
+}
+
+class _KvRow extends StatelessWidget {
+final String label, value;
+final Color valueColor, muted;
+const _KvRow(this.label, this.value, this.valueColor, this.muted);
+@override
+Widget build(BuildContext context) => Row(
+mainAxisAlignment: MainAxisAlignment.spaceBetween,
+children: [
+Text(label, style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: muted)),
+Text(value, style: TextStyle(
+fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w900, color: valueColor)),
+ ],
+);
+}
+
+class _MacroBar extends StatelessWidget {
+final String label;
+final double val, max;
+final Color color;
+const _MacroBar(this.label, this.val, this.max, this.color);
+@override
+Widget build(BuildContext context) => Row(children: [
+SizedBox(width: 14, child: Text(label, style: TextStyle(
+fontFamily: 'Cairo', fontSize: 9, fontWeight: FontWeight.w800, color: color))),
+const SizedBox(width: 6),
+Expanded(child: ClipRRect(
+borderRadius: BorderRadius.circular(3),
+child: LinearProgressIndicator(
+value: max > 0 ? (val / max).clamp(0.0, 1.0) : 0,
+minHeight: 4,
+color: color,
+backgroundColor: color.withOpacity(0.1),
+),
+)),
+const SizedBox(width: 6),
+Text('$`{val.toInt()}g', style: TextStyle(
+fontFamily: 'Cairo', fontSize: 9, color: color, fontWeight: FontWeight.w700)),
+ ]);
+}
+
+// Custom ring painter with glow
+class _RingPainter extends CustomPainter {
+final double pct;
+final Color color;
+final bool isDark;
+const _RingPainter({required this.pct, required this.color, required this.isDark});
+
+@override
+void paint(Canvas canvas, Size size) {
+final cx = size.width / 2;
+final cy = size.height / 2;
+final r = size.width / 2 - 10;
+const sw = 9.0;
+
+// Track
+final trackPaint = Paint()
+..color = isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF)
+..strokeWidth = sw
+..style = PaintingStyle.stroke
+..strokeCap = StrokeCap.round;
+canvas.drawCircle(Offset(cx, cy), r, trackPaint);
+
+if (pct <= 0) return;
+
+// Glow
+final glowPaint = Paint()
+..color = color.withOpacity(0.25)
+..strokeWidth = sw + 6
+..style = PaintingStyle.stroke
+..strokeCap = StrokeCap.round
+..maskFilter = const MaskFilter.blur(BlurStyle.normal, 6);
+canvas.drawArc(
+Rect.fromCircle(center: Offset(cx, cy), radius: r),
+-pi / 2, 2 * pi * pct, false, glowPaint,
+);
+
+// Main arc
+final arcPaint = Paint()
+..shader = SweepGradient(
+startAngle: -pi / 2,
+endAngle: -pi / 2 + 2 * pi * pct,
+colors: [color.withOpacity(0.7), color],
+).createShader(Rect.fromCircle(center: Offset(cx, cy), radius: r))
+..strokeWidth = sw
+..style = PaintingStyle.stroke
+..strokeCap = StrokeCap.round;
+canvas.drawArc(
+Rect.fromCircle(center: Offset(cx, cy), radius: r),
+-pi / 2, 2 * pi * pct, false, arcPaint,
+);
+
+// End dot
+if (pct > 0.02) {
+final angle = -pi / 2 + 2 * pi * pct;
+final dotX = cx + r * cos(angle);
+final dotY = cy + r * sin(angle);
+canvas.drawCircle(Offset(dotX, dotY), 5,
+Paint()..color = color);
+}
+}
+
+@override bool shouldRepaint(_RingPainter old) =>
+old.pct != pct || old.color != color;
+}
+
+// ════════════════════════════════════════════════════════════
+// STATS ROW
+// ════════════════════════════════════════════════════════════
+class _StatsRow extends StatelessWidget {
+final WaterState water;
+final SleepState sleep;
+final int streak, wMin;
+final bool isAr, isDark;
+final Color card, border, muted;
+final VoidCallback onWater, onSleep, onWorkout;
+const _StatsRow({
+required this.water, required this.sleep,
+required this.streak, required this.wMin,
+required this.isAr, required this.isDark,
+required this.card, required this.border, required this.muted,
+required this.onWater, required this.onSleep, required this.onWorkout,
+});
+
+@override
+Widget build(BuildContext context) => Row(children: [
+_Stat(
+emoji: '💧',
+value: '${water.cups}', total: '/${water.goal}',
+label: isAr ? 'ماء' : 'Water',
+color: AppColors.waterBlue,
+pct: water.percent,
+isDark: isDark, card: card, border: border, muted: muted,
+onTap: onWater,
+),
+const SizedBox(width: 10),
+_Stat(
+emoji: '😴',
+value: '${sleep.hours.toInt()}', total: '/${sleep.goal.toInt()}h',
+label: isAr ? 'نوم' : 'Sleep',
+color: AppColors.sleepPurple,
+pct: sleep.percent,
+isDark: isDark, card: card, border: border, muted: muted,
+onTap: onSleep,
+),
+const SizedBox(width: 10),
+_Stat(
+emoji: '🔥',
+value: '`$streak',
+total: isAr ? ' يوم' : 'd',
+label: isAr ? 'تتابع' : 'Streak',
+color: AppColors.haramRed,
+pct: (streak / 30).clamp(0.0, 1.0),
+isDark: isDark, card: card, border: border, muted: muted,
+onTap: () {},
+),
+const SizedBox(width: 10),
+_Stat(
+emoji: '🏃',
+value: wMin > 0 ? '$wMin' : '0',
+total: isAr ? 'د' : 'm',
+label: isAr ? 'تمرين' : 'Workout',
+color: AppColors.halalGreen,
+pct: (wMin / 30).clamp(0.0, 1.0),
+isDark: isDark, card: card, border: border, muted: muted,
+onTap: onWorkout,
+),
+ ]);
+}
+
+class _Stat extends StatefulWidget {
+final String emoji, value, total, label;
+final Color color, card, border, muted;
+final double pct;
+final bool isDark;
+final VoidCallback onTap;
+const _Stat({
+required this.emoji, required this.value, required this.total,
+required this.label, required this.color, required this.pct,
+required this.isDark, required this.card, required this.border,
+required this.muted, required this.onTap,
+});
+@override State<_Stat> createState() => _StatState();
+}
+
+class _StatState extends State<_Stat> with SingleTickerProviderStateMixin {
+late AnimationController _press;
+@override
+void initState() {
+super.initState();
+_press = AnimationController(vsync: this,
+duration: const Duration(milliseconds: 110),
+lowerBound: 0.93, upperBound: 1.0, value: 1.0);
+}
+@override void dispose() { _press.dispose(); super.dispose(); }
+
+@override
+Widget build(BuildContext context) {
+return Expanded(child: GestureDetector(
+onTapDown: (_) => press.reverse(),
+onTapUp: () { _press.forward(); widget.onTap(); },
+onTapCancel: () => _press.forward(),
+child: AnimatedBuilder(
+animation: press,
+builder: (, child) => Transform.scale(scale: _press.value, child: child),
+child: Container(
+padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
+decoration: BoxDecoration(
+color: widget.card,
+borderRadius: BorderRadius.circular(12),
+border: Border.all(color: widget.border, width: 0.5),
+),
+child: Column(children: [
+Text(widget.emoji, style: const TextStyle(fontSize: 18)),
+const SizedBox(height: 5),
+RichText(text: TextSpan(children: [
+TextSpan(text: widget.value, style: TextStyle(
+fontFamily: 'Cairo', fontSize: 15,
+fontWeight: FontWeight.w900, color: widget.color,
+)),
+TextSpan(text: widget.total, style: TextStyle(
+fontFamily: 'Cairo', fontSize: 10, color: widget.muted,
+)),
+ ])),
+const SizedBox(height: 4),
+ClipRRect(
+borderRadius: BorderRadius.circular(3),
+child: LinearProgressIndicator(
+value: widget.pct, minHeight: 3,
+color: widget.color,
+backgroundColor: widget.color.withOpacity(0.1),
+),
+),
+const SizedBox(height: 4),
+Text(widget.label, style: TextStyle(
+fontFamily: 'Cairo', fontSize: 9, color: widget.muted)),
+]),
+),
+),
+));
+}
+}
+
+// ════════════════════════════════════════════════════════════
+// HADITH CARD
+// ════════════════════════════════════════════════════════════
+class _HadithCard extends StatelessWidget {
+final Map<String, String> hadith;
+final bool isAr, isDark;
+final Color card, border, muted, text;
+final AnimationController dotAnim;
+const _HadithCard({
+required this.hadith, required this.isAr, required this.isDark,
+required this.card, required this.border, required this.muted,
+required this.text, required this.dotAnim,
+});
+
+@override
+Widget build(BuildContext context) {
+return Container(
+padding: const EdgeInsets.all(16),
+decoration: BoxDecoration(
+color: card,
+borderRadius: BorderRadius.circular(14),
+border: Border.all(color: border, width: 0.5),
+),
+child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+// Green left bar
+Container(
+width: 3, height: 56,
+margin: const EdgeInsets.only(top: 2),
+decoration: BoxDecoration(
+gradient: const LinearGradient(
+colors: [AppColors.sunnahGreen, AppColors.barakahGold],
+begin: Alignment.topCenter, end: Alignment.bottomCenter,
+),
+borderRadius: BorderRadius.circular(3),
+),
+),
+const SizedBox(width: 12),
+Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+children: [
+Row(children: [
+Text(isAr ? '📖 حديث اليوم' : '📖 Today's Hadith',
+style: const TextStyle(fontFamily: 'Cairo',
+fontSize: 10, fontWeight: FontWeight.w700,
+color: AppColors.sunnahGreen)),
+const Spacer(),
+// Breathing dot
+AnimatedBuilder(
+animation: dotAnim,
+builder: (_, __) {
+final v = (dotAnim.value + 1) / 2;
+return Container(
+width: 6, height: 6,
+decoration: BoxDecoration(
+color: AppColors.sunnahGreen.withOpacity(0.4 + 0.6 * v),
+shape: BoxShape.circle,
+boxShadow: [BoxShadow(
+color: AppColors.sunnahGreen.withOpacity(0.3 * v),
+blurRadius: 6,
+)],
+),
+);
+},
+),
+]),
+const SizedBox(height: 7),
+Text(
+isAr ? hadith['ar']! : hadith['en']!,
+style: TextStyle(
+fontFamily: 'Cairo',
+fontSize: isAr ? 13 : 12,
+height: 1.65, fontStyle: FontStyle.italic,
+color: text,
+),
+),
+],
+)),
+]),
+);
+}
+}
+
+// ════════════════════════════════════════════════════════════
+// QUICK GRID
+// ════════════════════════════════════════════════════════════
+class _QuickGrid extends StatelessWidget {
+final bool isAr, isDark;
+final Color card, border, text, muted;
+final void Function(String) onTap;
+const _QuickGrid({
+required this.isAr, required this.isDark,
+required this.card, required this.border,
+required this.text, required this.muted, required this.onTap,
+});
+
+@override
+Widget build(BuildContext context) {
+final items = [
+_Q('📸', isAr ? 'صوّر طعامك' : 'Photo Food',
+isAr ? 'AI يحلل فوراً' : 'AI instant', '/food-photo',
+const Color(0xFF238636)),
+_Q('📷', isAr ? 'باركود' : 'Barcode',
+isAr ? 'فحص الحلال' : 'Halal check', '/scanner',
+const Color(0xFF1F6FEB)),
+_Q('🏃', isAr ? 'تمارين' : 'Workouts',
+isAr ? '١٨٠ خطة' : '180 plans', '/fitness',
+const Color(0xFF8957E5)),
+_Q('💪', isAr ? 'مقاييس' : 'Body',
+isAr ? 'BMI وأكثر' : 'BMI & more', '/body',
+const Color(0xFFBF8700)),
+ ];
+
+return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+Text(isAr ? 'ابدأ الآن' : 'Quick Actions',
+style: TextStyle(fontFamily: 'Cairo',
+fontSize: 13, fontWeight: FontWeight.w700, color: muted)),
+const SizedBox(height: 10),
+Row(children: items.map((item) => Expanded(
+child: Padding(
+padding: EdgeInsets.only(
+right: item == items.last ? 0 : 8),
+child: _QTile(
+item: item, isDark: isDark,
+card: card, border: border, text: text,
+onTap: () => onTap(item.route),
+),
+),
+)).toList()),
+ ]);
+}
+}
+
+class _Q {
+final String emoji, title, sub, route;
+final Color color;
+const _Q(this.emoji, this.title, this.sub, this.route, this.color);
+}
+
+class _QTile extends StatefulWidget {
+final _Q item;
+final bool isDark;
+final Color card, border, text;
+final VoidCallback onTap;
+const _QTile({required this.item, required this.isDark,
+required this.card, required this.border,
+required this.text, required this.onTap});
+@override State<_QTile> createState() => _QTileState();
+}
+
+class _QTileState extends State<_QTile> with SingleTickerProviderStateMixin {
+late AnimationController _c;
+@override void initState() {
+super.initState();
+_c = AnimationController(vsync: this,
+duration: const Duration(milliseconds: 100),
+lowerBound: 0.92, upperBound: 1.0, value: 1.0);
+}
+@override void dispose() { _c.dispose(); super.dispose(); }
+
+@override
+Widget build(BuildContext context) {
+final item = widget.item;
+return GestureDetector(
+onTapDown: (_) => c.reverse(),
+onTapUp: () { _c.forward(); widget.onTap(); },
+onTapCancel: () => _c.forward(),
+child: AnimatedBuilder(
+animation: c,
+builder: (, child) => Transform.scale(scale: _c.value, child: child),
+child: Container(
+padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
+decoration: BoxDecoration(
+color: widget.card,
+borderRadius: BorderRadius.circular(12),
+border: Border.all(color: widget.border, width: 0.5),
+),
+child: Column(children: [
+Container(
+width: 36, height: 36,
+decoration: BoxDecoration(
+color: item.color.withOpacity(0.12),
+borderRadius: BorderRadius.circular(9),
+),
+child: Center(child: Text(item.emoji,
+style: const TextStyle(fontSize: 17))),
+),
+const SizedBox(height: 7),
+Text(item.title, style: TextStyle(
+fontFamily: 'Cairo', fontSize: 11,
+fontWeight: FontWeight.w700, color: widget.text),
+textAlign: TextAlign.center,
+maxLines: 1, overflow: TextOverflow.ellipsis),
+const SizedBox(height: 2),
+Text(item.sub, style: TextStyle(
+fontFamily: 'Cairo', fontSize: 9,
+color: item.color),
+textAlign: TextAlign.center,
+maxLines: 1),
+ ]),
+),
+),
+);
+}
+}
+
+// ════════════════════════════════════════════════════════════
+// ICON BUTTON
+// ════════════════════════════════════════════════════════════
+class _IconBtn extends StatelessWidget {
+final String icon;
+final bool isDark;
+final bool isText;
+final VoidCallback onTap;
+const _IconBtn({required this.icon, required this.isDark,
+this.isText = false, required this.onTap});
+
+@override
+Widget build(BuildContext context) {
+return GestureDetector(
+onTap: onTap,
+child: Container(
+margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 3),
+width: 34, height: 34,
+decoration: BoxDecoration(
+color: isDark ? const Color(0xFF21262D) : const Color(0xFFF6F8FA),
+borderRadius: BorderRadius.circular(8),
+border: Border.all(
+color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
+width: 0.5),
+),
+child: Center(child: Text(icon, style: TextStyle(
+fontFamily: isText ? 'Cairo' : null,
+fontSize: isText ? 11 : 15,
+fontWeight: isText ? FontWeight.w800 : null,
+color: isDark ? AppColors.darkText : AppColors.lightText,
+))),
+),
+);
+}
 }
