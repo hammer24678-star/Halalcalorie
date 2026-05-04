@@ -763,12 +763,12 @@ lowerBound: 0.93, upperBound: 1.0, value: 1.0);
 @override
 Widget build(BuildContext context) {
 return Expanded(child: GestureDetector(
-onTapDown: (_) => press.reverse(),
-onTapUp: () { _press.forward(); widget.onTap(); },
+onTapDown: (_) => _press.reverse(),
+onTapUp: (_) { _press.forward(); widget.onTap(); },
 onTapCancel: () => _press.forward(),
 child: AnimatedBuilder(
-animation: press,
-builder: (, child) => Transform.scale(scale: _press.value, child: child),
+animation: _press,
+builder: (_, child) => Transform.scale(scale: _press.value, child: child),
 child: Container(
 padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
 decoration: BoxDecoration(
@@ -847,7 +847,7 @@ const SizedBox(width: 12),
 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
 children: [
 Row(children: [
-Text(isAr ? '📖 حديث اليوم' : '📖 Today's Hadith',
+Text(isAr ? '📖 حديث اليوم' : "📖 Today's Hadith",
 style: const TextStyle(fontFamily: 'Cairo',
 fontSize: 10, fontWeight: FontWeight.w700,
 color: AppColors.sunnahGreen)),
@@ -969,12 +969,12 @@ lowerBound: 0.92, upperBound: 1.0, value: 1.0);
 Widget build(BuildContext context) {
 final item = widget.item;
 return GestureDetector(
-onTapDown: (_) => c.reverse(),
-onTapUp: () { _c.forward(); widget.onTap(); },
+onTapDown: (_) => _c.reverse(),
+onTapUp: (_) { _c.forward(); widget.onTap(); },
 onTapCancel: () => _c.forward(),
 child: AnimatedBuilder(
-animation: c,
-builder: (, child) => Transform.scale(scale: _c.value, child: child),
+animation: _c,
+builder: (_, child) => Transform.scale(scale: _c.value, child: child),
 child: Container(
 padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
 decoration: BoxDecoration(
