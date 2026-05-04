@@ -60,7 +60,7 @@ for (final p in _prayers) {
 final t = (p['h'] as int) * 60 + (p['m'] as int);
 if (t > cur) {
 final d = t - cur;
-return d >= 60 ? ' {d % 60}د' : '$`{d}د';
+return d >= 60 ? '${d ~/ 60}س ${d % 60}د' : '${d}د';
 }
 }
 return '--';
@@ -120,7 +120,7 @@ vsync: this, duration: const Duration(milliseconds: 1800))
 _stagger.forward();
 _ringCtrl.forward();
 
-clock = Timer.periodic(const Duration(seconds: 30), () {
+_clock = Timer.periodic(const Duration(seconds: 30), (_) {
 if (mounted) setState(() => _now = DateTime.now());
 });
 }
