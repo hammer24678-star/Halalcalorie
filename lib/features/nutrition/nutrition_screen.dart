@@ -785,26 +785,42 @@ class _NutritionState extends ConsumerState<NutritionScreen>
       double target, Color color) {
     final pct = target > 0
         ? (current / target).clamp(0.0, 1.0) : 0.0;
-    return Row(children: [
-      SizedBox(width: 90,
-          child: Text(label, style: TextStyle(fontFamily: 'Cairo',
-              fontSize: 11,
-              color: AppColors.lightMuted))),
-      Expanded(child: ClipRRect(
-        borderRadius: BorderRadius.circular(6),
-        child: LinearProgressIndicator(
-          value: pct, minHeight: 8,
-          color: color,
-          backgroundColor: color.withOpacity(0.1),
+    final pctInt = (pct * 100).toInt();
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Text(label, style: TextStyle(fontFamily: 'Cairo',
+            fontSize: 12, fontWeight: FontWeight.w600, color: color)),
+        Text('${current.toInt()}g / ${target.toInt()}g  •  $pctInt%',
+            style: TextStyle(fontFamily: 'Cairo',
+                fontSize: 10, color: color.withOpacity(0.75))),
+      ]),
+      const SizedBox(height: 5),
+      Stack(children: [
+        Container(
+          height: 10,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.12),
+            borderRadius: BorderRadius.circular(8),
+          ),
         ),
-      )),
-      const SizedBox(width: 8),
-      SizedBox(width: 42,
-          child: Text('${current.toInt()}g',
-              style: TextStyle(fontFamily: 'Cairo',
-                  fontSize: 11, fontWeight: FontWeight.w700,
-                  color: color),
-              textAlign: TextAlign.end)),
+        LayoutBuilder(builder: (_, constraints) => AnimatedContainer(
+          duration: const Duration(milliseconds: 600),
+          curve: Curves.easeOut,
+          height: 10,
+          width: constraints.maxWidth * pct,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [color.withOpacity(0.7), color],
+              begin: Alignment.centerLeft, end: Alignment.centerRight,
+            ),
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [BoxShadow(
+              color: color.withOpacity(0.3),
+              blurRadius: 4, offset: const Offset(0, 1),
+            )],
+          ),
+        )),
+      ]),
     ]);
   }
 
