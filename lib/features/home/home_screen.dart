@@ -600,7 +600,7 @@ backgroundColor: color.withOpacity(0.1),
 ),
 )),
 const SizedBox(width: 6),
-Text('$`{val.toInt()}g', style: TextStyle(
+Text('${val.toInt()}g', style: TextStyle(
 fontFamily: 'Cairo', fontSize: 9, color: color, fontWeight: FontWeight.w700)),
  ]);
 }
