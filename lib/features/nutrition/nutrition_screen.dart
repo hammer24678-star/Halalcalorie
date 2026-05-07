@@ -120,7 +120,6 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   borderRadius: BorderRadius.circular(12)),
               duration: const Duration(seconds: 2),
             ));
-          }
         },
       ),
     );
