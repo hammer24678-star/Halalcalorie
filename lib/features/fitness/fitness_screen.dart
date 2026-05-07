@@ -161,7 +161,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                   const Icon(Icons.play_circle_filled, color: Colors.white, size: 32),
                 ]),
               ),
-            );
+            ));
           }),
           const SizedBox(height: 6),
 

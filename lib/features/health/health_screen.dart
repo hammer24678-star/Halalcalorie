@@ -197,20 +197,23 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           BoxShadow(color: scoreColor().withOpacity(0.08), blurRadius: 16, spreadRadius: 2),
         ],
       ),
+
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        // Gradient accent strip at top
-        Container(
-          height: 4,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(colors: [scoreColor(), scoreColor().withOpacity(0.3)]),
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        // Accent strip
+        ClipRRect(
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          child: Container(
+            height: 4,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [scoreColor(), scoreColor().withOpacity(0.3)]),
+            ),
           ),
         ),
+        const SizedBox(height: 16),
         Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(children: [
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
               children: [
             Text(isAr ? 'نقاط صحتك اليوم' : 'Your Daily Health Score',
@@ -234,14 +237,13 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                   style: TextStyle(fontFamily: 'Cairo', fontSize: 22,
                       fontWeight: FontWeight.w900, color: scoreColor())),
             ])),
-        ]),
+          ]),
+        ),
         const SizedBox(height: 14),
         scoreBar(isAr ? 'الماء' : 'Water', wScore, 25, AppColors.waterBlue),
         scoreBar(isAr ? 'النوم' : 'Sleep', slScore, 25, AppColors.sleepPurple),
         scoreBar(isAr ? 'الخطوات' : 'Steps', stScore, 25, AppColors.halalGreen),
         scoreBar(isAr ? 'المزاج' : 'Mood', mScore, 25, AppColors.barakahGold),
-          ]),
-        ),
       ]),
     );
   }
