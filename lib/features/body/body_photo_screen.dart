@@ -384,7 +384,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
   }
 
   Widget _resultCard(BodyPhotoResult r, bool isAr, bool isDark, Color bg, Color muted, UserProfile? profile) {
-    final confPct  = (r.bodyFatPercent * 100).toInt();
+    final confPct  = (r.confidence * 100).clamp(0, 100).toInt();
     final recs     = isAr ? r.recommendationsAr : r.recommendations;
     final postureN = isAr ? r.rawAnalysisAr : r.rawAnalysis;
     final btype    = isAr ? r.bodyType : r.bodyType;

@@ -129,7 +129,7 @@ Rules:
         proteinG: _safeDouble(json['proteinG']),
         carbsG: _safeDouble(json['carbsG']),
         fatG: _safeDouble(json['fatG']),
-        halalStatus: HalalStatus.unknown,
+        halalStatus: _parseHalalStatus(json['halalStatus'] as String? ?? 'unknown'),
         halalExplanation: json['halalNote'] as String? ?? '',
         halalExplanationEn: json['halalNote'] as String? ?? '',
         sunnahNote: json['sunnahNote'] as String? ?? '',
@@ -457,11 +457,6 @@ Request: $prompt
     if (v is int) return v;
     if (v is double) return v.round();
     return int.tryParse(v.toString()) ?? fb;
-  }
-
-  static String _safeStr(dynamic v, [String fb = '']) {
-    if (v == null) return fb;
-    return v.toString();
   }
 
 

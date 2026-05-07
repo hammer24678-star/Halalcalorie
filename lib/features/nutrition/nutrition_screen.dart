@@ -8,6 +8,8 @@ import '../../core/providers.dart';
 import '../../data/models/models.dart';
 import '../../core/ai_service.dart';
 
+enum MealType { breakfast, lunch, dinner, snack }
+
 // ── Food emoji helper ────────────────────────────────────────
 String foodEmoji(String name) {
   final n = name.toLowerCase();
@@ -70,6 +72,15 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     super.dispose();
   }
 
+
+  MealType _mealType(DateTime t) {
+    final h = t.hour;
+    if (h >= 4  && h < 10) return MealType.breakfast;
+    if (h >= 10 && h < 15) return MealType.lunch;
+    if (h >= 15 && h < 21) return MealType.dinner;
+    return MealType.snack;
+  }
+
   void _openAdd(BuildContext ctx, bool isAr, bool isDark, bool isPremium) {
     showModalBottomSheet(
       context: ctx,
@@ -85,13 +96,12 @@ class _NutritionState extends ConsumerState<NutritionScreen>
             await ref.read(caloriesProvider.notifier)
                 .addEntry(name, kcal, proteinG: p, carbsG: c, fatG: ft);
             ref.invalidate(weeklyKcalProvider);
-            ref.invalidate(weeklyKcalProvider);
           } catch (e) {
             debugPrint("addEntry error: $e");
           }
+          final messenger = ScaffoldMessenger.of(ctx);
           if (ctx.mounted) Navigator.pop(ctx);
-          if (ctx.mounted) {
-            ScaffoldMessenger.of(ctx).showSnackBar(SnackBar(
+          messenger.showSnackBar(SnackBar(
               content: Row(children: [
                 const Text('✅ ', style: TextStyle(fontSize: 16)),
                 Text('$name ${isAr ? "أضيف" : "added"}',
@@ -477,7 +487,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   _MealSection(
                     emoji: '🌅',
                     title: tl('الفطور', 'Breakfast'),
-                    entries: cals.entries,
+                    entries: cals.entries.where((e) => _mealType(e.time) == MealType.breakfast).toList(),
                     isAr: isAr,
                     isDark: isDark,
                     cardBg: cardBg,
@@ -495,7 +505,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   _MealSection(
                     emoji: '☀️',
                     title: tl('الغداء', 'Lunch'),
-                    entries: const [],
+                    entries: cals.entries.where((e) => _mealType(e.time) == MealType.lunch).toList(),
                     isAr: isAr,
                     isDark: isDark,
                     cardBg: cardBg,
@@ -510,7 +520,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   _MealSection(
                     emoji: '🌙',
                     title: tl('العشاء', 'Dinner'),
-                    entries: const [],
+                    entries: cals.entries.where((e) => _mealType(e.time) == MealType.dinner).toList(),
                     isAr: isAr,
                     isDark: isDark,
                     cardBg: cardBg,
@@ -525,7 +535,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   _MealSection(
                     emoji: '🍎',
                     title: tl('وجبات خفيفة', 'Snacks'),
-                    entries: const [],
+                    entries: cals.entries.where((e) => _mealType(e.time) == MealType.snack).toList(),
                     isAr: isAr,
                     isDark: isDark,
                     cardBg: cardBg,

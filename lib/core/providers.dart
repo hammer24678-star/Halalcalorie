@@ -94,6 +94,7 @@ class CaloriesNotifier extends StateNotifier<CaloriesState> {
   Future<void> addEntry(String name, int kcal, {double proteinG = 0, double carbsG = 0, double fatG = 0}) async {
     if (kcal <= 0) return;
     final id = await AppDatabase.insertMeal(name: name, kcal: kcal.clamp(1, 9999), proteinG: proteinG, carbsG: carbsG, fatG: fatG);
+    if (id == -1) return;
     final entry = MealEntry(id: id, name: name, kcal: kcal.clamp(1, 9999), time: DateTime.now(), proteinG: proteinG, carbsG: carbsG, fatG: fatG);
     state = CaloriesState(goal: state.goal, entries: [...state.entries, entry]);
   }
@@ -130,7 +131,7 @@ class WaterNotifier extends StateNotifier<WaterState> {
 }
 
 final sleepProvider = StateNotifierProvider<SleepNotifier, SleepState>((ref) => SleepNotifier(ref));
-class SleepState { final double hours, goal; SleepState({required this.hours, required this.goal}); double get percent => goal > 0 ? (hours / goal).clamp(0, 1) : 0; String qualityAr() { if (hours >= 8) return 'ideal'; if (hours >= 6) return 'adequate'; return 'insufficient'; } String qualityEn() { if (hours >= 8) return 'Ideal'; if (hours >= 6) return 'Adequate'; return 'Insufficient'; } }
+class SleepState { final double hours, goal; SleepState({required this.hours, required this.goal}); double get percent => goal > 0 ? (hours / goal).clamp(0, 1) : 0; String qualityAr() { if (hours >= 8) return 'ممتاز'; if (hours >= 6) return 'كافٍ'; return 'غير كافٍ'; } String qualityEn() { if (hours >= 8) return 'Ideal'; if (hours >= 6) return 'Adequate'; return 'Insufficient'; } }
 class SleepNotifier extends StateNotifier<SleepState> {
   final Ref _ref;
   SleepNotifier(this._ref) : super(SleepState(hours: 7, goal: 8)) { _init(); }

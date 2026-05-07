@@ -47,7 +47,7 @@ class HealthService {
           _wasAboveThreshold = true;
           _steps++;
           _onStep?.call(_steps);
-          _saveSteps();
+          _throttledSave();
         } else if (magnitude < _minMagnitude) {
           _wasAboveThreshold = false;
         }
@@ -68,7 +68,7 @@ class HealthService {
     } catch (_) {}
   }
 
-  static void stopTracking() { try { _accelSub?.cancel(); _accelSub = null; } catch(_) {} }
+  static void stopTracking() { try { _accelSub?.cancel(); _accelSub = null; _saveTimer?.cancel(); _saveTimer = null; } catch(_) {} }
   static void setManualHeartRate(double bpm) => _heartRate = bpm;
   static void setManualSleep(double hours) => _sleepHours = hours;
   static void addSteps(int s) { _steps += s; _saveSteps(); _onStep?.call(_steps); }
