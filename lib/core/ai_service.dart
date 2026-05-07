@@ -202,6 +202,7 @@ IMPORTANT:
         recommendationsAr: List<String>.from(json['recommendationsAr'] ?? []),
         recommendationsEn: List<String>.from(json['recommendations'] ?? []),
         rawAnalysis: '',
+        confidence: (json['confidence'] as num?)?.toDouble() ?? 0.55,
       );
     } catch (e) {
       return _fallbackBodyResult(isMale, weightKg, language);
@@ -219,6 +220,7 @@ IMPORTANT:
       recommendationsAr: ['زِد البروتين اليومي', 'امشِ ٣٠ دقيقة يومياً', 'نم ٨ ساعات'],
       recommendationsEn: ['Increase protein intake', 'Walk 30 min daily', 'Sleep 8 hours'],
       rawAnalysis: '',
+      confidence: 0.55,
     );
   }
 
@@ -445,6 +447,16 @@ Request: $prompt
   }
 
   // ── Safe type conversion (prevents runtime cast errors) ──
+
+  static HalalStatus _parseHalalStatus(String s) {
+    switch (s.toLowerCase()) {
+      case 'halal':    return HalalStatus.halal;
+      case 'haram':    return HalalStatus.haram;
+      case 'doubtful': return HalalStatus.doubtful;
+      default:         return HalalStatus.unknown;
+    }
+  }
+
   static double _safeDouble(dynamic v, [double fb = 0.0]) {
     if (v == null) return fb;
     if (v is double) return v;

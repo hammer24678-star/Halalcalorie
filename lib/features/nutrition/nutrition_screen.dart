@@ -6,9 +6,12 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../data/models/models.dart';
+
 import '../../core/ai_service.dart';
 
 enum MealType { breakfast, lunch, dinner, snack }
+
+
 
 // ── Food emoji helper ────────────────────────────────────────
 String foodEmoji(String name) {
@@ -71,6 +74,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     _tab.dispose();
     super.dispose();
   }
+
 
 
   MealType _mealType(DateTime t) {

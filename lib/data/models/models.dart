@@ -87,7 +87,7 @@ class FoodPhotoResult {
 
 // ── AI Body Photo Result ─────────────────────────
 class BodyPhotoResult {
-  final double bodyFatPercent, muscleMassKg, leanBodyMassKg;
+  final double bodyFatPercent, muscleMassKg, leanBodyMassKg, confidence;
   final String bodyType, bodyTypeEn;
   final List<String> recommendationsAr, recommendationsEn;
   final String rawAnalysis;
@@ -96,6 +96,7 @@ class BodyPhotoResult {
     required this.bodyType, required this.bodyTypeEn,
     required this.recommendationsAr, required this.recommendationsEn,
     required this.rawAnalysis,
+    this.confidence = 0.55,
   });
   // Compatibility getters
   List<String> get recommendations => recommendationsEn;
