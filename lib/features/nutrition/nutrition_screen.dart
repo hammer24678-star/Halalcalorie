@@ -60,19 +60,47 @@ class NutritionScreen extends ConsumerStatefulWidget {
 }
 
 class _NutritionState extends ConsumerState<NutritionScreen>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late TabController _tab;
+  late AnimationController _stagger;
+
+  // Silky smooth stagger helpers
+  Animation<double> _fade(int i) => CurvedAnimation(
+      parent: _stagger,
+      curve: Interval(
+          (i * 0.08).clamp(0.0, 0.7),
+          ((i * 0.08) + 0.45).clamp(0.0, 1.0),
+          curve: Curves.easeOutQuart));
+  Animation<Offset> _slide(int i) => Tween<Offset>(
+      begin: const Offset(0, 0.10), end: Offset.zero
+  ).animate(CurvedAnimation(
+      parent: _stagger,
+      curve: Interval(
+          (i * 0.08).clamp(0.0, 0.7),
+          ((i * 0.08) + 0.45).clamp(0.0, 1.0),
+          curve: Curves.easeOutQuart)));
+  Widget _anim(int i, Widget child) => FadeTransition(
+      opacity: _fade(i),
+      child: SlideTransition(position: _slide(i), child: child));
 
   @override
   void initState() {
     super.initState();
     _tab = TabController(length: 3, vsync: this);
-    _tab.addListener(() => setState(() {}));
+    _tab.addListener(() {
+      setState(() {});
+      _stagger.forward(from: 0);
+    });
+    _stagger = AnimationController(
+        vsync: this,
+        duration: const Duration(milliseconds: 700))
+      ..forward();
   }
 
   @override
   void dispose() {
     _tab.dispose();
+    _stagger.dispose();
     super.dispose();
   }
 
@@ -345,10 +373,19 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   fontSize: 14)),
         ),
         appBar: AppBar(
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF1A6B3C), AppColors.sunnahGreen],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
           title: Text(tl('التغذية', 'Nutrition'),
               style: const TextStyle(fontFamily: 'Cairo',
                   fontWeight: FontWeight.w800, fontSize: 18)),
-          backgroundColor: AppColors.sunnahGreen,
+          backgroundColor: Colors.transparent,
           foregroundColor: Colors.white,
           elevation: 0,
           actions: [
@@ -390,19 +427,31 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                 children: [
                   // ── Calorie Summary Card ────────────────
-                  Container(
-                    padding: const EdgeInsets.all(20),
+                  _anim(0, Container(
                     decoration: BoxDecoration(
                       color: cardBg,
                       borderRadius: BorderRadius.circular(24),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.sunnahGreen.withOpacity(0.12),
-                          blurRadius: 20,
-                          offset: const Offset(0, 6),
+                          color: calCol.withOpacity(0.18),
+                          blurRadius: 24,
+                          offset: const Offset(0, 8),
                         ),
                       ],
                     ),
+                    child: Column(children: [
+                      // Gradient accent strip — color reacts to calories
+                      Container(
+                        height: 5,
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [calCol, calCol.withOpacity(0.3)]),
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(24)),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(20),
                     child: Column(children: [
                       // Top row: eaten | ring | burned
                       Row(
@@ -483,13 +532,15 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         (profile?.calorieGoalKcal ?? 2000) / 9 * 0.3,
                         AppColors.barakahGold,
                       ),
-                    ]),
-                  ),
+                    ]),          // end macro Column
+                  ),            // end Padding
+                  ]),           // end outer Column
+                )),             // end Container + _anim
 
                   const SizedBox(height: 16),
 
                   // ── Meal Sections ───────────────────────
-                  _MealSection(
+                  _anim(1, _MealSection(
                     emoji: '🌅',
                     title: tl('الفطور', 'Breakfast'),
                     entries: cals.entries.where((e) => _mealType(e.time) == MealType.breakfast).toList(),
@@ -505,9 +556,9 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                     onDelete: (e) => ref
                         .read(caloriesProvider.notifier)
                         .removeEntry(e.id),
-                  ),
+                  )),
 
-                  _MealSection(
+                  _anim(2, _MealSection(
                     emoji: '☀️',
                     title: tl('الغداء', 'Lunch'),
                     entries: cals.entries.where((e) => _mealType(e.time) == MealType.lunch).toList(),
@@ -520,9 +571,9 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         _openAdd(context, isAr, isDark, isPremium),
                     onTap: (_) {},
                     onDelete: (_) {},
-                  ),
+                  )),
 
-                  _MealSection(
+                  _anim(3, _MealSection(
                     emoji: '🌙',
                     title: tl('العشاء', 'Dinner'),
                     entries: cals.entries.where((e) => _mealType(e.time) == MealType.dinner).toList(),
@@ -535,9 +586,9 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         _openAdd(context, isAr, isDark, isPremium),
                     onTap: (_) {},
                     onDelete: (_) {},
-                  ),
+                  )),
 
-                  _MealSection(
+                  _anim(4, _MealSection(
                     emoji: '🍎',
                     title: tl('وجبات خفيفة', 'Snacks'),
                     entries: cals.entries.where((e) => _mealType(e.time) == MealType.snack).toList(),
@@ -550,19 +601,21 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         _openAdd(context, isAr, isDark, isPremium),
                     onTap: (_) {},
                     onDelete: (_) {},
-                  ),
+                  )),
 
                   const SizedBox(height: 16),
 
                   // ── Weekly Chart ────────────────────────
-                  Container(
+                  _anim(5, Container(
                     padding: const EdgeInsets.all(18),
                     decoration: BoxDecoration(
                       color: cardBg,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [BoxShadow(
-                          color: Colors.black.withOpacity(0.05),
-                          blurRadius: 12)],
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.sunnahGreen.withOpacity(0.08),
+                          blurRadius: 16, offset: const Offset(0, 4)),
+                      ],
                     ),
                     child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -657,7 +710,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         ),
                       ),
                     ]),
-                  ),
+                  )),
                 ],
               ),
             ),
