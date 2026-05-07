@@ -79,6 +79,14 @@ class _NutritionState extends ConsumerState<NutritionScreen>
 
 
 
+  MealType _mealType(DateTime t) {
+    final h = t.hour;
+    if (h >= 4  && h < 10) return MealType.breakfast;
+    if (h >= 10 && h < 15) return MealType.lunch;
+    if (h >= 15 && h < 21) return MealType.dinner;
+    return MealType.snack;
+  }
+
   void _openAdd(BuildContext ctx, bool isAr, bool isDark, bool isPremium) {
     showModalBottomSheet(
       context: ctx,
