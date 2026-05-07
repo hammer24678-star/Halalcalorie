@@ -16,11 +16,11 @@ class _FitnessState extends ConsumerState<FitnessScreen>
   late AnimationController _stagger;
   Animation<double> _fade(int i) => CurvedAnimation(
       parent: _stagger,
-      curve: Interval(i * 0.09, (i * 0.09 + 0.5).clamp(0,1), curve: Curves.easeOut));
+      curve: Interval(i * 0.09, (i * 0.09 + 0.5).clamp(0,1), curve: Curves.easeOutQuart));
   Animation<Offset> _slide(int i) => Tween<Offset>(
       begin: const Offset(0, 0.15), end: Offset.zero).animate(CurvedAnimation(
       parent: _stagger,
-      curve: Interval(i * 0.09, (i * 0.09 + 0.5).clamp(0,1), curve: Curves.easeOutCubic)));
+      curve: Interval(i * 0.09, (i * 0.09 + 0.5).clamp(0,1), curve: Curves.easeOutQuart)));
   Widget _anim(int i, Widget child) => FadeTransition(
       opacity: _fade(i), child: SlideTransition(position: _slide(i), child: child));
  static const _cats = ['all','walking','strength','gentle','ramadan','breathing','family'];
@@ -30,7 +30,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
     _tab = TabController(length: _cats.length, vsync: this);
     _tab.addListener(() => setState(() => _filter = _cats[_tab.index]));
     _stagger = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 800))
+        vsync: this, duration: const Duration(milliseconds: 650))
       ..forward();
   }
   @override void dispose() { _tab.dispose(); _stagger.dispose(); super.dispose(); }

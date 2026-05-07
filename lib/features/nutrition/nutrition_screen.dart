@@ -933,14 +933,27 @@ class _MealSectionState extends State<_MealSection> {
 
   @override
   Widget build(BuildContext context) {
+    final accentCol = widget.emoji == '🌅'
+        ? const Color(0xFFFF8C42)
+        : widget.emoji == '☀️'
+        ? const Color(0xFFDAA520)
+        : widget.emoji == '🌙'
+        ? const Color(0xFF6B7FD4)
+        : AppColors.halalGreen;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: widget.cardBg,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10, offset: const Offset(0, 3))],
+        boxShadow: [
+          BoxShadow(
+              color: accentCol.withOpacity(0.10),
+              blurRadius: 14, offset: const Offset(0, 4)),
+        ],
+        border: Border(
+          left: BorderSide(color: accentCol, width: 3.5),
+        ),
       ),
       child: Column(children: [
         // Header
@@ -976,19 +989,19 @@ class _MealSectionState extends State<_MealSection> {
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppColors.sunnahGreen.withOpacity(0.1),
+                    color: accentCol.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                        color: AppColors.sunnahGreen.withOpacity(0.3)),
+                        color: accentCol.withOpacity(0.35)),
                   ),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    const Icon(Icons.add_rounded,
-                        color: AppColors.sunnahGreen, size: 16),
+                    Icon(Icons.add_rounded,
+                        color: accentCol, size: 16),
                     const SizedBox(width: 3),
                     Text(widget.isAr ? 'أضف' : 'Add',
-                        style: const TextStyle(fontFamily: 'Cairo',
+                        style: TextStyle(fontFamily: 'Cairo',
                             fontSize: 11,
-                            color: AppColors.sunnahGreen,
+                            color: accentCol,
                             fontWeight: FontWeight.w700)),
                   ]),
                 ),

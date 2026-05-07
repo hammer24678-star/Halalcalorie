@@ -19,11 +19,11 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   late AnimationController _stagger;
   Animation<double> _fade(int i) => CurvedAnimation(
       parent: _stagger,
-      curve: Interval(i * 0.1, (i * 0.1 + 0.5).clamp(0,1), curve: Curves.easeOut));
+      curve: Interval(i * 0.1, (i * 0.1 + 0.5).clamp(0,1), curve: Curves.easeOutQuart));
   Animation<Offset> _slide(int i) => Tween<Offset>(
       begin: const Offset(0, 0.12), end: Offset.zero).animate(CurvedAnimation(
       parent: _stagger,
-      curve: Interval(i * 0.1, (i * 0.1 + 0.5).clamp(0,1), curve: Curves.easeOutCubic)));
+      curve: Interval(i * 0.1, (i * 0.1 + 0.5).clamp(0,1), curve: Curves.easeOutQuart)));
   Widget _anim(int i, Widget child) => FadeTransition(
       opacity: _fade(i), child: SlideTransition(position: _slide(i), child: child));
 
@@ -36,7 +36,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       _stagger.forward(from: 0);
     });
     _stagger = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 750))
+        vsync: this, duration: const Duration(milliseconds: 650))
       ..forward();
   }
 
