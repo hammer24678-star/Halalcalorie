@@ -16,17 +16,34 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   String? _expandedArticle;
   final _weightCtrl = TextEditingController();
   final _heightCtrl = TextEditingController();
+  late AnimationController _stagger;
+  Animation<double> _fade(int i) => CurvedAnimation(
+      parent: _stagger,
+      curve: Interval(i * 0.1, (i * 0.1 + 0.5).clamp(0,1), curve: Curves.easeOut));
+  Animation<Offset> _slide(int i) => Tween<Offset>(
+      begin: const Offset(0, 0.12), end: Offset.zero).animate(CurvedAnimation(
+      parent: _stagger,
+      curve: Interval(i * 0.1, (i * 0.1 + 0.5).clamp(0,1), curve: Curves.easeOutCubic)));
+  Widget _anim(int i, Widget child) => FadeTransition(
+      opacity: _fade(i), child: SlideTransition(position: _slide(i), child: child));
 
   @override
   void initState() {
     super.initState();
     _tab = TabController(length: 3, vsync: this);
-    _tab.addListener(() => setState(() {}));
+    _tab.addListener(() {
+      setState(() {});
+      _stagger.forward(from: 0);
+    });
+    _stagger = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 750))
+      ..forward();
   }
 
   @override
   void dispose() {
     _tab.dispose();
+    _stagger.dispose();
     _weightCtrl.dispose();
     _heightCtrl.dispose();
     super.dispose();
@@ -41,26 +58,37 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('الصحة والعافية', 'Health & Wellness')),
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Color(0xFF1A2A1A), Color(0xFF1A6B3C)],
+              begin: Alignment.topLeft, end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+        backgroundColor: Colors.transparent,
+        title: Text(t('الصحة والعافية', 'Health & Wellness'),
+            style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800, fontSize: 18)),
         actions: [
           GestureDetector(
             onTap: () => ref.read(themeProvider.notifier).toggle(),
             child: Padding(
-              padding: const EdgeInsets.only(left: 14),
-              child: Icon(isDark ? Icons.wb_sunny : Icons.nightlight_round,
-                  color: Colors.white),
+              padding: const EdgeInsets.only(right: 14),
+              child: Icon(isDark ? Icons.wb_sunny_outlined : Icons.nightlight_round,
+                  color: Colors.white, size: 22),
             ),
           ),
         ],
         bottom: TabBar(
           controller: _tab,
           indicatorColor: AppColors.barakahGold,
+          indicatorWeight: 3,
           labelStyle: const TextStyle(
-              fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 11),
+              fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 12),
           unselectedLabelStyle:
-              const TextStyle(fontFamily: 'Cairo', fontSize: 11),
+              const TextStyle(fontFamily: 'Cairo', fontSize: 12),
           labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
+          unselectedLabelColor: Colors.white60,
           tabs: [
             Tab(text: t('تتبع', 'Tracking')),
             Tab(text: t('حاسبات', 'Calculators')),
@@ -86,22 +114,22 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     final health = ref.watch(healthProvider);
 
     return ListView(padding: const EdgeInsets.all(14), children: [
-      _healthScoreCard(water, sleep, health, isAr, isDark),
+      _anim(0, _healthScoreCard(water, sleep, health, isAr, isDark)),
       const SizedBox(height: 16),
-      _sectionTitle('💧 ${isAr ? "الماء اليومي" : "Daily Water"}', isDark),
-      _waterCard(water, isAr, isDark),
+      _anim(1, _sectionTitle('💧 ${isAr ? "الماء اليومي" : "Daily Water"}', isDark)),
+      _anim(1, _waterCard(water, isAr, isDark)),
       const SizedBox(height: 16),
-      _sectionTitle('😴 ${isAr ? "النوم" : "Sleep"}', isDark),
-      _sleepCard(sleep, isAr, isDark),
+      _anim(2, _sectionTitle('😴 ${isAr ? "النوم" : "Sleep"}', isDark)),
+      _anim(2, _sleepCard(sleep, isAr, isDark)),
       const SizedBox(height: 16),
-      _sectionTitle('🚶 ${isAr ? "خطوات اليوم" : "Today Steps"}', isDark),
-      _stepsCard(health, isAr, isDark),
+      _anim(3, _sectionTitle('🚶 ${isAr ? "خطوات اليوم" : "Today Steps"}', isDark)),
+      _anim(3, _stepsCard(health, isAr, isDark)),
       const SizedBox(height: 16),
-      _sectionTitle('😊 ${isAr ? "مزاجك اليوم" : "Today Mood"}', isDark),
-      _moodCard(health, isAr, isDark),
+      _anim(4, _sectionTitle('😊 ${isAr ? "مزاجك اليوم" : "Today Mood"}', isDark)),
+      _anim(4, _moodCard(health, isAr, isDark)),
       const SizedBox(height: 16),
-      _sectionTitle('❤️ ${isAr ? "معدل النبض" : "Heart Rate"}', isDark),
-      _hrCard(health, isAr, isDark),
+      _anim(5, _sectionTitle('❤️ ${isAr ? "معدل النبض" : "Heart Rate"}', isDark)),
+      _anim(5, _hrCard(health, isAr, isDark)),
       const SizedBox(height: 14),
     ]);
   }
@@ -161,13 +189,26 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     }
 
     return Container(
-      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(
-            color: Colors.black.withOpacity(0.06), blurRadius: 12)],
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(color: Colors.black.withOpacity(0.10), blurRadius: 18, offset: const Offset(0, 5)),
+          BoxShadow(color: scoreColor().withOpacity(0.08), blurRadius: 16, spreadRadius: 2),
+        ],
       ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        // Gradient accent strip at top
+        Container(
+          height: 4,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [scoreColor(), scoreColor().withOpacity(0.3)]),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,6 +240,8 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         scoreBar(isAr ? 'النوم' : 'Sleep', slScore, 25, AppColors.sleepPurple),
         scoreBar(isAr ? 'الخطوات' : 'Steps', stScore, 25, AppColors.halalGreen),
         scoreBar(isAr ? 'المزاج' : 'Mood', mScore, 25, AppColors.barakahGold),
+          ]),
+        ),
       ]),
     );
   }
@@ -653,20 +696,32 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
 
   Widget _sectionTitle(String t, bool isDark) => Padding(
     padding: const EdgeInsets.only(bottom: 10),
-    child: Text(t,
-        style: TextStyle(fontFamily: 'Cairo', fontSize: 15,
-            fontWeight: FontWeight.w700,
-            color: isDark ? AppColors.darkText : AppColors.lightText)),
+    child: Row(children: [
+      Container(
+        width: 4, height: 20,
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [AppColors.sunnahGreen, AppColors.halalGreen],
+            begin: Alignment.topCenter, end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.circular(2),
+        ),
+      ),
+      const SizedBox(width: 8),
+      Text(t, style: TextStyle(fontFamily: 'Cairo', fontSize: 15,
+          fontWeight: FontWeight.w700,
+          color: isDark ? AppColors.darkText : AppColors.lightText)),
+    ]),
   );
 
   Widget _card(Color bg, Widget child) => Container(
-    padding: const EdgeInsets.all(14),
+    padding: const EdgeInsets.all(16),
     decoration: BoxDecoration(
       color: bg,
-      borderRadius: BorderRadius.circular(16),
-      boxShadow: [BoxShadow(
-          color: Colors.black.withOpacity(0.06),
-          blurRadius: 14, offset: const Offset(0, 3))],
+      borderRadius: BorderRadius.circular(20),
+      boxShadow: [
+        BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 18, offset: const Offset(0, 4)),
+      ],
     ),
     child: child,
   );

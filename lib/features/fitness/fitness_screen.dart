@@ -12,14 +12,28 @@ class FitnessScreen extends ConsumerStatefulWidget {
 
 class _FitnessState extends ConsumerState<FitnessScreen>
     with SingleTickerProviderStateMixin {
-  late TabController _tab; String _filter ='all'; static const _cats = ['all','walking','strength','gentle','ramadan','breathing','family'];
+  late TabController _tab; String _filter ='all';
+  late AnimationController _stagger;
+  Animation<double> _fade(int i) => CurvedAnimation(
+      parent: _stagger,
+      curve: Interval(i * 0.09, (i * 0.09 + 0.5).clamp(0,1), curve: Curves.easeOut));
+  Animation<Offset> _slide(int i) => Tween<Offset>(
+      begin: const Offset(0, 0.15), end: Offset.zero).animate(CurvedAnimation(
+      parent: _stagger,
+      curve: Interval(i * 0.09, (i * 0.09 + 0.5).clamp(0,1), curve: Curves.easeOutCubic)));
+  Widget _anim(int i, Widget child) => FadeTransition(
+      opacity: _fade(i), child: SlideTransition(position: _slide(i), child: child));
+ static const _cats = ['all','walking','strength','gentle','ramadan','breathing','family'];
 
   @override void initState() {
     super.initState();
     _tab = TabController(length: _cats.length, vsync: this);
     _tab.addListener(() => setState(() => _filter = _cats[_tab.index]));
+    _stagger = AnimationController(
+        vsync: this, duration: const Duration(milliseconds: 800))
+      ..forward();
   }
-  @override void dispose() { _tab.dispose(); super.dispose(); }
+  @override void dispose() { _tab.dispose(); _stagger.dispose(); super.dispose(); }
 
   List<Workout> _filtered(String gender, bool isRamadan, bool isPremium) { var list = kWorkouts.where((w) => w.gender =='both'|| w.gender == gender).toList();
     if (isRamadan) {
@@ -56,7 +70,19 @@ class _FitnessState extends ConsumerState<FitnessScreen>
       child: Scaffold(
         backgroundColor: bg,
         appBar: AppBar(
-          backgroundColor: barCol, title: Text(t('اللياقة الإسلامية 🏃', 'Islamic Fitness 🏃')),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: isSis
+                    ? [const Color(0xFFB8860B), const Color(0xFFDAA520)]
+                    : [const Color(0xFF1A6B3C), AppColors.sunnahGreen],
+                begin: Alignment.topLeft, end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+          backgroundColor: Colors.transparent,
+          title: Text(t('اللياقة الإسلامية 🏃', 'Islamic Fitness 🏃'),
+              style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800, fontSize: 18)),
           actions: [
             if (workoutMin > 0)
               Padding(
@@ -106,7 +132,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
             } else if (hour >= 21) { rec = kWorkouts.firstWhere((w) => w.category =='breathing', orElse: () => kWorkouts.first);
             }
             if (rec == null) return const SizedBox.shrink();
-            return GestureDetector(
+            return _anim(0, GestureDetector(
               onTap: () => Navigator.push(bCtx, MaterialPageRoute(
                   builder: (_) => WorkoutPlayerScreen(workoutId: rec!.id))),
               child: Container(
@@ -116,10 +142,13 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                   gradient: LinearGradient(
                     colors: isRamadan
                         ? [const Color(0xFF1A0F00), const Color(0xFF3D2000)]
-                        : [AppColors.sunnahGreen, AppColors.darkGreen],
+                        : [const Color(0xFF1A6B3C), AppColors.sunnahGreen],
                     begin: Alignment.topLeft, end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16),
+                  boxShadow: [BoxShadow(
+                    color: AppColors.sunnahGreen.withOpacity(0.35),
+                    blurRadius: 18, offset: const Offset(0, 6))],
                 ),
                 child: Row(children: [
                   Text(rec.emoji, style: const TextStyle(fontSize: 28)),
@@ -178,7 +207,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                     final lc = _hexColor(w.levelColor);
                     final locked = w.isPremium && !isPremium;
 
-                    return GestureDetector(
+                    return _anim(i + 1, GestureDetector(
                       onTap: () {
                         if (locked) { context.push('/paywall');
                         } else { context.push('/workout/${w.id}');
@@ -189,10 +218,19 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                         decoration: BoxDecoration(
                           color: card,
                           borderRadius: BorderRadius.circular(18),
-                          boxShadow: [BoxShadow(
-                              color: Colors.black.withOpacity(isDark ? 0.18 : 0.07),
-                              blurRadius: 12, offset: const Offset(0, 3))],
-                          border: Border.all(color: isDark ? AppColors.darkBorder : AppColors.lightBorder, width: 0.5),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(isDark ? 0.25 : 0.08),
+                              blurRadius: 16, offset: const Offset(0, 5)),
+                            if (!locked) BoxShadow(
+                              color: barCol.withOpacity(0.06),
+                              blurRadius: 12, spreadRadius: 1),
+                          ],
+                          border: Border.all(
+                              color: locked
+                                  ? (isDark ? AppColors.darkBorder : AppColors.lightBorder)
+                                  : barCol.withOpacity(isDark ? 0.25 : 0.18),
+                              width: 0.8),
                         ),
                         child: Stack(children: [
                           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -233,7 +271,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                           ),
                         ]),
                       ),
-                    );
+                    ));
                   },
                 ),
 
@@ -245,8 +283,11 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                            colors: [AppColors.sunnahGreen, AppColors.darkGreen]),
+                            colors: [Color(0xFF1A6B3C), AppColors.sunnahGreen]),
                         borderRadius: BorderRadius.circular(16),
+                        boxShadow: [BoxShadow(
+                          color: AppColors.sunnahGreen.withOpacity(0.30),
+                          blurRadius: 14, offset: const Offset(0, 5))],
                       ),
                       child: Row(children: [
                         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(t('🔒 ${kWorkouts.where((w) => w.isPremium).length} خطة متقدمة', '🔒 ${kWorkouts.where((w) => w.isPremium).length} Advanced Plans'), style: const TextStyle(fontFamily:'Cairo',
