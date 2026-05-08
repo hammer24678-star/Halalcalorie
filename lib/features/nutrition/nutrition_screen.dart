@@ -1659,8 +1659,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     ]),
                     const SizedBox(width: 8),
                     GestureDetector(
-                      onTap: () => _doAdd(food.name, food.kcal,
-                          food.proteinG, food.carbsG, food.fatG),
+                      onTap: () => _showUnitPicker(name: food.name, kcal100: food.kcal.toDouble(), protein100: food.proteinG, carbs100: food.carbsG, fat100: food.fatG),
                       child: Container(
                         width: 34, height: 34,
                         decoration: BoxDecoration(
@@ -1782,6 +1781,383 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
     );
   }
 
+  // ── Unit Picker ─────────────────────────────────────────────────────────────
+
+  /// Smart grams-per-piece lookup based on food name keywords
+  double _pieceToGrams(String name) {
+    final n = name.toLowerCase();
+    if (n.contains('تمر')    || n.contains('date'))     return 7;
+    if (n.contains('موز')    || n.contains('banana'))   return 120;
+    if (n.contains('تفاح')   || n.contains('apple'))    return 182;
+    if (n.contains('برتقال') || n.contains('orange'))   return 131;
+    if (n.contains('بيض')    || n.contains('egg'))      return 55;
+    if (n.contains('كيوي')   || n.contains('kiwi'))     return 70;
+    if (n.contains('خيار')   || n.contains('cucumber')) return 200;
+    if (n.contains('طماطم')  || n.contains('tomato'))   return 123;
+    if (n.contains('فلفل')   || n.contains('pepper'))   return 90;
+    if (n.contains('خوخ')    || n.contains('peach'))    return 150;
+    if (n.contains('إجاص')   || n.contains('pear'))     return 166;
+    if (n.contains('مانجو')  || n.contains('mango'))    return 200;
+    if (n.contains('بطيخ')   || n.contains('watermelon')) return 280;
+    return 50;
+  }
+
+  /// Smart grams-per-cup lookup (liquids ~240ml, solids ~150g)
+  double _cupToGrams(String name) {
+    final n = name.toLowerCase();
+    if (n.contains('حليب')   || n.contains('milk'))    return 244;
+    if (n.contains('عصير')   || n.contains('juice'))   return 248;
+    if (n.contains('ماء')    || n.contains('water'))   return 240;
+    if (n.contains('شاي')    || n.contains('tea'))     return 240;
+    if (n.contains('قهوة')   || n.contains('coffee'))  return 240;
+    if (n.contains('زبادي')  || n.contains('yogurt'))  return 245;
+    if (n.contains('دبس')    || n.contains('molasses')) return 340;
+    return 150;
+  }
+
+  /// Opens the unit picker bottom sheet — called instead of _doAdd directly
+  void _showUnitPicker({
+    required String name,
+    required double kcal100,
+    required double protein100,
+    required double carbs100,
+    required double fat100,
+  }) {
+    final isAr   = widget.isAr;
+    final isDark = widget.isDark;
+    final amtCtrl = TextEditingController(text: '100');
+    int unitIdx   = 0; // 0=g 1=piece 2=cup 3=tbsp 4=tsp 5=ml
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setS) {
+          // ── Config per unit ───────────────────────────────────
+          final unitLabels = isAr
+              ? ['جرام', 'حبة', 'كوب', 'م.ك', 'م.ص', 'مل']
+              : ['g', 'piece', 'cup', 'tbsp', 'tsp', 'ml'];
+          final unitDefaults = [100.0, 1.0, 1.0, 1.0, 1.0, 100.0];
+          final chipSets = [
+            [25, 50, 100, 150, 200, 300],
+            [1, 2, 3, 4, 5],
+            [0.25, 0.5, 1.0, 1.5, 2.0],
+            [1, 2, 3, 4, 5, 6],
+            [1, 2, 3, 4, 5],
+            [50, 100, 150, 200, 250, 300],
+          ];
+
+          // ── Convert selected amount to grams ──────────────────
+          double toGrams(int ui, double amt) {
+            switch (ui) {
+              case 0:  return amt;
+              case 1:  return amt * _pieceToGrams(name);
+              case 2:  return amt * _cupToGrams(name);
+              case 3:  return amt * 15.0;
+              case 4:  return amt * 5.0;
+              case 5:  return amt;
+              default: return amt;
+            }
+          }
+
+          // ── Live macro calculation ─────────────────────────────
+          final raw   = double.tryParse(amtCtrl.text) ?? unitDefaults[unitIdx];
+          final grams = toGrams(unitIdx, raw).clamp(0.1, 10000.0);
+          final scale = grams / 100.0;
+          final kcal  = (kcal100    * scale).round();
+          final prot  = protein100  * scale;
+          final carb  = carbs100    * scale;
+          final fat   = fat100      * scale;
+
+          // ── Theme ─────────────────────────────────────────────
+          final bg    = isDark ? AppColors.darkCard  : Colors.white;
+          final muted = isDark ? AppColors.darkMuted : const Color(0xFF9E9E9E);
+          final textC = isDark ? AppColors.darkText  : AppColors.lightText;
+          String tl(String ar, String en) => isAr ? ar : en;
+
+          // ── Step size per unit ────────────────────────────────
+          final step = unitIdx == 2
+              ? 0.25
+              : (unitIdx == 0 || unitIdx == 5 ? 10.0 : 1.0);
+          final minV = unitIdx == 2 ? 0.25 : 1.0;
+
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(ctx).viewInsets.bottom),
+            child: Container(
+              decoration: BoxDecoration(
+                  color: bg,
+                  borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(28))),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 36),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+
+                // Handle bar
+                Center(child: Container(
+                  width: 40, height: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2)))),
+
+                // Food row
+                Row(children: [
+                  Container(
+                    width: 52, height: 52,
+                    decoration: BoxDecoration(
+                      color: AppColors.sunnahGreen.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(14)),
+                    child: Center(child: Text(foodEmoji(name),
+                        style: const TextStyle(fontSize: 26)))),
+                  const SizedBox(width: 12),
+                  Expanded(child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(name,
+                        style: TextStyle(fontFamily: 'Cairo', fontSize: 15,
+                            fontWeight: FontWeight.w800, color: textC),
+                        maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(
+                        '${tl("أساس 100ج — ", "Base 100g — ")}${kcal100.round()} ${tl("سعرة", "kcal")}',
+                        style: TextStyle(fontFamily: 'Cairo',
+                            fontSize: 10, color: muted)),
+                    ])),
+                ]),
+                const SizedBox(height: 18),
+
+                // ── Unit selector ─────────────────────────────────
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.sunnahGreen.withOpacity(0.07),
+                    borderRadius: BorderRadius.circular(14)),
+                  padding: const EdgeInsets.all(4),
+                  child: Row(children: List.generate(
+                    unitLabels.length, (i) => Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          final d = unitDefaults[i];
+                          amtCtrl.text = d % 1 == 0
+                              ? d.toInt().toString()
+                              : d.toString();
+                          setS(() => unitIdx = i);
+                        },
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 180),
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: BoxDecoration(
+                            color: unitIdx == i
+                                ? AppColors.sunnahGreen
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(10)),
+                          child: Center(child: Text(unitLabels[i],
+                            style: TextStyle(fontFamily: 'Cairo',
+                              fontSize: 11, fontWeight: FontWeight.w700,
+                              color: unitIdx == i
+                                  ? Colors.white
+                                  : AppColors.sunnahGreen))),
+                        ),
+                      )),
+                  )),
+                ),
+                const SizedBox(height: 16),
+
+                // ── Amount row: minus / field / plus ──────────────
+                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  _gramBtn(Icons.remove_rounded, () {
+                    final v  = double.tryParse(amtCtrl.text)
+                        ?? unitDefaults[unitIdx];
+                    final nv = (v - step).clamp(minV, 9999.0);
+                    amtCtrl.text = nv % 1 == 0
+                        ? nv.toInt().toString()
+                        : nv.toStringAsFixed(2);
+                    setS(() {});
+                  }),
+                  const SizedBox(width: 14),
+                  SizedBox(width: 110, child: TextField(
+                    controller: amtCtrl,
+                    keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true),
+                    textAlign: TextAlign.center,
+                    onChanged: (_) => setS(() {}),
+                    style: const TextStyle(fontFamily: 'Cairo',
+                        fontSize: 24, fontWeight: FontWeight.w900),
+                    decoration: InputDecoration(
+                      suffixText: ' ${unitLabels[unitIdx]}',
+                      suffixStyle: TextStyle(fontFamily: 'Cairo',
+                          fontSize: 13, color: muted,
+                          fontWeight: FontWeight.w600),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: const BorderSide(
+                            color: AppColors.sunnahGreen, width: 1.5)),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(
+                            color: AppColors.sunnahGreen.withOpacity(0.4),
+                            width: 1.5)),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: const BorderSide(
+                            color: AppColors.sunnahGreen, width: 2)),
+                      contentPadding: const EdgeInsets.symmetric(
+                          vertical: 14, horizontal: 8),
+                    ),
+                  )),
+                  const SizedBox(width: 14),
+                  _gramBtn(Icons.add_rounded, () {
+                    final v  = double.tryParse(amtCtrl.text)
+                        ?? unitDefaults[unitIdx];
+                    final nv = (v + step).clamp(minV, 9999.0);
+                    amtCtrl.text = nv % 1 == 0
+                        ? nv.toInt().toString()
+                        : nv.toStringAsFixed(2);
+                    setS(() {});
+                  }),
+                ]),
+                const SizedBox(height: 10),
+
+                // ── Quick-pick chips ──────────────────────────────
+                Wrap(spacing: 6, runSpacing: 6,
+                  children: chipSets[unitIdx].map((chip) {
+                    final cv    = (chip as num).toDouble();
+                    final curV  = double.tryParse(amtCtrl.text) ?? 0;
+                    final active = (curV - cv).abs() < 0.001;
+                    final lbl   = cv % 1 == 0
+                        ? '${cv.toInt()} ${unitLabels[unitIdx]}'
+                        : '$cv ${unitLabels[unitIdx]}';
+                    return GestureDetector(
+                      onTap: () {
+                        amtCtrl.text = cv % 1 == 0
+                            ? cv.toInt().toString()
+                            : cv.toString();
+                        setS(() {});
+                      },
+                      child: AnimatedContainer(
+                        duration: const Duration(milliseconds: 150),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: active
+                              ? AppColors.sunnahGreen
+                              : AppColors.sunnahGreen.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                              color: AppColors.sunnahGreen.withOpacity(0.3))),
+                        child: Text(lbl, style: TextStyle(
+                          fontFamily: 'Cairo', fontSize: 12,
+                          fontWeight: FontWeight.w700,
+                          color: active
+                              ? Colors.white
+                              : AppColors.sunnahGreen)),
+                      ),
+                    );
+                  }).toList(),
+                ),
+
+                // ── Grams-equivalent badge (hidden for g and ml) ──
+                if (unitIdx != 0 && unitIdx != 5) ...[
+                  const SizedBox(height: 10),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: AppColors.barakahGold.withOpacity(0.08),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                          color: AppColors.barakahGold.withOpacity(0.25))),
+                    child: Text(
+                      '= ${grams.toStringAsFixed(unitIdx == 2 ? 1 : 0)} ${tl("جرام", "g")}',
+                      style: const TextStyle(fontFamily: 'Cairo',
+                          fontSize: 12, fontWeight: FontWeight.w700,
+                          color: AppColors.barakahGold)),
+                  ),
+                ],
+                const SizedBox(height: 14),
+
+                // ── Live macro preview card ────────────────────────
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 12, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: AppColors.sunnahGreen.withOpacity(
+                        isDark ? 0.06 : 0.04),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(
+                        color: AppColors.sunnahGreen.withOpacity(0.15))),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                    _gramMacro('$kcal',
+                        tl('سعرة', 'kcal'),      AppColors.haramRed),
+                    _vDivider(),
+                    _gramMacro('${prot.toStringAsFixed(1)}g',
+                        tl('بروتين', 'Protein'),  AppColors.halalGreen),
+                    _vDivider(),
+                    _gramMacro('${carb.toStringAsFixed(1)}g',
+                        tl('كارب', 'Carbs'),      AppColors.waterBlue),
+                    _vDivider(),
+                    _gramMacro('${fat.toStringAsFixed(1)}g',
+                        tl('دهون', 'Fat'),        AppColors.barakahGold),
+                  ]),
+                ),
+                const SizedBox(height: 18),
+
+                // ── Add button ────────────────────────────────────
+                SizedBox(width: double.infinity, child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    final unitLabel = unitIdx == 0
+                        ? '${raw.toInt()}${tl("ج", "g")}'
+                        : '${amtCtrl.text} ${unitLabels[unitIdx]}';
+                    _doAdd('$name ($unitLabel)', kcal, prot, carb, fat);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.sunnahGreen,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    elevation: 2,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16))),
+                  child: Text(tl('أضف للعداد', 'Add to Tracker'),
+                    style: const TextStyle(fontFamily: 'Cairo',
+                        fontSize: 15, color: Colors.white,
+                        fontWeight: FontWeight.w800)),
+                )),
+              ]),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _gramBtn(IconData icon, VoidCallback onTap) => GestureDetector(
+    onTap: onTap,
+    child: Container(
+      width: 46, height: 46,
+      decoration: BoxDecoration(
+        color: AppColors.sunnahGreen.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(23),
+        border: Border.all(
+            color: AppColors.sunnahGreen.withOpacity(0.3))),
+      child: Icon(icon, color: AppColors.sunnahGreen, size: 22)),
+  );
+
+  Widget _gramMacro(String val, String label, Color color) =>
+    Column(mainAxisSize: MainAxisSize.min, children: [
+      Text(val, style: TextStyle(fontFamily: 'Cairo', fontSize: 13,
+          fontWeight: FontWeight.w900, color: color)),
+      const SizedBox(height: 1),
+      Text(label, style: TextStyle(fontFamily: 'Cairo', fontSize: 9,
+          color: color.withOpacity(0.75))),
+    ]);
+
+  Widget _vDivider() => Container(
+    width: 1, height: 32,
+    color: Colors.grey.withOpacity(0.2));
+
+
   Widget _buildAIResult(Map<String, dynamic> r,
       bool isAr, Color muted) {
     final name = isAr
@@ -1878,10 +2254,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
         const SizedBox(height: 14),
         SizedBox(width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: () => _doAdd(
-                name.toString(), kcal.round(),
-                protein.toDouble(), carbs.toDouble(),
-                fat.toDouble()),
+            onPressed: () => _showUnitPicker(name: name.toString(), kcal100: kcal.toDouble(), protein100: protein.toDouble(), carbs100: carbs.toDouble(), fat100: fat.toDouble()),
             icon: const Icon(Icons.add_rounded,
                 color: Colors.white, size: 20),
             label: Text(
