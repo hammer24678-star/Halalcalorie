@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../data/models/models.dart';
+import '../../core/health_service.dart';
 
 class HealthScreen extends ConsumerStatefulWidget {
   const HealthScreen({super.key});
@@ -14,6 +15,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tab;
   String? _expandedArticle;
+  bool _stepServiceRunning = false;
   final _weightCtrl = TextEditingController();
   final _heightCtrl = TextEditingController();
   late AnimationController _stagger;
@@ -35,6 +37,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       setState(() {});
       _stagger.forward(from: 0);
     });
+    _startStepService();
     _stagger = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 650))
       ..forward();
@@ -42,11 +45,22 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
 
   @override
   void dispose() {
+    HealthService.stopTracking();
     _tab.dispose();
     _stagger.dispose();
     _weightCtrl.dispose();
     _heightCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _startStepService() async {
+    await HealthService.startStepTracking((steps) {
+      if (!mounted) return;
+      ref.read(healthProvider.notifier).setSteps(steps);
+      if (!_stepServiceRunning)
+        setState(() => _stepServiceRunning = true);
+    });
+    if (mounted) setState(() => _stepServiceRunning = true);
   }
 
   @override
@@ -374,47 +388,129 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   }
 
   Widget _stepsCard(HealthState health, bool isAr, bool isDark) {
-    final bg  = isDark ? AppColors.darkCard : Colors.white;
-    final pct = (health.steps / health.stepsGoal).clamp(0.0, 1.0);
+    final bg       = isDark ? AppColors.darkCard : Colors.white;
+    final pct      = (health.steps / health.stepsGoal).clamp(0.0, 1.0);
+    final kcalBurn = (health.steps * 0.04).toInt();
+    final distKm   = health.steps * 0.00076;
+    final distStr  = distKm >= 1
+        ? '${distKm.toStringAsFixed(2)}${isAr?" كم":" km"}'
+        : '${(distKm * 1000).toInt()}${isAr?" م":" m"}';
 
-    return _card(bg, Column(children: [
-      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text('${health.steps}',
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 28,
-                  fontWeight: FontWeight.w900,
-                  color: AppColors.halalGreen)),
-          Text('${isAr ? "خطوة من" : "steps of"} ${health.stepsGoal}',
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 12,
-                  color: AppColors.lightMuted)),
-        ]),
-        Text(pct >= 1 ? '🏆' : pct >= 0.7 ? '💪' : '🚶',
-            style: const TextStyle(fontSize: 36)),
+    return _card(bg, Column(
+        crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+        Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Text('${health.steps}',
+                style: const TextStyle(fontFamily: 'Cairo',
+                    fontSize: 36, fontWeight: FontWeight.w900,
+                    color: AppColors.halalGreen)),
+            const SizedBox(width: 8),
+            if (_stepServiceRunning)
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 7, vertical: 3),
+                decoration: BoxDecoration(
+                  color: AppColors.halalGreen.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(8)),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  Container(width: 6, height: 6,
+                    decoration: const BoxDecoration(
+                        color: AppColors.halalGreen,
+                        shape: BoxShape.circle)),
+                  const SizedBox(width: 4),
+                  Text(isAr?'مباشر':'LIVE',
+                      style: const TextStyle(fontFamily: 'Cairo',
+                          fontSize: 10, fontWeight: FontWeight.w800,
+                          color: AppColors.halalGreen)),
+                ]))
+            else
+              GestureDetector(
+                onTap: _startStepService,
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 7, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(8)),
+                  child: Text(isAr?'▶ تشغيل':'▶ Start',
+                      style: const TextStyle(fontFamily: 'Cairo',
+                          fontSize: 10, fontWeight: FontWeight.w800,
+                          color: Colors.orange)))),
+          ]),
+          Text('/ ${health.stepsGoal} ${isAr?"خطوة":"steps"}',
+              style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
+                  color: AppColors.halalGreen.withOpacity(0.7))),
+        ])),
+        Text(pct >= 1.0?'🏆':pct >= 0.7?'💪':'🚶',
+            style: const TextStyle(fontSize: 42)),
       ]),
-      const SizedBox(height: 10),
-      LinearProgressIndicator(
-          value: pct,
-          backgroundColor: Colors.grey.shade200,
-          valueColor: const AlwaysStoppedAnimation(AppColors.halalGreen),
-          borderRadius: BorderRadius.circular(8),
-          minHeight: 10),
       const SizedBox(height: 12),
-      Row(children: [500, 1000, 2000].map((n) => Expanded(
+      Stack(children: [
+        Container(height: 12, decoration: BoxDecoration(
+          color: AppColors.halalGreen.withOpacity(0.10),
+          borderRadius: BorderRadius.circular(8))),
+        LayoutBuilder(builder: (_, c) => AnimatedContainer(
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeOutCubic,
+          height: 12, width: c.maxWidth * pct,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [
+              AppColors.halalGreen.withOpacity(0.6),
+              AppColors.halalGreen]),
+            borderRadius: BorderRadius.circular(8),
+            boxShadow: [BoxShadow(
+              color: AppColors.halalGreen.withOpacity(0.35),
+              blurRadius: 6)]))),
+      ]),
+      const SizedBox(height: 12),
+      Row(children: [
+        _stepStat('🗺️', distStr,   isAr?'مسافة':'Distance', AppColors.waterBlue),
+        const SizedBox(width: 8),
+        _stepStat('🔥', '$kcalBurn', isAr?'سعرة محروقة':'kcal burned', AppColors.haramRed),
+        const SizedBox(width: 8),
+        _stepStat('🎯', '${(pct*100).toInt()}%', isAr?'من الهدف':'of goal', AppColors.halalGreen),
+      ]),
+      const SizedBox(height: 12),
+      Text(isAr?'ضبط يدوي:':'Manual adjust:',
+          style: TextStyle(fontFamily: 'Cairo', fontSize: 10,
+              color: isDark?AppColors.darkMuted:AppColors.lightMuted)),
+      const SizedBox(height: 6),
+      Row(children: [1000, 3000, 5000].map((n) => Expanded(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 3),
           child: OutlinedButton(
-            onPressed: () => ref.read(healthProvider.notifier).addSteps(n),
+            onPressed: () =>
+                ref.read(healthProvider.notifier).addSteps(n),
             style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.halalGreen,
-                side: const BorderSide(color: AppColors.halalGreen),
-                padding: const EdgeInsets.symmetric(vertical: 8)),
-            child: Text('+$n',
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 11)),
+                side: BorderSide(
+                    color: AppColors.halalGreen.withOpacity(0.4)),
+                padding: const EdgeInsets.symmetric(vertical: 6)),
+            child: Text('+$n', style: const TextStyle(
+                fontFamily: 'Cairo', fontSize: 10)),
           ),
         ),
       )).toList()),
     ]));
   }
+
+  Widget _stepStat(String emoji, String val,
+      String label, Color color) =>
+      Expanded(child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.08),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: color.withOpacity(0.2))),
+        child: Column(children: [
+          Text(emoji, style: const TextStyle(fontSize: 20)),
+          Text(val, style: TextStyle(fontFamily: 'Cairo',
+              fontSize: 13, fontWeight: FontWeight.w800, color: color)),
+          Text(label, style: TextStyle(fontFamily: 'Cairo',
+              fontSize: 9, color: color.withOpacity(0.8))),
+        ])));
 
   Widget _moodCard(HealthState health, bool isAr, bool isDark) {
     final bg = isDark ? AppColors.darkCard : Colors.white;

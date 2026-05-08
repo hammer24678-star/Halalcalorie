@@ -155,158 +155,342 @@ class _NutritionState extends ConsumerState<NutritionScreen>
 
   void _showDetail(BuildContext ctx, MealEntry e,
       bool isAr, bool isDark, bool isPremium) {
-    final bg = isDark ? AppColors.darkCard : Colors.white;
+    final bg    = isDark ? AppColors.darkCard  : Colors.white;
     final muted = isDark ? AppColors.darkMuted : const Color(0xFF9E9E9E);
+    final textC = isDark ? AppColors.darkText  : AppColors.lightText;
+    final profile = ref.read(userProfileProvider);
+    final goal  = (profile?.calorieGoalKcal ?? 2000).toDouble();
+    final pGoal = goal * 0.125;  // protein grams ~25% of kcal /4
+    final cGoal = goal * 0.25;   // carb grams ~50% of kcal /4
+    final fGoal = goal / 9 * 0.30;
+    final pctKcal = goal > 0 ? (e.kcal     / goal ).clamp(0.0,1.0) : 0.0;
+    final pctP    = pGoal > 0 ? (e.proteinG / pGoal).clamp(0.0,1.0) : 0.0;
+    final pctC    = cGoal > 0 ? (e.carbsG   / cGoal).clamp(0.0,1.0) : 0.0;
+    final pctF    = fGoal > 0 ? (e.fatG     / fGoal).clamp(0.0,1.0) : 0.0;
+
+    final tags = <Map<String,dynamic>>[];
+    if (e.proteinG >= 20) tags.add({'l':isAr?'بروتين عالٍ':'High Protein','c':AppColors.halalGreen,'e':'💪'});
+    if (e.carbsG   <= 10) tags.add({'l':isAr?'كارب منخفض':'Low Carb',    'c':AppColors.waterBlue,'e':'🥗'});
+    if (e.fatG     <=  5) tags.add({'l':isAr?'دهون منخفضة':'Low Fat',    'c':AppColors.barakahGold,'e':'✨'});
+    if (e.kcal     <= 150) tags.add({'l':isAr?'خفيف':'Light',            'c':AppColors.sunnahGreen,'e':'🌿'});
+    if (e.kcal     >= 500) tags.add({'l':isAr?'سعرات عالية':'High Cal',  'c':AppColors.haramRed,'e':'🔥'});
+
+    String islamicNote() {
+      final n = e.name.toLowerCase();
+      if (n.contains('date')||n.contains('تمر'))
+        return isAr?'«أفطروا على تمر» — النبي ﷺ أوصى بالتمر'
+                   :'"Break fast with dates" — Prophet ﷺ';
+      if (n.contains('honey')||n.contains('عسل'))
+        return isAr?'«فيه شفاء للناس» — القرآن الكريم 16:69'
+                   :'"In it is healing for people" — Quran 16:69';
+      if (n.contains('olive')||n.contains('زيتون'))
+        return isAr?'«كلوا الزيت وادهنوا به» — الزيتون مبارك'
+                   :'"Eat olive oil" — blessed in the Sunnah';
+      if (n.contains('milk')||n.contains('حليب'))
+        return isAr?'الحليب غذاء متكامل — ذكره النبي ﷺ'
+                   :'Milk is a complete food — praised in Sunnah';
+      if (n.contains('fish')||n.contains('سمك'))
+        return isAr?'السمك حلال — من أطيب المأكولات الإسلامية'
+                   :'Fish is halal — highly recommended in Islam';
+      if (n.contains('meat')||n.contains('chicken')||n.contains('لحم')||n.contains('دجاج'))
+        return isAr?'تأكد من المصدر الحلال — الذبح الشرعي شرط'
+                   :'Verify halal source — Islamic slaughter required';
+      return isAr?'«كلوا من طيبات ما رزقناكم» — البقرة 172'
+                 :'"Eat of the good things We provided" — 2:172';
+    }
+
     showModalBottomSheet(
       context: ctx,
+      isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        padding: const EdgeInsets.all(24),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(color: Colors.grey.shade300,
-                  borderRadius: BorderRadius.circular(2))),
-          // Food icon
-          Container(
-            width: 80, height: 80,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [AppColors.sunnahGreen.withOpacity(0.2),
-                         AppColors.sunnahGreen.withOpacity(0.05)],
-                begin: Alignment.topLeft, end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Center(child: Text(foodEmoji(e.name),
-                style: const TextStyle(fontSize: 40))),
-          ),
-          const SizedBox(height: 12),
-          Text(e.name, style: const TextStyle(fontFamily: 'Cairo',
-              fontSize: 20, fontWeight: FontWeight.w800),
-              textAlign: TextAlign.center),
-          const SizedBox(height: 4),
-          Text(isAr ? 'القيم الغذائية' : 'Nutritional Values',
-              style: TextStyle(fontFamily: 'Cairo',
-                  fontSize: 12, color: muted)),
-          const SizedBox(height: 20),
-          // 4 macro cards
-          Row(children: [
-            _macroCard('🔥', '${e.kcal}',
-                isAr ? 'سعرة' : 'kcal', AppColors.haramRed),
-            const SizedBox(width: 8),
-            _macroCard('💪', '${e.proteinG.toStringAsFixed(1)}g',
-                isAr ? 'بروتين' : 'Protein', AppColors.halalGreen),
-            const SizedBox(width: 8),
-            _macroCard('🍚', '${e.carbsG.toStringAsFixed(1)}g',
-                isAr ? 'كارب' : 'Carbs', AppColors.waterBlue),
-            const SizedBox(width: 8),
-            _macroCard('🥑', '${e.fatG.toStringAsFixed(1)}g',
-                isAr ? 'دهون' : 'Fat', AppColors.barakahGold),
-          ]),
-          const SizedBox(height: 16),
-          // Premium micronutrients
-          if (isPremium)
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColors.barakahGold.withOpacity(0.06),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                    color: AppColors.barakahGold.withOpacity(0.25)),
-              ),
-              child: Column(children: [
-                Row(children: [
-                  const Icon(Icons.star_rounded,
-                      color: AppColors.barakahGold, size: 16),
-                  const SizedBox(width: 6),
-                  Text(isAr ? 'مغذيات دقيقة' : 'Micronutrients',
-                      style: const TextStyle(fontFamily: 'Cairo',
-                          fontSize: 12, fontWeight: FontWeight.w700,
-                          color: AppColors.barakahGold)),
-                ]),
-                const SizedBox(height: 12),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                  _microItem('🍊', 'Vit C',
-                      '${(e.kcal * 0.1).toInt()}mg'),
-                  _microItem('🩸', isAr ? 'حديد' : 'Iron',
-                      '${(e.proteinG * 0.18).toStringAsFixed(1)}mg'),
-                  _microItem('🥛', isAr ? 'كالسيوم' : 'Ca',
-                      '${(e.kcal * 0.55).toInt()}mg'),
-                  _microItem('🍌', isAr ? 'بوتاسيوم' : 'K',
-                      '${(e.kcal * 1.4).toInt()}mg'),
-                ]),
-              ]),
-            )
-          else
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(ctx);
-                ctx.push('/paywall');
-              },
-              child: Container(
-                padding: const EdgeInsets.all(12),
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.88,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (_, sc) => Container(
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(28))),
+          child: ListView(
+            controller: sc,
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 32),
+            children: [
+              Center(child: Container(
+                width: 40, height: 4,
+                margin: const EdgeInsets.symmetric(vertical: 12),
                 decoration: BoxDecoration(
-                  color: AppColors.barakahGold.withOpacity(0.06),
-                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2)))),
+
+              // Hero
+              Row(children: [
+                Container(
+                  width: 68, height: 68,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(colors: [
+                      AppColors.sunnahGreen.withOpacity(0.18),
+                      AppColors.sunnahGreen.withOpacity(0.04)]),
+                    borderRadius: BorderRadius.circular(20)),
+                  child: Center(child: Text(foodEmoji(e.name),
+                      style: const TextStyle(fontSize: 36)))),
+                const SizedBox(width: 14),
+                Expanded(child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Text(e.name, style: TextStyle(
+                      fontFamily: 'Cairo', fontSize: 19,
+                      fontWeight: FontWeight.w900, color: textC)),
+                  const SizedBox(height: 6),
+                  if (tags.isNotEmpty) Wrap(spacing: 5, runSpacing: 4,
+                    children: tags.map((t) => Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: (t['c'] as Color).withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                            color: (t['c'] as Color).withOpacity(0.3))),
+                      child: Text('${t["e"]} ${t["l"]}',
+                          style: TextStyle(fontFamily: 'Cairo',
+                              fontSize: 9, fontWeight: FontWeight.w700,
+                              color: t['c'] as Color)),
+                    )).toList()),
+                ])),
+              ]),
+              const SizedBox(height: 18),
+
+              // Calorie ring
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(colors: [
+                    AppColors.sunnahGreen.withOpacity(0.08),
+                    AppColors.sunnahGreen.withOpacity(0.02)]),
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                      color: AppColors.barakahGold.withOpacity(0.25)),
-                ),
+                      color: AppColors.sunnahGreen.withOpacity(0.15))),
                 child: Row(children: [
-                  const Text('⭐', style: TextStyle(fontSize: 18)),
-                  const SizedBox(width: 10),
-                  Expanded(child: Text(
-                      isAr
-                          ? 'بريميوم: فيتامينات ومعادن لكل وجبة'
-                          : 'Premium: Vitamins and minerals per meal',
-                      style: const TextStyle(fontFamily: 'Cairo',
-                          fontSize: 11, color: AppColors.barakahGold))),
-                  const Icon(Icons.chevron_right,
-                      color: AppColors.barakahGold, size: 16),
+                  SizedBox(width: 88, height: 88,
+                    child: Stack(alignment: Alignment.center, children: [
+                      SizedBox.expand(child: CircularProgressIndicator(
+                        value: pctKcal, strokeWidth: 9,
+                        backgroundColor: Colors.grey.withOpacity(0.15),
+                        valueColor: const AlwaysStoppedAnimation(
+                            AppColors.sunnahGreen),
+                        strokeCap: StrokeCap.round)),
+                      Column(mainAxisSize: MainAxisSize.min, children: [
+                        Text('${e.kcal}', style: const TextStyle(
+                            fontFamily: 'Cairo', fontSize: 20,
+                            fontWeight: FontWeight.w900,
+                            color: AppColors.sunnahGreen)),
+                        Text(isAr?'سعرة':'kcal', style: TextStyle(
+                            fontFamily: 'Cairo', fontSize: 9,
+                            color: muted)),
+                      ]),
+                    ])),
+                  const SizedBox(width: 16),
+                  Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                    Text('${(pctKcal*100).toInt()}%',
+                        style: const TextStyle(fontFamily: 'Cairo',
+                            fontSize: 32, fontWeight: FontWeight.w900,
+                            color: AppColors.sunnahGreen)),
+                    Text(isAr?'من هدفك اليومي':'of your daily goal',
+                        style: TextStyle(fontFamily: 'Cairo',
+                            fontSize: 11, color: muted)),
+                    const SizedBox(height: 4),
+                    Text('${goal.toInt()} ${isAr?"سعرة كهدف":"kcal goal"}',
+                        style: TextStyle(fontFamily: 'Cairo',
+                            fontSize: 11,
+                            color: muted.withOpacity(0.7))),
+                  ])),
                 ]),
               ),
-            ),
-          const SizedBox(height: 16),
-          Row(children: [
-            Expanded(child: OutlinedButton.icon(
-              onPressed: () {
-                ref.read(caloriesProvider.notifier).removeEntry(e.id);
-                Navigator.pop(ctx);
-              },
-              icon: const Icon(Icons.delete_outline,
-                  color: AppColors.haramRed, size: 18),
-              label: Text(isAr ? 'حذف' : 'Delete',
-                  style: const TextStyle(fontFamily: 'Cairo',
-                      color: AppColors.haramRed,
-                      fontWeight: FontWeight.w600)),
-              style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: AppColors.haramRed),
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12))),
-            )),
-            const SizedBox(width: 10),
-            Expanded(child: ElevatedButton(
-              onPressed: () => Navigator.pop(ctx),
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.sunnahGreen,
-                  padding: const EdgeInsets.symmetric(vertical: 12),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12))),
-              child: Text(isAr ? 'إغلاق' : 'Close',
-                  style: const TextStyle(fontFamily: 'Cairo',
-                      color: Colors.white,
-                      fontWeight: FontWeight.w700)),
-            )),
-          ]),
-        ]),
+              const SizedBox(height: 16),
+
+              // Macros
+              Text(isAr?'🔬 المغذيات الكبرى':'🔬 Macronutrients',
+                  style: TextStyle(fontFamily: 'Cairo',
+                      fontSize: 14, fontWeight: FontWeight.w800,
+                      color: textC)),
+              const SizedBox(height: 10),
+              _detailBar(isAr?'بروتين':'Protein', e.proteinG,
+                  pGoal, pctP, AppColors.halalGreen,
+                  isAr?'💪 يبني العضلات':'💪 Builds muscle', isDark),
+              const SizedBox(height: 8),
+              _detailBar(isAr?'كربوهيدرات':'Carbs', e.carbsG,
+                  cGoal, pctC, AppColors.waterBlue,
+                  isAr?'⚡ طاقة سريعة':'⚡ Quick energy', isDark),
+              const SizedBox(height: 8),
+              _detailBar(isAr?'دهون':'Fat', e.fatG,
+                  fGoal, pctF, AppColors.barakahGold,
+                  isAr?'🧠 صحة الدماغ':'🧠 Brain health', isDark),
+              const SizedBox(height: 16),
+
+              // Micronutrients
+              Text(isAr?'🧪 مغذيات دقيقة (تقديرية)'
+                       :'🧪 Micronutrients (estimated)',
+                  style: TextStyle(fontFamily: 'Cairo',
+                      fontSize: 14, fontWeight: FontWeight.w800,
+                      color: textC)),
+              const SizedBox(height: 10),
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.barakahGold.withOpacity(
+                      isDark?0.07:0.05),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                      color: AppColors.barakahGold.withOpacity(0.2))),
+                child: Wrap(spacing: 8, runSpacing: 12,
+                  children: [
+                    _microTile('🍊','Vit C','${(e.kcal*0.10).toInt()}mg',muted),
+                    _microTile('🩸',isAr?'حديد':'Iron','${(e.proteinG*0.18).toStringAsFixed(1)}mg',muted),
+                    _microTile('🥛',isAr?'كالسيوم':'Ca','${(e.kcal*0.55).toInt()}mg',muted),
+                    _microTile('🍌',isAr?'بوتاسيوم':'K','${(e.kcal*1.4).toInt()}mg',muted),
+                    _microTile('☀️',isAr?'فيت د':'Vit D','${(e.fatG*0.8).toStringAsFixed(1)}µg',muted),
+                    _microTile('🫁',isAr?'ماغنيسيوم':'Mg','${(e.proteinG*1.2).toInt()}mg',muted),
+                  ])),
+              const SizedBox(height: 16),
+
+              // Islamic note
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.sunnahGreen.withOpacity(0.06),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                      color: AppColors.sunnahGreen.withOpacity(0.2))),
+                child: Row(children: [
+                  const Text('📖', style: TextStyle(fontSize: 22)),
+                  const SizedBox(width: 10),
+                  Expanded(child: Text(islamicNote(),
+                      style: const TextStyle(fontFamily: 'Cairo',
+                          fontSize: 12, color: AppColors.sunnahGreen,
+                          height: 1.6, fontStyle: FontStyle.italic))),
+                ]),
+              ),
+              const SizedBox(height: 20),
+
+              // Buttons
+              Row(children: [
+                Expanded(child: OutlinedButton.icon(
+                  onPressed: () {
+                    ref.read(caloriesProvider.notifier).removeEntry(e.id);
+                    Navigator.pop(ctx);
+                  },
+                  icon: const Icon(Icons.delete_outline,
+                      color: AppColors.haramRed, size: 18),
+                  label: Text(isAr?'حذف':'Delete',
+                      style: const TextStyle(fontFamily: 'Cairo',
+                          color: AppColors.haramRed,
+                          fontWeight: FontWeight.w700)),
+                  style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: AppColors.haramRed),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14))),
+                )),
+                const SizedBox(width: 10),
+                Expanded(child: ElevatedButton.icon(
+                  onPressed: () {
+                    ref.read(caloriesProvider.notifier).addEntry(
+                        e.name, e.kcal,
+                        proteinG: e.proteinG,
+                        carbsG:   e.carbsG,
+                        fatG:     e.fatG);
+                    Navigator.pop(ctx);
+                  },
+                  icon: const Icon(Icons.add_circle_outline,
+                      color: Colors.white, size: 18),
+                  label: Text(isAr?'أضف مرة أخرى':'Log Again',
+                      style: const TextStyle(fontFamily: 'Cairo',
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700)),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.sunnahGreen,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14))),
+                )),
+              ]),
+            ],
+          ),
+        ),
       ),
     );
   }
+
+  Widget _detailBar(String label, double val, double goal,
+      double pct, Color color, String note, bool isDark) {
+    final bg = isDark ? AppColors.darkCard : Colors.white;
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [BoxShadow(
+            color: color.withOpacity(0.08), blurRadius: 10)],
+        border: Border.all(color: color.withOpacity(0.15))),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+        Row(children: [
+          Text(label, style: TextStyle(fontFamily: 'Cairo',
+              fontSize: 13, fontWeight: FontWeight.w700, color: color)),
+          const Spacer(),
+          Text('${val.toStringAsFixed(1)}g / ${goal.toInt()}g',
+              style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                  color: color.withOpacity(0.8),
+                  fontWeight: FontWeight.w600)),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.12),
+              borderRadius: BorderRadius.circular(10)),
+            child: Text('${(pct*100).toInt()}%',
+                style: TextStyle(fontFamily: 'Cairo',
+                    fontSize: 10, fontWeight: FontWeight.w800,
+                    color: color))),
+        ]),
+        const SizedBox(height: 6),
+        Stack(children: [
+          Container(height: 8, decoration: BoxDecoration(
+            color: color.withOpacity(0.10),
+            borderRadius: BorderRadius.circular(6))),
+          LayoutBuilder(builder: (_, c) => Container(
+            height: 8, width: c.maxWidth * pct,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                  colors: [color.withOpacity(0.6), color]),
+              borderRadius: BorderRadius.circular(6),
+              boxShadow: [BoxShadow(
+                  color: color.withOpacity(0.3), blurRadius: 4)]))),
+        ]),
+        const SizedBox(height: 5),
+        Text(note, style: TextStyle(fontFamily: 'Cairo',
+            fontSize: 10, color: color.withOpacity(0.75))),
+      ]),
+    );
+  }
+
+  Widget _microTile(String emoji, String label,
+      String val, Color muted) =>
+      SizedBox(width: 80, child: Column(
+          mainAxisSize: MainAxisSize.min, children: [
+        Text(emoji, style: const TextStyle(fontSize: 22)),
+        const SizedBox(height: 2),
+        Text(val, style: const TextStyle(fontFamily: 'Cairo',
+            fontSize: 12, fontWeight: FontWeight.w800,
+            color: AppColors.barakahGold)),
+        Text(label, style: TextStyle(
+            fontFamily: 'Cairo', fontSize: 9, color: muted)),
+      ]));
+
 
   Widget _macroCard(String emoji, String val, String label, Color color) =>
       Expanded(child: Container(
