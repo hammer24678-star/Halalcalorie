@@ -554,6 +554,50 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
       );
     }
 
+    if (log.length < 2) {
+      final single = log.isEmpty ? null : log.first;
+      return GestureDetector(
+        onTap: () => _showAddWeightDialog(isAr),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: cardBg,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 12)],
+          ),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [
+              Expanded(child: Text(isAr ? 'منحنى الوزن' : 'Weight Trend',
+                  style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700,
+                      fontSize: 14, color: textC))),
+              GestureDetector(
+                onTap: () => _showAddWeightDialog(isAr),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: AppColors.sunnahGreen,
+                    borderRadius: BorderRadius.circular(20)),
+                  child: Text(isAr ? '+ سجل' : '+ Log',
+                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                          color: Colors.white, fontWeight: FontWeight.w700)),
+                ),
+              ),
+            ]),
+            const SizedBox(height: 16),
+            Center(child: Column(children: [
+              if (single != null)
+                Text('${single.weightKg.toStringAsFixed(1)} kg',
+                    style: const TextStyle(fontFamily: 'Cairo', fontSize: 32,
+                        fontWeight: FontWeight.w900, color: AppColors.sunnahGreen)),
+              const SizedBox(height: 6),
+              Text(isAr ? 'سجل وزنك غدا لرؤية المنحنى' : 'Log again tomorrow to see your trend',
+                  style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted)),
+            ])),
+          ]),
+        ),
+      );
+    }
+
     final spots = log.asMap().entries.map((e) =>
         FlSpot(e.key.toDouble(), e.value.weightKg)).toList();
     final minW = log.map((e) => e.weightKg).reduce((a, b) => a < b ? a : b);

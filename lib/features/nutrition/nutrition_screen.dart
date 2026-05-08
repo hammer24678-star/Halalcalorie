@@ -753,8 +753,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                     textC: textC,
                     onAdd: () =>
                         _openAdd(context, isAr, isDark, isPremium),
-                    onTap: (_) {},
-                    onDelete: (_) {},
+                    onTap: (e) =>
+                        _showDetail(context, e, isAr, isDark, isPremium),
+                    onDelete: (e) => ref
+                        .read(caloriesProvider.notifier)
+                        .removeEntry(e.id),
                   )),
 
                   _anim(3, _MealSection(
@@ -768,8 +771,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                     textC: textC,
                     onAdd: () =>
                         _openAdd(context, isAr, isDark, isPremium),
-                    onTap: (_) {},
-                    onDelete: (_) {},
+                    onTap: (e) =>
+                        _showDetail(context, e, isAr, isDark, isPremium),
+                    onDelete: (e) => ref
+                        .read(caloriesProvider.notifier)
+                        .removeEntry(e.id),
                   )),
 
                   _anim(4, _MealSection(
@@ -783,8 +789,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                     textC: textC,
                     onAdd: () =>
                         _openAdd(context, isAr, isDark, isPremium),
-                    onTap: (_) {},
-                    onDelete: (_) {},
+                    onTap: (e) =>
+                        _showDetail(context, e, isAr, isDark, isPremium),
+                    onDelete: (e) => ref
+                        .read(caloriesProvider.notifier)
+                        .removeEntry(e.id),
                   )),
 
                   const SizedBox(height: 16),
@@ -1608,7 +1617,8 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 children: kQuickFoods
                     .where((f) => _filter.isEmpty ||
-                        f.name.toLowerCase().contains(_filter))
+                        f.name.toLowerCase().contains(_filter) ||
+                        f.nameEn.toLowerCase().contains(_filter))
                     .map((food) => ListTile(
                   dense: true,
                   contentPadding: const EdgeInsets.symmetric(
