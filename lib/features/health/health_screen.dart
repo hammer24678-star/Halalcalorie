@@ -5,6 +5,7 @@ import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../data/models/models.dart';
 import '../../core/health_service.dart';
+import '../../core/health_service.dart';
 
 class HealthScreen extends ConsumerStatefulWidget {
   const HealthScreen({super.key});
@@ -15,6 +16,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tab;
   String? _expandedArticle;
+  bool _stepServiceRunning = false;
   bool _stepServiceRunning = false;
   final _weightCtrl = TextEditingController();
   final _heightCtrl = TextEditingController();
@@ -38,6 +40,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       _stagger.forward(from: 0);
     });
     _startStepService();
+    _startStepService();
     _stagger = AnimationController(
         vsync: this, duration: const Duration(milliseconds: 650))
       ..forward();
@@ -51,6 +54,16 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     _weightCtrl.dispose();
     _heightCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _startStepService() async {
+    await HealthService.startStepTracking((steps) {
+      if (!mounted) return;
+      ref.read(healthProvider.notifier).setSteps(steps);
+      if (!_stepServiceRunning)
+        setState(() => _stepServiceRunning = true);
+    });
+    if (mounted) setState(() => _stepServiceRunning = true);
   }
 
   Future<void> _startStepService() async {
