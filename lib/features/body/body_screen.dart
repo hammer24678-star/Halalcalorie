@@ -692,7 +692,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
 
   void _showAddWeightDialog(bool isAr) {
     final ctrl = TextEditingController();
-    showDialog(context: context, builder: (_) => AlertDialog(
+    showDialog(context: context, builder: (dialogCtx) => AlertDialog(
       title: Text(isAr ? 'سجّل وزنك' : 'Log Your Weight',
           style: const TextStyle(fontFamily: 'Cairo')),
       content: TextField(
@@ -706,22 +706,23 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
       ),
       actions: [
         TextButton(
-          onPressed: () { if (context.mounted) Navigator.pop(context); },
+          onPressed: () => Navigator.of(dialogCtx).pop(),
           child: Text(isAr ? 'إلغاء' : 'Cancel',
               style: const TextStyle(fontFamily: 'Cairo')),
         ),
         ElevatedButton(
-          onPressed: () async {
-            final kg = double.tryParse(ctrl.text.trim().replaceAll(',', '.'));
+          onPressed: () {
+            final kg = double.tryParse(
+                ctrl.text.trim().replaceAll(',', '.'));
             if (kg == null || kg < 20 || kg > 300) return;
-            await ref.read(weightLogProvider.notifier).add(kg);
-            if (context.mounted) Navigator.pop(context);
+            Navigator.of(dialogCtx).pop();
+            ref.read(weightLogProvider.notifier).add(kg);
           },
           child: Text(isAr ? 'حفظ' : 'Save',
               style: const TextStyle(fontFamily: 'Cairo')),
         ),
       ],
-    ));
+    )).whenComplete(ctrl.dispose);
   }
 
   Widget _bodyPhotoCard(bool isAr, bool isDark, bool isPremium) {
