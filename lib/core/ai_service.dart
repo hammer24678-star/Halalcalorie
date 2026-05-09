@@ -250,7 +250,7 @@ IMPORTANT:
     required String goal,
     required String language,
   }) async {
-    final system = '''You are a halal dietitian. Respond in ${language == 'ar' ? 'Arabic' : 'English'}.
+    final system = '''You are a halal dietitian. Respond in ${_langName(language)}.
 Provide meal suggestions that are 100% halal, practical, and aligned with Islamic dietary guidelines.
 Mention Sunnah foods (dates, honey, olive oil, black seed) when relevant.
 Keep response concise and structured.''';

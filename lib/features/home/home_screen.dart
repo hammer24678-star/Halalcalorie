@@ -281,6 +281,11 @@ onWater: () {
 HapticFeedback.lightImpact();
 ref.read(waterProvider.notifier).add();
 },
+onRemoveWater: () {
+if (ref.read(waterProvider).cups > 0) {
+  ref.read(waterProvider.notifier).remove();
+}
+},
 onSleep: () => context.go('/health'),
 onWorkout: () => context.go('/fitness'),
 )),
@@ -555,7 +560,7 @@ const SizedBox(width: 20),
 Expanded(child: Column(
 crossAxisAlignment: CrossAxisAlignment.start,
 children: [
-_KvRow(t('الهدف','Goal'), ' remaining', calCol, muted),
+_KvRow(t('المتبقي','Left'), '$remaining', calCol, muted),
 const SizedBox(height: 14),
 // Macro bars
 _MacroBar(t('P','P'), proteinTotal,
@@ -764,12 +769,14 @@ final int streak, wMin;
 final bool isAr, isDark;
 final Color card, border, muted;
 final VoidCallback onWater, onSleep, onWorkout;
+final VoidCallback? onRemoveWater;
 const _StatsRow({
 required this.water, required this.sleep,
 required this.streak, required this.wMin,
 required this.isAr, required this.isDark,
 required this.card, required this.border, required this.muted,
 required this.onWater, required this.onSleep, required this.onWorkout,
+this.onRemoveWater,
 });
 
 @override
@@ -782,6 +789,7 @@ color: AppColors.waterBlue,
 pct: water.percent,
 isDark: isDark, card: card, border: border, muted: muted,
 onTap: onWater,
+onLongPress: onRemoveWater,
 ),
 const SizedBox(width: 10),
 _Stat(
@@ -796,13 +804,13 @@ onTap: onSleep,
 const SizedBox(width: 10),
 _Stat(
 emoji: '🔥',
-value: '`$streak',
+value: '$streak',
 total: isAr ? ' يوم' : 'd',
 label: isAr ? 'تتابع' : 'Streak',
 color: AppColors.haramRed,
 pct: (streak / 30).clamp(0.0, 1.0),
 isDark: isDark, card: card, border: border, muted: muted,
-onTap: () {},
+onTap: () => _showStreakDialog(context, streak, isAr, card, border),
 ),
 const SizedBox(width: 10),
 _Stat(
@@ -824,11 +832,12 @@ final Color color, card, border, muted;
 final double pct;
 final bool isDark;
 final VoidCallback onTap;
+final VoidCallback? onLongPress;
 const _Stat({
 required this.emoji, required this.value, required this.total,
 required this.label, required this.color, required this.pct,
 required this.isDark, required this.card, required this.border,
-required this.muted, required this.onTap,
+required this.muted, required this.onTap, this.onLongPress,
 });
 @override State<_Stat> createState() => _StatState();
 }
@@ -850,6 +859,10 @@ return Expanded(child: GestureDetector(
 onTapDown: (_) => _press.reverse(),
 onTapUp: (_) { _press.forward(); widget.onTap(); },
 onTapCancel: () => _press.forward(),
+onLongPress: widget.onLongPress != null ? () {
+  HapticFeedback.mediumImpact();
+  widget.onLongPress!();
+} : null,
 child: AnimatedBuilder(
 animation: _press,
 builder: (_, child) => Transform.scale(scale: _press.value, child: child),
@@ -889,6 +902,56 @@ fontFamily: 'Cairo', fontSize: 9, color: widget.muted)),
 ),
 ));
 }
+}
+
+// ════════════════════════════════════════════════════════════
+// STREAK DIALOG
+// ════════════════════════════════════════════════════════════
+void _showStreakDialog(BuildContext context, int streak, bool isAr, Color card, Color border) {
+  final msg = streak == 0
+    ? (isAr ? 'ابدأ يومك بتسجيل وجبة! 💪' : 'Log a meal today to start your streak! 💪')
+    : streak < 7
+    ? (isAr ? 'رائع! استمر للحصول على أسبوع كامل 🌟' : 'Great start! Keep going for a full week 🌟')
+    : streak < 30
+    ? (isAr ? 'أنت على المسار الصحيح! 🔥' : "You're on fire! 🔥")
+    : (isAr ? 'مبارك! تتابع رائع جداً 🏆' : 'Masha Allah! Incredible streak 🏆');
+  showDialog(context: context, builder: (_) => Dialog(
+    backgroundColor: card,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),
+      side: BorderSide(color: border)),
+    child: Padding(padding: const EdgeInsets.all(28), child: Column(
+      mainAxisSize: MainAxisSize.min, children: [
+        const Text('🔥', style: TextStyle(fontSize: 56)),
+        const SizedBox(height: 12),
+        Text('$streak', style: const TextStyle(
+          fontFamily: 'Cairo', fontSize: 48,
+          fontWeight: FontWeight.w900, color: AppColors.haramRed)),
+        Text(isAr ? 'يوم تتابع' : 'day streak', style: const TextStyle(
+          fontFamily: 'Cairo', fontSize: 14, color: AppColors.haramRed)),
+        const SizedBox(height: 16),
+        Text(msg, textAlign: TextAlign.center, style: const TextStyle(
+          fontFamily: 'Cairo', fontSize: 13, height: 1.5)),
+        const SizedBox(height: 20),
+        if (streak > 0) LinearProgressIndicator(
+          value: (streak % 30) / 30,
+          color: AppColors.haramRed,
+          backgroundColor: AppColors.haramRed.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(4),
+          minHeight: 6,
+        ),
+        if (streak > 0) Padding(padding: const EdgeInsets.only(top: 6),
+          child: Text(isAr ? '${streak % 30}/30 يوم للجائزة التالية 🎁'
+                           : '${streak % 30}/30 days to next milestone 🎁',
+            style: const TextStyle(fontFamily: 'Cairo', fontSize: 10,
+              color: AppColors.haramRed))),
+        const SizedBox(height: 16),
+        TextButton(onPressed: () => Navigator.pop(context),
+          child: Text(isAr ? 'حسناً 👍' : 'Got it 👍',
+            style: const TextStyle(fontFamily: 'Cairo',
+              color: AppColors.sunnahGreen, fontWeight: FontWeight.w700))),
+      ],
+    )),
+  ));
 }
 
 // ════════════════════════════════════════════════════════════

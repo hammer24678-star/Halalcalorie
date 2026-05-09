@@ -347,11 +347,23 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
 
   // ── Language selector (onboarding screen 2) ──────────────
   Widget _buildLanguagePage(bool isDark) {
-    final isAr  = ref.watch(languageProvider) == 'ar';
+    final lang  = ref.watch(languageProvider);
     final textC = isDark ? Colors.white : const Color(0xFF1F2A1F);
     final muted = isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D);
+
+    // 7 supported languages
+    const langs = [
+      ('ar', '🇸🇦', 'العربية',   'Arabic',     AppColors.sunnahGreen),
+      ('en', '🇬🇧', 'English',   'الإنجليزية', AppColors.barakahGold),
+      ('fr', '🇫🇷', 'Français',  'الفرنسية',   Color(0xFF4A90D9)),
+      ('tr', '🇹🇷', 'Türkçe',    'التركية',    Color(0xFFE53935)),
+      ('ur', '🇵🇰', 'اردو',      'الأردية',    Color(0xFF00897B)),
+      ('ms', '🇲🇾', 'Melayu',    'الملايو',    Color(0xFF8E24AA)),
+      ('id', '🇮🇩', 'Bahasa',    'الإندونيسية',Color(0xFFEF6C00)),
+    ];
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 28),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -360,43 +372,73 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
             duration: const Duration(milliseconds: 700),
             curve: Curves.elasticOut,
             builder: (_, v, child) => Transform.scale(scale: v, child: child),
-            child: const Text('🌐', style: TextStyle(fontSize: 82)),
+            child: const Text('🌐', style: TextStyle(fontSize: 72)),
           ),
-          const SizedBox(height: 28),
+          const SizedBox(height: 20),
           Text('اختر لغتك', style: TextStyle(
-            fontFamily: 'Cairo', fontSize: 30,
+            fontFamily: 'Cairo', fontSize: 28,
             fontWeight: FontWeight.w900, color: textC)),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Text('Choose your language', style: TextStyle(
-            fontFamily: 'Cairo', fontSize: 16, color: muted)),
-          const SizedBox(height: 44),
-          Row(children: [
-            _LangChoice(
-              flag: '🇸🇦', label: 'العربية', sub: 'Arabic',
-              selected: isAr,
-              color: AppColors.sunnahGreen,
-              isDark: isDark,
-              onTap: () {
-                ref.read(languageProvider.notifier).set('ar');
-                setState(() {});
-              },
-            ),
-            const SizedBox(width: 14),
-            _LangChoice(
-              flag: '🇬🇧', label: 'English', sub: 'الإنجليزية',
-              selected: !isAr,
-              color: AppColors.barakahGold,
-              isDark: isDark,
-              onTap: () {
-                ref.read(languageProvider.notifier).set('en');
-                setState(() {});
-              },
-            ),
-          ]),
-          const SizedBox(height: 32),
+            fontFamily: 'Cairo', fontSize: 15, color: muted)),
+          const SizedBox(height: 28),
+
+          // 2-column grid of language cards
+          GridView.count(
+            crossAxisCount: 2,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 2.6,
+            children: langs.map((l) {
+              final (code, flag, name, sub, color) = l;
+              final selected = lang == code;
+              return GestureDetector(
+                onTap: () {
+                  HapticFeedback.lightImpact();
+                  ref.read(languageProvider.notifier).set(code);
+                  setState(() {});
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  decoration: BoxDecoration(
+                    color: selected ? color.withOpacity(0.15) :
+                      (isDark ? const Color(0xFF1E2D1E) : Colors.white),
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(
+                      color: selected ? color : (isDark ? const Color(0xFF2D3D2D) : const Color(0xFFE0E0E0)),
+                      width: selected ? 2 : 1,
+                    ),
+                  ),
+                  child: Row(children: [
+                    Text(flag, style: const TextStyle(fontSize: 22)),
+                    const SizedBox(width: 10),
+                    Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(name, style: TextStyle(
+                          fontFamily: 'Cairo', fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: selected ? color : textC)),
+                        Text(sub, style: TextStyle(
+                          fontFamily: 'Cairo', fontSize: 10,
+                          color: muted)),
+                      ],
+                    )),
+                    if (selected) Icon(Icons.check_circle, color: color, size: 18),
+                  ]),
+                ),
+              );
+            }).toList(),
+          ),
+
+          const SizedBox(height: 24),
           Text(
-            isAr ? '✨ يمكنك تغييرها لاحقاً من الإعدادات'
-                 : '✨ You can change this later in settings',
+            lang == 'ar' ? '✨ يمكنك تغييرها لاحقاً من الإعدادات'
+                         : '✨ You can change this later in settings',
             style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted),
             textAlign: TextAlign.center,
           ),

@@ -97,10 +97,12 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
               value: isDark,
               onChanged: (_) => ref.read(themeProvider.notifier).toggle(),
             ),
-            tile( emoji:'🌐', title: t('اللغة', 'Language'), subtitle: isAr ?'العربية' : 'English',
-              trailing: Row(mainAxisSize: MainAxisSize.min, children: [ _langBtn(context, isAr, true,'ع', 'ar'),
-                const SizedBox(width: 6), _langBtn(context, isAr, false,'EN', 'en'),
-              ]),
+            tile(
+              emoji: '🌐',
+              title: t('اللغة', 'Language'),
+              subtitle: _langLabel(ref.watch(languageProvider)),
+              trailing: const Icon(Icons.expand_more, size: 20),
+              onTap: () => _showLangPicker(context),
             ),
 
             // ── RAMADAN ────────────────────────────────────── section(t('رمضان المبارك 🌙', 'RAMADAN 🌙')),
@@ -215,21 +217,72 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
     );
   }
 
-  Widget _langBtn(BuildContext context, bool isAr, bool isActive, String label, String code) {
-    return GestureDetector(
-      onTap: () => ref.read(languageProvider.notifier).set(code),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: isActive ? AppColors.sunnahGreen : Colors.transparent,
-          border: Border.all(
-              color: isActive ? AppColors.sunnahGreen : AppColors.lightMuted),
-          borderRadius: BorderRadius.circular(20),
+  // ── Language helpers ──────────────────────────────────
+  static const _kLangs = [
+    ('ar', '🇸🇦', 'العربية',  'Arabic'),
+    ('en', '🇬🇧', 'English',  'English'),
+    ('fr', '🇫🇷', 'Français', 'French'),
+    ('tr', '🇹🇷', 'Türkçe',   'Turkish'),
+    ('ur', '🇵🇰', 'اردو',     'Urdu'),
+    ('ms', '🇲🇾', 'Melayu',   'Malay'),
+    ('id', '🇮🇩', 'Bahasa',   'Indonesian'),
+  ];
+
+  String _langLabel(String code) {
+    for (final (c, flag, name, _) in _kLangs) {
+      if (c == code) return '$flag  $name';
+    }
+    return '🌐  English';
+  }
+
+  void _showLangPicker(BuildContext context) {
+    final isDark = ref.read(themeProvider);
+    final current = ref.read(languageProvider);
+    final bg   = isDark ? AppColors.darkCard  : Colors.white;
+    final text = isDark ? AppColors.darkText  : AppColors.lightText;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: bg,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(width: 40, height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.lightMuted.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 16),
+            Text('🌐  Language / اللغة',
+              style: TextStyle(fontFamily: 'Cairo', fontSize: 16,
+                fontWeight: FontWeight.w800, color: text)),
+            const SizedBox(height: 16),
+            ..._kLangs.map((l) {
+              final (code, flag, name, sub) = l;
+              final sel = current == code;
+              return ListTile(
+                leading: Text(flag, style: const TextStyle(fontSize: 24)),
+                title: Text(name, style: TextStyle(fontFamily: 'Cairo',
+                  fontWeight: sel ? FontWeight.w800 : FontWeight.w500,
+                  color: sel ? AppColors.sunnahGreen : text)),
+                subtitle: Text(sub, style: TextStyle(
+                  fontFamily: 'Cairo', fontSize: 11,
+                  color: AppColors.lightMuted)),
+                trailing: sel
+                  ? const Icon(Icons.check_circle,
+                      color: AppColors.sunnahGreen, size: 22)
+                  : null,
+                onTap: () {
+                  ref.read(languageProvider.notifier).set(code);
+                  Navigator.pop(context);
+                  setState(() {});
+                },
+              );
+            }),
+            const SizedBox(height: 8),
+          ]),
         ),
-        child: Text(label, style: TextStyle( fontFamily:'Cairo', fontSize: 12, fontWeight: FontWeight.w700,
-          color: isActive ? Colors.white : AppColors.lightMuted,
-        )),
       ),
     );
   }
