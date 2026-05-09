@@ -2481,11 +2481,12 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
   final _ctrl   = TextEditingController();
   bool _loading = false;
   String? _result;
+  String? _genError;
 
   @override void dispose() { _ctrl.dispose(); super.dispose(); }
 
   Future<void> _generate() async {
-    setState(() { _loading = true; _result = null; });
+    setState(() { _loading = true; _result = null; _genError = null; });
     final lang    = ref.read(languageProvider);
     final profile = ref.read(userProfileProvider);
     final goal    = profile?.calorieGoalKcal.toInt() ?? 2000;
@@ -2502,10 +2503,11 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
         language: lang,
       );
       if (mounted) setState(() { _loading = false; _result = r; });
-    } catch (_) {
+    } catch (e) {
       if (mounted) setState(() {
         _loading = false;
-        _result = 'error';
+        _result = null;
+        _genError = e.toString();
       });
     }
   }
@@ -2671,6 +2673,31 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
             )),
           ]),
         ),
+        if (_genError != null) ...[
+          const SizedBox(height: 14),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.haramRed.withOpacity(0.07),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.haramRed.withOpacity(0.3)),
+            ),
+            child: Column(children: [
+              const Text('⚠️', style: TextStyle(fontSize: 28)),
+              const SizedBox(height: 8),
+              Text(
+                _genError!.contains('API_KEY') || _genError!.contains('401')
+                  ? (isAr ? 'مفتاح API غير مُعدّ' : 'API key not configured')
+                  : _genError!.contains('timeout')
+                  ? (isAr ? 'انتهت مهلة الاتصال، حاول مجدداً' : 'Connection timed out, try again')
+                  : (isAr ? 'فشل توليد الخطة، حاول مجدداً' : 'Plan generation failed, try again'),
+                style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
+                  color: AppColors.haramRed, fontWeight: FontWeight.w600),
+                textAlign: TextAlign.center,
+              ),
+            ]),
+          ),
+        ],
         if (_result != null) ...[
           const SizedBox(height: 14),
           Container(

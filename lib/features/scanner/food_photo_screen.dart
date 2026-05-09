@@ -76,9 +76,13 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       if (mounted) setState(() { _result = result; _state = AnalysisState.done; });
     } catch (e) {
       if (!mounted) return;
-      if (mounted) setState(() { _error = lang =='ar' ?'تعذّر التحليل. تحقق من اتصالك بالإنترنت.' :'Analysis failed. Check your internet connection.';
-        _state = AnalysisState.error;
-      });
+      final errStr = e.toString();
+      final msg = errStr.contains('ANTHROPIC_API_KEY') || errStr.contains('401')
+        ? (lang == 'ar' ? 'مفتاح API غير مُعدّ — راجع إعدادات Codemagic' : 'API key not configured — check Codemagic secrets')
+        : errStr.contains('timeout') || errStr.contains('TimeoutException')
+        ? (lang == 'ar' ? 'انتهت مهلة الاتصال، حاول مجدداً' : 'Connection timed out, try again')
+        : (lang == 'ar' ? 'تعذّر التحليل. تحقق من اتصالك بالإنترنت.' : 'Analysis failed. Check your internet connection.');
+      if (mounted) setState(() { _error = msg; _state = AnalysisState.error; });
     }
   }
 
@@ -89,6 +93,9 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
     ref.read(caloriesProvider.notifier).addEntry(
       isAr ? _result!.foodName : _result!.foodNameEn,
       _result!.kcal,
+      proteinG: _result!.proteinG,
+      carbsG:   _result!.carbsG,
+      fatG:     _result!.fatG,
     );
     ScaffoldMessenger.of(context).showSnackBar(SnackBar( content: Text(isAr ?'✓ تمت الإضافة للعداد' : '✓ Added to tracker', style: const TextStyle(fontFamily:'Cairo')),
       backgroundColor: AppColors.sunnahGreen,

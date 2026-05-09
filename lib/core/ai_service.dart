@@ -39,6 +39,7 @@ class AIService {
     required String userPrompt,
     int maxTokens = 800,
   }) async {
+    if (_apiKey.isEmpty) throw Exception('ANTHROPIC_API_KEY not set');
     final b64   = await _toBase64(imagePath);
     final mime  = _mimeType(imagePath);
 
@@ -68,19 +69,30 @@ class AIService {
         'x-api-key': _apiKey,
       },
       body: body,
-    ).timeout(const Duration(seconds: 30));
+    ).timeout(const Duration(seconds: 60));
 
-    if (resp.statusCode == 200) {
-      final data = jsonDecode(resp.body) as Map<String, dynamic>;
-      final content = data['content'];
-      if (content is! List || content.isEmpty) return '{}';
-      final textBlock = content.firstWhere(
-        (c) => c is Map && c['type'] == 'text',
-        orElse: () => <String, dynamic>{'text': '{}'},
-      );
-      return (textBlock is Map ? textBlock['text'] : null)?.toString() ?? '{}';
+    if (resp.statusCode != 200) {
+      throw Exception('API ${resp.statusCode}: ${resp.body}');
     }
-    throw Exception('API error ${resp.statusCode}: ${resp.body}');
+    final data = jsonDecode(resp.body) as Map<String, dynamic>;
+    final content = data['content'];
+    if (content is! List || content.isEmpty) return '{}';
+    final textBlock = content.firstWhere(
+      (c) => c is Map && c['type'] == 'text',
+      orElse: () => <String, dynamic>{'text': '{}'},
+    );
+    // Extract raw text
+    final raw = (textBlock is Map ? textBlock['text'] : null)?.toString() ?? '{}';
+    // Claude sometimes adds preamble before JSON — extract only the {...} block
+    final match = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
+    return match?.group(0) ?? '{}';
+  }
+
+  // helper: same extraction for text-only responses
+  static String _extractJson(String raw) {
+    final m = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
+    return m?.group(0) ?? '{}';
+  }
   }
 
   // ════════════════════════════════════════════════
@@ -100,11 +112,13 @@ Analyze food images and return ONLY valid JSON with this exact structure — no 
   "carbsG": <integer grams>,
   "fatG": <integer grams>,
   "halalStatus": "<halal|doubtful|haram|unknown>",
-  "halalNote": "<brief halal explanation in Arabic>",
+  "halalNote": "<halal explanation in Arabic>",
+  "halalNoteEn": "<halal explanation in English>",
   "confidence": <0.0-1.0>,
   "ingredients": ["<main ingredient 1>", "<main ingredient 2>"],
   "portionSize": "<e.g. 1 plate ~300g>",
-  "sunnahNote": "<any Sunnah/Islamic connection, or empty string>"
+  "sunnahNote": "<Sunnah/Islamic connection in Arabic, or empty>",
+  "sunnahNoteEn": "<Sunnah/Islamic connection in English, or empty>"
 }
 
 Rules:
@@ -123,25 +137,27 @@ Rules:
       final clean = raw.replaceAll(RegExp(r'```json|```'), '').trim();
       final json  = jsonDecode(clean) as Map<String, dynamic>;
       return FoodPhotoResult(
-        foodName: json['foodName'] as String? ?? 'Unknown',
-        foodNameEn: json['foodNameEn'] as String? ?? 'Unknown',
-        kcal: _safeInt(json['kcal']),
-        proteinG: _safeDouble(json['proteinG']),
-        carbsG: _safeDouble(json['carbsG']),
-        fatG: _safeDouble(json['fatG']),
-        halalStatus: _parseHalalStatus(json['halalStatus'] as String? ?? 'unknown'),
-        halalExplanation: json['halalNote'] as String? ?? '',
-        halalExplanationEn: json['halalNote'] as String? ?? '',
-        sunnahNote: json['sunnahNote'] as String? ?? '',
-        sunnahNoteEn: '',
+        foodName:         json['foodName']    as String? ?? 'Unknown',
+        foodNameEn:       json['foodNameEn']  as String? ?? 'Unknown',
+        kcal:             _safeInt(json['kcal']),
+        proteinG:         _safeDouble(json['proteinG']),
+        carbsG:           _safeDouble(json['carbsG']),
+        fatG:             _safeDouble(json['fatG']),
+        halalStatus:      _parseHalalStatus(json['halalStatus'] as String? ?? 'unknown'),
+        halalExplanation: json['halalNote']   as String? ?? '',
+        halalExplanationEn: json['halalNoteEn'] as String? ?? json['halalNote'] as String? ?? '',
+        sunnahNote:       json['sunnahNote']  as String? ?? '',
+        sunnahNoteEn:     json['sunnahNoteEn'] as String? ?? '',
+        confidence:   _safeDouble(json['confidence'], 0.75),
+        portionSize:  json['portionSize'] as String? ?? '',
+        ingredients:  (json['ingredients'] as List<dynamic>?)?.cast<String>() ?? const [],
       );
-    } catch (e) {
-      // Graceful fallback
+    } on FormatException {
       return _fallbackFoodResult(language);
     }
   }
 
-    static FoodPhotoResult _fallbackFoodResult(String lang) => FoodPhotoResult(
+  static FoodPhotoResult _fallbackFoodResult(String lang) => FoodPhotoResult(
     foodName: lang == 'ar' ? 'وجبة مختلطة' : 'Mixed Meal',
     foodNameEn: 'Mixed Meal',
     kcal: 350, proteinG: 20, carbsG: 40, fatG: 12,
@@ -246,6 +262,11 @@ Goal: $goal
 Request: $prompt
 ''';
 
+    if (_apiKey.isEmpty) {
+      return language == 'ar'
+        ? 'لم يتم إعداد مفتاح API. راجع إعدادات Codemagic.'
+        : 'API key not configured. Check Codemagic secrets.';
+    }
     final body = jsonEncode({
       'model': _model,
       'max_tokens': 600,
@@ -412,6 +433,11 @@ Request: $prompt
         ? 'القيم الغذائية لـ: $foodName'
         : 'Nutritional values for: $foodName';
 
+    if (_apiKey.isEmpty) {
+      return {'name_ar': foodName, 'name_en': foodName,
+        'kcal': 100, 'protein_g': 5.0, 'carbs_g': 15.0,
+        'fat_g': 3.0, 'serving_size': '100g', 'halal': true};
+    }
     try {
       final body = jsonEncode({
         'model': _model,
@@ -435,7 +461,7 @@ Request: $prompt
           orElse: () => <String, dynamic>{'text': '{}'},
         );
         final text = (block is Map ? block['text'] : null)?.toString() ?? '{}';
-        final clean = text.trim().replaceAll('```json', '').replaceAll('```', '').trim();
+        final clean = _extractJson(text);
         return jsonDecode(clean) as Map<String, dynamic>;
       }
     } catch (_) {}
