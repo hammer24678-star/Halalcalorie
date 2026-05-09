@@ -246,6 +246,15 @@ mosqueScale: _mosqueScale,
 )),
 const SizedBox(height: 12),
 
+// ── Sunnah fast day banner (Mon/Thu) ────────────
+if (_now.weekday == DateTime.monday ||
+    _now.weekday == DateTime.thursday) ...[
+  _anim(0, _SunnahFastBanner(
+      isAr: isAr, isDark: isDark,
+      card: card, border: border)),
+  const SizedBox(height: 12),
+],
+
 // ── 2 CALORIE RING ──────────────────────────
 _anim(1, _CalRing(
 eaten: cals.total, goal: cals.goal,
@@ -560,9 +569,84 @@ _MacroBar(t('F','F'), fatTotal,
  ],
 )),
 ]),
+// ── Prophet's 1/3 rule hint ───────────────────────────
+if (pct >= 0.90)
+  Padding(
+    padding: const EdgeInsets.only(top: 10),
+    child: Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: AppColors.sunnahGreen.withOpacity(0.07),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+            color: AppColors.sunnahGreen.withOpacity(0.2)),
+      ),
+      child: Text(
+        t('الثلث للطعام • الثلث للشراب • الثلث للنَّفَس — النبي ﷺ',
+          '1/3 food · 1/3 water · 1/3 air — Prophet ﷺ'),
+        style: const TextStyle(fontFamily: 'Cairo', fontSize: 10,
+          color: AppColors.sunnahGreen,
+          fontWeight: FontWeight.w600, height: 1.4),
+        textAlign: TextAlign.center,
+      ),
+    ),
+  ),
 ]),
 );
 }
+}
+
+// ════════════════════════════════════════════════════════════
+// SUNNAH FAST BANNER
+// ════════════════════════════════════════════════════════════
+class _SunnahFastBanner extends StatelessWidget {
+  final bool isAr, isDark;
+  final Color card, border;
+  const _SunnahFastBanner({
+    required this.isAr, required this.isDark,
+    required this.card, required this.border,
+  });
+  @override
+  Widget build(BuildContext context) {
+    String t(String ar, String en) => isAr ? ar : en;
+    final dayName = DateTime.now().weekday == DateTime.monday
+      ? t('الاثنين', 'Monday') : t('الخميس', 'Thursday');
+    return Container(
+      padding: const EdgeInsets.symmetric(
+          horizontal: 14, vertical: 11),
+      decoration: BoxDecoration(
+        color: AppColors.barakahGold.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            color: AppColors.barakahGold.withOpacity(0.35), width: 1),
+      ),
+      child: Row(children: [
+        const Text('🌙', style: TextStyle(fontSize: 22)),
+        const SizedBox(width: 12),
+        Expanded(child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+          Text(
+            t('يوم صيام سنة — $dayName 🌿',
+              'Sunnah Fast Day — $dayName 🌿'),
+            style: const TextStyle(
+              fontFamily: 'Cairo', fontSize: 13,
+              fontWeight: FontWeight.w700,
+              color: AppColors.barakahGold),
+          ),
+          Text(
+            t('«كان يصوم الاثنين والخميس» — النبي ﷺ',
+              '"He fasted on Mon & Thu" — Prophet ﷺ'),
+            style: const TextStyle(
+              fontFamily: 'Cairo', fontSize: 11,
+              color: AppColors.barakahGold, height: 1.4),
+          ),
+        ])),
+        const Text('✨', style: TextStyle(fontSize: 16)),
+      ]),
+    );
+  }
 }
 
 class _KvRow extends StatelessWidget {

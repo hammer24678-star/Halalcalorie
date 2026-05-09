@@ -14,6 +14,34 @@ enum MealType { breakfast, lunch, dinner, snack }
 
 
 
+// ── Sunnah foods database ────────────────────────────────────
+const _kSunnahFoodsData = <String, (String, String, String)>{
+  'تمر':         ('🌴', 'من تصبّح بسبع تمرات — النبي ﷺ', 'Eat 7 dates every morning — Prophet ﷺ'),
+  'date':         ('🌴', 'من تصبّح بسبع تمرات — النبي ﷺ', 'Eat 7 dates every morning — Prophet ﷺ'),
+  'عسل':          ('🍯', 'فيه شفاء للناس — القرآن الكريم', 'In it is healing for people — Quran'),
+  'honey':        ('🍯', 'فيه شفاء للناس — القرآن الكريم', 'In it is healing for people — Quran'),
+  'زيتون':        ('🪲', 'كلوا الزيت وادهنوا به — النبي ﷺ', 'Eat olive oil — Prophet ﷺ'),
+  'olive':        ('🪲', 'كلوا الزيت وادهنوا به — النبي ﷺ', 'Eat olive oil — Prophet ﷺ'),
+  'حبة سوداء':  ('🌱', 'شفاء من كل داء إلا السام — النبي ﷺ', 'Cure for every disease — Prophet ﷺ'),
+  'black seed':   ('🌱', 'شفاء من كل داء إلا السام — النبي ﷺ', 'Cure for every disease — Prophet ﷺ'),
+  'حليب':         ('🥛', 'فإن اللبن يملأ البطن — النبي ﷺ', 'Milk fills the stomach — Prophet ﷺ'),
+  'milk':         ('🥛', 'فإن اللبن يملأ البطن — النبي ﷺ', 'Milk fills the stomach — Prophet ﷺ'),
+  'تين':          ('🥫', 'فاكهة الجنة — النبي ﷺ', 'Fruit of paradise — Prophet ﷺ'),
+  'fig':          ('🥫', 'فاكهة الجنة — النبي ﷺ', 'Fruit of paradise — Prophet ﷺ'),
+  'رمان':         ('🍉', 'ما من رمانة إلا وفيها حبة من الجنة — النبي ﷺ', 'Every pomegranate has a seed from paradise — Prophet ﷺ'),
+  'pomegranate':  ('🍉', 'ما من رمانة إلا وفيها حبة من الجنة — النبي ﷺ', 'Every pomegranate has a seed from paradise — Prophet ﷺ'),
+  'شعير':         ('🌾', 'عليكم بالشعير — النبي ﷺ', 'Use barley — Prophet ﷺ'),
+  'barley':       ('🌾', 'عليكم بالشعير — النبي ﷺ', 'Use barley — Prophet ﷺ'),
+};
+
+(String, String, String)? _checkSunnahFood(String name) {
+  final n = name.toLowerCase();
+  for (final e in _kSunnahFoodsData.entries) {
+    if (n.contains(e.key)) return e.value;
+  }
+  return null;
+}
+
 // ── Food emoji helper ────────────────────────────────────────
 String foodEmoji(String name) {
   final n = name.toLowerCase();
@@ -135,18 +163,39 @@ class _NutritionState extends ConsumerState<NutritionScreen>
           }
           final messenger = ScaffoldMessenger.of(ctx);
           if (ctx.mounted) Navigator.pop(ctx);
+          final sunnah = _checkSunnahFood(name);
           messenger.showSnackBar(SnackBar(
-              content: Row(children: [
-                const Text('✅ ', style: TextStyle(fontSize: 16)),
-                Text('$name ${isAr ? "أضيف" : "added"}',
-                    style: const TextStyle(fontFamily: 'Cairo',
-                        fontWeight: FontWeight.w700)),
-              ]),
-              backgroundColor: AppColors.sunnahGreen,
+              content: sunnah != null
+                ? Column(mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                    Row(children: [
+                      Text(sunnah.$1,
+                        style: const TextStyle(fontSize: 20)),
+                      const SizedBox(width: 8),
+                      Text(isAr ? '🌿 طعام سنة نبوية!' : '🌿 Sunnah Food!',
+                        style: const TextStyle(fontFamily: 'Cairo',
+                            fontWeight: FontWeight.w800, fontSize: 14,
+                            color: Colors.white)),
+                    ]),
+                    const SizedBox(height: 3),
+                    Text(isAr ? sunnah.$2 : sunnah.$3,
+                      style: const TextStyle(fontFamily: 'Cairo',
+                          fontSize: 11, color: Colors.white70, height: 1.3)),
+                  ])
+                : Row(children: [
+                    const Text('✅ ', style: TextStyle(fontSize: 16)),
+                    Text('$name ${isAr ? "أضيف" : "added"}',
+                        style: const TextStyle(fontFamily: 'Cairo',
+                            fontWeight: FontWeight.w700)),
+                  ]),
+              backgroundColor: sunnah != null
+                ? const Color(0xFF8B6914)
+                : AppColors.sunnahGreen,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
-              duration: const Duration(seconds: 2),
+              duration: Duration(seconds: sunnah != null ? 4 : 2),
             ));
         },
       ),
@@ -1413,6 +1462,28 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
           decoration: BoxDecoration(
               color: Colors.grey.shade300,
               borderRadius: BorderRadius.circular(2)),
+        ),
+        // Bismillah reminder — unique HalalCalorie touch
+        Container(
+          margin: const EdgeInsets.fromLTRB(16, 4, 16, 0),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+          decoration: BoxDecoration(
+            color: AppColors.sunnahGreen.withOpacity(0.07),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(
+                color: AppColors.sunnahGreen.withOpacity(0.2)),
+          ),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            const Text('🤲', style: TextStyle(fontSize: 13)),
+            const SizedBox(width: 8),
+            Text(
+              tl('قُل بسم الله قبل الأكل', 'Say Bismillah before eating'),
+              style: const TextStyle(
+                fontFamily: 'Cairo', fontSize: 11,
+                color: AppColors.sunnahGreen,
+                fontWeight: FontWeight.w700),
+            ),
+          ]),
         ),
         // Title row
         Padding(
