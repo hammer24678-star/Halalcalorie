@@ -659,6 +659,33 @@ class _NutritionState extends ConsumerState<NutritionScreen>
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                 children: [
+                  // ── Bismillah reminder (shown when no meals yet) ──
+                  if (cals.entries.isEmpty)
+                    _anim(0, Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 12),
+                      decoration: BoxDecoration(
+                        color: AppColors.sunnahGreen.withOpacity(0.07),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(
+                            color: AppColors.sunnahGreen.withOpacity(0.3)),
+                      ),
+                      child: Row(children: [
+                        const Text('🌿',
+                            style: TextStyle(fontSize: 22)),
+                        const SizedBox(width: 10),
+                        Expanded(child: Text(
+                          tl('بسم الله قبل الأكل، وكل بيمينك 🍽️',
+                             'Say Bismillah before eating, eat with your right hand 🍽️'),
+                          style: const TextStyle(
+                              fontFamily: 'Cairo', fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.sunnahGreen, height: 1.4),
+                        )),
+                      ]),
+                    )),
+
                   // ── Calorie Summary Card ────────────────
                   _anim(0, Container(
                     decoration: BoxDecoration(
