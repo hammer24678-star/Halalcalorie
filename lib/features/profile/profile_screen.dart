@@ -73,7 +73,7 @@ class ProfileScreen extends ConsumerWidget {
                 color: isSis ? AppColors.barakahGold.withOpacity(0.15) : AppColors.sunnahGreen.withOpacity(0.12)),
               child: Center(child: Text(isSis ? '🧕' : '🧔', style: const TextStyle(fontSize: 44)))),
             const SizedBox(height: 11),
-            Text(isSis ? t('مسلمة', 'Muslimah') : t('مسلم', 'Muslim'),
+            Text(isSis ? t('امرأة', 'Woman') : t('رجل', 'Man'),
                 style: TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.w800, color: textC)),
             const SizedBox(height: 3),
             Text(isSis ? t('وضع النساء', "Women Mode") : t('وضع الرجال', "Men Mode"),

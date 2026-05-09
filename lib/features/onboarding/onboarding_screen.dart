@@ -13,8 +13,8 @@ import '../../core/providers.dart';
 import '../../data/models/user_profile.dart';
 
 // ─── TOTAL PAGES: 3 welcome + 6 questions = 9 ──────────────
-const int _kWelcomePages = 3;
-const int _kTotalPages   = 9;
+const int _kWelcomePages = 4; // lang(1) + 3 welcome before questions
+const int _kTotalPages   = 10;
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -195,7 +195,10 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
   }
 
   Widget _buildPage(int i, bool isDark) {
-    if (i < _kWelcomePages) return _WelcomePage(step: _welcomeSteps[i], isDark: isDark);
+    if (i == 0) return _WelcomePage(step: _welcomeSteps[0], isDark: isDark);
+    if (i == 1) return _buildLanguagePage(isDark); // language screen 2
+    if (i == 2) return _WelcomePage(step: _welcomeSteps[1], isDark: isDark);
+    if (i == 3) return _WelcomePage(step: _welcomeSteps[2], isDark: isDark);
     return _buildQuestion(_questionIdx, isDark);
   }
 
@@ -213,7 +216,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
         isDark: isDark,
         child: Row(children: [
           _GenderCard(
-            emoji: '🧔', labelAr: 'أخ', labelEn: 'Brother',
+            emoji: '🧔', labelAr: 'رجل', labelEn: 'Man',
             selected: _gender == 'brothers',
             color: AppColors.sunnahGreen,
             isDark: isDark,
@@ -340,6 +343,66 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
         isDark: isDark,
       );
     }
+  }
+
+  // ── Language selector (onboarding screen 2) ──────────────
+  Widget _buildLanguagePage(bool isDark) {
+    final isAr  = ref.watch(languageProvider) == 'ar';
+    final textC = isDark ? Colors.white : const Color(0xFF1F2A1F);
+    final muted = isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D);
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 28),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.6, end: 1.0),
+            duration: const Duration(milliseconds: 700),
+            curve: Curves.elasticOut,
+            builder: (_, v, child) => Transform.scale(scale: v, child: child),
+            child: const Text('🌐', style: TextStyle(fontSize: 82)),
+          ),
+          const SizedBox(height: 28),
+          Text('اختر لغتك', style: TextStyle(
+            fontFamily: 'Cairo', fontSize: 30,
+            fontWeight: FontWeight.w900, color: textC)),
+          const SizedBox(height: 6),
+          Text('Choose your language', style: TextStyle(
+            fontFamily: 'Cairo', fontSize: 16, color: muted)),
+          const SizedBox(height: 44),
+          Row(children: [
+            _LangChoice(
+              flag: '🇸🇦', label: 'العربية', sub: 'Arabic',
+              selected: isAr,
+              color: AppColors.sunnahGreen,
+              isDark: isDark,
+              onTap: () {
+                ref.read(languageProvider.notifier).set('ar');
+                setState(() {});
+              },
+            ),
+            const SizedBox(width: 14),
+            _LangChoice(
+              flag: '🇬🇧', label: 'English', sub: 'الإنجليزية',
+              selected: !isAr,
+              color: AppColors.barakahGold,
+              isDark: isDark,
+              onTap: () {
+                ref.read(languageProvider.notifier).set('en');
+                setState(() {});
+              },
+            ),
+          ]),
+          const SizedBox(height: 32),
+          Text(
+            isAr ? '✨ يمكنك تغييرها لاحقاً من الإعدادات'
+                 : '✨ You can change this later in settings',
+            style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -526,6 +589,134 @@ class _GenderCard extends StatelessWidget {
                 child: const Icon(Icons.check_rounded, color: Colors.white, size: 14),
               ),
             ),
+        ]),
+      ),
+    ));
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  LANGUAGE CHOICE CARD
+// ═══════════════════════════════════════════════════════════
+class _LangChoice extends StatelessWidget {
+  final String flag, label, sub;
+  final bool selected, isDark;
+  final Color color;
+  final VoidCallback onTap;
+  const _LangChoice({
+    required this.flag, required this.label, required this.sub,
+    required this.selected, required this.isDark,
+    required this.color, required this.onTap,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(child: GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutBack,
+        height: 160,
+        decoration: BoxDecoration(
+          color: selected
+            ? color.withOpacity(0.12)
+            : (isDark ? const Color(0xFF161B22) : Colors.white),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? color
+              : (isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF)),
+            width: selected ? 2.5 : 0.5,
+          ),
+          boxShadow: selected
+            ? [BoxShadow(color: color.withOpacity(0.2),
+                blurRadius: 16, offset: const Offset(0, 4))]
+            : [],
+        ),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text(flag, style: TextStyle(fontSize: selected ? 52 : 44)),
+          const SizedBox(height: 10),
+          Text(label, style: TextStyle(
+            fontFamily: 'Cairo', fontSize: 18, fontWeight: FontWeight.w800,
+            color: selected ? color
+              : (isDark ? Colors.white : const Color(0xFF1F2A1F)),
+          )),
+          Text(sub, style: TextStyle(
+            fontFamily: 'Cairo', fontSize: 11,
+            color: selected ? color.withOpacity(0.8)
+              : const Color(0xFF7D8590),
+          )),
+          if (selected) ...[
+            const SizedBox(height: 8),
+            Container(
+              width: 26, height: 26,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              child: const Icon(Icons.check_rounded,
+                  color: Colors.white, size: 15),
+            ),
+          ],
+        ]),
+      ),
+    ));
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  LANGUAGE CHOICE CARD
+// ═══════════════════════════════════════════════════════════
+class _LangChoice extends StatelessWidget {
+  final String flag, label, sub;
+  final bool selected, isDark;
+  final Color color;
+  final VoidCallback onTap;
+  const _LangChoice({
+    required this.flag, required this.label, required this.sub,
+    required this.selected, required this.isDark,
+    required this.color, required this.onTap,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(child: GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOutBack,
+        height: 160,
+        decoration: BoxDecoration(
+          color: selected
+            ? color.withOpacity(0.12)
+            : (isDark ? const Color(0xFF161B22) : Colors.white),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? color
+              : (isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF)),
+            width: selected ? 2.5 : 0.5,
+          ),
+          boxShadow: selected
+            ? [BoxShadow(color: color.withOpacity(0.2),
+                blurRadius: 16, offset: const Offset(0, 4))]
+            : [],
+        ),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Text(flag, style: TextStyle(fontSize: selected ? 52 : 44)),
+          const SizedBox(height: 10),
+          Text(label, style: TextStyle(
+            fontFamily: 'Cairo', fontSize: 18, fontWeight: FontWeight.w800,
+            color: selected ? color
+              : (isDark ? Colors.white : const Color(0xFF1F2A1F)),
+          )),
+          Text(sub, style: TextStyle(
+            fontFamily: 'Cairo', fontSize: 11,
+            color: selected ? color.withOpacity(0.8)
+              : const Color(0xFF7D8590),
+          )),
+          if (selected) ...[
+            const SizedBox(height: 8),
+            Container(
+              width: 26, height: 26,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              child: const Icon(Icons.check_rounded,
+                  color: Colors.white, size: 15),
+            ),
+          ],
         ]),
       ),
     ));
