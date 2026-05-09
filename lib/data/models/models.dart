@@ -25,9 +25,13 @@ class ScanResult {
   final List<String> certs;
   final String? notes;
   final DateTime scannedAt;
+  // Nutrition from Open Food Facts API (null = no data)
+  final int? kcal;
+  final double? proteinG, carbsG, fatG;
   ScanResult({
     required this.barcode, required this.name, this.brand,
     required this.status, this.certs = const [], this.notes, DateTime? scannedAt,
+    this.kcal, this.proteinG, this.carbsG, this.fatG,
   }) : scannedAt = scannedAt ?? DateTime.now();
 }
 

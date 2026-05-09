@@ -1,5 +1,6 @@
 // scanner_screen.dart — HalalCalorie v1.0
-import 'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'../../core/theme.dart'; import'../../core/providers.dart'; import'../../data/models/models.dart'; import'barcode_scanner_widget.dart';
+import 'dart:convert';
+import 'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'package:http/http.dart' as http; import'../../core/theme.dart'; import'../../core/providers.dart'; import'../../data/models/models.dart'; import'barcode_scanner_widget.dart';
 
 class ScannerScreen extends ConsumerStatefulWidget {
   const ScannerScreen({super.key});
@@ -10,6 +11,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
     with SingleTickerProviderStateMixin {
   final _barcodeCtrl = TextEditingController();
   ScanResult? _result;
+  bool _scanning = false; // true while hitting OFFapi
 
   @override
   void initState() {
@@ -19,18 +21,95 @@ class _ScannerState extends ConsumerState<ScannerScreen>
 
   @override void dispose() { _barcodeCtrl.dispose(); super.dispose(); }
 
-  void _scan(String barcode) {
-    final scan      = ref.read(scanProvider);
-    final isPremium = ref.read(premiumProvider); final isAr      = ref.read(languageProvider) =='ar';
-    if (!isPremium && scan.todayCount >= 10) { _showLimitDialog(isAr); return; }
-    final product = kProductsDB.firstWhere((p) => p.barcode == barcode,
-        orElse: () => ScanResult(
-          barcode: barcode, name:    isAr ?'منتج غير معروف' : 'Unknown Product', brand:   isAr ?'غير معروف'       : 'Unknown',
-          status:  HalalStatus.unknown, notes:   isAr ?'لا توجد بيانات' : 'No data found'));
-    final r = ScanResult(barcode: barcode, name: product.name, brand: product.brand,
-        status: product.status, certs: product.certs, notes: product.notes);
+  // ── Halal ingredient check ─────────────────────────────
+  HalalStatus _halalCheck(String ingredients) {
+    final lower = ingredients.toLowerCase();
+    const haram = ['alcohol', ' wine', 'pork', ' lard', 'bacon', ' ham,',
+      'porcine', 'carmine', 'cochineal', 'e120', 'gelatin porcine'];
+    const doubtful = ['gelatin', 'e441', 'e471',
+      'mono- and diglycerides', 'natural flavour', 'natural flavor',
+      'rennet', 'whey powder'];
+    if (haram.any(lower.contains))    return HalalStatus.haram;
+    if (doubtful.any(lower.contains)) return HalalStatus.doubtful;
+    return HalalStatus.halal;
+  }
+
+  // ── Unknown product fallback ───────────────────────────
+  void _unknownProduct(String barcode, bool isAr) {
+    final r = ScanResult(
+      barcode: barcode,
+      name:   isAr ? 'منتج غير معروف' : 'Unknown Product',
+      brand:  isAr ? 'غير معروف'       : 'Unknown',
+      status: HalalStatus.unknown,
+      notes:  isAr ? 'لا توجد بيانات — جرّب تحليل AI' : 'No data — try AI Analysis',
+    );
     ref.read(scanProvider.notifier).addScan(r);
-    setState(() => _result = r);
+    if (mounted) setState(() { _result = r; _scanning = false; });
+  }
+
+  // ── Main scan: local DB → Open Food Facts API ──────────
+  Future<void> _scan(String barcode) async {
+    if (_scanning) return;
+    final scan      = ref.read(scanProvider);
+    final isPremium = ref.read(premiumProvider);
+    final isAr      = ref.read(languageProvider) == 'ar';
+    if (!isPremium && scan.todayCount >= 10) { _showLimitDialog(isAr); return; }
+
+    // 1. Local DB lookup (instant)
+    final local = kProductsDB.cast<ScanResult?>().firstWhere(
+        (p) => p!.barcode == barcode, orElse: () => null);
+    if (local != null) {
+      ref.read(scanProvider.notifier).addScan(local);
+      setState(() => _result = local);
+      return;
+    }
+
+    // 2. Open Food Facts API fallback
+    setState(() { _scanning = true; _result = null; });
+    try {
+      final uri = Uri.parse(
+        'https://world.openfoodfacts.org/api/v2/product/$barcode.json'
+        '?fields=product_name,product_name_ar,brands,nutriments,ingredients_text');
+      final resp = await http.get(uri,
+        headers: {'User-Agent': 'HalalCalorie/1.0 (Android; halal-tracking)'}
+      ).timeout(const Duration(seconds: 10));
+      if (!mounted) return;
+
+      if (resp.statusCode == 200) {
+        final json = jsonDecode(resp.body) as Map<String, dynamic>;
+        if (json['status'] == 1) {
+          final p    = json['product'] as Map<String, dynamic>;
+          final n    = (p['nutriments'] ?? {}) as Map<String, dynamic>;
+          final ing  = (p['ingredients_text'] ?? '') as String;
+          final name = ((p['product_name_ar'] ?? '') as String).isNotEmpty
+              ? p['product_name_ar'] as String
+              : (p['product_name'] ?? barcode) as String;
+          final brand  = (p['brands'] ?? '') as String;
+          final kcal   = ((n['energy-kcal_100g'] ?? n['energy_100g'] ?? 0) as num).toInt();
+          final prot   = ((n['proteins_100g']       ?? 0) as num).toDouble();
+          final carbs  = ((n['carbohydrates_100g']  ?? 0) as num).toDouble();
+          final fat    = ((n['fat_100g']            ?? 0) as num).toDouble();
+          final status = _halalCheck(ing);
+          final r = ScanResult(
+            barcode:  barcode,
+            name:     name.isEmpty ? (isAr ? 'منتج مجهول' : 'Unknown') : name,
+            brand:    brand,
+            status:   status,
+            kcal:     kcal > 0 ? kcal : null,
+            proteinG: prot > 0 ? prot : null,
+            carbsG:   carbs > 0 ? carbs : null,
+            fatG:     fat > 0 ? fat : null,
+            notes:    '📡 Open Food Facts',
+          );
+          ref.read(scanProvider.notifier).addScan(r);
+          if (mounted) setState(() { _result = r; _scanning = false; });
+          return;
+        }
+      }
+      _unknownProduct(barcode, isAr);
+    } catch (_) {
+      if (mounted) _unknownProduct(barcode, isAr);
+    }
   }
 
   void _showLimitDialog(bool isAr) {
@@ -245,8 +324,34 @@ class _ScannerState extends ConsumerState<ScannerScreen>
           )).toList(),
         ),
 
+        // ── OFFapi loading indicator ──────────────────────
+        if (_scanning) ...[
+          const SizedBox(height: 14),
+          Container(
+            padding: const EdgeInsets.all(18),
+            decoration: BoxDecoration(
+              color: bg,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.sunnahGreen.withOpacity(0.3)),
+            ),
+            child: Column(children: [
+              const CircularProgressIndicator(
+                color: AppColors.sunnahGreen, strokeWidth: 2.5),
+              const SizedBox(height: 10),
+              Text(
+                isAr ? '📡 جارٍ البحث في Open Food Facts…'
+                     : '📡 Searching Open Food Facts…',
+                style: const TextStyle(
+                  fontFamily: 'Cairo', fontSize: 13,
+                  color: AppColors.sunnahGreen,
+                  fontWeight: FontWeight.w600),
+                textAlign: TextAlign.center,
+              ),
+            ]),
+          ),
+        ],
         // ── Scan result ───────────────────────────────────
-        if (_result != null) ...[
+        if (_result != null && !_scanning) ...[
           const SizedBox(height: 14),
           _resultCard(_result!, isAr, isDark, bg, muted),
         ],
@@ -281,26 +386,79 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               if (r.brand != null && r.brand!.isNotEmpty) Text(r.brand!, style: TextStyle(fontFamily:'Cairo', fontSize: 11, color: muted)),
             ]),
           ]),
-          const Divider(height: 20), _row(t('الباركود', 'Barcode'), r.barcode), if (r.certs.isNotEmpty) _row(t('الشهادات', 'Certificates'), r.certs.join(' • ')), if (r.notes != null && r.notes!.isNotEmpty) _row(t('ملاحظات', 'Notes'), r.notes!),
+          const Divider(height: 20),
+          _row(t('الباركود', 'Barcode'), r.barcode),
+          if (r.certs.isNotEmpty) _row(t('الشهادات', 'Certificates'), r.certs.join(' • ')),
+          if (r.notes != null && r.notes!.isNotEmpty) _row(t('ملاحظات', 'Notes'), r.notes!),
+          // ── Nutrition macros (from OFFapi) ──────────────
+          if (r.kcal != null) ...[
+            const Divider(height: 16),
+            Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+              _macroCol('🔥', '${r.kcal}', t('سعرة', 'kcal'), AppColors.haramRed),
+              if (r.proteinG != null)
+                _macroCol('💪', '${r.proteinG!.toStringAsFixed(1)}g', t('بروتين', 'Prot'), AppColors.halalGreen),
+              if (r.carbsG != null)
+                _macroCol('🍚', '${r.carbsG!.toStringAsFixed(1)}g', t('كربوهيد', 'Carbs'), AppColors.waterBlue),
+              if (r.fatG != null)
+                _macroCol('🫒', '${r.fatG!.toStringAsFixed(1)}g', t('دهون', 'Fat'), AppColors.barakahGold),
+            ]),
+            const SizedBox(height: 4),
+            Text(t('لكل ١٠٠ج', 'per 100g'),
+              style: TextStyle(fontFamily: 'Cairo', fontSize: 9, color: muted),
+              textAlign: TextAlign.center),
+          ],
           const SizedBox(height: 12),
           Row(children: [
             Expanded(child: OutlinedButton.icon(
               onPressed: () => setState(() { _result = null; _barcodeCtrl.clear(); }),
-              icon: const Icon(Icons.refresh, size: 16), label: Text(t('مسح آخر', 'Scan Again'), style: const TextStyle(fontFamily: 'Cairo')),
+              icon: const Icon(Icons.refresh, size: 16),
+              label: Text(t('مسح آخر', 'Scan Again'),
+                style: const TextStyle(fontFamily: 'Cairo')),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.sunnahGreen,
                 side: const BorderSide(color: AppColors.sunnahGreen),
               ),
             )),
             const SizedBox(width: 10),
-            Expanded(child: ElevatedButton.icon( onPressed: () => context.push('/food-photo'), icon: const Text('📸', style: TextStyle(fontSize: 14)), label: Text(t('تحليل AI', 'AI Analysis'), style: const TextStyle(fontFamily: 'Cairo', color: Colors.white)),
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.sunnahGreen),
-            )),
+            if (r.kcal != null)
+              Expanded(child: ElevatedButton.icon(
+                onPressed: () {
+                  ref.read(caloriesProvider.notifier).addEntry(
+                      r.name, r.kcal!);
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(isAr ? '✅ أُضيف للعداد' : '✅ Added to tracker',
+                        style: const TextStyle(fontFamily: 'Cairo')),
+                    backgroundColor: AppColors.sunnahGreen,
+                    duration: const Duration(seconds: 2),
+                  ));
+                },
+                icon: const Icon(Icons.add_rounded, color: Colors.white, size: 16),
+                label: Text(t('أضف للعداد', 'Add to Log'),
+                    style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontSize: 12)),
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.sunnahGreen),
+              ))
+            else
+              Expanded(child: ElevatedButton.icon(
+                onPressed: () => context.push('/food-photo'),
+                icon: const Text('📸', style: TextStyle(fontSize: 14)),
+                label: Text(t('تحليل AI', 'AI Analysis'),
+                    style: const TextStyle(fontFamily: 'Cairo', color: Colors.white)),
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.sunnahGreen),
+              )),
           ]),
         ]),
       ),
     );
   }
+
+  Widget _macroCol(String emoji, String val, String label, Color col) =>
+    Column(children: [
+      Text(emoji, style: const TextStyle(fontSize: 16)),
+      Text(val, style: TextStyle(fontFamily:'Cairo',
+          fontWeight: FontWeight.w800, fontSize: 13, color: col)),
+      Text(label, style: TextStyle(
+          fontFamily:'Cairo', fontSize: 9, color: col)),
+    ]);
 
   Widget _row(String label, String val) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 4),
