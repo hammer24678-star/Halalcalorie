@@ -9,6 +9,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../data/models/models.dart';
+import 'open_food_facts_service.dart';
 
 class AIService {
   static const _endpoint = 'https://api.anthropic.com/v1/messages';
@@ -429,12 +430,20 @@ Request: $prompt
 
   static Future<Map<String, dynamic>> lookupFood(String foodName, {String language = 'ar', bool isPremium = false}) async {
     final isAr = language == 'ar';
-    // Check local database first (works offline, instant)
+    // 1. Local database (offline, instant)
     final local = _localLookup(foodName);
     if (local != null) {
       local['serving_size'] = '100g';
       return local;
     }
+
+    // 2. Open Food Facts — real data, 3M+ products, free
+    try {
+      final off = await OpenFoodFactsService.searchByName(foodName);
+      if (off != null) return off;
+    } catch (_) {} // network error — fall through to AI
+
+    // 3. Anthropic AI — generates estimates when OFFs has no data
     final jsonFmt = isPremium 
         ? '{"name_ar":"...","name_en":"...","kcal":0,"protein_g":0.0,"carbs_g":0.0,"fat_g":0.0,"vitamin_c_mg":0.0,"iron_mg":0.0,"calcium_mg":0.0,"potassium_mg":0.0,"serving_size":"100g","halal":true}'
         : '{"name_ar":"...","name_en":"...","kcal":0,"protein_g":0.0,"carbs_g":0.0,"fat_g":0.0,"serving_size":"100g","halal":true}';
