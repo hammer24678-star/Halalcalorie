@@ -324,9 +324,9 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(name, style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w900, fontSize: 18)),
-            Text(r.halalStatus.label, style: TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700, fontSize: 13, color: statusColor)),
-            if ((r.halalExplanation).isNotEmpty)
-              Text(r.halalExplanation, style: TextStyle(fontFamily:'Cairo', fontSize: 11, color: muted, height: 1.4)),
+            Text(isAr ? r.halalStatus.label : r.halalStatus.labelEn, style: TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700, fontSize: 13, color: statusColor)),
+            if ((isAr ? r.halalExplanation : r.halalExplanationEn).isNotEmpty)
+              Text(isAr ? r.halalExplanation : r.halalExplanationEn, style: TextStyle(fontFamily:'Cairo', fontSize: 11, color: muted, height: 1.4)),
           ])),
           Column(children: [ Text('$confPct%', style: TextStyle(fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w700, color: muted)), Text(isAr ?'دقة' : 'conf.', style: TextStyle(fontFamily: 'Cairo', fontSize: 9, color: muted)),
           ]),
@@ -367,7 +367,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
             ),
             child: Row(children: [ const Text('📖', style: TextStyle(fontSize: 16)),
               const SizedBox(width: 8),
-              Expanded(child: Text(r.sunnahNote ?? '', style: const TextStyle(fontFamily:'Cairo', fontSize: 11, height: 1.5, color: AppColors.lightMuted))),
+              Expanded(child: Text((isAr ? r.sunnahNote : r.sunnahNoteEn) ?? '', style: const TextStyle(fontFamily:'Cairo', fontSize: 11, height: 1.5, color: AppColors.lightMuted))),
             ]),
           ),
         ),

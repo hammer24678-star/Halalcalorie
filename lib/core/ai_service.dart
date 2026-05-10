@@ -110,9 +110,11 @@ class AIService {
   // ════════════════════════════════════════════════
   static Future<FoodPhotoResult> analyzeFoodPhoto({
     required String imagePath,
-    required String language, // 'ar' | 'en'
+    required String language, // ar/en/fr/tr/ur/ms/id — all 7 supported
   }) async {
-    const system = '''You are a professional dietitian and halal food expert.
+    final langName = _langName(language);
+    final system = '''You are a professional dietitian and halal food expert.
+Respond with foodName, halalNote, sunnahNote fields in $langName; keep foodNameEn, halalNoteEn, sunnahNoteEn always in English as fallback.
 Analyze food images and return ONLY valid JSON with this exact structure — no markdown, no extra text:
 {
   "foodName": "<Arabic name>",
@@ -140,7 +142,7 @@ Rules:
 
     final prompt = language == 'ar'
       ? 'حلل هذا الطعام وأعطني القيم الغذائية والحكم الشرعي.'
-      : 'Analyze this food and provide nutritional values and halal assessment.';
+      : 'Analyze this food and provide nutritional values and halal assessment. Respond in $langName.';
 
     try {
       final raw  = await _callVision(imagePath: imagePath, systemPrompt: system, userPrompt: prompt);
