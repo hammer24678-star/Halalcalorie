@@ -14,6 +14,17 @@ class AIService {
   static const _endpoint = 'https://api.anthropic.com/v1/messages';
   static const _apiKey = String.fromEnvironment('ANTHROPIC_API_KEY', defaultValue: '');
   static const _model    = 'claude-sonnet-4-20250514';
+  /// Maps language code → human-readable name for AI prompts
+  static String _langName(String code) => const {
+    'ar': 'Arabic',
+    'en': 'English',
+    'fr': 'French',
+    'tr': 'Turkish',
+    'ur': 'Urdu',
+    'ms': 'Malay',
+    'id': 'Indonesian',
+  }[code] ?? 'English';
+
   static const _version  = '2023-06-01';
 
   // ── Convert image file to base64 ──────────────
