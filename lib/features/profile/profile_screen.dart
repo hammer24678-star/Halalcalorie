@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/revenuecat_service.dart';
 import '../../data/models/user_profile.dart';
 
@@ -180,7 +181,10 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 13),
         ],
 
-        // ── Premium upsell ────────────────────────────────
+        // ── Achievement Badges ───────────────────────────────
+        _achievementsCard(isPremium, isAr, isDark),
+        const SizedBox(height: 12),
+                // ── Premium upsell ────────────────────────────────
         if (!isPremium) ...[
           GestureDetector(
             onTap: () => context.push('/paywall'),
@@ -253,6 +257,99 @@ class ProfileScreen extends ConsumerWidget {
       ]),
     );
   }
+
+  // ── ACHIEVEMENT BADGES ─────────────────────────────────────
+  Widget _achievementsCard(bool isPremium, bool isAr, bool isDark) {
+    final ach  = ref.watch(achievementProvider);
+    final fast = ref.watch(sunnahFastProvider);
+    final bg   = isDark ? AppColors.darkCard : Colors.white;
+    final muted= isDark ? AppColors.darkMuted : AppColors.lightMuted;
+    String t(String ar, String en) => isAr ? ar : en;
+
+    final badges = <(String, String, bool)>[
+      ('🌱', t('البداية','First Step'),          ach.totalDaysLogged >= 1),
+      ('📅', t('أسبوع كامل','Week Warrior'),      ach.totalDaysLogged >= 7),
+      ('🌙', t('صائم السنة','Sunnah Faster'),     fast.lifetimeCount >= 1),
+      ('🏆', t('محارب السنة','Sunnah Warrior'),   fast.lifetimeCount >= 7),
+      ('🍯', t('طعام نبوي','Sunnah Chef'),        ach.sunnahFoodsLogged >= 3),
+      ('✨', t('الإخلاص','Mukhlis'),               ach.totalDaysLogged >= 30),
+      ('💎', t('المجاهد','Al-Mujahid'),            ach.totalDaysLogged >= 100),
+      ('🕌', t('النية','Niyyah Master'),
+        ach.totalDaysLogged >= 28 && fast.lifetimeCount >= 4),
+    ];
+    final earned = badges.where((b) => b.$3).length;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 4),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: bg, borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF))),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          const Text('🏅', style: TextStyle(fontSize: 20)),
+          const SizedBox(width: 10),
+          Expanded(child: Text(t('إنجازاتك','Your Achievements'),
+            style: TextStyle(fontFamily: 'Cairo',
+              fontWeight: FontWeight.w800, fontSize: 14,
+              color: isDark ? Colors.white : const Color(0xFF1F2A1F)))),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+            decoration: BoxDecoration(
+              color: AppColors.barakahGold.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20)),
+            child: Text('$earned/${badges.length}',
+              style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                fontWeight: FontWeight.w700, color: AppColors.barakahGold)),
+          ),
+        ]),
+        const SizedBox(height: 14),
+        Wrap(spacing: 8, runSpacing: 8,
+          children: badges.map((b) => _badge(b.$1, b.$2, b.$3, muted)).toList()),
+        if (!isPremium) ...[
+          const SizedBox(height: 10),
+          GestureDetector(
+            onTap: () => context.push('/paywall'),
+            child: Center(child: Text(
+              t('⭐ ترقّ لفتح كل الإنجازات','⭐ Upgrade to unlock all badges'),
+              style: const TextStyle(fontFamily: 'Cairo',
+                fontSize: 11, color: AppColors.barakahGold))),
+          ),
+        ],
+      ]),
+    );
+  }
+
+  Widget _badge(String emoji, String label, bool earned, Color muted) =>
+    AnimatedOpacity(
+      opacity: earned ? 1.0 : 0.3,
+      duration: const Duration(milliseconds: 400),
+      child: Container(
+        width: 74, padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        decoration: BoxDecoration(
+          color: earned
+            ? AppColors.barakahGold.withOpacity(0.1)
+            : const Color(0xFF1A1F26),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: earned
+              ? AppColors.barakahGold.withOpacity(0.45)
+              : Colors.transparent)),
+        child: Column(children: [
+          Text(emoji, style: const TextStyle(fontSize: 22)),
+          const SizedBox(height: 3),
+          Text(label,
+            style: TextStyle(fontFamily: 'Cairo', fontSize: 8,
+              fontWeight: FontWeight.w600,
+              color: earned ? AppColors.barakahGold : muted),
+            textAlign: TextAlign.center, maxLines: 2,
+            overflow: TextOverflow.ellipsis),
+          if (earned) const Icon(Icons.check_circle_rounded,
+            color: AppColors.barakahGold, size: 11),
+        ]),
+      ),
+    );
 
   Widget _lifeStat(String emoji, String val, String label, Color col) {
     return Column(children: [
