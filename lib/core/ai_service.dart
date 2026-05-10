@@ -104,7 +104,6 @@ class AIService {
     final m = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
     return m?.group(0) ?? '{}';
   }
-  }
 
   // ════════════════════════════════════════════════
   //  FOOD PHOTO ANALYSIS
