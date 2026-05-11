@@ -95,12 +95,15 @@ class BodyPhotoResult {
   final String bodyType, bodyTypeEn;
   final List<String> recommendationsAr, recommendationsEn;
   final String rawAnalysis;
+  final String postureNote, postureNoteAr; // from AI posture analysis
   const BodyPhotoResult({
     required this.bodyFatPercent, required this.muscleMassKg, required this.leanBodyMassKg,
     required this.bodyType, required this.bodyTypeEn,
     required this.recommendationsAr, required this.recommendationsEn,
     required this.rawAnalysis,
     this.confidence = 0.55,
+    this.postureNote = '',
+    this.postureNoteAr = '',
   });
   // Compatibility getters
   List<String> get recommendations => recommendationsEn;
@@ -116,7 +119,9 @@ class BodyPhotoResult {
       bodyTypeEn: j['bodyType'] as String? ?? 'mesomorph',
       recommendationsAr: List<String>.from(j['recommendationsAr'] ?? []),
       recommendationsEn: List<String>.from(j['recommendations'] ?? []),
-      rawAnalysis: j.toString());
+      rawAnalysis:    j.toString(),
+      postureNote:    j['postureNote']   as String? ?? '',
+      postureNoteAr:  j['postureNoteAr'] as String? ?? '',);
   }
 }
 

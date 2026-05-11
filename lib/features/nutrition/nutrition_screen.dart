@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';
@@ -686,7 +688,15 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                       ]),
                     )),
 
-                  // ── Calorie Summary Card ────────────────
+                  // ── Weekly Report (premium) ───────────────────────
+                  _anim(0, _weeklyReportCard(isAr, isDark, isPremium)),
+                  const SizedBox(height: 12),
+
+          // ── Weekly Report (premium) ────────────────────────
+        _anim(0, _weeklyReportCard(isAr, isDark, isPremium)),
+        const SizedBox(height: 12),
+
+        // ── Calorie Summary Card ────────────────
                   _anim(0, Container(
                     decoration: BoxDecoration(
                       color: cardBg,
@@ -2374,6 +2384,173 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
     );
   }
 
+  // ── WEEKLY REPORT CARD (PREMIUM) ─────────────────────────
+  Widget _weeklyReportCard(bool isAr, bool isDark, bool isPremium) {
+    final bg    = isDark ? AppColors.darkCard : Colors.white;
+    final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
+    final goal  = ref.read(caloriesProvider).goal;
+    String t(String ar, String en) => isAr ? ar : en;
+
+    if (!isPremium) {
+      return GestureDetector(
+        onTap: () => context.push('/paywall'),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [
+              AppColors.barakahGold.withOpacity(0.13),
+              AppColors.barakahGold.withOpacity(0.04)]),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.barakahGold.withOpacity(0.45))),
+          child: Row(children: [
+            const Text('📊', style: TextStyle(fontSize: 26)),
+            const SizedBox(width: 12),
+            Expanded(child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(t('تقرير الأسبوع 🔒', 'Weekly Report 🔒'),
+                style: const TextStyle(fontFamily: 'Cairo',
+                  fontWeight: FontWeight.w700, fontSize: 13,
+                  color: AppColors.barakahGold)),
+              Text(t('متوسط السعرات • الالتزام • أفضل يوم — بريميوم',
+                'Avg calories • Adherence • Best day — Premium'),
+                style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: muted)),
+            ])),
+            const Icon(Icons.arrow_forward_ios, size: 13,
+              color: AppColors.barakahGold),
+          ]),
+        ),
+      );
+    }
+
+    // Premium: real 7-day data from caloriesProvider
+    final entries = ref.watch(caloriesProvider).entries;
+    final now  = DateTime.now();
+    final Map<String, int> byDay = {};
+    for (int i = 0; i < 7; i++) {
+      final d = now.subtract(Duration(days: i));
+      final key = '${d.month}/${d.day}';
+      byDay[key] = 0;
+    }
+    for (final e in entries) {
+      final d = e.time;
+      final daysAgo = now.difference(d).inDays;
+      if (daysAgo < 7) {
+        final key = '${d.month}/${d.day}';
+        byDay[key] = (byDay[key] ?? 0) + e.kcal;
+      }
+    }
+    final vals     = byDay.values.toList();
+    final avgKcal  = vals.isEmpty ? 0 : vals.reduce((a,b)=>a+b) ~/ vals.length;
+    final goodDays = vals.where((v) => (v - goal).abs() < goal * 0.15).length;
+    final adherePct= vals.isEmpty ? 0 : goodDays * 100 ~/ vals.length;
+    final bestDay  = vals.isEmpty ? 0 : vals.reduce((a,b)=>a>b?a:b);
+    final bestKey  = vals.isEmpty ? '-'
+      : byDay.entries.firstWhere((e)=>e.value==bestDay).key;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: bg, borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.sunnahGreen.withOpacity(0.25)),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)]),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Row(children: [
+            const Text('📊', style: TextStyle(fontSize: 20)),
+            const SizedBox(width: 8),
+            Text(t('تقرير الأسبوع ⭐', 'Weekly Report ⭐'),
+              style: const TextStyle(fontFamily: 'Cairo',
+                fontWeight: FontWeight.w800, fontSize: 14,
+                color: AppColors.sunnahGreen)),
+          ]),
+          GestureDetector(
+            onTap: () {
+              final txt = isAr
+                ? 'تقرير HalalCalorie 📊\n'
+                  'متوسط السعرات: $avgKcal kcal\n'
+                  'الالتزام بالهدف: $adherePct%\n'
+                  'أيام ملتزمة: $goodDays / ${vals.length}\n\n'
+                  'الجسم أمانة — HalalCalorie'
+                : 'HalalCalorie Weekly Report 📊\n'
+                  'Avg calories: $avgKcal kcal\n'
+                  'Goal adherence: $adherePct%\n'
+                  'On-target days: $goodDays / ${vals.length}\n\n'
+                  'Your body is an amanah — HalalCalorie';
+              try { Share.share(txt); }
+              catch (_) {
+                Clipboard.setData(ClipboardData(text: txt));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(t('نُسخت!', 'Copied!'),
+                    style: const TextStyle(fontFamily: 'Cairo')),
+                  backgroundColor: AppColors.sunnahGreen,
+                  duration: const Duration(seconds: 2)));
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: AppColors.sunnahGreen.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8)),
+              child: const Icon(Icons.share_rounded,
+                color: AppColors.sunnahGreen, size: 16)),
+          ),
+        ]),
+        const SizedBox(height: 14),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+          _weekStat('🔥', '$avgKcal', t('متوسط', 'Avg kcal'), AppColors.haramRed, isDark),
+          _weekStat('🎯', '$adherePct%', t('الالتزام', 'Adherence'), AppColors.sunnahGreen, isDark),
+          _weekStat('📅', bestKey, t('أفضل يوم', 'Best day'), AppColors.barakahGold, isDark),
+          _weekStat('✅', '$goodDays/${vals.isEmpty?7:vals.length}',
+            t('ملتزمة', 'On-target'), AppColors.waterBlue, isDark),
+        ]),
+        if (vals.any((v)=>v>0)) ...[
+          const SizedBox(height: 10),
+          const Divider(height: 1),
+          const SizedBox(height: 10),
+          SizedBox(
+            height: 44,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: byDay.entries.map((e) {
+                final pct = (e.value / (goal > 0 ? goal : 2000)).clamp(0.0, 1.5);
+                final col = (e.value - goal).abs() < goal * 0.15
+                  ? AppColors.sunnahGreen
+                  : e.value > goal * 1.15
+                  ? AppColors.haramRed : AppColors.barakahGold;
+                return Expanded(child: Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Expanded(child: FractionallySizedBox(
+                      heightFactor: pct.clamp(0.05, 1.0),
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 2),
+                        decoration: BoxDecoration(
+                          color: col.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(4))),
+                    )),
+                    const SizedBox(height: 2),
+                    Text(e.key.split('/').last,
+                      style: TextStyle(fontFamily: 'Cairo',
+                        fontSize: 8, color: muted)),
+                  ]));
+              }).toList()),
+          ),
+        ],
+      ]),
+    );
+  }
+
+  Widget _weekStat(String emoji, String val, String label, Color col, bool isDark) =>
+    Column(children: [
+      Text(emoji, style: const TextStyle(fontSize: 16)),
+      Text(val, style: TextStyle(fontFamily: 'Cairo',
+        fontWeight: FontWeight.w800, fontSize: 13, color: col)),
+      Text(label, style: TextStyle(fontFamily: 'Cairo',
+        fontSize: 9, color: isDark ? AppColors.darkMuted : AppColors.lightMuted)),
+    ]);
+
   Widget _aiMacroBox(String emoji, String val,
       String label, Color color) =>
       Expanded(child: Container(
@@ -2740,6 +2917,29 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                             fontSize: 15,
                             color: AppColors.sunnahGreen)),
                   ]),
+                  GestureDetector(
+                    onTap: () async {
+                      final txt = '${tl("خطة HalalCalorie", "HalalCalorie Plan")}\n\n'
+                        '$_result\n\n'
+                        '${tl("الجسم أمانة ﷺ", "Your body is an amanah ﷺ")}';
+                      try { await Share.share(txt); }
+                      catch (_) {
+                        await Clipboard.setData(ClipboardData(text: txt));
+                        if (mounted) ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(tl('نُسخت الخطة!','Plan copied!'),
+                            style: const TextStyle(fontFamily:'Cairo')),
+                            backgroundColor: AppColors.sunnahGreen,
+                            duration: const Duration(seconds: 2)));
+                      }
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.all(7),
+                      decoration: BoxDecoration(
+                        color: AppColors.sunnahGreen.withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(9)),
+                      child: const Icon(Icons.share_rounded,
+                        color: AppColors.sunnahGreen, size: 18)),
+                  ),
                   const SizedBox(height: 14),
                   const Divider(height: 1),
                   const SizedBox(height: 14),

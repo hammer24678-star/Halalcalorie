@@ -14,7 +14,7 @@ import '../../data/models/user_profile.dart';
 
 // ─── TOTAL PAGES: 3 welcome + 6 questions = 9 ──────────────
 const int _kWelcomePages = 4; // lang(1) + 3 welcome before questions
-const int _kTotalPages   = 10;
+const int _kTotalPages   = 11; // 4 welcome + 6 questions + 1 summary
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});

@@ -231,7 +231,9 @@ IMPORTANT:
         recommendationsAr: List<String>.from(json['recommendationsAr'] ?? []),
         recommendationsEn: List<String>.from(json['recommendations'] ?? []),
         rawAnalysis: '',
-        confidence: (json['confidence'] as num?)?.toDouble() ?? 0.55,
+        confidence:    (json['confidence'] as num?)?.toDouble() ?? 0.55,
+        postureNote:   json['postureNote']   as String? ?? '',
+        postureNoteAr: json['postureNoteAr'] as String? ?? '',
       );
     } catch (e) {
       return _fallbackBodyResult(isMale, weightKg, language);

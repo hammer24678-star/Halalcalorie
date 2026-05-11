@@ -188,6 +188,98 @@ class CityNotifier extends StateNotifier<String> { CityNotifier() : super('\u062
   Future<void> set(String city) async { state = city; final p = await SharedPreferences.getInstance(); await p.setString('city', city); }
 }
 
+// ── Sunnah Fast Tracker ─────────────────────────────────
+class SunnahFastState {
+  final bool fastedToday;
+  final int streak;
+  final int lifetimeCount;
+  final List<String> fastDates; // yyyy-MM-dd
+  const SunnahFastState({
+    this.fastedToday = false, this.streak = 0,
+    this.lifetimeCount = 0, this.fastDates = const [],
+  });
+}
+
+class SunnahFastNotifier extends StateNotifier<SunnahFastState> {
+  SunnahFastNotifier() : super(const SunnahFastState()) { _load(); }
+
+  Future<void> _load() async {
+    final p     = await SharedPreferences.getInstance();
+    final dates = p.getStringList('sunnah_fast_dates') ?? [];
+    final today = _today();
+    final fastedToday = dates.contains(today);
+    int streak = 0;
+    DateTime d = DateTime.now();
+    while (true) {
+      final key = '${d.year}-${d.month.toString().padLeft(2,'0')}-${d.day.toString().padLeft(2,'0')}';
+      if (!dates.contains(key)) break;
+      streak++;
+      d = d.subtract(const Duration(days: 1));
+    }
+    state = SunnahFastState(
+      fastedToday: fastedToday, streak: streak,
+      lifetimeCount: dates.length, fastDates: dates,
+    );
+  }
+
+  Future<void> toggleToday() async {
+    final p     = await SharedPreferences.getInstance();
+    final dates = List<String>.from(state.fastDates);
+    final today = _today();
+    if (dates.contains(today)) dates.remove(today);
+    else dates.add(today);
+    await p.setStringList('sunnah_fast_dates', dates);
+    await _load();
+  }
+
+  String _today() {
+    final n = DateTime.now();
+    return '${n.year}-${n.month.toString().padLeft(2,'0')}-${n.day.toString().padLeft(2,'0')}';
+  }
+}
+
+final sunnahFastProvider = StateNotifierProvider<SunnahFastNotifier, SunnahFastState>(
+  (ref) => SunnahFastNotifier());
+
+// ── Achievement Badges ────────────────────────────────────
+class AchievementState {
+  final int totalDaysLogged, sunnahFastCount, sunnahFoodsLogged;
+  const AchievementState({
+    this.totalDaysLogged = 0, this.sunnahFastCount = 0,
+    this.sunnahFoodsLogged = 0,
+  });
+}
+
+class AchievementNotifier extends StateNotifier<AchievementState> {
+  AchievementNotifier() : super(const AchievementState()) { _load(); }
+  Future<void> _load() async {
+    final p = await SharedPreferences.getInstance();
+    state = AchievementState(
+      totalDaysLogged:   p.getInt('ach_days_logged')  ?? 0,
+      sunnahFastCount:   p.getInt('ach_sunnah_fasts') ?? 0,
+      sunnahFoodsLogged: p.getInt('ach_sunnah_foods') ?? 0,
+    );
+  }
+  Future<void> incrementDay() async {
+    final p = await SharedPreferences.getInstance();
+    final v = (p.getInt('ach_days_logged') ?? 0) + 1;
+    await p.setInt('ach_days_logged', v);
+    state = AchievementState(totalDaysLogged: v,
+      sunnahFastCount: state.sunnahFastCount,
+      sunnahFoodsLogged: state.sunnahFoodsLogged);
+  }
+  Future<void> incrementSunnahFood() async {
+    final p = await SharedPreferences.getInstance();
+    final v = (p.getInt('ach_sunnah_foods') ?? 0) + 1;
+    await p.setInt('ach_sunnah_foods', v);
+    state = AchievementState(totalDaysLogged: state.totalDaysLogged,
+      sunnahFastCount: state.sunnahFastCount, sunnahFoodsLogged: v);
+  }
+}
+
+final achievementProvider = StateNotifierProvider<AchievementNotifier, AchievementState>(
+  (ref) => AchievementNotifier());
+
 final weightLogProvider = StateNotifierProvider<WeightLogNotifier, List<WeightEntry>>((ref) => WeightLogNotifier());
 class WeightEntry { final int id; final DateTime date; final double weightKg; final String? note; WeightEntry({required this.id, required this.date, required this.weightKg, this.note}); }
 class WeightLogNotifier extends StateNotifier<List<WeightEntry>> { WeightLogNotifier() : super([]) { _load(); }
