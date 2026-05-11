@@ -1401,6 +1401,119 @@ class _MealSectionState extends State<_MealSection> {
           fontSize: 10, color: color));
 }
 
+  Widget _weeklyReportCard(bool isAr, bool isDark, bool isPremium) {
+    final bg    = isDark ? AppColors.darkCard : Colors.white;
+    final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
+    final goal  = ref.read(caloriesProvider).goal;
+    String t(String ar, String en) => isAr ? ar : en;
+
+    if (!isPremium) {
+      return GestureDetector(
+        onTap: () => context.push('/paywall'),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(colors: [
+              AppColors.barakahGold.withOpacity(0.13),
+              AppColors.barakahGold.withOpacity(0.04)]),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+                color: AppColors.barakahGold.withOpacity(0.45))),
+          child: Row(children: [
+            const Text('📊', style: TextStyle(fontSize: 26)),
+            const SizedBox(width: 12),
+            Expanded(child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(t('تقرير الأسبوع 🔒', 'Weekly Report 🔒'),
+                  style: const TextStyle(fontFamily: 'Cairo',
+                    fontWeight: FontWeight.w700, fontSize: 13,
+                    color: AppColors.barakahGold)),
+                Text(t('متوسط سعرات • التزام • أفضل يوم — بريميوم',
+                  'Avg calories • Adherence • Best day — Premium'),
+                  style: TextStyle(fontFamily: 'Cairo',
+                    fontSize: 11, color: muted)),
+              ])),
+            const Icon(Icons.arrow_forward_ios,
+              size: 13, color: AppColors.barakahGold),
+          ]),
+        ),
+      );
+    }
+
+    final entries = ref.watch(caloriesProvider).entries;
+    final now     = DateTime.now();
+    final Map<String, int> byDay = {};
+    for (int i = 0; i < 7; i++) {
+      final d   = now.subtract(Duration(days: i));
+      final key = '${d.month}/${d.day}';
+      byDay[key] = 0;
+    }
+    for (final e in entries) {
+      final daysAgo = now.difference(e.time).inDays;
+      if (daysAgo < 7) {
+        final key = '${e.time.month}/${e.time.day}';
+        byDay[key] = (byDay[key] ?? 0) + e.kcal;
+      }
+    }
+    final vals      = byDay.values.toList();
+    final avgKcal   = vals.isEmpty ? 0
+        : vals.reduce((a, b) => a + b) ~/ vals.length;
+    final goodDays  = vals.where(
+        (v) => (v - goal).abs() < goal * 0.15).length;
+    final adherePct = vals.isEmpty ? 0
+        : goodDays * 100 ~/ vals.length;
+    final bestDay   = vals.isEmpty ? 0
+        : vals.reduce((a, b) => a > b ? a : b);
+    final bestKey   = vals.isEmpty ? '-'
+        : byDay.entries.firstWhere((e) => e.value == bestDay).key;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+            color: AppColors.sunnahGreen.withOpacity(0.25)),
+        boxShadow: [BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10)]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(t('تقرير الأسبوع ⭐', 'Weekly Report ⭐'),
+            style: const TextStyle(fontFamily: 'Cairo',
+              fontWeight: FontWeight.w800, fontSize: 14,
+              color: AppColors.sunnahGreen)),
+          const SizedBox(height: 14),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+            _weekStat('🔥', '$avgKcal',
+              t('متوسط', 'Avg'), AppColors.haramRed, isDark),
+            _weekStat('🎯', '$adherePct%',
+              t('التزام', 'Adhere'), AppColors.sunnahGreen, isDark),
+            _weekStat('📅', bestKey,
+              t('أفضل', 'Best'), AppColors.barakahGold, isDark),
+            _weekStat('✅', '$goodDays/${vals.isEmpty ? 7 : vals.length}',
+              t('ملتزم', 'OnTarget'), AppColors.waterBlue, isDark),
+          ]),
+        ]),
+    );
+  }
+
+  Widget _weekStat(String emoji, String val, String label,
+      Color col, bool isDark) =>
+    Column(children: [
+      Text(emoji, style: const TextStyle(fontSize: 16)),
+      Text(val, style: TextStyle(fontFamily: 'Cairo',
+        fontWeight: FontWeight.w800, fontSize: 13, color: col)),
+      Text(label, style: TextStyle(fontFamily: 'Cairo',
+        fontSize: 9,
+        color: isDark ? AppColors.darkMuted : AppColors.lightMuted)),
+    ]);
+
+
+
 // ══════════════════════════════════════════════════════════════
 // ADD FOOD SHEET
 // ══════════════════════════════════════════════════════════════
