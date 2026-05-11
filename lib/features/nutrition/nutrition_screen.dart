@@ -690,11 +690,8 @@ class _NutritionState extends ConsumerState<NutritionScreen>
 
                   // ── Weekly Report (premium) ───────────────────────
                   _anim(0, _weeklyReportCard(isAr, isDark, isPremium)),
-                  const SizedBox(height: 12),
 
-          // ── Weekly Report (premium) ────────────────────────
         _anim(0, _weeklyReportCard(isAr, isDark, isPremium)),
-        const SizedBox(height: 12),
 
         // ── Calorie Summary Card ────────────────
                   _anim(0, Container(
@@ -1179,7 +1176,6 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     child: Text(text, style: TextStyle(fontFamily: 'Cairo',
         fontSize: 10, color: color, fontWeight: FontWeight.w600)),
   );
-}
 
 // ══════════════════════════════════════════════════════════════
 // MEAL SECTION WIDGET
@@ -1453,7 +1449,7 @@ class _MealSectionState extends State<_MealSection> {
       final daysAgo = now.difference(e.time).inDays;
       if (daysAgo < 7) {
         final key = '${e.time.month}/${e.time.day}';
-        byDay[key] = (byDay[key] ?? 0) + e.kcal;
+        byDay[key] = ((byDay[key] ?? 0) + e.kcal).toInt();
       }
     }
     final vals      = byDay.values.toList();
@@ -1511,6 +1507,7 @@ class _MealSectionState extends State<_MealSection> {
         fontSize: 9,
         color: isDark ? AppColors.darkMuted : AppColors.lightMuted)),
     ]);
+}
 
 
 
