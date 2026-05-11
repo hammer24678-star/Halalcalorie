@@ -182,7 +182,7 @@ class ProfileScreen extends ConsumerWidget {
         ],
 
         // ── Achievement Badges ───────────────────────────────
-        _achievementsCard(isPremium, isAr, isDark),
+        _achievementsCard(isPremium, isAr, isDark, ref, context),
         const SizedBox(height: 12),
                 // ── Premium upsell ────────────────────────────────
         if (!isPremium) ...[
@@ -259,7 +259,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   // ── ACHIEVEMENT BADGES ─────────────────────────────────────
-  Widget _achievementsCard(bool isPremium, bool isAr, bool isDark) {
+  Widget _achievementsCard(bool isPremium, bool isAr, bool isDark, WidgetRef ref, BuildContext context) {
     final ach  = ref.watch(achievementProvider);
     final fast = ref.watch(sunnahFastProvider);
     final bg   = isDark ? AppColors.darkCard : Colors.white;
