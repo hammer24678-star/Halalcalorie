@@ -578,6 +578,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     final isDark  = ref.watch(themeProvider);
     final cals    = ref.watch(caloriesProvider);
     final profile = ref.watch(userProfileProvider);
+    final plan    = ref.watch(macroPlanProvider);
     final isPremium = ref.watch(premiumProvider);
     final bg      = isDark ? AppColors.darkBg : const Color(0xFFF2F4F7);
     final cardBg  = isDark ? AppColors.darkCard : Colors.white;
@@ -778,25 +779,57 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                       const SizedBox(height: 20),
                       const Divider(height: 1),
                       const SizedBox(height: 16),
-                      // Macro progress bars
+                      // Macro plan chips
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: MacroPlan.values.map((p) {
+                            final sel = p == plan;
+                            return GestureDetector(
+                              onTap: () => ref.read(macroPlanProvider.notifier).set(p),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 200),
+                                margin: const EdgeInsets.only(right: 6, bottom: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                decoration: BoxDecoration(
+                                  color: sel ? AppColors.sunnahGreen : Colors.transparent,
+                                  border: Border.all(
+                                    color: sel ? AppColors.sunnahGreen : AppColors.lightMuted.withOpacity(0.4),
+                                  ),
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: Text(
+                                  '\${p.emoji()} \${isAr ? p.nameAr() : p.nameEn()}',
+                                  style: TextStyle(
+                                    fontFamily: 'Cairo', fontSize: 11,
+                                    fontWeight: sel ? FontWeight.w700 : FontWeight.w400,
+                                    color: sel ? Colors.white : muted,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      // Macro progress bars (plan-based goals)
                       _macroRow(
                         tl('بروتين', 'Protein'),
                         cals.proteinTotal,
-                        profile?.proteinGrams ?? 50,
+                        (goal * plan.proteinPct / 100) / 4,
                         AppColors.halalGreen,
                       ),
                       const SizedBox(height: 10),
                       _macroRow(
                         tl('كربوهيدرات', 'Carbs'),
                         cals.carbsTotal,
-                        (profile?.calorieGoalKcal ?? 2000) / 4,
+                        (goal * plan.carbsPct / 100) / 4,
                         AppColors.waterBlue,
                       ),
                       const SizedBox(height: 10),
                       _macroRow(
                         tl('دهون', 'Fat'),
                         cals.fatTotal,
-                        (profile?.calorieGoalKcal ?? 2000) / 9 * 0.3,
+                        (goal * plan.fatPct / 100) / 9,
                         AppColors.barakahGold,
                       ),
                     ]),          // end macro Column
@@ -1855,7 +1888,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                         foodEmoji(food.name),
                         style: const TextStyle(fontSize: 20))),
                   ),
-                  title: Text(food.name,
+                  title: Text(isAr ? food.name : food.nameEn,
                       style: const TextStyle(fontFamily: 'Cairo',
                           fontSize: 13,
                           fontWeight: FontWeight.w600)),
@@ -1881,7 +1914,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     ]),
                     const SizedBox(width: 8),
                     GestureDetector(
-                      onTap: () => _showUnitPicker(name: food.name, kcal100: food.kcal.toDouble(), protein100: food.proteinG, carbs100: food.carbsG, fat100: food.fatG),
+                      onTap: () => _showUnitPicker(name: isAr ? food.name : food.nameEn, kcal100: food.kcal.toDouble(), protein100: food.proteinG, carbs100: food.carbsG, fat100: food.fatG),
                       child: Container(
                         width: 34, height: 34,
                         decoration: BoxDecoration(

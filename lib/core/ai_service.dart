@@ -118,19 +118,19 @@ class AIService {
 Respond with foodName, halalNote, sunnahNote fields in $langName; keep foodNameEn, halalNoteEn, sunnahNoteEn always in English as fallback.
 Analyze food images and return ONLY valid JSON with this exact structure — no markdown, no extra text:
 {
-  "foodName": "<Arabic name>",
-  "foodNameEn": "<English name>",
+  "foodName": "<food name in $langName>",
+  "foodNameEn": "<food name in English>",
   "kcal": <integer per serving>,
   "proteinG": <integer grams>,
   "carbsG": <integer grams>,
   "fatG": <integer grams>,
   "halalStatus": "<halal|doubtful|haram|unknown>",
-  "halalNote": "<halal explanation in Arabic>",
+  "halalNote": "<halal explanation in $langName>",
   "halalNoteEn": "<halal explanation in English>",
   "confidence": <0.0-1.0>,
   "ingredients": ["<main ingredient 1>", "<main ingredient 2>"],
   "portionSize": "<e.g. 1 plate ~300g>",
-  "sunnahNote": "<Sunnah/Islamic connection in Arabic, or empty>",
+  "sunnahNote": "<Sunnah/Islamic connection in $langName, or empty>",
   "sunnahNoteEn": "<Sunnah/Islamic connection in English, or empty>"
 }
 

@@ -68,7 +68,10 @@ class HalalCalorieApp extends ConsumerWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [Locale('ar'), Locale('en')],
+      supportedLocales: const [
+        Locale('ar'), Locale('en'), Locale('fr'),
+        Locale('tr'), Locale('ms'), Locale('id'), Locale('ur'),
+      ],
     );
   }
 }
