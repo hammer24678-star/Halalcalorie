@@ -117,6 +117,24 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
               onTap: () => _showLangPicker(context),
             ),
 
+            const Divider(height: 1, indent: 56),
+            ListTile(
+              leading: Text(
+                ref.watch(macroPlanProvider).emoji(),
+                style: const TextStyle(fontSize: 22)),
+              title: Text(t('خطة الماكرو', 'Macro Plan'),
+                  style: TextStyle(fontFamily: 'Cairo',
+                      fontWeight: FontWeight.w600, fontSize: 14,
+                      color: text)),
+              subtitle: Text(
+                isAr ? ref.watch(macroPlanProvider).nameAr()
+                     : ref.watch(macroPlanProvider).nameEn(),
+                style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                    color: AppColors.sunnahGreen)),
+              trailing: const Icon(Icons.expand_more, size: 20),
+              onTap: () => _showMacroPicker(context),
+            ),
+
             // ── RAMADAN ────────────────────────────────────── section(t('رمضان المبارك 🌙', 'RAMADAN 🌙')),
             tog( emoji:'🌙', title: t('وضع رمضان', 'Ramadan Mode'), subtitle: t('يُعدّل التمارين والتغذية للصائم', 'Adjusts workouts & nutrition for fasting'),
               value: ramadan,
@@ -319,6 +337,60 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  void _showMacroPicker(BuildContext context) {
+    final isDark  = ref.read(themeProvider);
+    final isAr    = ref.read(languageProvider) == 'ar';
+    final current = ref.read(macroPlanProvider);
+    final bg   = isDark ? AppColors.darkCard : Colors.white;
+    final text = isDark ? AppColors.darkText : AppColors.lightText;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: bg,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (_) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(width: 40, height: 4,
+              decoration: BoxDecoration(
+                color: AppColors.lightMuted.withOpacity(0.4),
+                borderRadius: BorderRadius.circular(2))),
+            const SizedBox(height: 16),
+            Text(isAr ? 'خطط الماكرو' : 'Macro Plans',
+              style: TextStyle(fontFamily: 'Cairo', fontSize: 16,
+                fontWeight: FontWeight.w800, color: text)),
+            const SizedBox(height: 8),
+            ...MacroPlan.values.map((p) {
+              final sel = p == current;
+              return ListTile(
+                leading: Text(p.emoji(), style: const TextStyle(fontSize: 24)),
+                title: Text(isAr ? p.nameAr() : p.nameEn(),
+                  style: TextStyle(fontFamily: 'Cairo',
+                    fontWeight: sel ? FontWeight.w800 : FontWeight.w500,
+                    color: sel ? AppColors.sunnahGreen : text)),
+                subtitle: Text(
+                  'P:${p.proteinPct}%  C:${p.carbsPct}%  F:${p.fatPct}%',
+                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                      color: AppColors.lightMuted)),
+                trailing: sel
+                  ? const Icon(Icons.check_circle,
+                      color: AppColors.sunnahGreen, size: 22)
+                  : null,
+                onTap: () {
+                  ref.read(macroPlanProvider.notifier).set(p);
+                  Navigator.pop(context);
+                  setState(() {});
+                },
+              );
+            }),
+            const SizedBox(height: 8),
+          ]),
+        ),
       ),
     );
   }
