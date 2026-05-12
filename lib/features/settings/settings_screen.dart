@@ -98,18 +98,21 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
               onChanged: (_) => ref.read(themeProvider.notifier).toggle(),
             ),
             tile(
-              emoji: '🌐',
+              emoji: '🔔',
               title: t('الإشعارات', 'Notifications'),
               subtitle: t('وجبات • ماء • رياضة', 'Meals • Water • Workout'),
-              leading: const Icon(Icons.notifications_active_rounded,
-                  color: AppColors.sunnahGreen),
               trailing: const Icon(Icons.arrow_forward_ios, size: 14),
               onTap: () => _showNotifSettings(context),
             ),
             const Divider(height: 1, indent: 56),
             ListTile(
-              title: t('اللغة', 'Language'),
-              subtitle: _langLabel(ref.watch(languageProvider)),
+              title: Text(t('اللغة', 'Language'),
+                  style: TextStyle(fontFamily: 'Cairo',
+                      fontWeight: FontWeight.w600, fontSize: 14,
+                      color: text)),
+              subtitle: Text(_langLabel(ref.watch(languageProvider)),
+                  style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                      color: muted)),
               trailing: const Icon(Icons.expand_more, size: 20),
               onTap: () => _showLangPicker(context),
             ),
@@ -440,3 +443,48 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
     ));
   }
 }
+
+class _NotifToggle extends StatefulWidget {
+  final String label;
+  final String sub;
+  final String prefKey;
+  final bool isDark;
+  final Future<void> Function(bool) onChange;
+  const _NotifToggle({required this.label, required this.sub,
+    required this.prefKey, required this.isDark, required this.onChange});
+  @override
+  State<_NotifToggle> createState() => _NotifToggleState();
+}
+
+class _NotifToggleState extends State<_NotifToggle> {
+  bool _value = true;
+  @override
+  void initState() { super.initState(); _load(); }
+  Future<void> _load() async {
+    final p = await SharedPreferences.getInstance();
+    if (!mounted) return;
+    setState(() => _value = p.getBool(widget.prefKey) ?? true);
+  }
+  Future<void> _toggle(bool v) async {
+    setState(() => _value = v);
+    final p = await SharedPreferences.getInstance();
+    await p.setBool(widget.prefKey, v);
+    await widget.onChange(v);
+  }
+  @override
+  Widget build(BuildContext context) {
+    final text  = widget.isDark ? AppColors.darkText  : AppColors.lightText;
+    final muted = widget.isDark ? AppColors.darkMuted : AppColors.lightMuted;
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      title: Text(widget.label, style: TextStyle(fontFamily: 'Cairo',
+          fontWeight: FontWeight.w600, fontSize: 14, color: text)),
+      subtitle: Text(widget.sub, style: TextStyle(fontFamily: 'Cairo',
+          fontSize: 11, color: muted)),
+      trailing: Switch(value: _value, onChanged: _toggle,
+          activeColor: AppColors.sunnahGreen),
+      onTap: () => _toggle(!_value),
+    );
+  }
+}
+
