@@ -99,6 +99,15 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             ),
             tile(
               emoji: '🌐',
+              title: t('الإشعارات', 'Notifications'),
+              subtitle: t('وجبات • ماء • رياضة', 'Meals • Water • Workout'),
+              leading: const Icon(Icons.notifications_active_rounded,
+                  color: AppColors.sunnahGreen),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 14),
+              onTap: () => _showNotifSettings(context),
+            ),
+            const Divider(height: 1, indent: 56),
+            ListTile(
               title: t('اللغة', 'Language'),
               subtitle: _langLabel(ref.watch(languageProvider)),
               trailing: const Icon(Icons.expand_more, size: 20),
@@ -233,6 +242,82 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
       if (c == code) return '$flag  $name';
     }
     return '🌐  English';
+  }
+
+  // ── Notification settings ──────────────────────────────
+  void _showNotifSettings(BuildContext context) {
+    final isDark = ref.read(themeProvider);
+    final isAr   = ref.read(languageProvider) == 'ar';
+    final bg   = isDark ? AppColors.darkCard  : Colors.white;
+    final text = isDark ? AppColors.darkText  : AppColors.lightText;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: bg,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (_) => StatefulBuilder(
+        builder: (ctx, setS) {
+          return SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
+              child: Column(mainAxisSize: MainAxisSize.min, children: [
+                Container(width: 40, height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.lightMuted.withOpacity(0.4),
+                    borderRadius: BorderRadius.circular(2))),
+                const SizedBox(height: 16),
+                Text(isAr ? '🔔 إعدادات الإشعارات' : '🔔 Notification Settings',
+                  style: TextStyle(fontFamily: 'Cairo', fontSize: 16,
+                    fontWeight: FontWeight.w800, color: text)),
+                const SizedBox(height: 16),
+                _NotifToggle(
+                  label: isAr ? '💧 تذكير الماء' : '💧 Water reminder',
+                  sub:   isAr ? 'كل ساعتين 8ص–10م' : 'Every 2h 8am–10pm',
+                  prefKey: 'notif_water',
+                  isDark: isDark,
+                  onChange: (v) async {
+                    setS(() {});
+                    await NotificationService.scheduleWaterReminder(isAr: isAr);
+                  },
+                ),
+                _NotifToggle(
+                  label: isAr ? '🍽️ تذكير الوجبات' : '🍽️ Meal reminders',
+                  sub:   isAr ? 'الإفطار 7:30 • الغداء 1:00 • العشاء 7:30م'
+                              : 'Breakfast 7:30 • Lunch 1:00 • Dinner 7:30pm',
+                  prefKey: 'notif_meals',
+                  isDark: isDark,
+                  onChange: (v) async {
+                    setS(() {});
+                    await NotificationService.scheduleMealReminder(isAr: isAr);
+                  },
+                ),
+                _NotifToggle(
+                  label: isAr ? '💪 تذكير الرياضة' : '💪 Workout reminder',
+                  sub:   isAr ? 'كل يوم 5:30م' : 'Daily at 5:30pm',
+                  prefKey: 'notif_workout',
+                  isDark: isDark,
+                  onChange: (v) async {
+                    setS(() {});
+                    await NotificationService.scheduleWorkoutReminder(isAr: isAr);
+                  },
+                ),
+                const SizedBox(height: 8),
+                SizedBox(width: double.infinity, child: ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.sunnahGreen,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12))),
+                  child: Text(isAr ? 'حفظ' : 'Save',
+                    style: const TextStyle(fontFamily: 'Cairo',
+                        color: Colors.white, fontWeight: FontWeight.w700)),
+                )),
+              ]),
+            ),
+          );
+        },
+      ),
+    );
   }
 
   void _showLangPicker(BuildContext context) {

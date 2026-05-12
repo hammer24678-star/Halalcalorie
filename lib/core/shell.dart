@@ -48,7 +48,8 @@ class _AppShellState extends ConsumerState<AppShell>
     final loc    = GoRouterState.of(context).matchedLocation;
     final idx    = _idx(loc);
     final isDark = ref.watch(themeProvider);
-    final isAr   = ref.watch(languageProvider) == 'ar';
+    final lang   = ref.watch(languageProvider);
+    final isAr   = lang == 'ar' || lang == 'ur';
 
     return Scaffold(
       body: FadeTransition(

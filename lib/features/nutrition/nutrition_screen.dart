@@ -1772,10 +1772,12 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     children: (isAr
                         ? ['🌴 تمر', '🍯 عسل', '🥚 بيض',
                            '🍗 دجاج', '🥛 حليب', '🍚 أرز',
-                           '🫒 زيتون', '🌾 شوفان']
+                           '🫒 زيتون', '🌾 شوفان', '🍬 حلوى',
+                           '🎂 كيك', '🍫 شوكولاتة']
                         : ['🌴 Dates', '🍯 Honey', '🥚 Egg',
                            '🍗 Chicken', '🥛 Milk', '🍚 Rice',
-                           '🫒 Olive oil', '🌾 Oats'])
+                           '🫒 Olive oil', '🌾 Oats', '🍬 Sweets',
+                           '🎂 Cake', '🍫 Chocolate'])
                         .map((s) => GestureDetector(
                       onTap: () {
                         _searchCtrl.text = s.substring(2).trim();
@@ -2403,6 +2405,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
         Row(children: [
           Container(
             width: 56, height: 56,
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [
@@ -2414,9 +2417,17 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
               ),
               borderRadius: BorderRadius.circular(16),
             ),
-            child: Center(child: Text(
-                foodEmoji(name.toString()),
-                style: const TextStyle(fontSize: 28))),
+            child: (r['image_url'] as String?)?.isNotEmpty == true
+                ? Image.network(
+                    r['image_url'] as String,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => Center(child: Text(
+                        foodEmoji(name.toString()),
+                        style: const TextStyle(fontSize: 28))),
+                  )
+                : Center(child: Text(
+                    foodEmoji(name.toString()),
+                    style: const TextStyle(fontSize: 28))),
           ),
           const SizedBox(width: 12),
           Expanded(child: Column(

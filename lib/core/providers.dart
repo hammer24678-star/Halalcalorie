@@ -114,6 +114,62 @@ final weeklyKcalProvider = FutureProvider<List<Map<String, dynamic>>>((ref) asyn
   final rows = await AppDatabase.getWeeklyKcal(); return rows.map((r) => {'date': r.dateKey, 'kcal': r.kcal}).toList();
 });
 
+// ── Macro Plan ──────────────────────────────────────────
+enum MacroPlan { balanced, highProtein, highCarb, keto }
+extension MacroPlanExt on MacroPlan {
+  int get proteinPct => switch (this) {
+    MacroPlan.highProtein => 40,
+    MacroPlan.keto        => 25,
+    _                     => 30,
+  };
+  int get carbsPct => switch (this) {
+    MacroPlan.highCarb    => 55,
+    MacroPlan.keto        =>  5,
+    MacroPlan.highProtein => 35,
+    _                     => 40,
+  };
+  int get fatPct => switch (this) {
+    MacroPlan.keto        => 70,
+    MacroPlan.highProtein => 25,
+    MacroPlan.highCarb    => 25,
+    _                     => 30,
+  };
+  String nameAr() => switch (this) {
+    MacroPlan.balanced    => 'متوازن',
+    MacroPlan.highProtein => 'عالي البروتين',
+    MacroPlan.highCarb    => 'عالي الكارب',
+    MacroPlan.keto        => 'كيتو',
+  };
+  String nameEn() => switch (this) {
+    MacroPlan.balanced    => 'Balanced',
+    MacroPlan.highProtein => 'High Protein',
+    MacroPlan.highCarb    => 'High Carb',
+    MacroPlan.keto        => 'Keto',
+  };
+  String emoji() => switch (this) {
+    MacroPlan.balanced    => '⚖️',
+    MacroPlan.highProtein => '💪',
+    MacroPlan.highCarb    => '🍚',
+    MacroPlan.keto        => '🥑',
+  };
+}
+final macroPlanProvider = StateNotifierProvider<MacroPlanNotifier, MacroPlan>(
+    (ref) => MacroPlanNotifier());
+class MacroPlanNotifier extends StateNotifier<MacroPlan> {
+  MacroPlanNotifier() : super(MacroPlan.balanced) { _load(); }
+  Future<void> _load() async {
+    final p = await SharedPreferences.getInstance();
+    final n = p.getString('macro_plan') ?? 'balanced';
+    state = MacroPlan.values.firstWhere(
+        (e) => e.name == n, orElse: () => MacroPlan.balanced);
+  }
+  Future<void> set(MacroPlan plan) async {
+    state = plan;
+    final p = await SharedPreferences.getInstance();
+    await p.setString('macro_plan', plan.name);
+  }
+}
+
 final waterProvider = StateNotifierProvider<WaterNotifier, WaterState>((ref) => WaterNotifier(ref));
 class WaterState { final int cups, goal; WaterState({required this.cups, required this.goal}); double get percent => goal > 0 ? (cups / goal).clamp(0, 1) : 0; }
 class WaterNotifier extends StateNotifier<WaterState> {

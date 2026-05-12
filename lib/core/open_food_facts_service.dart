@@ -17,7 +17,7 @@ class OpenFoodFactsService {
     try {
       final uri = Uri.parse(
         'https://world.openfoodfacts.org/api/v2/product/$barcode.json'
-        '?fields=product_name,product_name_ar,brands,nutriments,ingredients_text',
+        '?fields=product_name,product_name_ar,brands,nutriments,ingredients_text,image_front_small_url,image_url',
       );
       final resp = await http
           .get(uri, headers: {'User-Agent': _ua})
@@ -47,6 +47,7 @@ class OpenFoodFactsService {
         'ingredients':  ing,
         'serving_size': '100g',
         'source':       'openfoodfacts',
+        'image_url':    _str(p['image_front_small_url']).ifEmpty(() => _str(p['image_url'])),
       };
     } catch (_) {
       return null;
@@ -63,7 +64,7 @@ class OpenFoodFactsService {
         'https://world.openfoodfacts.org/cgi/search.pl'
         '?search_terms=${Uri.encodeComponent(query.trim())}'
         '&json=1&page_size=8&page=1'
-        '&fields=product_name,product_name_ar,brands,nutriments',
+        '&fields=product_name,product_name_ar,brands,nutriments,image_front_small_url,image_url',
       );
       final resp = await http
           .get(uri, headers: {'User-Agent': _ua})
@@ -95,6 +96,7 @@ class OpenFoodFactsService {
           'serving_size': '100g',
           'halal':      true,
           'source':     'openfoodfacts',
+          'image_url':  _str(p['image_front_small_url']).ifEmpty(() => _str(p['image_url'])),
         };
       }
       return null; // no result with nutrition data

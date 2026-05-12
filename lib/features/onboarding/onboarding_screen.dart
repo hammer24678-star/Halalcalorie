@@ -125,6 +125,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
   @override
   Widget build(BuildContext context) {
     final isDark = ref.watch(themeProvider);
+    final lang   = ref.watch(languageProvider);
     final size   = MediaQuery.of(context).size;
     final bg     = isDark ? const Color(0xFF0D1117) : const Color(0xFFF0F4F8);
 
@@ -173,7 +174,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
                     opacity: _enterFade,
                     child: SlideTransition(
                       position: _enterSlide,
-                      child: _buildPage(i, isDark),
+                      child: _buildPage(i, isDark, lang),
                     ),
                   );
                 },
@@ -194,11 +195,11 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
     );
   }
 
-  Widget _buildPage(int i, bool isDark) {
-    if (i == 0) return _WelcomePage(step: _welcomeSteps[0], isDark: isDark);
+  Widget _buildPage(int i, bool isDark, String lang) {
+    if (i == 0) return _WelcomePage(step: _welcomeSteps[0], isDark: isDark, lang: lang);
     if (i == 1) return _buildLanguagePage(isDark); // language screen 2
-    if (i == 2) return _WelcomePage(step: _welcomeSteps[1], isDark: isDark);
-    if (i == 3) return _WelcomePage(step: _welcomeSteps[2], isDark: isDark);
+    if (i == 2) return _WelcomePage(step: _welcomeSteps[1], isDark: isDark, lang: lang);
+    if (i == 3) return _WelcomePage(step: _welcomeSteps[2], isDark: isDark, lang: lang);
     return _buildQuestion(_questionIdx, isDark);
   }
 
@@ -452,31 +453,39 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
 //  WELCOME STEPS
 // ═══════════════════════════════════════════════════════════
 class _WelcomeStep {
-  final String emoji, title, subtitle;
-  final List<String> chips;
+  final String emoji, title, titleEn, subtitle, subtitleEn;
+  final List<String> chips, chipsEn;
   final Color color;
-  const _WelcomeStep(this.emoji, this.title, this.subtitle, this.chips, this.color);
+  const _WelcomeStep(this.emoji, this.title, this.titleEn,
+    this.subtitle, this.subtitleEn, this.chips, this.chipsEn, this.color);
 }
 
 const _welcomeSteps = [
-  _WelcomeStep('🌿', 'هلال كالوري',
+  _WelcomeStep('🌿', 'هلال كالوري', 'HalalCalorie',
     'تطبيقك الأول لتتبع السعرات\nبطريقة حلال ١٠٠٪',
+    'Your #1 app to track calories\nthe 100% Halal way',
     ['حلال ✓', 'عربي أولاً', 'خصوصية تامة'],
+    ['Halal ✓', 'Privacy first', 'No ads'],
     AppColors.sunnahGreen),
-  _WelcomeStep('🤖', 'ذكاء اصطناعي',
+  _WelcomeStep('🤖', 'ذكاء اصطناعي', 'AI-Powered',
     'صوّر طعامك أو امسح الباركود\nواحصل على السعرات فوراً',
-    ['Claude AI', '١٠٠٠+ طعام', 'بدون إنترنت'],
+    'Photo your food or scan a barcode\nget calories instantly',
+    ['Claude AI', '١٠٠٠+ طعام', 'تعرف الطعام'],
+    ['Claude AI', '1000+ foods', 'Smart detect'],
     AppColors.barakahGold),
-  _WelcomeStep('🕌', 'إسلامي ١٠٠٪',
+  _WelcomeStep('🕌', 'إسلامي ١٠٠٪', '100% Islamic',
     'أوقات الصلاة • وضع رمضان\nأحاديث يومية • وصفات سنة',
+    'Prayer times • Ramadan mode\nDaily hadith • Sunnah recipes',
     ['أوقات الصلاة', 'وضع رمضان', 'سنة نبوية'],
+    ['Prayer times', 'Ramadan mode', 'Sunnah foods'],
     AppColors.waterBlue),
 ];
 
 class _WelcomePage extends StatelessWidget {
   final _WelcomeStep step;
   final bool isDark;
-  const _WelcomePage({required this.step, required this.isDark});
+  final String lang;
+  const _WelcomePage({required this.step, required this.isDark, required this.lang});
 
   @override
   Widget build(BuildContext context) {
@@ -508,7 +517,7 @@ class _WelcomePage extends StatelessWidget {
 
           const SizedBox(height: 36),
 
-          Text(step.title, textAlign: TextAlign.center,
+          Text(lang == 'ar' ? step.title : step.titleEn, textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Cairo', fontSize: 30, fontWeight: FontWeight.w900,
               color: isDark ? Colors.white : const Color(0xFF1F2A1F),
@@ -516,7 +525,7 @@ class _WelcomePage extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          Text(step.subtitle, textAlign: TextAlign.center,
+          Text(lang == 'ar' ? step.subtitle : step.subtitleEn, textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Cairo', fontSize: 16, height: 1.7,
               color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D),
@@ -526,7 +535,7 @@ class _WelcomePage extends StatelessWidget {
 
           Wrap(spacing: 8, runSpacing: 8,
             alignment: WrapAlignment.center,
-            children: step.chips.map((c) => Container(
+            children: (lang == 'ar' ? step.chips : step.chipsEn).map((c) => Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
               decoration: BoxDecoration(
                 color: step.color.withOpacity(0.1),
