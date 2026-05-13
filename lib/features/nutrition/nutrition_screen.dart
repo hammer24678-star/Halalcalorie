@@ -689,10 +689,6 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                       ]),
                     )),
 
-                  // ── Weekly Report (premium) ───────────────────────
-                  _anim(0, _weeklyReportCard(isAr, isDark, isPremium)),
-
-        _anim(0, _weeklyReportCard(isAr, isDark, isPremium)),
 
         // ── Calorie Summary Card ────────────────
                   _anim(0, Container(
@@ -708,14 +704,20 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                       ],
                     ),
                     child: Column(children: [
-                      // Gradient accent strip — color reacts to calories
-                      Container(
-                        height: 5,
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: [calCol, calCol.withOpacity(0.3)]),
-                          borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(24)),
+                      // Plan badge
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              isAr ? plan.nameAr() : plan.nameEn(),
+                              style: const TextStyle(fontFamily: 'Cairo',
+                                  fontSize: 12, fontWeight: FontWeight.w700,
+                                  color: AppColors.sunnahGreen)),
+                            Text(plan.emoji(),
+                                style: const TextStyle(fontSize: 16)),
+                          ],
                         ),
                       ),
                       Padding(
@@ -799,7 +801,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                   borderRadius: BorderRadius.circular(20),
                                 ),
                                 child: Text(
-                                  '\${p.emoji()} \${isAr ? p.nameAr() : p.nameEn()}',
+                                  '${p.emoji()} ${isAr ? p.nameAr() : p.nameEn()}',
                                   style: TextStyle(
                                     fontFamily: 'Cairo', fontSize: 11,
                                     fontWeight: sel ? FontWeight.w700 : FontWeight.w400,
