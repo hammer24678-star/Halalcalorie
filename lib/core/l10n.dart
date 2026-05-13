@@ -25,4 +25,10 @@ class L {
   String get doubtful       => t('مشبوه ⚠️', 'Doubtful ⚠️');
   String get haram          => t('حرام ✕', 'Haram ✕');
   String get unknown        => t('غير معروف ?', 'Unknown ?');
+
+  String get navHome        => t('الرئيسية', 'Home');
+  String get navNutrition   => t('تغذية', 'Nutrition');
+  String get navFitness     => t('لياقة', 'Fitness');
+  String get navHealth      => t('صحة', 'Health');
+  String get navProfile     => t('ملفي', 'Profile');
 }

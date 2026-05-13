@@ -74,7 +74,7 @@ class _AppShellState extends ConsumerState<AppShell>
   }
 }
 
-class _PremiumNav extends StatefulWidget {
+class _PremiumNav extends ConsumerStatefulWidget {
   final List<_T> tabs;
   final int activeIdx;
   final bool isDark, isAr;
@@ -84,7 +84,7 @@ class _PremiumNav extends StatefulWidget {
   @override State<_PremiumNav> createState() => _PremiumNavState();
 }
 
-class _PremiumNavState extends State<_PremiumNav>
+class _PremiumNavState extends ConsumerState<_PremiumNav>
     with SingleTickerProviderStateMixin {
   late AnimationController _ctrl;
   late Animation<double> _spring;

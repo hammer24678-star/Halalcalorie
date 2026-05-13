@@ -200,10 +200,11 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
     if (i == 1) return _buildLanguagePage(isDark); // language screen 2
     if (i == 2) return _WelcomePage(step: _welcomeSteps[1], isDark: isDark, lang: lang);
     if (i == 3) return _WelcomePage(step: _welcomeSteps[2], isDark: isDark, lang: lang);
-    return _buildQuestion(_questionIdx, isDark);
+    return _buildQuestion(_questionIdx, isDark, lang);
   }
 
-  Widget _buildQuestion(int q, bool isDark) {
+  Widget _buildQuestion(int q, bool isDark, String lang) {
+    final isAr  = lang == 'ar' || lang == 'ur';
     final muted = isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D);
     final text  = isDark ? Colors.white : const Color(0xFF1F2A1F);
 
