@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'theme.dart';
+import 'l10n.dart';
 import 'providers.dart';
 
 class AppShell extends ConsumerStatefulWidget {
@@ -172,7 +173,18 @@ class _PremiumNavState extends State<_PremiumNav>
                                   ? AppColors.halalGreen
                                   : (widget.isDark ? AppColors.darkDimmed : AppColors.lightMuted),
                               ),
-                              child: Text(widget.isAr ? tab.ar : tab.en),
+                              child: Builder(builder: (ctx) {
+                                final _lang = ref.watch(languageProvider);
+                                final _l = L.fromLang(_lang);
+                                switch (tab.path) {
+                                  case '/home':      return Text(_l.navHome);
+                                  case '/nutrition': return Text(_l.navNutrition);
+                                  case '/fitness':   return Text(_l.navFitness);
+                                  case '/health':    return Text(_l.navHealth);
+                                  case '/profile':   return Text(_l.navProfile);
+                                  default: return Text(widget.isAr ? tab.ar : tab.en);
+                                }
+                              }),
                             ),
                             // Active bar
                             AnimatedContainer(

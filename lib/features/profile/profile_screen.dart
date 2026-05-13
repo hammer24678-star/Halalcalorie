@@ -38,6 +38,7 @@ class ProfileScreen extends ConsumerWidget {
     final textC = isDark ? AppColors.darkText  : AppColors.lightText;
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
 
+    final plan = ref.watch(macroPlanProvider);
     String t(String ar, String en) => isAr ? ar : en;
 
     return Scaffold(
@@ -172,7 +173,10 @@ class ProfileScreen extends ConsumerWidget {
                 Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
                   _bodyMini('BMI', profile.bmi.toStringAsFixed(1), _bmiColor(profile.bmi)),
                   _bodyMini(t('السعرات','Cals'), '${profile.calorieGoalKcal.toInt()}', AppColors.haramRed),
-                  _bodyMini(t('البروتين','Protein'), '${profile.proteinGrams.toInt()}g', AppColors.halalGreen),
+                  _bodyMini(
+                    '${plan.emoji()} ${isAr ? plan.nameAr() : plan.nameEn()}',
+                    'P:${(profile.calorieGoalKcal * plan.proteinPct / 400).toInt()}g',
+                    AppColors.halalGreen),
                   _bodyMini(t('الماء','Water'), '${profile.waterLiters}L', AppColors.waterBlue),
                 ]),
               ]),

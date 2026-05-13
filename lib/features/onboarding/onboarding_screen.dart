@@ -293,6 +293,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
           min: 10, max: 80,
           unit: 'سنة',
           unitEn: 'years',
+          isAr: isAr,
           color: AppColors.barakahGold,
           isDark: isDark,
           onChanged: (v) => setState(() => _age = v.round()),
@@ -310,6 +311,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
           min: 140, max: 210,
           unit: 'سم',
           unitEn: 'cm',
+          isAr: isAr,
           color: AppColors.waterBlue,
           isDark: isDark,
           onChanged: (v) => setState(() => _height = (v * 10).round() / 10),
@@ -327,6 +329,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
           min: 30, max: 180,
           unit: 'كجم',
           unitEn: 'kg',
+          isAr: isAr,
           color: AppColors.halalGreen,
           isDark: isDark,
           onChanged: (v) => setState(() => _weight = (v * 10).round() / 10),
@@ -783,11 +786,13 @@ class _NumberSlider extends StatelessWidget {
   final String unit, unitEn;
   final Color color;
   final bool isDark;
+  final bool isAr;
   final void Function(double) onChanged;
   const _NumberSlider({
     required this.value, required this.min, required this.max,
     required this.unit, required this.unitEn,
-    required this.color, required this.isDark, required this.onChanged,
+    required this.color, required this.isDark,
+    this.isAr = true, required this.onChanged,
   });
 
   @override
@@ -810,7 +815,7 @@ class _NumberSlider extends StatelessWidget {
               )),
             Padding(
               padding: const EdgeInsets.only(bottom: 12, left: 8),
-              child: Text(unit, style: TextStyle(
+              child: Text(isAr ? unit : unitEn, style: TextStyle(
                 fontFamily: 'Cairo', fontSize: 18,
                 fontWeight: FontWeight.w700, color: color.withOpacity(0.7),
               )),
@@ -846,10 +851,10 @@ class _NumberSlider extends StatelessWidget {
 
       // Min / Max labels
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text('${min.toInt()} $unit',
+        Text('${min.toInt()} ${isAr ? unit : unitEn}',
           style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
             color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D))),
-        Text('${max.toInt()} $unit',
+        Text('${max.toInt()} ${isAr ? unit : unitEn}',
           style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
             color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D))),
       ]),
