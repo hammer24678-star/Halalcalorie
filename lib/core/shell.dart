@@ -81,7 +81,7 @@ class _PremiumNav extends ConsumerStatefulWidget {
   final void Function(String) onTap;
   const _PremiumNav({required this.tabs, required this.activeIdx,
     required this.isDark, required this.isAr, required this.onTap});
-  @override State<_PremiumNav> createState() => _PremiumNavState();
+  @override ConsumerState<_PremiumNav> createState() => _PremiumNavState();
 }
 
 class _PremiumNavState extends ConsumerState<_PremiumNav>
