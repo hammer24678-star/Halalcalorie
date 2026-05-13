@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
+import '../../core/prayer_provider.dart';
 import '../../data/models/models.dart';
 import '../../data/models/user_profile.dart';
 
@@ -46,17 +47,19 @@ static const _prayers = [
 {'ar': 'العشاء', 'en': 'Isha', 'h': 19, 'm': 28},
  ];
 
-Map<String, dynamic> _next() {
+Map<String, dynamic> _next([List<Map<String,dynamic>>? times]) {
+final list = times ?? _prayers;
 final cur = _now.hour * 60 + _now.minute;
-for (final p in _prayers) {
+for (final p in list) {
 if ((p['h'] as int) * 60 + (p['m'] as int) > cur) return p;
 }
-return _prayers[0];
+return list[0];
 }
 
-String _countdown() {
+String _countdown([List<Map<String,dynamic>>? times]) {
+final list = times ?? _prayers;
 final cur = _now.hour * 60 + _now.minute;
-for (final p in _prayers) {
+for (final p in list) {
 final t = (p['h'] as int) * 60 + (p['m'] as int);
 if (t > cur) {
 final d = t - cur;
@@ -144,7 +147,8 @@ final water = ref.watch(waterProvider);
 final sleep = ref.watch(sleepProvider);
 final streak = ref.watch(streakProvider);
 final profile = ref.watch(userProfileProvider);
-final wMin = ref.watch(workoutMinutesProvider);
+final wMin      = ref.watch(workoutMinutesProvider);
+final isRamadan = ref.watch(ramadanModeProvider);
 
 // Animate ring when cals change
 if (cals.total != _lastCals) {
@@ -165,7 +169,6 @@ final calCol = cals.total > cals.goal
 ? AppColors.doubtOrange
 : AppColors.halalGreen;
 final pct = cals.percent.clamp(0.0, 1.0);
-final next = _next();
 
 return Scaffold(
 backgroundColor: bg,
@@ -186,14 +189,16 @@ title: Row(children: [
 Container(
 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
 decoration: BoxDecoration(
-gradient: const LinearGradient(
-colors: [Color(0xFF238636), Color(0xFF3FB950)],
+gradient: LinearGradient(
+colors: isRamadan
+    ? [const Color(0xFF7A5010), const Color(0xFFD4A017)]
+    : [const Color(0xFF238636), const Color(0xFF3FB950)],
 begin: Alignment.topLeft, end: Alignment.bottomRight,
 ),
 borderRadius: BorderRadius.circular(20),
 ),
 child: Row(mainAxisSize: MainAxisSize.min, children: [
-const Text('🌿', style: TextStyle(fontSize: 12)),
+Text(isRamadan ? '🌙' : '🌿', style: const TextStyle(fontSize: 12)),
 const SizedBox(width: 5),
 const Text('HalalCalorie', style: TextStyle(
 fontFamily: 'Cairo', fontSize: 13,
@@ -235,16 +240,42 @@ padding: const EdgeInsets.fromLTRB(16, 4, 16, 100),
 sliver: SliverList(delegate: SliverChildListDelegate([
 
 // ── 1 PRAYER CARD ───────────────────────────
-_anim(0, _PrayerCard(
-next: next, countdown: _countdown(),
-prayers: _prayers,
-fmtTime: _fmtPrayerTime,
-now: _now,
-isAr: isAr, isDark: isDark,
-card: card, border: border, muted: muted,
-mosqueScale: _mosqueScale,
-)),
+Builder(builder: (_) {
+  final pt = ref.watch(prayerTimesProvider);
+  List<Map<String,dynamic>> livePrayers = _prayers;
+  pt.whenData((times) {
+    if (times != null) {
+      livePrayers = [
+        {'ar':'الفجر',  'en':'Fajr',    'h':times.fajr.hour,    'm':times.fajr.minute},
+        {'ar':'الظهر',  'en':'Dhuhr',   'h':times.dhuhr.hour,   'm':times.dhuhr.minute},
+        {'ar':'العصر',  'en':'Asr',     'h':times.asr.hour,     'm':times.asr.minute},
+        {'ar':'المغرب','en':'Maghrib','h':times.maghrib.hour,'m':times.maghrib.minute},
+        {'ar':'العشاء', 'en':'Isha',   'h':times.isha.hour,    'm':times.isha.minute},
+      ];
+    }
+  });
+  final livNext = _next(livePrayers);
+  return _anim(0, _PrayerCard(
+    next: livNext, countdown: _countdown(livePrayers),
+    prayers: livePrayers,
+    fmtTime: _fmtPrayerTime,
+    now: _now,
+    isAr: isAr, isDark: isDark,
+    card: card, border: border, muted: muted,
+    mosqueScale: _mosqueScale,
+  ));
+}),
 const SizedBox(height: 12),
+
+// ── RAMADAN BANNER ──
+if (isRamadan) ...[
+  _anim(1, _RamadanBanner(
+    isAr: isAr, isDark: isDark,
+    card: card, border: border, muted: muted,
+    now: _now, moonAnim: _mosqueScale,
+  )),
+  const SizedBox(height: 12),
+],
 
 // ── Sunnah fast day banner (Mon/Thu) ────────────
 if (_now.weekday == DateTime.monday ||
@@ -649,6 +680,162 @@ class _SunnahFastBanner extends StatelessWidget {
           ),
         ])),
         const Text('✨', style: TextStyle(fontSize: 16)),
+      ]),
+    );
+  }
+}
+
+
+// ══════════════════════════════════════════════════
+// RAMADAN BANNER
+// ══════════════════════════════════════════════════
+class _RamadanBanner extends StatelessWidget {
+  final bool isAr, isDark;
+  final Color card, border, muted;
+  final DateTime now;
+  final Animation<double> moonAnim;
+  const _RamadanBanner({
+    required this.isAr, required this.isDark,
+    required this.card, required this.border, required this.muted,
+    required this.now, required this.moonAnim,
+  });
+
+  static const _iftarH = 18, _iftarM = 5;
+  static const _suhoorH = 5, _suhoorM = 12;
+
+  String _cd(int th, int tm) {
+    final nowMins = now.hour * 60 + now.minute;
+    var diff = th * 60 + tm - nowMins;
+    if (diff <= 0) diff += 24 * 60;
+    final h = diff ~/ 60; final m = diff % 60;
+    return h == 0 ? '${m}\u062f' : '${h}\u0633 ${m}\u062f';
+  }
+
+  static const _ayahs = [
+    {'ar':'\u00ab\u0634\u0647\u0652\u0631\u064f \u0631\u064e\u0645\u064e\u0636\u064e\u0627\u0646\u064e \u0627\u0644\u0651\u064e\u0630\u0650\u064a \u0623\u064f\u0646\u0632\u0650\u0644\u064e \u0641\u0650\u064a\u0647\u0650 \u0627\u0644\u0652\u0642\u064f\u0631\u0652\u0622\u0646\u064f\u00bb \u2014 \u0627\u0644\u0628\u0642\u0631\u0629 185','en':'"Ramadan \u2014 the month the Quran was revealed" \u2014 Al-Baqarah 2:185'},
+    {'ar':'\u00ab\u0641\u064e\u0625\u0650\u0646\u0650\u0651\u064a \u0642\u064e\u0631\u0650\u064a\u0628\u064c\u00bb \u2014 \u0627\u0644\u0628\u0642\u0631\u0629 186','en':'"I am near" \u2014 Al-Baqarah 2:186'},
+    {'ar':'\u00ab\u0627\u0644\u0635\u0650\u0651\u064a\u064e\u0627\u0645\u064f \u062c\u064f\u0646\u0651\u064e\u0629\u064c\u00bb \u2014 \u0627\u0644\u0628\u062e\u0627\u0631\u064a','en':'"Fasting is a shield" \u2014 Al-Bukhari'},
+    {'ar':'\u00ab\u062a\u064e\u0633\u064e\u062d\u064e\u0651\u0631\u064f\u0648\u0627 \u0641\u064e\u0625\u0650\u0646\u064e\u0651 \u0641\u0650\u064a \u0627\u0644\u0633\u064e\u0651\u062d\u064f\u0648\u0631\u0650 \u0628\u064e\u0631\u064e\u0643\u064e\u0629\u064b\u00bb \u2014 \u0627\u0644\u0628\u062e\u0627\u0631\u064a','en':'"There is blessing in suhoor" \u2014 Al-Bukhari'},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    String t(String ar, String en) => isAr ? ar : en;
+    final nowMins = now.hour * 60 + now.minute;
+    final isFasting = nowMins >= _suhoorH*60+_suhoorM && nowMins < _iftarH*60+_iftarM;
+    final ayah = _ayahs[now.weekday % _ayahs.length];
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(18),
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [Color(0xFF0A1628), Color(0xFF120E2C), Color(0xFF0C1F3F)],
+            begin: Alignment.topLeft, end: Alignment.bottomRight,
+          ),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: AppColors.barakahGold.withOpacity(0.42), width: 1.5),
+          boxShadow: [BoxShadow(color: AppColors.barakahGold.withOpacity(0.16),
+              blurRadius: 22, offset: const Offset(0, 6))],
+        ),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+          child: Column(children: [
+            Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+              ScaleTransition(
+                scale: Tween<double>(begin: 0.94, end: 1.06).animate(moonAnim),
+                child: Container(
+                  width: 52, height: 52,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [Color(0xFFD4A017), Color(0xFFFFD060)],
+                      begin: Alignment.topLeft, end: Alignment.bottomRight,
+                    ),
+                    shape: BoxShape.circle,
+                    boxShadow: [BoxShadow(color: AppColors.barakahGold.withOpacity(0.55),
+                        blurRadius: 20, spreadRadius: 2)],
+                  ),
+                  child: const Center(child: Text('\U0001F319', style: TextStyle(fontSize: 26))),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(t('\u0631\u0645\u0636\u0627\u0646 \u0643\u0631\u064a\u0645', 'Ramadan Kareem'),
+                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 18,
+                    fontWeight: FontWeight.w900, color: AppColors.barakahGold)),
+                const SizedBox(height: 3),
+                Text(isFasting
+                  ? t('\u0623\u0646\u062a \u0635\u0627\u0626\u0645 \u0627\u0644\u0622\u0646 \U0001F90D', 'Currently Fasting \U0001F90D')
+                  : t('\u0648\u0642\u062a \u0627\u0644\u0625\u0641\u0637\u0627\u0631 \U0001F33F', 'Iftar time \U0001F33F'),
+                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: Colors.white60)),
+              ])),
+            ]),
+            const SizedBox(height: 14),
+            Row(children: [
+              Expanded(child: _RamadanCountdownChip(
+                emoji: '\U0001F305',
+                labelAr: '\u0627\u0644\u0625\u0641\u0637\u0627\u0631 \u0628\u0639\u062f', labelEn: 'Iftar in',
+                countdown: _cd(_iftarH, _iftarM),
+                isAr: isAr, isPrimary: isFasting,
+              )),
+              const SizedBox(width: 8),
+              Expanded(child: _RamadanCountdownChip(
+                emoji: '\U0001F303',
+                labelAr: '\u0627\u0644\u0633\u062d\u0648\u0631 \u0628\u0639\u062f', labelEn: 'Suhoor in',
+                countdown: _cd(_suhoorH, _suhoorM),
+                isAr: isAr, isPrimary: !isFasting,
+              )),
+            ]),
+            const SizedBox(height: 10),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.05),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(isAr ? ayah['ar']! : ayah['en']!,
+                style: const TextStyle(fontFamily: 'Cairo', fontSize: 10,
+                    color: Colors.white60, height: 1.6),
+                textAlign: TextAlign.center),
+            ),
+          ]),
+        ),
+      ),
+    );
+  }
+}
+
+class _RamadanCountdownChip extends StatelessWidget {
+  final String emoji, labelAr, labelEn, countdown;
+  final bool isAr, isPrimary;
+  const _RamadanCountdownChip({
+    required this.emoji, required this.labelAr, required this.labelEn,
+    required this.countdown, required this.isAr, required this.isPrimary,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+      decoration: BoxDecoration(
+        gradient: isPrimary ? LinearGradient(colors: [
+          AppColors.barakahGold.withOpacity(0.24),
+          AppColors.barakahGold.withOpacity(0.10),
+        ], begin: Alignment.topLeft, end: Alignment.bottomRight) : null,
+        color: isPrimary ? null : Colors.white.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(13),
+        border: Border.all(
+          color: isPrimary ? AppColors.barakahGold.withOpacity(0.58)
+                           : Colors.white.withOpacity(0.12),
+          width: isPrimary ? 1.5 : 1.0),
+      ),
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Text(emoji, style: const TextStyle(fontSize: 22)),
+        const SizedBox(height: 4),
+        Text(isAr ? labelAr : labelEn, style: const TextStyle(
+            fontFamily: 'Cairo', fontSize: 9, color: Colors.white54)),
+        const SizedBox(height: 4),
+        Text(countdown, style: TextStyle(fontFamily: 'Cairo', fontSize: 17,
+            fontWeight: FontWeight.w900,
+            color: isPrimary ? AppColors.barakahGold : Colors.white70)),
       ]),
     );
   }
