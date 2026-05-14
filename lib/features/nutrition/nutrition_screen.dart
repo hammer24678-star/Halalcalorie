@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:intl/intl.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
@@ -579,8 +580,9 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     final cals    = ref.watch(caloriesProvider);
     final profile = ref.watch(userProfileProvider);
     final plan    = ref.watch(macroPlanProvider);
-    final isPremium = ref.watch(premiumProvider);
-    final bg      = isDark ? AppColors.darkBg : const Color(0xFFF2F4F7);
+    final isPremium  = ref.watch(premiumProvider);
+    final burnedKcal = ref.watch(caloriesBurnedTodayProvider).round();
+    final bg         = isDark ? AppColors.darkBg : const Color(0xFFF2F4F7);
     final cardBg  = isDark ? AppColors.darkCard : Colors.white;
     final muted   = isDark ? AppColors.darkMuted : const Color(0xFF9E9E9E);
     final textC   = isDark ? AppColors.darkText : AppColors.lightText;
@@ -662,6 +664,48 @@ class _NutritionState extends ConsumerState<NutritionScreen>
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 120),
                 children: [
+                  // ── Date + Greeting Header ──
+                  _anim(0, Padding(
+                    padding: const EdgeInsets.only(bottom: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(() {
+                              final h = DateTime.now().hour;
+                              if (h < 12) return tl('صباح الخير ☀️', 'Good Morning ☀️');
+                              if (h < 17) return tl('نهارك سعيد 🌟', 'Good Afternoon 🌟');
+                              return tl('مساء الخير 🌙', 'Good Evening 🌙');
+                            }(),
+                            style: TextStyle(fontFamily: 'Cairo',
+                                fontSize: 18, fontWeight: FontWeight.w800,
+                                color: textC)),
+                            Text(
+                              DateFormat(isAr ? 'EEEE، d MMMM' : 'EEEE, MMMM d',
+                                  isAr ? 'ar' : 'en').format(DateTime.now()),
+                              style: TextStyle(fontFamily: 'Cairo',
+                                  fontSize: 11, color: muted)),
+                          ]),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppColors.sunnahGreen.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                                color: AppColors.sunnahGreen.withOpacity(0.3)),
+                          ),
+                          child: Text('🎯 $goal ${tl(" سعرة", "kcal")}',
+                            style: const TextStyle(fontFamily: 'Cairo',
+                                fontSize: 12, fontWeight: FontWeight.w700,
+                                color: AppColors.sunnahGreen)),
+                        ),
+                      ],
+                    ),
+                  )),
+                  const SizedBox(height: 8),
+
                   // ── Bismillah reminder (shown when no meals yet) ──
                   if (cals.entries.isEmpty)
                     _anim(0, Container(
@@ -774,7 +818,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           ),
                           _summaryBox(
                               tl('المحروق', 'Burned'),
-                              '0',
+                              '$burnedKcal',
                               AppColors.haramRed, isDark),
                         ],
                       ),
@@ -834,6 +878,51 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         (goal * plan.fatPct / 100) / 9,
                         AppColors.barakahGold,
                       ),
+                      const SizedBox(height: 14),
+                      Row(children: [
+                        const Text('💧', style: TextStyle(fontSize: 14)),
+                        const SizedBox(width: 8),
+                        Expanded(child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(tl('الماء', 'Water'),
+                                  style: TextStyle(fontFamily: 'Cairo',
+                                    fontSize: 12, fontWeight: FontWeight.w600,
+                                    color: AppColors.waterBlue)),
+                                Text('${ref.watch(waterProvider).cups} / ${ref.watch(waterProvider).goal}  •  ${(ref.watch(waterProvider).percent * 100).toInt()}%',
+                                  style: TextStyle(fontFamily: 'Cairo',
+                                    fontSize: 10,
+                                    color: AppColors.waterBlue.withOpacity(0.75))),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: LinearProgressIndicator(
+                                value: ref.watch(waterProvider).percent,
+                                backgroundColor: AppColors.waterBlue.withOpacity(0.12),
+                                valueColor: const AlwaysStoppedAnimation(
+                                    AppColors.waterBlue),
+                                minHeight: 10,
+                              ),
+                            ),
+                          ],
+                        )),
+                        const SizedBox(width: 8),
+                        GestureDetector(
+                          onTap: () => ref.read(waterProvider.notifier).add(),
+                          child: Container(
+                            width: 32, height: 32,
+                            decoration: BoxDecoration(
+                              color: AppColors.waterBlue.withOpacity(0.15),
+                              shape: BoxShape.circle),
+                            child: const Icon(Icons.add,
+                                color: AppColors.waterBlue, size: 18)),
+                        ),
+                      ]),
                     ]),          // end macro Column
                   ),            // end Padding
                   ]),           // end outer Column
@@ -1151,14 +1240,21 @@ class _NutritionState extends ConsumerState<NutritionScreen>
 
   Widget _summaryBox(String label, String val,
       Color color, bool isDark) =>
-      Column(mainAxisSize: MainAxisSize.min, children: [
-        Text(val, style: TextStyle(fontFamily: 'Cairo',
-            fontSize: 26, fontWeight: FontWeight.w900, color: color)),
-        const SizedBox(height: 2),
-        Text(label, style: TextStyle(fontFamily: 'Cairo',
-            fontSize: 11, color: color.withOpacity(0.8),
-            fontWeight: FontWeight.w600)),
-      ]);
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.07),
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          Text(val, style: TextStyle(fontFamily: 'Cairo',
+              fontSize: 24, fontWeight: FontWeight.w900, color: color)),
+          const SizedBox(height: 2),
+          Text(label, style: TextStyle(fontFamily: 'Cairo',
+              fontSize: 10, color: color.withOpacity(0.85),
+              fontWeight: FontWeight.w700)),
+        ]),
+      );
 
   Widget _macroRow(String label, double current,
       double target, Color color) {

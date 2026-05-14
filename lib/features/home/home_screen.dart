@@ -754,7 +754,7 @@ class _RamadanBanner extends StatelessWidget {
                     boxShadow: [BoxShadow(color: AppColors.barakahGold.withOpacity(0.55),
                         blurRadius: 20, spreadRadius: 2)],
                   ),
-                  child: const Center(child: Text('\U0001F319', style: TextStyle(fontSize: 26))),
+                  child: const Center(child: Text('🌙', style: TextStyle(fontSize: 26))),
                 ),
               ),
               const SizedBox(width: 12),
@@ -764,22 +764,22 @@ class _RamadanBanner extends StatelessWidget {
                     fontWeight: FontWeight.w900, color: AppColors.barakahGold)),
                 const SizedBox(height: 3),
                 Text(isFasting
-                  ? t('\u0623\u0646\u062a \u0635\u0627\u0626\u0645 \u0627\u0644\u0622\u0646 \U0001F90D', 'Currently Fasting \U0001F90D')
-                  : t('\u0648\u0642\u062a \u0627\u0644\u0625\u0641\u0637\u0627\u0631 \U0001F33F', 'Iftar time \U0001F33F'),
+                  ? t('\u0623\u0646\u062a \u0635\u0627\u0626\u0645 \u0627\u0644\u0622\u0646 🤍', 'Currently Fasting 🤍')
+                  : t('\u0648\u0642\u062a \u0627\u0644\u0625\u0641\u0637\u0627\u0631 🌿', 'Iftar time 🌿'),
                   style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: Colors.white60)),
               ])),
             ]),
             const SizedBox(height: 14),
             Row(children: [
               Expanded(child: _RamadanCountdownChip(
-                emoji: '\U0001F305',
+                emoji: '🌅',
                 labelAr: '\u0627\u0644\u0625\u0641\u0637\u0627\u0631 \u0628\u0639\u062f', labelEn: 'Iftar in',
                 countdown: _cd(_iftarH, _iftarM),
                 isAr: isAr, isPrimary: isFasting,
               )),
               const SizedBox(width: 8),
               Expanded(child: _RamadanCountdownChip(
-                emoji: '\U0001F303',
+                emoji: '🌃',
                 labelAr: '\u0627\u0644\u0633\u062d\u0648\u0631 \u0628\u0639\u062f', labelEn: 'Suhoor in',
                 countdown: _cd(_suhoorH, _suhoorM),
                 isAr: isAr, isPrimary: !isFasting,
