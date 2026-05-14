@@ -364,6 +364,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
 
   // ── Result card ───────────────────────────────────────────
   Widget _resultCard(ScanResult r, bool isAr, bool isDark, Color bg, Color muted) {
+    final lang  = ref.read(languageProvider);
     final col   = _statusColor(r.status);
     final label = isAr ? _labelAr(r.status) : _labelEn(r.status);
     String t(String ar, String en) => tLang(lang, ar, en);

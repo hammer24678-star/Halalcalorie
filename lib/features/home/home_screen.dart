@@ -283,7 +283,7 @@ if (isRamadan) ...[
 if (_now.weekday == DateTime.monday ||
     _now.weekday == DateTime.thursday) ...[
   _anim(0, _SunnahFastBanner(
-      isAr: isAr, isDark: isDark,
+      isAr: isAr, isDark: isDark, lang: lang,
       card: card, border: border)),
   const SizedBox(height: 12),
 ],
@@ -298,7 +298,7 @@ carbsTotal: cals.carbsTotal,
 fatTotal: cals.fatTotal,
 profile: profile,
 ringAnim: _ringVal,
-isAr: isAr, isDark: isDark,
+isAr: isAr, isDark: isDark, lang: lang,
 card: card, border: border, muted: muted, text: text,
 onAdd: () => context.push('/food-photo'),
 )),
@@ -503,6 +503,7 @@ final int eaten, goal, remaining;
 final double pct, proteinTotal, carbsTotal, fatTotal;
 final Color calCol, card, border, muted, text;
 final bool isAr, isDark;
+final String lang;
 final UserProfile? profile;
 final Animation<double> ringAnim;
 final VoidCallback onAdd;
@@ -512,6 +513,7 @@ required this.pct, required this.calCol,
 required this.proteinTotal, required this.carbsTotal,
 required this.fatTotal, required this.profile,
 required this.ringAnim, required this.isAr, required this.isDark,
+required this.lang,
 required this.card, required this.border, required this.muted,
 required this.text, required this.onAdd,
 });
@@ -640,9 +642,11 @@ if (pct >= 0.90)
 // ════════════════════════════════════════════════════════════
 class _SunnahFastBanner extends StatelessWidget {
   final bool isAr, isDark;
+  final String lang;
   final Color card, border;
   const _SunnahFastBanner({
     required this.isAr, required this.isDark,
+    required this.lang,
     required this.card, required this.border,
   });
   @override
@@ -744,7 +748,7 @@ class _RamadanBanner extends StatelessWidget {
     final iftarMins = _iftarH * 60 + _iftarM;
     final isFasting = nowMins >= _suhoorH * 60 + _suhoorM && nowMins < iftarMins;
     final minsToIftar = ((iftarMins - nowMins) + 1440) % 1440;
-    final iftarSoon   = minsToIftar in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+    final iftarSoon   = minsToIftar >= 1 && minsToIftar <= 15;
     final ayah        = _ayahs[now.weekday % _ayahs.length];
     final day         = _dayOfRamadan;
     final sw          = MediaQuery.of(context).size.width;

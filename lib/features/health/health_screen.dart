@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
+import '../../core/l10n.dart';
 import '../../data/models/models.dart';
-import '../../core/health_service.dart';
 import '../../core/health_service.dart';
 
 class HealthScreen extends ConsumerStatefulWidget {

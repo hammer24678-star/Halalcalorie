@@ -2642,6 +2642,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
 
   // ── WEEKLY REPORT CARD (PREMIUM) ─────────────────────────
   Widget _weeklyReportCard(bool isAr, bool isDark, bool isPremium) {
+    final lang  = ref.read(languageProvider);
     final bg    = isDark ? AppColors.darkCard : Colors.white;
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     final goal  = ref.read(caloriesProvider).goal;

@@ -48,7 +48,9 @@ class _FitnessState extends ConsumerState<FitnessScreen>
 
   @override
   Widget build(BuildContext context) {
-    final gender    = ref.watch(genderProvider); final isAr      = ref.watch(languageProvider) =='ar';
+    final gender    = ref.watch(genderProvider);
+    final lang      = ref.watch(languageProvider);
+    final isAr      = lang == 'ar' || lang == 'ur';
     final isDark    = ref.watch(themeProvider);
     final isPremium = ref.watch(premiumProvider);
     final isRamadan = ref.watch(ramadanModeProvider);
@@ -423,7 +425,9 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
 
   @override
   Widget build(BuildContext context) {
-    final w     = _workout; final isAr  = ref.watch(languageProvider) =='ar';
+    final w     = _workout;
+    final lang   = ref.watch(languageProvider);
+    final isAr   = lang == 'ar' || lang == 'ur';
     final isDark = ref.watch(themeProvider); if (w == null) return const Scaffold(body: Center(child: Text('Not found')));
 
     final bg   = isDark ? AppColors.darkBg   : AppColors.lightBg;
