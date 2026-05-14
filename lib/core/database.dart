@@ -139,6 +139,25 @@ class AppDatabase {
     final rows = await d.rawQuery('SELECT SUM(minutes) as total FROM workout_log WHERE date_key=?', [_today()]);
     return (rows.first['total'] as int?) ?? 0;
   }
+
+  // Calories burned today — estimated at 5 kcal per workout minute
+  static Future<double> getTodayBurnedKcal() async {
+    final d = await db;
+    final rows = await d.rawQuery(
+        'SELECT SUM(minutes) as total FROM workout_log WHERE date_key=?',
+        [_today()]);
+    final mins = (rows.first['total'] as int?) ?? 0;
+    return mins * 5.0;
+  }
+
+  // Distinct workout days in the past 7 days
+  static Future<Set<String>> getWeeklyWorkoutDays() async {
+    final d = await db;
+    final rows = await d.rawQuery(
+        "SELECT DISTINCT date_key FROM workout_log "
+        "WHERE date_key >= date('now','-6 days')");
+    return rows.map((r) => r['date_key'] as String).toSet();
+  }
 }
 
 class _DailyKcal { final String dateKey; final int kcal; _DailyKcal(this.dateKey, this.kcal); }

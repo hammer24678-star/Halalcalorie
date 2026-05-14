@@ -50,7 +50,8 @@ class _AppShellState extends ConsumerState<AppShell>
     final idx    = _idx(loc);
     final isDark = ref.watch(themeProvider);
     final lang   = ref.watch(languageProvider);
-    final isAr   = lang == 'ar' || lang == 'ur';
+    final isAr      = lang == 'ar' || lang == 'ur';
+    final isRamadan = ref.watch(ramadanModeProvider);
 
     return Scaffold(
       body: FadeTransition(
@@ -64,7 +65,7 @@ class _AppShellState extends ConsumerState<AppShell>
       ),
       bottomNavigationBar: _PremiumNav(
         tabs: _tabs, activeIdx: idx,
-        isDark: isDark, isAr: isAr,
+        isDark: isDark, isAr: isAr, isRamadan: isRamadan,
         onTap: (path) {
           HapticFeedback.lightImpact();
           context.go(path);
@@ -77,10 +78,11 @@ class _AppShellState extends ConsumerState<AppShell>
 class _PremiumNav extends ConsumerStatefulWidget {
   final List<_T> tabs;
   final int activeIdx;
-  final bool isDark, isAr;
+  final bool isDark, isAr, isRamadan;
   final void Function(String) onTap;
   const _PremiumNav({required this.tabs, required this.activeIdx,
-    required this.isDark, required this.isAr, required this.onTap});
+    required this.isDark, required this.isAr,
+    required this.isRamadan, required this.onTap});
   @override ConsumerState<_PremiumNav> createState() => _PremiumNavState();
 }
 
@@ -113,8 +115,13 @@ class _PremiumNavState extends ConsumerState<_PremiumNav>
 
   @override
   Widget build(BuildContext context) {
-    final bg     = widget.isDark ? const Color(0xFF161B22) : Colors.white;
-    final border = widget.isDark ? const Color(0xFF21262D) : const Color(0xFFD0D7DE);
+    final bg         = widget.isDark ? const Color(0xFF161B22) : Colors.white;
+    final border     = widget.isDark ? const Color(0xFF21262D) : const Color(0xFFD0D7DE);
+    // Ramadan mode: swap all greens to gold
+    final activeColor = widget.isRamadan ? AppColors.barakahGold : AppColors.halalGreen;
+    final activeBg    = widget.isRamadan
+        ? AppColors.barakahGold.withOpacity(0.15)
+        : AppColors.sunnahGreen.withOpacity(0.15);
 
     return Container(
       decoration: BoxDecoration(
@@ -149,15 +156,20 @@ class _PremiumNavState extends ConsumerState<_PremiumNav>
                               curve: Curves.easeOutCubic,
                               padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
                               decoration: BoxDecoration(
-                                color: active
-                                  ? AppColors.sunnahGreen.withOpacity(0.15)
-                                  : Colors.transparent,
+                                color: active ? activeBg : Colors.transparent,
                                 borderRadius: BorderRadius.circular(24),
+                                boxShadow: active && widget.isRamadan
+                                    ? [BoxShadow(
+                                        color: AppColors.barakahGold.withOpacity(0.55),
+                                        blurRadius: 16,
+                                        spreadRadius: 2,
+                                      )]
+                                    : null,
                               ),
                               child: Text(tab.icon, style: TextStyle(
                                 fontSize: active ? 20 : 18,
                                 color: active
-                                  ? AppColors.halalGreen
+                                  ? activeColor
                                   : (widget.isDark ? AppColors.darkDimmed : AppColors.lightMuted),
                               )),
                             ),
@@ -170,7 +182,7 @@ class _PremiumNavState extends ConsumerState<_PremiumNav>
                                 fontSize: 9,
                                 fontWeight: active ? FontWeight.w800 : FontWeight.w400,
                                 color: active
-                                  ? AppColors.halalGreen
+                                  ? activeColor
                                   : (widget.isDark ? AppColors.darkDimmed : AppColors.lightMuted),
                               ),
                               child: Builder(builder: (ctx) {
@@ -194,7 +206,7 @@ class _PremiumNavState extends ConsumerState<_PremiumNav>
                               width: active ? 20 : 0,
                               height: 2.5,
                               decoration: BoxDecoration(
-                                color: AppColors.halalGreen,
+                                color: activeColor,
                                 borderRadius: BorderRadius.circular(2),
                               ),
                             ),
