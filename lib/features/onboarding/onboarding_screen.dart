@@ -250,6 +250,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
               child: _SelectTile(
                 emoji: goal.emoji(),
                 title: goal.nameAr(),
+                titleEn: goal.nameEn(),
                 selected: selected,
                 isDark: isDark,
                 onTap: () => setState(() => _goalIdx = e.key),
@@ -274,6 +275,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
               child: _SelectTile(
                 emoji: act.emoji(),
                 title: act.nameAr(),
+                titleEn: act.nameEn(),
                 selected: selected,
                 isDark: isDark,
                 onTap: () => setState(() => _activityIdx = e.key),

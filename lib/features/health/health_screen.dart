@@ -69,8 +69,8 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   Widget build(BuildContext context) {
     final isDark = ref.watch(themeProvider);
     final lang   = ref.watch(languageProvider);
-    final isAr   = lang == 'ar';
-    String t(String ar, String en) => isAr ? ar : en;
+    final isAr   = lang == 'ar' || lang == 'ur';
+    String t(String ar, String en) => tLang(lang, ar, en);
 
     return Scaffold(
       appBar: AppBar(

@@ -128,7 +128,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
     final isDark    = ref.watch(themeProvider);
     final bg        = isDark ? AppColors.darkCard : Colors.white;
     final muted     = isDark ? AppColors.darkMuted : AppColors.lightMuted;
-    String t(String ar, String en) => isAr ? ar : en;
+    String t(String ar, String en) => tLang(lang, ar, en);
 
     return Scaffold(
       appBar: AppBar( title: Text(t('الماسح الذكي 📷', 'Smart Scanner 📷')),
@@ -365,7 +365,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
   Widget _resultCard(ScanResult r, bool isAr, bool isDark, Color bg, Color muted) {
     final col   = _statusColor(r.status);
     final label = isAr ? _labelAr(r.status) : _labelEn(r.status);
-    String t(String ar, String en) => isAr ? ar : en;
+    String t(String ar, String en) => tLang(lang, ar, en);
 
     return Container(
       decoration: BoxDecoration(

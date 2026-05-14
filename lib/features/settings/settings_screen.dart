@@ -42,7 +42,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
     final muted  = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
 
-    String t(String ar, String en) => isAr ? ar : en;
+    String t(String ar, String en) => tLang(lang, ar, en);
 
     Widget section(String label) => Padding(
       padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),

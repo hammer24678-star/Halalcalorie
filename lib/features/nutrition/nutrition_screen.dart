@@ -575,11 +575,12 @@ class _NutritionState extends ConsumerState<NutritionScreen>
   @override
   Widget build(BuildContext context) {
     final lang    = ref.watch(languageProvider);
-    final isAr    = lang == 'ar';
+    final isAr    = lang == 'ar' || lang == 'ur';
     final isDark  = ref.watch(themeProvider);
     final cals    = ref.watch(caloriesProvider);
     final profile = ref.watch(userProfileProvider);
-    final plan    = ref.watch(macroPlanProvider);
+    final plan      = ref.watch(macroPlanProvider);
+    final isRamadan = ref.watch(ramadanModeProvider);
     final isPremium  = ref.watch(premiumProvider);
     final burnedKcal = ref.watch(caloriesBurnedTodayProvider).round();
     final bg         = isDark ? AppColors.darkBg : const Color(0xFFF2F4F7);
@@ -1312,7 +1313,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     final bg    = isDark ? AppColors.darkCard : Colors.white;
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     final goal  = ref.read(caloriesProvider).goal;
-    String t(String ar, String en) => isAr ? ar : en;
+    String t(String ar, String en) => tLang(lang, ar, en);
 
     if (!isPremium) {
       return GestureDetector(
@@ -2643,7 +2644,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
     final bg    = isDark ? AppColors.darkCard : Colors.white;
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     final goal  = ref.read(caloriesProvider).goal;
-    String t(String ar, String en) => isAr ? ar : en;
+    String t(String ar, String en) => tLang(lang, ar, en);
 
     if (!isPremium) {
       return GestureDetector(

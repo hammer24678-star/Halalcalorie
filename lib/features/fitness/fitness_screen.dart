@@ -60,7 +60,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
 
     final workouts = _filtered(gender, isRamadan, isPremium);
 
-    String t(String ar, String en) => isAr ? ar : en;
+    String t(String ar, String en) => tLang(lang, ar, en);
 
     final catLabels = { 'all':       t('الكل', 'All'), 'walking':   t('مشي', 'Walk'), 'strength':  t('قوة', 'Strength'), 'gentle':    t('لطيف', 'Gentle'), 'ramadan':   t('رمضان', 'Ramadan'), 'breathing': t('تنفس', 'Breathe'), 'family':    t('عائلة', 'Family'),
     };
@@ -430,7 +430,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
     final text = isDark ? AppColors.darkText : AppColors.lightText;
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
 
-    String t(String ar, String en) => isAr ? ar : en;
+    String t(String ar, String en) => tLang(lang, ar, en);
 
     final step = _currentStep;
     final rem  = _hasSteps

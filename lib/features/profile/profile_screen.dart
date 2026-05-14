@@ -20,7 +20,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang      = ref.watch(languageProvider);
-    final isAr      = lang == 'ar';
+    final isAr      = lang == 'ar' || lang == 'ur';
     final gender    = ref.watch(genderProvider);
     final streak    = ref.watch(streakProvider);
     final water     = ref.watch(waterProvider);
@@ -39,7 +39,7 @@ class ProfileScreen extends ConsumerWidget {
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
 
     final plan = ref.watch(macroPlanProvider);
-    String t(String ar, String en) => isAr ? ar : en;
+    String t(String ar, String en) => tLang(lang, ar, en);
 
     return Scaffold(
       appBar: AppBar(
@@ -268,7 +268,7 @@ class ProfileScreen extends ConsumerWidget {
     final fast = ref.watch(sunnahFastProvider);
     final bg   = isDark ? AppColors.darkCard : Colors.white;
     final muted= isDark ? AppColors.darkMuted : AppColors.lightMuted;
-    String t(String ar, String en) => isAr ? ar : en;
+    String t(String ar, String en) => tLang(lang, ar, en);
 
     final badges = <(String, String, bool)>[
       ('🌱', t('البداية','First Step'),          ach.totalDaysLogged >= 1),
