@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
+import '../../core/l10n.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/revenuecat_service.dart';
 import '../../data/models/user_profile.dart';
@@ -39,6 +40,7 @@ class ProfileScreen extends ConsumerWidget {
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
 
     final plan = ref.watch(macroPlanProvider);
+    final lang   = ref.watch(languageProvider);
     String t(String ar, String en) => tLang(lang, ar, en);
 
     return Scaffold(

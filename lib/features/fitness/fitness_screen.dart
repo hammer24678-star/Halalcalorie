@@ -1,6 +1,7 @@
 // fitness_screen.dart — HalalCalorie v1.0
 // 23 workouts, category tabs, Ramadan mode, step-by-step player
-import 'dart:async'; import'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'../../core/theme.dart'; import'../../core/providers.dart'; import'../../data/models/models.dart';
+import 'dart:async'; import'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'../../core/theme.dart'; import'../../core/providers.dart';
+import '../../core/l10n.dart'; import'../../data/models/models.dart';
 
 // ══════════════════════════════════════════════════
 //  FitnessScreen

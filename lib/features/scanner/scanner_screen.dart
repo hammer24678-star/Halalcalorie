@@ -1,6 +1,7 @@
 // scanner_screen.dart — HalalCalorie v1.0
 import 'dart:convert';
-import 'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'package:http/http.dart' as http; import'../../core/theme.dart'; import'../../core/providers.dart'; import'../../data/models/models.dart'; import'barcode_scanner_widget.dart';
+import 'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'package:http/http.dart' as http; import'../../core/theme.dart'; import'../../core/providers.dart';
+import '../../core/l10n.dart'; import'../../data/models/models.dart'; import'barcode_scanner_widget.dart';
 
 class ScannerScreen extends ConsumerStatefulWidget {
   const ScannerScreen({super.key});

@@ -1,5 +1,6 @@
 // settings_screen.dart — HalalCalorie v1.0
-import 'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'package:shared_preferences/shared_preferences.dart'; import'../../core/theme.dart'; import'../../core/providers.dart'; import'../../core/notifications.dart';
+import 'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'package:shared_preferences/shared_preferences.dart'; import'../../core/theme.dart'; import'../../core/providers.dart';
+import '../../core/l10n.dart'; import'../../core/notifications.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -41,6 +42,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
     final text   = isDark ? AppColors.darkText  : AppColors.lightText;
     final muted  = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final lang   = ref.watch(languageProvider);
 
     String t(String ar, String en) => tLang(lang, ar, en);
 

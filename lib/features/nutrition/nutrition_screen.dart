@@ -8,6 +8,7 @@ import 'package:intl/intl.dart' hide TextDirection;
 import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
+import '../../core/l10n.dart';
 import '../../data/models/models.dart';
 
 import '../../core/ai_service.dart';
@@ -1313,7 +1314,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     final bg    = isDark ? AppColors.darkCard : Colors.white;
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     final goal  = ref.read(caloriesProvider).goal;
-    String t(String ar, String en) => tLang(lang, ar, en);
+    String t(String ar, String en) => isAr ? ar : en;
 
     if (!isPremium) {
       return GestureDetector(
