@@ -226,6 +226,20 @@ class WorkoutMinutesNotifier extends StateNotifier<int> { WorkoutMinutesNotifier
   Future<void> add(String workoutId, int minutes) async { await AppDatabase.logWorkout(workoutId, minutes); state = state + minutes; }
 }
 
+final caloriesBurnedTodayProvider =
+    StateNotifierProvider<BurnedCaloriesNotifier, double>(
+        (ref) => BurnedCaloriesNotifier());
+class BurnedCaloriesNotifier extends StateNotifier<double> {
+  BurnedCaloriesNotifier() : super(0.0) { _init(); }
+  Future<void> _init() async { state = await AppDatabase.getTodayBurnedKcal(); }
+  void addBurned(double kcal) => state = state + kcal;
+}
+
+final workoutWeekProvider = FutureProvider<Set<String>>((ref) async {
+  ref.watch(caloriesBurnedTodayProvider);
+  return AppDatabase.getWeeklyWorkoutDays();
+});
+
 final scanProvider = StateNotifierProvider<ScanNotifier, ScanState>((ref) => ScanNotifier());
 class ScanState { final List<ScanResult> history; final int todayCount; ScanState({required this.history, required this.todayCount}); }
 class ScanNotifier extends StateNotifier<ScanState> { ScanNotifier() : super(ScanState(history: [], todayCount: 0));
