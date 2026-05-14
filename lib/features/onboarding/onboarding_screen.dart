@@ -561,7 +561,7 @@ class _WelcomePage extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════
 //  QUESTION SHELL
 // ═══════════════════════════════════════════════════════════
-class _QuestionShell extends StatelessWidget {
+class _QuestionShell extends ConsumerWidget {
   final String emoji, title, titleEn;
   final bool isDark;
   final Widget child;
@@ -571,7 +571,8 @@ class _QuestionShell extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAr = ref.watch(languageProvider) == 'ar' || ref.watch(languageProvider) == 'ur';
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
       child: Column(
@@ -579,11 +580,11 @@ class _QuestionShell extends StatelessWidget {
         children: [
           Text(emoji, style: const TextStyle(fontSize: 40)),
           const SizedBox(height: 10),
-          Text(title, style: TextStyle(
+          Text(isAr ? title : titleEn, style: TextStyle(
             fontFamily: 'Cairo', fontSize: 28, fontWeight: FontWeight.w900,
             color: isDark ? Colors.white : const Color(0xFF1F2A1F),
           )),
-          Text(titleEn, style: TextStyle(
+          Text(isAr ? titleEn : title, style: TextStyle(
             fontFamily: 'Cairo', fontSize: 13,
             color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D),
           )),
@@ -598,7 +599,7 @@ class _QuestionShell extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════
 //  GENDER CARD
 // ═══════════════════════════════════════════════════════════
-class _GenderCard extends StatelessWidget {
+class _GenderCard extends ConsumerWidget {
   final String emoji, labelAr, labelEn;
   final bool selected, isDark;
   final Color color;
@@ -610,7 +611,8 @@ class _GenderCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAr = ref.watch(languageProvider) == 'ar' || ref.watch(languageProvider) == 'ur';
     return Expanded(child: GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -631,7 +633,7 @@ class _GenderCard extends StatelessWidget {
           Text(emoji, style: TextStyle(
             fontSize: selected ? 52 : 44)),
           const SizedBox(height: 10),
-          Text(labelAr, style: TextStyle(
+          Text(isAr ? labelAr : labelEn, style: TextStyle(
             fontFamily: 'Cairo', fontSize: 18, fontWeight: FontWeight.w800,
             color: selected ? color : (isDark ? Colors.white : const Color(0xFF1F2A1F)),
           )),
@@ -717,17 +719,20 @@ class _LangChoice extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════
 //  SELECT TILE
 // ═══════════════════════════════════════════════════════════
-class _SelectTile extends StatelessWidget {
+class _SelectTile extends ConsumerWidget {
   final String emoji, title;
+  final String? titleEn;
   final bool selected, isDark;
   final VoidCallback onTap;
   const _SelectTile({
     required this.emoji, required this.title,
+    this.titleEn,
     required this.selected, required this.isDark, required this.onTap,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAr = ref.watch(languageProvider) == 'ar' || ref.watch(languageProvider) == 'ur';
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -749,7 +754,7 @@ class _SelectTile extends StatelessWidget {
         child: Row(children: [
           Text(emoji, style: const TextStyle(fontSize: 22)),
           const SizedBox(width: 12),
-          Expanded(child: Text(title, style: TextStyle(
+          Expanded(child: Text((!isAr && titleEn != null) ? titleEn! : title, style: TextStyle(
             fontFamily: 'Cairo', fontSize: 14,
             fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
             color: selected
