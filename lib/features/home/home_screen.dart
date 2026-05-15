@@ -298,7 +298,7 @@ carbsTotal: cals.carbsTotal,
 fatTotal: cals.fatTotal,
 profile: profile,
 ringAnim: _ringVal,
-isAr: isAr, isDark: isDark, lang: lang,
+isAr: isAr, isDark: isDark, isRamadan: isRamadan, lang: lang,
 card: card, border: border, muted: muted, text: text,
 onAdd: () => context.push('/food-photo'),
 )),
@@ -617,10 +617,10 @@ if (pct >= 0.90)
       padding: const EdgeInsets.symmetric(
           horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: AppColors.sunnahGreen.withOpacity(0.07),
+        color: (isRamadan ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.07),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-            color: AppColors.sunnahGreen.withOpacity(0.2)),
+            color: (isRamadan ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.2)),
       ),
       child: Text(
         t('الثلث للطعام • الثلث للشراب • الثلث للنَّفَس — النبي ﷺ',
