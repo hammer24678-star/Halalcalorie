@@ -502,7 +502,7 @@ class _CalRing extends StatelessWidget {
 final int eaten, goal, remaining;
 final double pct, proteinTotal, carbsTotal, fatTotal;
 final Color calCol, card, border, muted, text;
-final bool isAr, isDark;
+final bool isAr, isDark, isRamadan;
 final String lang;
 final UserProfile? profile;
 final Animation<double> ringAnim;
@@ -513,7 +513,7 @@ required this.pct, required this.calCol,
 required this.proteinTotal, required this.carbsTotal,
 required this.fatTotal, required this.profile,
 required this.ringAnim, required this.isAr, required this.isDark,
-required this.lang,
+required this.isRamadan, required this.lang,
 required this.card, required this.border, required this.muted,
 required this.text, required this.onAdd,
 });
