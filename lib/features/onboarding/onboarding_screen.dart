@@ -912,7 +912,7 @@ class _AdjustBtn extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════
 //  SUMMARY PAGE
 // ═══════════════════════════════════════════════════════════
-class _SummaryPage extends StatelessWidget {
+class _SummaryPage extends ConsumerWidget {
   final String gender;
   final int age, goalIdx, activityIdx;
   final double height, weight;
@@ -925,10 +925,14 @@ class _SummaryPage extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final lang   = ref.watch(languageProvider);
+    final isAr   = lang == 'ar' || lang == 'ur';
+    String t(String ar, String en) => isAr ? ar : en;
     final isMale = gender == 'brothers';
     final card   = isDark ? const Color(0xFF161B22) : Colors.white;
     final border = isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF);
+    final muted  = isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D);
 
     // Quick BMI calculation
     final hM  = height / 100;
@@ -945,6 +949,13 @@ class _SummaryPage extends StatelessWidget {
     final acts = ActivityLevel.values;
     final mult = acts[activityIdx.clamp(0, acts.length - 1)].multiplier;
     final kcal = (bmr * mult).round();
+    final goal = FitnessGoal.values[goalIdx.clamp(0, FitnessGoal.values.length - 1)];
+
+    // Bilingual value strings
+    final weightStr = '${weight.toStringAsFixed(1)} ${isAr ? 'كجم' : 'kg'}';
+    final heightStr = '${height.toStringAsFixed(0)} ${isAr ? 'سم' : 'cm'}';
+    final ageStr    = '$age ${isAr ? 'سنة' : 'yrs'}';
+    final kcalStr   = '$kcal ${isAr ? 'سعرة' : 'kcal'}';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
@@ -958,16 +969,15 @@ class _SummaryPage extends StatelessWidget {
           builder: (_, v, child) => Opacity(opacity: v,
             child: Transform.translate(offset: Offset(0, 20 * (1 - v)), child: child)),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('🎉', style: const TextStyle(fontSize: 44)),
+            const Text('🎉', style: TextStyle(fontSize: 44)),
             const SizedBox(height: 8),
-            Text('كل شيء جاهز!', style: TextStyle(
+            Text(t('كل شيء جاهز!', 'All Set!'), style: TextStyle(
               fontFamily: 'Cairo', fontSize: 28, fontWeight: FontWeight.w900,
               color: isDark ? Colors.white : const Color(0xFF1F2A1F),
             )),
-            Text('ملفك الشخصي محسوب', style: TextStyle(
-              fontFamily: 'Cairo', fontSize: 13,
-              color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D),
-            )),
+            Text(t('ملفك الشخصي محسوب',
+                   'Your profile has been calculated'),
+              style: TextStyle(fontFamily: 'Cairo', fontSize: 13, color: muted)),
           ]),
         ),
 
@@ -982,11 +992,11 @@ class _SummaryPage extends StatelessWidget {
           crossAxisSpacing: 10,
           childAspectRatio: 1.5,
           children: [
-            _SummaryTile('⚖️', 'الوزن', '${weight.toStringAsFixed(1)} كجم',
+            _SummaryTile('⚖️', t('الوزن', 'Weight'), weightStr,
               AppColors.halalGreen, card, border, isDark),
-            _SummaryTile('📏', 'الطول', '${height.toStringAsFixed(0)} سم',
+            _SummaryTile('📏', t('الطول', 'Height'), heightStr,
               AppColors.waterBlue, card, border, isDark),
-            _SummaryTile('🎂', 'العمر', '$age سنة',
+            _SummaryTile('🎂', t('العمر', 'Age'), ageStr,
               AppColors.barakahGold, card, border, isDark),
             _SummaryTile('📊', 'BMI', bmi.toStringAsFixed(1),
               bmiColor, card, border, isDark),
@@ -1013,14 +1023,16 @@ class _SummaryPage extends StatelessWidget {
             const Text('🔥', style: TextStyle(fontSize: 36)),
             const SizedBox(width: 14),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              const Text('هدف السعرات اليومي', style: TextStyle(
-                fontFamily: 'Cairo', fontSize: 12, color: Colors.white70)),
-              Text('$kcal سعرة', style: const TextStyle(
+              Text(t('هدف السعرات اليومي',
+                     'Daily Calorie Goal'),
+                style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: Colors.white70)),
+              Text(kcalStr, style: const TextStyle(
                 fontFamily: 'Cairo', fontSize: 24,
                 fontWeight: FontWeight.w900, color: Colors.white,
               )),
-              Text('محسوب لجسمك وهدفك', style: const TextStyle(
-                fontFamily: 'Cairo', fontSize: 11, color: Colors.white60)),
+              Text(t('محسوب لجسمك وهدفك',
+                     'Calculated for your body & goal'),
+                style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: Colors.white60)),
             ])),
           ]),
         ),
@@ -1036,15 +1048,12 @@ class _SummaryPage extends StatelessWidget {
             border: Border.all(color: border, width: 0.5),
           ),
           child: Row(children: [
-            Text(FitnessGoal.values[goalIdx.clamp(0, 4)].emoji(),
-              style: const TextStyle(fontSize: 28)),
+            Text(goal.emoji(), style: const TextStyle(fontSize: 28)),
             const SizedBox(width: 12),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Text('هدفك', style: TextStyle(
-                fontFamily: 'Cairo', fontSize: 11,
-                color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D),
-              )),
-              Text(FitnessGoal.values[goalIdx.clamp(0, 4)].nameAr(),
+              Text(t('هدفك', 'Your Goal'), style: TextStyle(
+                fontFamily: 'Cairo', fontSize: 11, color: muted)),
+              Text(isAr ? goal.nameAr() : goal.nameEn(),
                 style: TextStyle(
                   fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w800,
                   color: isDark ? Colors.white : const Color(0xFF1F2A1F),
@@ -1092,7 +1101,7 @@ class _SummaryTile extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════
 //  TOP BAR
 // ═══════════════════════════════════════════════════════════
-class _TopBar extends StatelessWidget {
+class _TopBar extends ConsumerWidget {
   final int page, total;
   final bool isDark, showBack;
   final VoidCallback onBack;
@@ -1103,13 +1112,14 @@ class _TopBar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final lang = ref.watch(languageProvider);
+    final isAr = lang == 'ar' || lang == 'ur';
     final pct = (page + 1) / total;
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
       child: Column(children: [
         Row(children: [
-          // Back button
           AnimatedOpacity(
             opacity: showBack ? 1.0 : 0.0,
             duration: const Duration(milliseconds: 200),
@@ -1121,33 +1131,27 @@ class _TopBar extends StatelessWidget {
                   color: isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(Icons.arrow_back_ios_rounded,
-                  size: 14,
+                child: Icon(Icons.arrow_back_ios_rounded, size: 14,
                   color: isDark ? Colors.white : const Color(0xFF1F2A1F)),
               ),
             ),
           ),
           const Spacer(),
-          // Page counter
           Text('${page + 1} / $total', style: TextStyle(
             fontFamily: 'Cairo', fontSize: 12,
-            color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D),
-          )),
+            color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D))),
           const Spacer(),
-          // Skip
           if (onSkip != null)
             GestureDetector(
               onTap: onSkip,
-              child: Text('تخطي', style: TextStyle(
-                fontFamily: 'Cairo', fontSize: 13,
-                fontWeight: FontWeight.w700, color: AppColors.halalGreen,
-              )),
+              child: Text(isAr ? 'تخطي' : 'Skip',
+                style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
+                  fontWeight: FontWeight.w700, color: AppColors.halalGreen)),
             )
           else
             const SizedBox(width: 36),
         ]),
         const SizedBox(height: 10),
-        // Progress bar
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
@@ -1162,10 +1166,7 @@ class _TopBar extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  BOTTOM BAR
-// ═══════════════════════════════════════════════════════════
-class _BottomBar extends StatelessWidget {
+class _BottomBar extends ConsumerWidget {
   final int page;
   final bool isLast, isQuestion, isDark;
   final VoidCallback onNext;
@@ -1175,11 +1176,12 @@ class _BottomBar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final label = isLast ? 'ابدأ رحلتك 🌿'
-      : isQuestion ? 'التالي →'
-      : 'التالي →';
-
+  Widget build(BuildContext context, WidgetRef ref) {
+    final lang  = ref.watch(languageProvider);
+    final isAr  = lang == 'ar' || lang == 'ur';
+    final label = isLast
+      ? (isAr ? 'ابدأ رحلتك 🌿' : 'Start your journey 🌿')
+      : (isAr ? 'التالي →' : 'Next →');
     return Padding(
       padding: EdgeInsets.fromLTRB(
         24, 12, 24, MediaQuery.of(context).padding.bottom + 20),
@@ -1196,23 +1198,18 @@ class _BottomBar extends StatelessWidget {
                   begin: Alignment.topLeft, end: Alignment.bottomRight),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [BoxShadow(
-              color: (isLast ? AppColors.barakahGold : AppColors.sunnahGreen)
-                .withOpacity(0.35),
-              blurRadius: 16, offset: const Offset(0, 6),
-            )],
+              color: (isLast ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.35),
+              blurRadius: 16, offset: const Offset(0, 6))],
           ),
           child: ElevatedButton(
             onPressed: onNext,
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.transparent,
               shadowColor: Colors.transparent,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16)),
-            ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
             child: Text(label, style: const TextStyle(
               fontFamily: 'Cairo', fontSize: 17,
-              fontWeight: FontWeight.w800, color: Colors.white,
-            )),
+              fontWeight: FontWeight.w800, color: Colors.white)),
           ),
         ),
       ),
@@ -1220,9 +1217,6 @@ class _BottomBar extends StatelessWidget {
   }
 }
 
-// ═══════════════════════════════════════════════════════════
-//  ORB BACKGROUND PAINTER
-// ═══════════════════════════════════════════════════════════
 class _OrbPainter extends CustomPainter {
   final double progress, pageProgress;
   final bool isDark;
