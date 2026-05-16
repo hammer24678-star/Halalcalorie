@@ -164,6 +164,7 @@ final border = isDark ? AppColors.darkBorder2 : AppColors.lightBorder;
 final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
 final text = isDark ? AppColors.darkText : AppColors.lightText;
 String t(String ar, String en) => tLang(lang, ar, en);
+final l = L.fromLang(lang);
 
 final calCol = cals.total > cals.goal
 ? AppColors.haramRed

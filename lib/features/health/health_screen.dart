@@ -256,10 +256,10 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           ]),
         ),
         const SizedBox(height: 14),
-        scoreBar(isAr ? 'الماء' : 'Water', wScore, 25, AppColors.waterBlue),
-        scoreBar(isAr ? 'النوم' : 'Sleep', slScore, 25, AppColors.sleepPurple),
-        scoreBar(isAr ? 'الخطوات' : 'Steps', stScore, 25, AppColors.halalGreen),
-        scoreBar(isAr ? 'المزاج' : 'Mood', mScore, 25, AppColors.barakahGold),
+        scoreBar(tLang(lang,'الماء','Water','Eau','Su','Air','Air'), wScore, 25, AppColors.waterBlue),
+        scoreBar(tLang(lang,'النوم','Sleep','Sommeil','Uyku','Tidur','Tidur'), slScore, 25, AppColors.sleepPurple),
+        scoreBar(tLang(lang,'الخطوات','Steps','Pas','Adımlar','Langkah','Langkah'), stScore, 25, AppColors.halalGreen),
+        scoreBar(tLang(lang,'المزاج','Mood','Humeur','Ruh Hali','Mood','Suasana Hati'), mScore, 25, AppColors.barakahGold),
       ]),
     );
   }
