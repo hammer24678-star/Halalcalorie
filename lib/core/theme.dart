@@ -156,6 +156,126 @@ class AppTheme {
     ),
   );
 
+
+  // ── Ramadan mode theme — everything gold ───────────────────────────
+  static ThemeData get darkRamadan => ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    fontFamily: 'Cairo',
+    scaffoldBackgroundColor: const Color(0xFF0D0A03),
+    colorScheme: const ColorScheme.dark(
+      primary: AppColors.barakahGold,
+      secondary: Color(0xFFFFD740),
+      surface: Color(0xFF1A1200),
+      onPrimary: Colors.black,
+      onSurface: Color(0xFFFFF8E1),
+    ),
+    cardColor: const Color(0xFF1A1200),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFF0D0A03),
+      foregroundColor: AppColors.barakahGold,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.barakahGold,
+        foregroundColor: Colors.black,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        textStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700),
+        elevation: 0,
+      ),
+    ),
+    cardTheme: CardTheme(
+      elevation: 0,
+      color: const Color(0xFF1A1200),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Color(0xFF3A2E00), width: 0.5),
+      ),
+    ),
+    dividerColor: const Color(0xFF3A2E00),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: const Color(0xFF1A1200),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFF3A2E00), width: 0.5)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFF3A2E00), width: 0.5)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: AppColors.barakahGold, width: 1.5)),
+      hintStyle: const TextStyle(fontFamily: 'Cairo', color: Color(0xFF7A6500)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    ),
+    textTheme: const TextTheme(
+      headlineLarge:  TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, color: Color(0xFFFFF8E1)),
+      headlineMedium: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: Color(0xFFFFF8E1)),
+      titleLarge:     TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: Color(0xFFFFF8E1)),
+      bodyLarge:      TextStyle(fontFamily: 'Cairo', color: Color(0xFFFFF8E1)),
+      bodyMedium:     TextStyle(fontFamily: 'Cairo', color: AppColors.barakahGold),
+    ),
+  );
+
+  static ThemeData get lightRamadan => ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+    fontFamily: 'Cairo',
+    scaffoldBackgroundColor: const Color(0xFFFFFBF0),
+    colorScheme: const ColorScheme.light(
+      primary: AppColors.barakahGold,
+      secondary: Color(0xFFC9963E),
+      surface: Color(0xFFFFF8E1),
+      onPrimary: Colors.black,
+      onSurface: Color(0xFF3E2C00),
+    ),
+    cardColor: const Color(0xFFFFF8E1),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: Color(0xFFFFFBF0),
+      foregroundColor: Color(0xFF8B6914),
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.barakahGold,
+        foregroundColor: Colors.black,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        textStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700),
+        elevation: 0,
+      ),
+    ),
+    cardTheme: CardTheme(
+      elevation: 0,
+      color: const Color(0xFFFFF8E1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Color(0xFFE0C060), width: 0.5),
+      ),
+    ),
+    dividerColor: const Color(0xFFE0C060),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: const Color(0xFFFFF8E1),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFFE0C060), width: 0.5)),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: Color(0xFFE0C060), width: 0.5)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+        borderSide: const BorderSide(color: AppColors.barakahGold, width: 1.5)),
+      hintStyle: const TextStyle(fontFamily: 'Cairo', color: Color(0xFFB8940A)),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    ),
+    textTheme: const TextTheme(
+      headlineLarge:  TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, color: Color(0xFF3E2C00)),
+      headlineMedium: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: Color(0xFF3E2C00)),
+      titleLarge:     TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: Color(0xFF3E2C00)),
+      bodyLarge:      TextStyle(fontFamily: 'Cairo', color: Color(0xFF3E2C00)),
+      bodyMedium:     TextStyle(fontFamily: 'Cairo', color: Color(0xFF8B6914)),
+    ),
+  );
+
   // Legacy compat
   static ThemeData get lightTheme => light;
   static ThemeData get darkTheme  => dark;

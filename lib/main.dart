@@ -54,13 +54,14 @@ class HalalCalorieApp extends ConsumerWidget {
   const HalalCalorieApp({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.watch(routerProvider);
-    final isDark  = ref.watch(themeProvider);
+    final router    = ref.watch(routerProvider);
+    final isDark    = ref.watch(themeProvider);
+    final isRamadan = ref.watch(ramadanModeProvider);
     return MaterialApp.router(
       title: 'HalalCalorie',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      theme:     isRamadan ? AppTheme.lightRamadan : AppTheme.light,
+      darkTheme: isRamadan ? AppTheme.darkRamadan  : AppTheme.dark,
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
       routerConfig: router,
       localizationsDelegates: const [
