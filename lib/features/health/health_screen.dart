@@ -130,7 +130,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     final health = ref.watch(healthProvider);
 
     return ListView(padding: const EdgeInsets.all(14), children: [
-      _anim(0, _healthScoreCard(water, sleep, health, isAr, isDark, lang)),
+      _anim(0, _healthScoreCard(water, sleep, health, isAr, isDark)),
       const SizedBox(height: 16),
       _anim(1, _sectionTitle('💧 ${isAr ? "الماء اليومي" : "Daily Water"}', isDark)),
       _anim(1, _waterCard(water, isAr, isDark)),
@@ -151,7 +151,8 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   }
 
   Widget _healthScoreCard(WaterState water, SleepState sleep,
-      HealthState health, bool isAr, bool isDark, String lang) {
+      HealthState health, bool isAr, bool isDark) {
+    final lang = ref.watch(languageProvider);
     final bg    = isDark ? AppColors.darkCard : Colors.white;
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
 
