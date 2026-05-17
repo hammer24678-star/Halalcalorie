@@ -318,19 +318,10 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
           style: const TextStyle(fontFamily: 'Cairo', fontSize: 12,
               color: Colors.white70, height: 1.5)),
         const SizedBox(height: 12),
-        GestureDetector(
-          onTap: () => launchUrl(Uri.parse(
-            'https://docs.codemagic.io/yaml-basic-configuration/environment-variables/')),
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.doubtOrange.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: AppColors.doubtOrange.withOpacity(0.4))),
-            child: Text(
-              isAr ? 'كيف أضيف المفتاح؟' : 'How to add the key →',
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 12,
-                  fontWeight: FontWeight.w700, color: AppColors.doubtOrange)))),
+        Text(
+          'docs.codemagic.io → Environment variables',
+          style: TextStyle(fontFamily: 'Cairo', fontSize: 10,
+              color: AppColors.doubtOrange.withOpacity(0.7))),
       ]),
     );
   }
