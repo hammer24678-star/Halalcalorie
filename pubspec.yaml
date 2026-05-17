@@ -24,7 +24,7 @@ dependencies:
   package_info_plus: ^6.0.0
   uuid: ^4.3.3
   mobile_scanner: ^5.0.0
-  pedometer: ^3.0.1
+  pedometer: ^4.1.1
   permission_handler: ^11.3.0
   share_plus: ^9.0.0
   flutter_local_notifications: ^17.2.0
