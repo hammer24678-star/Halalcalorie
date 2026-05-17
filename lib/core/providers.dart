@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show Color;
 // providers.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart'; import'package:shared_preferences/shared_preferences.dart'; import'package:go_router/go_router.dart'; import'../data/models/models.dart'; import'../data/models/user_profile.dart'; import'router.dart'; import'revenuecat_service.dart'; import'database.dart'; import'health_service.dart';
 
@@ -580,7 +581,7 @@ const kBadges = [
     descAr: '١٤ يوم متتالية', descEn: '14-day streak'),
   AppBadge(id: 18, emoji: '🎖️', nameAr: 'شهر كامل',     nameEn: 'Full Month',
     descAr: '٣٠ يوم تتابع', descEn: '30-day streak'),
-  AppBadge(id: 19, emoji: '🌍', nameAr: 'المسافر الصالح','nameEn': 'Righteous Traveller',
+  AppBadge(id: 19, emoji: '🌍', nameAr: 'المسافر الصالح', nameEn: 'Righteous Traveller',
     descAr: 'استخدم التطبيق بـ ٣ لغات', descEn: 'Use the app in 3 languages'),
   AppBadge(id: 20, emoji: '👑', nameAr: 'خير المؤمنين',  nameEn: 'Best Believer',
     descAr: 'كل الأعمدة + ١٠٠ يوم', descEn: 'All pillars + 100-day streak'),

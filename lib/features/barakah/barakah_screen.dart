@@ -93,15 +93,17 @@ class _BarakahState extends ConsumerState<BarakahScreen>
             ),
           ),
           backgroundColor: Colors.transparent,
-          title: Text(l.barakahTitle,
+          title: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Text(l.barakahTitle,
               style: TextStyle(
                   fontFamily: 'Cairo', fontWeight: FontWeight.w900,
                   fontSize: 18,
                   color: isRamadan ? AppColors.ramadanGold : AppColors.barakahGold)),
-          subtitle: Text(l.barakahSubtitle,
+            Text(l.barakahSubtitle,
               style: TextStyle(
                   fontFamily: 'Cairo', fontSize: 11,
                   color: isRamadan ? AppColors.ramadanMuted : Colors.white54)),
+          ]),
         ),
         body: ListView(
           padding: const EdgeInsets.fromLTRB(14, 14, 14, 28),

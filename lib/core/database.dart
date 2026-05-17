@@ -173,7 +173,6 @@ class AppDatabase {
         "WHERE date_key >= date('now','-6 days')");
     return rows.map((r) => r['date_key'] as String).toSet();
   }
-}
 
   // ── Barakah helpers ─────────────────────────────────────────
   static Future<Map<String,dynamic>?> getTodayBarakah() async {
@@ -216,5 +215,6 @@ class AppDatabase {
       "WHERE date_key >= date('now','-6 days') "
       "ORDER BY date_key ASC");
   }
+}
 
 class _DailyKcal { final String dateKey; final int kcal; _DailyKcal(this.dateKey, this.kcal); }
