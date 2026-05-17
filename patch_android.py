@@ -136,3 +136,21 @@ for folder in icon_sizes:
         shutil.copy("assets/logo.png", f"{path}/ic_launcher.png")
 
 print("Launcher icons written")
+
+# ── Patch AndroidManifest — step counter permissions ──────────
+manifest_path = "android/app/src/main/AndroidManifest.xml"
+if os.path.exists(manifest_path):
+    with open(manifest_path, "r") as f: manifest = f.read()
+    step_perms = (
+        '    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />\n'
+        '    <uses-permission android:name="android.hardware.sensor.stepcounter" />\n'
+        '    <uses-feature android:name="android.hardware.sensor.stepcounter" android:required="false" />\n'
+    )
+    if "ACTIVITY_RECOGNITION" not in manifest:
+        manifest = manifest.replace("<application", step_perms + "    <application", 1)
+        with open(manifest_path, "w") as f: f.write(manifest)
+        print("AndroidManifest: step counter permissions added")
+    else:
+        print("AndroidManifest: permissions already present")
+else:
+    print("WARNING: AndroidManifest.xml not found — run after flutter create")

@@ -77,6 +77,10 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
     } catch (e) {
       if (!mounted) return;
       final errStr = e.toString();
+      if (e is ApiKeyMissingException) {
+        if (mounted) setState(() { _error = '__API_KEY_MISSING__'; _state = AnalysisState.error; });
+        return;
+      }
       final msg = errStr.contains('ANTHROPIC_API_KEY') || errStr.contains('401')
         ? (lang == 'ar' ? 'مفتاح API غير مُعدّ — راجع إعدادات Codemagic' : 'API key not configured — check Codemagic secrets')
         : errStr.contains('timeout') || errStr.contains('TimeoutException')
@@ -161,7 +165,9 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
               _loadingCard(isAr, isDark),
 
             // ── Error state ───────────────────────────────
-            if (_state == AnalysisState.error && _error != null)
+            if (_state == AnalysisState.error && _error == '__API_KEY_MISSING__')
+              _apiKeyBanner(isAr, isDark),
+            if (_state == AnalysisState.error && _error != null && _error != '__API_KEY_MISSING__')
               _errorCard(_error!, isAr, isDark),
 
             // ── Results ───────────────────────────────────
@@ -283,6 +289,48 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
           backgroundColor: Colors.transparent,
           valueColor: AlwaysStoppedAnimation(AppColors.sunnahGreen),
         ),
+      ]),
+    );
+  }
+
+  Widget _apiKeyBanner(bool isAr, bool isDark) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A0A00),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.doubtOrange.withOpacity(0.6), width: 1.2)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Row(children: [
+          const Text('⚠️', style: TextStyle(fontSize: 20)),
+          const SizedBox(width: 8),
+          Expanded(child: Text(
+            isAr ? 'مفتاح AI غير مُعدّ' : 'AI Key Not Configured',
+            style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800,
+                fontSize: 14, color: AppColors.doubtOrange))),
+        ]),
+        const SizedBox(height: 8),
+        Text(
+          isAr
+            ? 'أضف ANTHROPIC_API_KEY في إعدادات Codemagic ثم أعد البناء.'
+            : 'Add ANTHROPIC_API_KEY to your Codemagic secrets and rebuild.',
+          style: const TextStyle(fontFamily: 'Cairo', fontSize: 12,
+              color: Colors.white70, height: 1.5)),
+        const SizedBox(height: 12),
+        GestureDetector(
+          onTap: () => launchUrl(Uri.parse(
+            'https://docs.codemagic.io/yaml-basic-configuration/environment-variables/')),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: AppColors.doubtOrange.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: AppColors.doubtOrange.withOpacity(0.4))),
+            child: Text(
+              isAr ? 'كيف أضيف المفتاح؟' : 'How to add the key →',
+              style: const TextStyle(fontFamily: 'Cairo', fontSize: 12,
+                  fontWeight: FontWeight.w700, color: AppColors.doubtOrange)))),
       ]),
     );
   }

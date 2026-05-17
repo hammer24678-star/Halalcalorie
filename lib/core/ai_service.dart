@@ -11,6 +11,13 @@ import 'package:http/http.dart' as http;
 import '../data/models/models.dart';
 import 'open_food_facts_service.dart';
 
+class ApiKeyMissingException implements Exception {
+  final String message;
+  const ApiKeyMissingException([this.message =
+    'ANTHROPIC_API_KEY is not set. Add it to your Codemagic secrets and rebuild.']);
+  @override String toString() => message;
+}
+
 class AIService {
   static const _endpoint = 'https://api.anthropic.com/v1/messages';
   static const _apiKey = String.fromEnvironment('ANTHROPIC_API_KEY', defaultValue: '');
@@ -51,7 +58,7 @@ class AIService {
     required String userPrompt,
     int maxTokens = 800,
   }) async {
-    if (_apiKey.isEmpty) throw Exception('ANTHROPIC_API_KEY not set');
+    if (_apiKey.isEmpty) throw const ApiKeyMissingException();
     final b64   = await _toBase64(imagePath);
     final mime  = _mimeType(imagePath);
 
@@ -277,11 +284,7 @@ Goal: $goal
 Request: $prompt
 ''';
 
-    if (_apiKey.isEmpty) {
-      return language == 'ar'
-        ? 'لم يتم إعداد مفتاح API. راجع إعدادات Codemagic.'
-        : 'API key not configured. Check Codemagic secrets.';
-    }
+    if (_apiKey.isEmpty) throw const ApiKeyMissingException();
     final body = jsonEncode({
       'model': _model,
       'max_tokens': 600,
@@ -456,11 +459,7 @@ Request: $prompt
         ? 'القيم الغذائية لـ: $foodName'
         : 'Nutritional values for: $foodName';
 
-    if (_apiKey.isEmpty) {
-      return {'name_ar': foodName, 'name_en': foodName,
-        'kcal': 100, 'protein_g': 5.0, 'carbs_g': 15.0,
-        'fat_g': 3.0, 'serving_size': '100g', 'halal': true};
-    }
+    if (_apiKey.isEmpty) throw const ApiKeyMissingException();
     try {
       final body = jsonEncode({
         'model': _model,

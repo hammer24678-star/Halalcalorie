@@ -48,7 +48,9 @@
 
     <!-- ═══ Privacy Usage Descriptions (REQUIRED for App Store) ══ -->
     <!-- Camera: food photo + body analysis -->
-    <key>NSCameraUsageDescription</key>
+    <key>NSMotionUsageDescription</key>
+	<string>HalalCalorie uses motion data to count your steps accurately throughout the day.</string>
+	<key>NSCameraUsageDescription</key>
     <string>SunnahStride uses your camera to analyze food for halal status and nutritional values, and optionally for body composition estimation.</string>
 
     <!-- Photo Library: select existing photos -->
