@@ -229,6 +229,44 @@ class L {
       '⚠️ Pas de connexion', '⚠️ İnternet yok',
       '⚠️ Tiada internet', '⚠️ Tidak ada internet');
 
+  // ── Barakah Engine ────────────────────────────────────────────────────────────────────
+  String get barakahTitle    => t6('نقاط بركتك', 'Barakah Score',
+      'Score Barakah', 'Bereket Puani', 'Mata Barakah', 'Skor Barakah');
+  String get barakahSubtitle => t6('بركتك اليومية', 'Your daily blessing score',
+      'Votre score bénédiction', 'Günlük bereket puanı', 'Skor berkat harian', 'Skor berkah harian');
+  String get pillarsTitle    => t6('أعمدة البركة', 'Barakah Pillars',
+      'Piliers Barakah', 'Bereket Sütunları', 'Tiang Barakah', 'Pilar Barakah');
+  String get pillarNutrition => t6('تغذية', 'Nutrition',
+      'Nutrition', 'Beslenme', 'Pemakanan', 'Nutrisi');
+  String get pillarHydration => t6('ترطيب', 'Hydration',
+      'Hydratation', 'Hidrasyon', 'Hidrasi', 'Hidrasi');
+  String get pillarSleep     => t6('نوم', 'Sleep',
+      'Sommeil', 'Uyku', 'Tidur', 'Tidur');
+  String get pillarMovement  => t6('حركة', 'Movement',
+      'Mouvement', 'Hareket', 'Pergerakan', 'Gerakan');
+  String get pillarFasting   => t6('صيام', 'Fasting',
+      'Jeûne', 'Oruç', 'Puasa', 'Puasa');
+  String get pillarSunnahFood=> t6('أكل سنة', 'Sunnah Food',
+      'Nourriture Sunnah', 'Sünnet Yemek', 'Makanan Sunnah', 'Makanan Sunnah');
+  String get pillarWorkout   => t6('تمرين', 'Workout',
+      'Entraînement', 'Antrenman', 'Latihan', 'Latihan');
+  String get pillarDhikr     => t6('ذكر', 'Dhikr',
+      'Dhikr', 'Zikir', 'Zikir', 'Zikir');
+  String get dhikrDone       => t6('ذكرتك اليوم ✓', 'Dhikr done today ✓',
+      'Dhikr fait aujourd’hui ✓', 'Bugün zikir yapıldı ✓',
+      'Zikir hari ini selesai ✓', 'Zikir hari ini selesai ✓');
+  String get dhikrTap        => t6('اضغط لتأكيد ذكرك', 'Tap to confirm dhikr',
+      'Appuyer pour confirmer', 'Zikir onaylamak için dokunun',
+      'Ketuk untuk sahkan zikir', 'Ketuk untuk konfirmasi zikir');
+  String get badgesTitle     => t6('شاراتك', 'Your Badges',
+      'Vos Badges', 'Rozetleriniz', 'Lencana Anda', 'Lencana Anda');
+  String get weeklyReport    => t6('تقرير الجمعة', 'Friday Report',
+      'Rapport Vendredi', 'Cuma Raporu', 'Laporan Jumaat', 'Laporan Jumat');
+  String get barakahNavLabel => t6('بركة', 'Barakah',
+      'Barakah', 'Bereket', 'Barakah', 'Barakah');
+  String get barakahHomeCard => t6('نقاط بركتك', 'Barakah Score',
+      'Score Barakah', 'Bereket Puanı', 'Mata Barakah', 'Skor Barakah');
+
   // ── Ramadan ───────────────────────────────────────────────────────────────
   String get ramadanKareem => t6('رمضان كريم',
       'Ramadan Kareem', 'Ramadan Karîm', 'Ramazan Kareem',

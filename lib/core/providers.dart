@@ -370,4 +370,275 @@ class NotifNotifier extends StateNotifier<bool> { NotifNotifier() : super(true) 
   Future<void> toggle() async { state = !state; final p = await SharedPreferences.getInstance(); await p.setBool('notifications_on', state); }
 }
 
+// ══════════════════════════════════════════════════════════════════
+// BARAKAH ENGINE
+// ══════════════════════════════════════════════════════════════════
+
+class BarakahState {
+  // 8 pillar scores — each 0..125 → total 0..1000
+  final int nutrition;   // from calorie % goal
+  final int hydration;   // from water cups
+  final int sleep;       // from sleep hours
+  final int movement;    // from step count
+  final int fasting;     // sunnah fast today
+  final int sunnahFood;  // sunnah foods logged today
+  final int workout;     // workout minutes today
+  final int dhikr;       // self-reported check-in
+
+  const BarakahState({
+    this.nutrition  = 0, this.hydration  = 0,
+    this.sleep      = 0, this.movement   = 0,
+    this.fasting    = 0, this.sunnahFood = 0,
+    this.workout    = 0, this.dhikr      = 0,
+  });
+
+  int get score =>
+      nutrition + hydration + sleep + movement +
+      fasting + sunnahFood + workout + dhikr;
+
+  // 0-1000 → tier label
+  String tierEn() {
+    if (score >= 900) return 'Radiant ✨';
+    if (score >= 700) return 'Blessed 🌟';
+    if (score >= 500) return 'Progressing 📈';
+    if (score >= 300) return 'Rising 🌱';
+    return 'Beginning 🤲';
+  }
+  String tierAr() {
+    if (score >= 900) return 'مشرق ✨';
+    if (score >= 700) return 'مبارك 🌟';
+    if (score >= 500) return 'في تقدم 📈';
+    if (score >= 300) return 'في الصعود 🌱';
+    return 'في البداية 🤲';
+  }
+
+  Color tierColor() {
+    if (score >= 900) return const Color(0xFFE8B84B);
+    if (score >= 700) return const Color(0xFF3FB950);
+    if (score >= 500) return const Color(0xFF58A6FF);
+    if (score >= 300) return const Color(0xFFBC8CFF);
+    return const Color(0xFF8B949E);
+  }
+
+  BarakahState copyWith({
+    int? nutrition, int? hydration, int? sleep, int? movement,
+    int? fasting, int? sunnahFood, int? workout, int? dhikr,
+  }) => BarakahState(
+    nutrition:  nutrition  ?? this.nutrition,
+    hydration:  hydration  ?? this.hydration,
+    sleep:      sleep      ?? this.sleep,
+    movement:   movement   ?? this.movement,
+    fasting:    fasting    ?? this.fasting,
+    sunnahFood: sunnahFood ?? this.sunnahFood,
+    workout:    workout    ?? this.workout,
+    dhikr:      dhikr      ?? this.dhikr,
+  );
+}
+
+class BarakahNotifier extends StateNotifier<BarakahState> {
+  final Ref _ref;
+  BarakahNotifier(this._ref) : super(const BarakahState()) { _sync(); }
+
+  /// Called whenever user data changes — recomputes all 8 pillars.
+  Future<void> _sync() async {
+    final cals    = _ref.read(caloriesProvider);
+    final water   = _ref.read(waterProvider);
+    final sleep   = _ref.read(sleepProvider);
+    final health  = _ref.read(healthProvider);
+    final wMin    = _ref.read(workoutMinutesProvider);
+    final fast    = _ref.read(sunnahFastProvider);
+
+    // Load persisted dhikr from db
+    final row     = await AppDatabase.getTodayBarakah();
+    final dhikrOn = (row?['dhikr'] as int? ?? 0) == 1;
+
+    // ── Pillar calculations (each caps at 125) ──────────────────
+    // Nutrition: % of calorie goal eaten (80-110% = perfect 125)
+    final calPct = cals.goal > 0 ? cals.total / cals.goal : 0.0;
+    final nutScore = calPct >= 0.8 && calPct <= 1.1
+        ? 125 : (calPct >= 0.6 ? 80 : 40);
+
+    // Hydration: 8 cups = 125
+    final hydScore = ((water.cups / water.goal) * 125).clamp(0, 125).toInt();
+
+    // Sleep: 8h = 125
+    final slpScore = ((sleep.hours / sleep.goal) * 125).clamp(0, 125).toInt();
+
+    // Movement: 10,000 steps = 125
+    final movScore = ((health.steps / 10000) * 125).clamp(0, 125).toInt();
+
+    // Fasting: sunnah fast today = 125
+    final fstScore = fast.fastedToday ? 125 : 0;
+
+    // Sunnah food: loaded from db (set externally)
+    final sfScore  = (row?['sunnah_food'] as int? ?? 0).clamp(0, 125);
+
+    // Workout: 30+ min = 125
+    final wrkScore = (wMin >= 30 ? 125 : ((wMin / 30) * 125).toInt()).clamp(0, 125);
+
+    // Dhikr: self-reported toggle
+    final dhkScore = dhikrOn ? 125 : 0;
+
+    final newState = BarakahState(
+      nutrition:  nutScore, hydration:  hydScore,
+      sleep:      slpScore, movement:   movScore,
+      fasting:    fstScore, sunnahFood: sfScore,
+      workout:    wrkScore, dhikr:      dhkScore,
+    );
+
+    state = newState;
+
+    // Persist to DB
+    await AppDatabase.upsertBarakah(
+      nutrition:  nutScore, hydration:  hydScore,
+      sleep:      slpScore, movement:   movScore,
+      fasting:    fstScore, sunnahFood: sfScore,
+      workout:    wrkScore, dhikr:      dhkScore,
+      score:      newState.score,
+    );
+
+    // Cascade badge check
+    _ref.read(badgeProvider.notifier).evaluate(newState, fast, _ref.read(streakProvider));
+  }
+
+  Future<void> toggleDhikr() async {
+    final row    = await AppDatabase.getTodayBarakah();
+    final wasOn  = (row?['dhikr'] as int? ?? 0) == 1;
+    await AppDatabase.upsertBarakah(dhikr: wasOn ? 0 : 1);
+    await _sync();
+  }
+
+  /// Call after any pillar-affecting action to keep score live.
+  void refresh() => _sync();
+}
+
+final barakahProvider =
+    StateNotifierProvider<BarakahNotifier, BarakahState>(
+        (ref) => BarakahNotifier(ref));
+
+final barakahWeekProvider = FutureProvider<List<Map<String,dynamic>>>((ref) async {
+  ref.watch(barakahProvider);
+  return AppDatabase.getWeeklyBarakah();
+});
+
+// ──────────────────────────────────────────────────────────────────
+// BADGE SYSTEM — 20 badges stored in SharedPreferences as a Set<int>
+// ──────────────────────────────────────────────────────────────────
+
+class BadgeState {
+  final Set<int> earned; // badge IDs that have been unlocked
+  const BadgeState({required this.earned});
+}
+
+// Static badge definitions
+class AppBadge {
+  final int    id;
+  final String emoji;
+  final String nameAr;
+  final String nameEn;
+  final String descAr;
+  final String descEn;
+  const AppBadge({required this.id, required this.emoji,
+    required this.nameAr, required this.nameEn,
+    required this.descAr, required this.descEn});
+}
+
+const kBadges = [
+  AppBadge(id:  1, emoji: '🌱', nameAr: 'الأولى',      nameEn: 'First Step',
+    descAr: 'سجّل أول يوم', descEn: 'Log your first day'),
+  AppBadge(id:  2, emoji: '📅', nameAr: 'أسبوع',        nameEn: 'Week Warrior',
+    descAr: '٧ أيام متتالية', descEn: '7-day streak'),
+  AppBadge(id:  3, emoji: '🌙', nameAr: 'صائم السنة',   nameEn: 'Sunnah Faster',
+    descAr: 'أول صيام سنة', descEn: 'First sunnah fast'),
+  AppBadge(id:  4, emoji: '🏆', nameAr: 'محارب السنة',  nameEn: 'Sunnah Warrior',
+    descAr: '٧ صيامات سنة', descEn: '7 sunnah fasts'),
+  AppBadge(id:  5, emoji: '🍯', nameAr: 'طعام نبوي',    nameEn: 'Sunnah Chef',
+    descAr: 'سجّل ٣ أطعمة سنة', descEn: 'Log 3 sunnah foods'),
+  AppBadge(id:  6, emoji: '💧', nameAr: 'حارس الماء',   nameEn: 'Water Guardian',
+    descAr: 'أكمل هدف الماء ٣ أيام', descEn: 'Hit water goal 3 days'),
+  AppBadge(id:  7, emoji: '💪', nameAr: 'المجاهد',       nameEn: 'Al-Mujahid',
+    descAr: '٣٠ دقيقة تمرين', descEn: '30 min workout'),
+  AppBadge(id:  8, emoji: '🔥', nameAr: 'مشتعل',         nameEn: 'On Fire',
+    descAr: '٣ تمارين في أسبوع', descEn: '3 workouts in a week'),
+  AppBadge(id:  9, emoji: '🌟', nameAr: 'بركة ٥٠٠',      nameEn: 'Barakah 500',
+    descAr: 'نقاط بركة ≥ ٥٠٠', descEn: 'Barakah score ≥ 500'),
+  AppBadge(id: 10, emoji: '🌠', nameAr: 'بركة ٧٠٠',      nameEn: 'Barakah 700',
+    descAr: 'نقاط بركة ≥ ٧٠٠', descEn: 'Barakah score ≥ 700'),
+  AppBadge(id: 11, emoji: '✨', nameAr: 'مشرق',           nameEn: 'Radiant',
+    descAr: 'نقاط بركة ≥ ٩٠٠', descEn: 'Barakah score ≥ 900'),
+  AppBadge(id: 12, emoji: '🤲', nameAr: 'الذاكر',         nameEn: 'The Rememberer',
+    descAr: 'أول ذكر يومي', descEn: 'First daily dhikr check-in'),
+  AppBadge(id: 13, emoji: '📖', nameAr: 'النية',          nameEn: 'Niyyah Master',
+    descAr: '٢٨ يوم + ٤ صيامات', descEn: '28 days + 4 fasts'),
+  AppBadge(id: 14, emoji: '💎', nameAr: 'مئة يوم',        nameEn: 'Centurion',
+    descAr: '١٠٠ يوم تتابع', descEn: '100-day streak'),
+  AppBadge(id: 15, emoji: '🕌', nameAr: 'السلوك الكامل', nameEn: 'Full Sunnah',
+    descAr: 'أكمل كل أعمدة البركة', descEn: 'Complete all 8 pillars in one day'),
+  AppBadge(id: 16, emoji: '🌅', nameAr: 'الفجر المبكر',  nameEn: 'Fajr Riser',
+    descAr: 'سجّل تمرين قبل الساعة ٦', descEn: 'Log workout before 6 AM'),
+  AppBadge(id: 17, emoji: '⚡', nameAr: 'العزيمة',        nameEn: 'Azimah',
+    descAr: '١٤ يوم متتالية', descEn: '14-day streak'),
+  AppBadge(id: 18, emoji: '🎖️', nameAr: 'شهر كامل',     nameEn: 'Full Month',
+    descAr: '٣٠ يوم تتابع', descEn: '30-day streak'),
+  AppBadge(id: 19, emoji: '🌍', nameAr: 'المسافر الصالح','nameEn': 'Righteous Traveller',
+    descAr: 'استخدم التطبيق بـ ٣ لغات', descEn: 'Use the app in 3 languages'),
+  AppBadge(id: 20, emoji: '👑', nameAr: 'خير المؤمنين',  nameEn: 'Best Believer',
+    descAr: 'كل الأعمدة + ١٠٠ يوم', descEn: 'All pillars + 100-day streak'),
+];
+
+class BadgeNotifier extends StateNotifier<BadgeState> {
+  BadgeNotifier() : super(const BadgeState(earned: {})) { _load(); }
+
+  Future<void> _load() async {
+    final p    = await SharedPreferences.getInstance();
+    final list = p.getStringList('barakah_badges') ?? [];
+    state = BadgeState(earned: list.map(int.parse).toSet());
+  }
+
+  Future<void> _unlock(int id) async {
+    if (state.earned.contains(id)) return;
+    final newSet = {...state.earned, id};
+    state = BadgeState(earned: newSet);
+    final p = await SharedPreferences.getInstance();
+    await p.setStringList('barakah_badges', newSet.map((e) => e.toString()).toList());
+  }
+
+  void evaluate(BarakahState b, SunnahFastState fast, int streak) {
+    // Score-based badges
+    if (b.score >= 500) _unlock(9);
+    if (b.score >= 700) _unlock(10);
+    if (b.score >= 900) _unlock(11);
+    // All 8 pillars active today
+    if ([b.nutrition, b.hydration, b.sleep, b.movement,
+         b.fasting, b.sunnahFood, b.workout, b.dhikr].every((v) => v > 0)) _unlock(15);
+    // Streak badges
+    if (streak >=   1) _unlock(1);
+    if (streak >=   7) _unlock(2);
+    if (streak >=  14) _unlock(17);
+    if (streak >=  30) _unlock(18);
+    if (streak >= 100) _unlock(14);
+    if (streak >= 100 &&
+        [b.nutrition, b.hydration, b.sleep, b.movement,
+         b.fasting, b.sunnahFood, b.workout, b.dhikr].every((v) => v > 0)) _unlock(20);
+    // Fasting badges
+    if (fast.lifetimeCount >=  1) _unlock(3);
+    if (fast.lifetimeCount >=  7) _unlock(4);
+    // Dhikr badge
+    if (b.dhikr > 0) _unlock(12);
+    // Workout badge
+    if (b.workout >= 125) _unlock(7);
+    // Niyyah master: 28 days + 4 fasts
+    if (streak >= 28 && fast.lifetimeCount >= 4) _unlock(13);
+  }
+
+  void unlockWorkoutWeek() => _unlock(8);
+  void unlockSunnahChef()  => _unlock(5);
+  void unlockWaterGuard()  => _unlock(6);
+  void unlockFajrRiser()   => _unlock(16);
+}
+
+final badgeProvider =
+    StateNotifierProvider<BadgeNotifier, BadgeState>(
+        (ref) => BadgeNotifier());
+
 final routerProvider = Provider<GoRouter>((ref) => AppRouter.router(ref));

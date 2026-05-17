@@ -12,6 +12,7 @@ import '../../core/l10n.dart';
 import '../../core/prayer_provider.dart';
 import '../../data/models/models.dart';
 import '../../data/models/user_profile.dart';
+import '../barakah/barakah_screen.dart' show kBadges;
 
 class HomeScreen extends ConsumerStatefulWidget {
 const HomeScreen({super.key});
@@ -325,8 +326,16 @@ onWorkout: () => context.go('/fitness'),
 )),
 const SizedBox(height: 12),
 
+// ── BARAKAH PULSE CARD ──────────────────────
+_anim(3, _BarakahPulseCard(
+  isDark: isDark, isAr: isAr,
+  card: card, border: border, muted: muted,
+  onTap: () => context.go('/barakah'),
+)),
+const SizedBox(height: 12),
+
 // ── 4 HADITH ────────────────────────────────
-_anim(3, _HadithCard(
+_anim(4, _HadithCard(
 hadith: _hadith, isAr: isAr, isDark: isDark,
 card: card, border: border, muted: muted, text: text,
 dotAnim: _dotCtrl,
@@ -334,7 +343,7 @@ dotAnim: _dotCtrl,
 const SizedBox(height: 12),
 
 // ── 5 QUICK ACTIONS ─────────────────────────
-_anim(4, _QuickGrid(
+_anim(5, _QuickGrid(
 isAr: isAr, isDark: isDark,
 card: card, border: border, text: text, muted: muted,
 onTap: (r) {
@@ -1519,6 +1528,77 @@ color: text,
 }
 
 // ════════════════════════════════════════════════════════════
+// BARAKAH PULSE CARD
+
+class _BarakahPulseCard extends ConsumerWidget {
+  final bool isDark, isAr;
+  final Color card, border, muted;
+  final VoidCallback onTap;
+  const _BarakahPulseCard({required this.isDark, required this.isAr,
+    required this.card, required this.border, required this.muted,
+    required this.onTap});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final barakah = ref.watch(barakahProvider);
+    final badges  = ref.watch(badgeProvider);
+    final lang    = ref.watch(languageProvider);
+    final l       = L.fromLang(lang);
+    final score   = barakah.score;
+    final pct     = (score / 1000).clamp(0.0, 1.0);
+    final col     = barakah.tierColor();
+    final earned  = badges.earned.length;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: card,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: col.withOpacity(0.35), width: 1.2),
+          boxShadow: [BoxShadow(
+            color: col.withOpacity(isDark ? 0.15 : 0.08),
+            blurRadius: 18, offset: const Offset(0, 5))],
+        ),
+        child: Column(children: [
+          Row(children: [
+            const Text('✨', style: TextStyle(fontSize: 20)),
+            const SizedBox(width: 8),
+            Expanded(child: Text(l.barakahHomeCard,
+              style: TextStyle(fontFamily: 'Cairo',
+                  fontWeight: FontWeight.w800, fontSize: 14, color: col))),
+            Text('$score / 1000',
+              style: TextStyle(fontFamily: 'Cairo',
+                  fontSize: 12, fontWeight: FontWeight.w700, color: col)),
+            const SizedBox(width: 6),
+            Icon(Icons.arrow_forward_ios, size: 12, color: muted),
+          ]),
+          const SizedBox(height: 10),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(6),
+            child: LinearProgressIndicator(
+              value: pct, minHeight: 8,
+              backgroundColor: isDark
+                  ? const Color(0xFF21262D) : const Color(0xFFEEEEEE),
+              valueColor: AlwaysStoppedAnimation(col),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+            Text(isAr ? barakah.tierAr() : barakah.tierEn(),
+              style: TextStyle(fontFamily: 'Cairo',
+                  fontSize: 11, color: col, fontWeight: FontWeight.w600)),
+            Text('🏅 $earned / ${kBadges.length}',
+              style: TextStyle(fontFamily: 'Cairo',
+                  fontSize: 11, color: muted)),
+          ]),
+        ]),
+      ),
+    );
+  }
+}
+
 // QUICK GRID
 // ════════════════════════════════════════════════════════════
 class _QuickGrid extends StatelessWidget {

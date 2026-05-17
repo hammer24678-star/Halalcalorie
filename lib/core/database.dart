@@ -15,13 +15,14 @@ class AppDatabase {
     final dbPath = await getDatabasesPath();
     return openDatabase(
       p.join(dbPath, 'halalcalorie.db'),
-      version: 5,
+      version: 6,
       onCreate: _create,
       onUpgrade: (db, oldV, newV) async {
         await db.execute('DROP TABLE IF EXISTS meal_entries');
         await db.execute('DROP TABLE IF EXISTS weight_log');
         await db.execute('DROP TABLE IF EXISTS daily_summary');
         await db.execute('DROP TABLE IF EXISTS workout_log');
+        await db.execute('DROP TABLE IF EXISTS barakah_log');
         await _create(db, newV);
       },
     );
@@ -61,6 +62,20 @@ class AppDatabase {
       'minutes INTEGER NOT NULL,'
       'date_key TEXT NOT NULL,'
       'created TEXT NOT NULL)'
+    );
+    // ── Barakah Engine ──────────────────────────────────
+    await db.execute(
+      'CREATE TABLE IF NOT EXISTS barakah_log ('
+      'date_key TEXT PRIMARY KEY,'
+      'nutrition  INTEGER DEFAULT 0,'
+      'hydration  INTEGER DEFAULT 0,'
+      'sleep      INTEGER DEFAULT 0,'
+      'movement   INTEGER DEFAULT 0,'
+      'fasting    INTEGER DEFAULT 0,'
+      'sunnah_food INTEGER DEFAULT 0,'
+      'workout    INTEGER DEFAULT 0,'
+      'dhikr      INTEGER DEFAULT 0,'
+      'score      INTEGER DEFAULT 0)'
     );
   }
 
@@ -159,5 +174,47 @@ class AppDatabase {
     return rows.map((r) => r['date_key'] as String).toSet();
   }
 }
+
+  // ── Barakah helpers ─────────────────────────────────────────
+  static Future<Map<String,dynamic>?> getTodayBarakah() async {
+    final d = await db;
+    final rows = await d.query('barakah_log', where:'date_key=?', whereArgs:[_today()]);
+    return rows.isNotEmpty ? rows.first : null;
+  }
+
+  static Future<void> upsertBarakah({
+    int? nutrition, int? hydration, int? sleep,
+    int? movement, int? fasting, int? sunnahFood,
+    int? workout, int? dhikr, int? score,
+  }) async {
+    final d = await db;
+    final key = _today();
+    final existing = await getTodayBarakah();
+    final data = <String, dynamic>{
+      if (nutrition  != null) 'nutrition':   nutrition,
+      if (hydration  != null) 'hydration':   hydration,
+      if (sleep      != null) 'sleep':       sleep,
+      if (movement   != null) 'movement':    movement,
+      if (fasting    != null) 'fasting':     fasting,
+      if (sunnahFood != null) 'sunnah_food': sunnahFood,
+      if (workout    != null) 'workout':     workout,
+      if (dhikr      != null) 'dhikr':       dhikr,
+      if (score      != null) 'score':       score,
+    };
+    if (data.isEmpty) return;
+    if (existing == null) {
+      await d.insert('barakah_log', {'date_key': key, ...data});
+    } else {
+      await d.update('barakah_log', data, where:'date_key=?', whereArgs:[key]);
+    }
+  }
+
+  static Future<List<Map<String,dynamic>>> getWeeklyBarakah() async {
+    final d = await db;
+    return d.rawQuery(
+      "SELECT date_key, score FROM barakah_log "
+      "WHERE date_key >= date('now','-6 days') "
+      "ORDER BY date_key ASC");
+  }
 
 class _DailyKcal { final String dateKey; final int kcal; _DailyKcal(this.dateKey, this.kcal); }

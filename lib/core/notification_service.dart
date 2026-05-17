@@ -17,6 +17,7 @@ class NotificationService {
   static const int kDinner    = 12;
   static const int kWorkout   = 30;
   static const int kGeneral   = 99;
+  static const int kBarakah   = 40; // Barakah Engine daily nudge
 
   // ── Android channel ────────────────────────────────────────
   static const _channel = AndroidNotificationChannel(
@@ -180,6 +181,22 @@ class NotificationService {
       body:  isAr
         ? 'حرّك جسمك — النبي ﷺ كان يمشي كثيراً'
         : 'Move your body — the Prophet ﷺ walked daily',
+    );
+  }
+
+  // ── Barakah Engine nudge (Asr time ~15:45) ─────────────────
+  /// Fires at 15:45 if the user has not updated their Barakah
+  /// score yet today (score == 0 in DB). Cancels itself if score > 0.
+  static Future<void> scheduleBarakahNudge({bool isAr = true}) async {
+    final prefs = await SharedPreferences.getInstance();
+    final on    = prefs.getBool('notif_barakah') ?? true;
+    if (!on) { await _plugin.cancel(kBarakah); return; }
+    await _daily(
+      id: kBarakah, hour: 15, minute: 45,
+      title: isAr ? '✨ نقاط بركتك تنتظرك' : '✨ Your Barakah score is waiting',
+      body:  isAr
+        ? 'سجّل ذكرك ومائك وخطواتك — حافظ على بركتك اليوم'
+        : 'Log your dhikr, water & steps — keep your Barakah alive',
     );
   }
 

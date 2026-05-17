@@ -31,12 +31,14 @@ class _AppShellState extends ConsumerState<AppShell>
     _T('/home',      '⌂',  'Home',      'الرئيسية'),
     _T('/nutrition', '◈',  'Nutrition', 'تغذية'),
     _T('/fitness',   '◉',  'Fitness',   'لياقة'),
+    _T('/barakah',   '✶',  'Barakah',   'بركة'),
     _T('/health',    '♡',  'Health',    'صحة'),
     _T('/profile',   '◯',  'Profile',   'ملفي'),
   ];
 
   int _idx(String loc) {
-    if (loc.startsWith('/body') || loc.startsWith('/health')) return 3;
+    if (loc.startsWith('/body') || loc.startsWith('/health')) return 4;
+    if (loc.startsWith('/barakah')) return 3;
     if (loc.startsWith('/scanner')) return 1;
     for (int i = 0; i < _tabs.length; i++) {
       if (loc.startsWith(_tabs[i].path)) return i;
