@@ -76,7 +76,8 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
     }) => tile(
       emoji: emoji, title: title, subtitle: subtitle,
       trailing: Switch(
-        value: value, onChanged: onChanged, activeColor: AppColors.sunnahGreen,
+        value: value, onChanged: onChanged,
+        activeColor: ramadan ? AppColors.barakahGold : AppColors.sunnahGreen,
       ),
       onTap: () => onChanged(!value),
     );

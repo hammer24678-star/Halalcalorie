@@ -36,6 +36,33 @@ class AppColors {
     colors: [Color(0xFFD29922), Color(0xFFE3B341)],
     begin: Alignment.topLeft, end: Alignment.bottomRight,
   );
+
+  // ── Ramadan Night-Sky palette (dark mode) ──────────────────────
+  static const ramadanNight   = Color(0xFF0B0919); // deep cosmic indigo
+  static const ramadanCard    = Color(0xFF12102A); // card surface
+  static const ramadanCardAlt = Color(0xFF1A1838); // elevated card
+  static const ramadanBorder  = Color(0xFF2A2650); // subtle indigo border
+  static const ramadanBorder2 = Color(0xFF1E1C3A); // faint border
+  static const ramadanGold    = Color(0xFFE8B84B); // rich warm gold
+  static const ramadanGoldDim = Color(0xFFB88E2A); // dimmed gold
+  static const ramadanText    = Color(0xFFF0E6C8); // warm parchment
+  static const ramadanMuted   = Color(0xFFA89878); // warm sand
+  static const ramadanDimmed  = Color(0xFF5C5040); // muted amber
+
+  // ── Ramadan Desert-Sunrise palette (light mode) ────────────────
+  static const ramadanDay     = Color(0xFFFEF5E4); // warm parchment bg
+  static const ramadanDayCard = Color(0xFFFDF0D0); // honey cream card
+  static const ramadanDayText = Color(0xFF2C1800); // deep warm brown
+  static const ramadanDayMuted= Color(0xFF7A5500); // amber muted
+
+  static const gradientRamadan = LinearGradient(
+    colors: [Color(0xFF0B0919), Color(0xFFE8B84B)],
+    begin: Alignment.topLeft, end: Alignment.bottomRight,
+  );
+  static const gradientRamadanDay = LinearGradient(
+    colors: [Color(0xFFEE9D2A), Color(0xFFD29922)],
+    begin: Alignment.topLeft, end: Alignment.bottomRight,
+  );
 }
 
 class AppTheme {
@@ -159,120 +186,196 @@ class AppTheme {
 
   // ── Ramadan mode theme — everything gold ───────────────────────────
   static ThemeData get darkRamadan => ThemeData(
+    // ── Night Sky over Mecca ────────────────────────────────────────
     useMaterial3: true,
     brightness: Brightness.dark,
     fontFamily: 'Cairo',
-    scaffoldBackgroundColor: const Color(0xFF0D0A03),
+    scaffoldBackgroundColor: AppColors.ramadanNight,
     colorScheme: const ColorScheme.dark(
-      primary: AppColors.barakahGold,
-      secondary: Color(0xFFFFD740),
-      surface: Color(0xFF1A1200),
-      onPrimary: Colors.black,
-      onSurface: Color(0xFFFFF8E1),
+      primary:     AppColors.ramadanGold,
+      secondary:   Color(0xFFFFD166),
+      surface:     AppColors.ramadanCard,
+      onPrimary:   Color(0xFF1A0800),
+      onSecondary: Color(0xFF1A0800),
+      onSurface:   AppColors.ramadanText,
+      outline:     AppColors.ramadanBorder,
     ),
-    cardColor: const Color(0xFF1A1200),
+    cardColor: AppColors.ramadanCard,
     appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFF0D0A03),
-      foregroundColor: AppColors.barakahGold,
-      elevation: 0,
+      backgroundColor:  AppColors.ramadanNight,
+      foregroundColor:  AppColors.ramadanGold,
+      elevation:        0,
       surfaceTintColor: Colors.transparent,
+      titleTextStyle: TextStyle(
+        fontFamily: 'Cairo', fontWeight: FontWeight.w800,
+        fontSize: 18, color: AppColors.ramadanGold,
+      ),
+      iconTheme: IconThemeData(color: AppColors.ramadanGold),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.barakahGold,
-        foregroundColor: Colors.black,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        textStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700),
+        backgroundColor: AppColors.ramadanGold,
+        foregroundColor: Color(0xFF1A0800),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding: EdgeInsets.symmetric(vertical: 14),
+        textStyle: TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700),
         elevation: 0,
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.ramadanGold,
+        side: BorderSide(color: AppColors.ramadanGold, width: 1.2),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding: EdgeInsets.symmetric(vertical: 14),
+        textStyle: TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.w600),
       ),
     ),
     cardTheme: CardTheme(
       elevation: 0,
-      color: const Color(0xFF1A1200),
+      color: AppColors.ramadanCard,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Color(0xFF3A2E00), width: 0.5),
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(color: AppColors.ramadanBorder, width: 0.8),
       ),
     ),
-    dividerColor: const Color(0xFF3A2E00),
+    dividerColor: AppColors.ramadanBorder,
+    tabBarTheme: const TabBarTheme(
+      indicatorColor:     AppColors.ramadanGold,
+      labelColor:         AppColors.ramadanGold,
+      unselectedLabelColor: AppColors.ramadanMuted,
+      dividerColor:       Colors.transparent,
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor:      AppColors.ramadanCard,
+      selectedItemColor:    AppColors.ramadanGold,
+      unselectedItemColor:  AppColors.ramadanMuted,
+      elevation: 0,
+    ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFF1A1200),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Color(0xFF3A2E00), width: 0.5)),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Color(0xFF3A2E00), width: 0.5)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: AppColors.barakahGold, width: 1.5)),
-      hintStyle: const TextStyle(fontFamily: 'Cairo', color: Color(0xFF7A6500)),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      fillColor: AppColors.ramadanCard,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: AppColors.ramadanBorder, width: 0.8)),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: AppColors.ramadanBorder, width: 0.8)),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: AppColors.ramadanGold, width: 1.6)),
+      hintStyle: TextStyle(fontFamily: 'Cairo', color: AppColors.ramadanMuted),
+      contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    ),
+    listTileTheme: const ListTileThemeData(
+      iconColor:   AppColors.ramadanGold,
+      textColor:   AppColors.ramadanText,
+      tileColor:   Colors.transparent,
     ),
     textTheme: const TextTheme(
-      headlineLarge:  TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, color: Color(0xFFFFF8E1)),
-      headlineMedium: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: Color(0xFFFFF8E1)),
-      titleLarge:     TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: Color(0xFFFFF8E1)),
-      bodyLarge:      TextStyle(fontFamily: 'Cairo', color: Color(0xFFFFF8E1)),
-      bodyMedium:     TextStyle(fontFamily: 'Cairo', color: AppColors.barakahGold),
+      headlineLarge:  TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, color: AppColors.ramadanText),
+      headlineMedium: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: AppColors.ramadanText),
+      titleLarge:     TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: AppColors.ramadanText),
+      bodyLarge:      TextStyle(fontFamily: 'Cairo', color: AppColors.ramadanText),
+      bodyMedium:     TextStyle(fontFamily: 'Cairo', color: AppColors.ramadanMuted),
+      labelLarge:     TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: Color(0xFF1A0800)),
     ),
   );
 
   static ThemeData get lightRamadan => ThemeData(
+    // ── Desert Sunrise ──────────────────────────────────────────────
     useMaterial3: true,
     brightness: Brightness.light,
     fontFamily: 'Cairo',
-    scaffoldBackgroundColor: const Color(0xFFFFFBF0),
+    scaffoldBackgroundColor: AppColors.ramadanDay,
     colorScheme: const ColorScheme.light(
-      primary: AppColors.barakahGold,
-      secondary: Color(0xFFC9963E),
-      surface: Color(0xFFFFF8E1),
-      onPrimary: Colors.black,
-      onSurface: Color(0xFF3E2C00),
+      primary:     AppColors.barakahGold,
+      secondary:   Color(0xFFB85C1A),
+      surface:     AppColors.ramadanDayCard,
+      onPrimary:   Colors.white,
+      onSecondary: Colors.white,
+      onSurface:   AppColors.ramadanDayText,
+      outline:     Color(0xFFD4A043),
     ),
-    cardColor: const Color(0xFFFFF8E1),
+    cardColor: AppColors.ramadanDayCard,
     appBarTheme: const AppBarTheme(
-      backgroundColor: Color(0xFFFFFBF0),
-      foregroundColor: Color(0xFF8B6914),
-      elevation: 0,
+      backgroundColor:  Color(0xFFEE9D2A),
+      foregroundColor:  Colors.white,
+      elevation:        0,
       surfaceTintColor: Colors.transparent,
+      titleTextStyle: TextStyle(
+        fontFamily: 'Cairo', fontWeight: FontWeight.w800,
+        fontSize: 18, color: Colors.white,
+      ),
+      iconTheme: IconThemeData(color: Colors.white),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.barakahGold,
-        foregroundColor: Colors.black,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        padding: const EdgeInsets.symmetric(vertical: 14),
-        textStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700),
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding: EdgeInsets.symmetric(vertical: 14),
+        textStyle: TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700),
         elevation: 0,
+      ),
+    ),
+    outlinedButtonTheme: OutlinedButtonThemeData(
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.barakahGold,
+        side: BorderSide(color: AppColors.barakahGold, width: 1.2),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        padding: EdgeInsets.symmetric(vertical: 14),
+        textStyle: TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.w600),
       ),
     ),
     cardTheme: CardTheme(
       elevation: 0,
-      color: const Color(0xFFFFF8E1),
+      color: AppColors.ramadanDayCard,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: const BorderSide(color: Color(0xFFE0C060), width: 0.5),
+        borderRadius: BorderRadius.circular(14),
+        side: BorderSide(color: Color(0xFFD4A043), width: 0.8),
       ),
     ),
-    dividerColor: const Color(0xFFE0C060),
+    dividerColor: const Color(0xFFD4A043),
+    tabBarTheme: const TabBarTheme(
+      indicatorColor:       AppColors.barakahGold,
+      labelColor:           AppColors.barakahGold,
+      unselectedLabelColor: Color(0xFFB8940A),
+      dividerColor:         Colors.transparent,
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor:     AppColors.ramadanDayCard,
+      selectedItemColor:   AppColors.barakahGold,
+      unselectedItemColor: Color(0xFFB8940A),
+      elevation: 0,
+    ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: const Color(0xFFFFF8E1),
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Color(0xFFE0C060), width: 0.5)),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: Color(0xFFE0C060), width: 0.5)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: AppColors.barakahGold, width: 1.5)),
-      hintStyle: const TextStyle(fontFamily: 'Cairo', color: Color(0xFFB8940A)),
-      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      fillColor: AppColors.ramadanDayCard,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: Color(0xFFD4A043), width: 0.8)),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: Color(0xFFD4A043), width: 0.8)),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide(color: AppColors.barakahGold, width: 1.6)),
+      hintStyle: TextStyle(fontFamily: 'Cairo', color: Color(0xFF9A7000)),
+      contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+    ),
+    listTileTheme: const ListTileThemeData(
+      iconColor: AppColors.barakahGold,
+      textColor: AppColors.ramadanDayText,
+      tileColor: Colors.transparent,
     ),
     textTheme: const TextTheme(
-      headlineLarge:  TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, color: Color(0xFF3E2C00)),
-      headlineMedium: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: Color(0xFF3E2C00)),
-      titleLarge:     TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: Color(0xFF3E2C00)),
-      bodyLarge:      TextStyle(fontFamily: 'Cairo', color: Color(0xFF3E2C00)),
-      bodyMedium:     TextStyle(fontFamily: 'Cairo', color: Color(0xFF8B6914)),
+      headlineLarge:  TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, color: AppColors.ramadanDayText),
+      headlineMedium: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: AppColors.ramadanDayText),
+      titleLarge:     TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: AppColors.ramadanDayText),
+      bodyLarge:      TextStyle(fontFamily: 'Cairo', color: AppColors.ramadanDayText),
+      bodyMedium:     TextStyle(fontFamily: 'Cairo', color: AppColors.ramadanDayMuted),
+      labelLarge:     TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: Colors.white),
     ),
   );
 

@@ -77,9 +77,11 @@ class _FitnessState extends ConsumerState<FitnessScreen>
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: isSis
-                    ? [const Color(0xFFB8860B), const Color(0xFFDAA520)]
-                    : [const Color(0xFF1A6B3C), AppColors.sunnahGreen],
+                colors: isRamadan && !isSis
+                    ? [AppColors.ramadanNight, AppColors.ramadanCard]
+                    : isSis
+                        ? [const Color(0xFFB8860B), const Color(0xFFDAA520)]
+                        : [const Color(0xFF1A6B3C), AppColors.sunnahGreen],
                 begin: Alignment.topLeft, end: Alignment.bottomRight,
               ),
             ),
@@ -111,7 +113,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
           // Mode banner
           if (isRamadan || isSis)
             Container(
-              color: (isSis ? AppColors.barakahGold : AppColors.darkGreen).withOpacity(0.08),
+              color: (isRamadan && !isSis ? AppColors.ramadanGold : isSis ? AppColors.barakahGold : AppColors.darkGreen).withOpacity(0.10),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(children: [ Text(isSis ?'🧕' : '🌙', style: const TextStyle(fontSize: 16)),
                 const SizedBox(width: 8),
@@ -119,7 +121,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                   isSis && isRamadan ? t('وضع النساء + رمضان — محتشم وخفيف', 'Sisters + Ramadan — modest & light')
                       : isRamadan ? l.ramadanModeLabel : t('وضع النساء — محتشم دائماً', 'Sisters mode — always modest'), style: TextStyle(fontFamily:'Cairo', fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: isSis ? AppColors.barakahGold : AppColors.sunnahGreen),
+                      color: isRamadan && !isSis ? AppColors.ramadanGold : isSis ? AppColors.barakahGold : AppColors.sunnahGreen),
                 )),
               ]),
             ),
@@ -145,8 +147,10 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: isRamadan
-                        ? [const Color(0xFF1A0F00), const Color(0xFF3D2000)]
-                        : [const Color(0xFF1A6B3C), AppColors.sunnahGreen],
+                        ? [AppColors.ramadanNight, AppColors.ramadanCardAlt]
+                        : isSis
+                            ? [const Color(0xFFB8860B), const Color(0xFFDAA520)]
+                            : [const Color(0xFF1A6B3C), AppColors.sunnahGreen],
                     begin: Alignment.topLeft, end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16),
@@ -427,9 +431,10 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
   @override
   Widget build(BuildContext context) {
     final w     = _workout;
-    final lang   = ref.watch(languageProvider);
-    final isAr   = lang == 'ar' || lang == 'ur';
-    final isDark = ref.watch(themeProvider); if (w == null) return const Scaffold(body: Center(child: Text('Not found')));
+    final lang      = ref.watch(languageProvider);
+    final isAr      = lang == 'ar' || lang == 'ur';
+    final isDark    = ref.watch(themeProvider); if (w == null) return const Scaffold(body: Center(child: Text('Not found')));
+    final isRamadan = ref.watch(ramadanModeProvider);
 
     final bg   = isDark ? AppColors.darkBg   : AppColors.lightBg;
     final card = isDark ? AppColors.darkCard : Colors.white;
@@ -454,7 +459,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
           ),
           title: Text(isAr ? w.titleAr : w.titleEn, style: const TextStyle(fontFamily:'Cairo', fontSize: 14,
                   fontWeight: FontWeight.w700)),
-          backgroundColor: AppColors.sunnahGreen,
+          backgroundColor: isRamadan ? AppColors.ramadanCard : AppColors.sunnahGreen,
         ),
         body: SingleChildScrollView(padding: const EdgeInsets.all(20), child: Column(children: [
 
