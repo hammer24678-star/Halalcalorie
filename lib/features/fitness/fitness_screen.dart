@@ -60,10 +60,11 @@ class _FitnessState extends ConsumerState<FitnessScreen>
     final bg        = isDark ? AppColors.darkBg   : AppColors.lightBg;
     final card      = isDark ? AppColors.darkCard : Colors.white;
     final muted     = isDark ? AppColors.darkMuted : AppColors.lightMuted;
+    final l         = L.fromLang(lang);
 
     final workouts = _filtered(gender, isRamadan, isPremium);
 
-    String t(String ar, String en) => tLang(lang, ar, en);
+    String t(String ar, String en) => l.t(ar, en);
 
     final catLabels = { 'all':       t('الكل', 'All'), 'walking':   t('مشي', 'Walk'), 'strength':  t('قوة', 'Strength'), 'gentle':    t('لطيف', 'Gentle'), 'ramadan':   t('رمضان', 'Ramadan'), 'breathing': t('تنفس', 'Breathe'), 'family':    t('عائلة', 'Family'),
     };
@@ -84,7 +85,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
             ),
           ),
           backgroundColor: Colors.transparent,
-          title: Text(t('اللياقة الإسلامية 🏃', 'Islamic Fitness 🏃'),
+          title: Text(l.islamicFitness,
               style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800, fontSize: 18)),
           actions: [
             if (workoutMin > 0)
@@ -116,7 +117,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                 const SizedBox(width: 8),
                 Expanded(child: Text(
                   isSis && isRamadan ? t('وضع النساء + رمضان — محتشم وخفيف', 'Sisters + Ramadan — modest & light')
-                      : isRamadan ? t('وضع رمضان — التمارين الخفيفة أولاً', 'Ramadan mode — light workouts first') : t('وضع النساء — محتشم دائماً', 'Sisters mode — always modest'), style: TextStyle(fontFamily:'Cairo', fontSize: 11,
+                      : isRamadan ? l.ramadanModeLabel : t('وضع النساء — محتشم دائماً', 'Sisters mode — always modest'), style: TextStyle(fontFamily:'Cairo', fontSize: 11,
                       fontWeight: FontWeight.w700,
                       color: isSis ? AppColors.barakahGold : AppColors.sunnahGreen),
                 )),

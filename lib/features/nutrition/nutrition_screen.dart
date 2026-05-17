@@ -588,7 +588,8 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     final cardBg  = isDark ? AppColors.darkCard : Colors.white;
     final muted   = isDark ? AppColors.darkMuted : const Color(0xFF9E9E9E);
     final textC   = isDark ? AppColors.darkText : AppColors.lightText;
-    String tl(String ar, String en) => isAr ? ar : en;
+    final l       = L.fromLang(lang);
+    String tl(String ar, String en) => l.t(ar, en);
 
     final goal  = cals.goal;
     final eaten = cals.total;
@@ -676,9 +677,9 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           children: [
                             Text(() {
                               final h = DateTime.now().hour;
-                              if (h < 12) return tl('صباح الخير ☀️', 'Good Morning ☀️');
-                              if (h < 17) return tl('نهارك سعيد 🌟', 'Good Afternoon 🌟');
-                              return tl('مساء الخير 🌙', 'Good Evening 🌙');
+                              if (h < 12) return l.goodMorning;
+                              if (h < 17) return l.goodAfternoon;
+                              return l.goodEvening;
                             }(),
                             style: TextStyle(fontFamily: 'Cairo',
                                 fontSize: 18, fontWeight: FontWeight.w800,

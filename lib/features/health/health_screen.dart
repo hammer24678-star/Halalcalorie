@@ -168,18 +168,12 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       return AppColors.haramRed;
     }
 
+    final l = L.fromLang(lang);
     String scoreLabel() {
-      if (isAr) {
-        if (total >= 80) return 'ممتاز';
-        if (total >= 60) return 'جيد جداً';
-        if (total >= 40) return 'جيد';
-        return 'يحتاج تحسيناً';
-      } else {
-        if (total >= 80) return 'Excellent';
-        if (total >= 60) return 'Very Good';
-        if (total >= 40) return 'Good';
-        return 'Keep improving';
-      }
+      if (total >= 80) return l.scoreExcellent;
+      if (total >= 60) return l.scoreVeryGood;
+      if (total >= 40) return l.scoreGood;
+      return l.scoreKeepGoing;
     }
 
     Widget scoreBar(String label, double score, double max, Color col) {
@@ -233,7 +227,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           child: Row(children: [
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-            Text(isAr ? 'نقاط صحتك اليوم' : 'Your Daily Health Score',
+            Text(l.dailyHealthScore,
                 style: const TextStyle(fontFamily: 'Cairo', fontSize: 14,
                     fontWeight: FontWeight.w700)),
             const SizedBox(height: 2),
@@ -257,10 +251,10 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           ]),
         ),
         const SizedBox(height: 14),
-        scoreBar(tLang(lang,'الماء','Water','Eau','Su','Air','Air'), wScore, 25, AppColors.waterBlue),
-        scoreBar(tLang(lang,'النوم','Sleep','Sommeil','Uyku','Tidur','Tidur'), slScore, 25, AppColors.sleepPurple),
-        scoreBar(tLang(lang,'الخطوات','Steps','Pas','Adımlar','Langkah','Langkah'), stScore, 25, AppColors.halalGreen),
-        scoreBar(tLang(lang,'المزاج','Mood','Humeur','Ruh Hali','Mood','Suasana Hati'), mScore, 25, AppColors.barakahGold),
+        scoreBar(l.water,      wScore, 25, AppColors.waterBlue),
+        scoreBar(l.sleepLabel, slScore, 25, AppColors.sleepPurple),
+        scoreBar(l.stepsLabel, stScore, 25, AppColors.halalGreen),
+        scoreBar(l.moodLabel,  mScore, 25, AppColors.barakahGold),
       ]),
     );
   }

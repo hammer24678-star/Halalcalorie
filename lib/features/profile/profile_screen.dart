@@ -40,11 +40,12 @@ class ProfileScreen extends ConsumerWidget {
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
 
     final plan = ref.watch(macroPlanProvider);
-    String t(String ar, String en) => tLang(lang, ar, en);
+    final l = L.fromLang(lang);
+    String t(String ar, String en) => l.t(ar, en);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(t('ملفي الشخصي', 'My Profile')),
+        title: Text(l.myProfile),
         actions: [
           // Language toggle
           GestureDetector(
@@ -76,14 +77,14 @@ class ProfileScreen extends ConsumerWidget {
                 color: isSis ? AppColors.barakahGold.withOpacity(0.15) : AppColors.sunnahGreen.withOpacity(0.12)),
               child: Center(child: Text(isSis ? '🧕' : '🧔', style: const TextStyle(fontSize: 44)))),
             const SizedBox(height: 11),
-            Text(isSis ? t('امرأة', 'Woman') : t('رجل', 'Man'),
+            Text(isSis ? l.womanLabel : l.manLabel,
                 style: TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.w800, color: textC)),
             const SizedBox(height: 3),
-            Text(isSis ? t('وضع النساء', "Women Mode") : t('وضع الرجال', "Men Mode"),
+            Text(isSis ? l.sistersMode : l.menMode,
                 style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted)),
             if (profile != null) ...[
               const SizedBox(height: 6),
-              Text('${profile.age} ${t("سنة","yrs")} • ${profile.heightCm.toInt()} cm • ${profile.weightKg.toStringAsFixed(1)} kg',
+              Text('${profile.age} ${l.yrsLabel} • ${profile.heightCm.toInt()} cm • ${profile.weightKg.toStringAsFixed(1)} kg',
                   style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted)),
               Text(isAr ? profile.primaryGoal.nameAr() : profile.primaryGoal.nameEn(),
                   style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.sunnahGreen, fontWeight: FontWeight.w700)),
