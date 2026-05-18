@@ -23,6 +23,7 @@ jobs:
 
       - name: Install Android SDK 35
         run: |
+          rm -rf $ANDROID_SDK_ROOT/platforms/android-35
           echo "y" | $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager "platforms;android-35"
 
       - run: flutter pub get
