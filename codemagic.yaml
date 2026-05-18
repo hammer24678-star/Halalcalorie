@@ -20,14 +20,6 @@ workflows:
       - name: Get Flutter packages
         script: flutter pub get
 
-      - name: Reinstall Android SDK 35
-        script: |
-          SDK=/usr/local/lib/android/sdk
-          rm -rf "$SDK/platforms/android-35"
-          yes | "$SDK/cmdline-tools/latest/bin/sdkmanager" "platforms;android-35" || \
-          yes | "$SDK/tools/bin/sdkmanager" "platforms;android-35" || \
-          yes | sdkmanager "platforms;android-35"
-
       - name: Build release APK
         script: flutter build apk --release --no-tree-shake-icons
 
