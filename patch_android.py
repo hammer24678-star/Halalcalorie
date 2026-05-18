@@ -6,7 +6,7 @@ APP_BUILD_GRADLE = """plugins {
 
 android {
     namespace "com.halalcalorie.app"
-    compileSdk 35
+    compileSdk 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -21,7 +21,7 @@ android {
     defaultConfig {
         applicationId "com.halalcalorie.app"
         minSdk 21
-        targetSdk 35
+        targetSdk 34
         versionCode 1
         versionName "1.0.0"
     }
@@ -97,18 +97,6 @@ print("Wrote gradle-wrapper.properties")
 
 print("Patch complete.")
 
-# ── Write local.properties with correct SDK path ──────────────
-import os
-sdk = os.environ.get("ANDROID_SDK_ROOT") or os.environ.get("ANDROID_HOME") or ""
-flutter_sdk = os.environ.get("FLUTTER_ROOT") or ""
-if sdk:
-    os.makedirs("android", exist_ok=True)
-    with open("android/local.properties", "w") as f:
-        f.write(f"sdk.dir={sdk}\n")
-        if flutter_sdk: f.write(f"flutter.sdk={flutter_sdk}\n")
-    print(f"local.properties: sdk.dir={sdk}")
-else:
-    print("WARNING: ANDROID_SDK_ROOT not set — skipping local.properties")
 
 # ── Fix MainActivity package mismatch ─────────────────────
 import os

@@ -21,12 +21,6 @@ jobs:
         with:
           flutter-version: '3.22.3'
 
-      - name: Setup Android SDK 35
-        uses: android-actions/setup-android@v3
-        with:
-          packages: 'platforms;android-35'
-          accept-android-sdk-licenses: true
-
       - run: flutter pub get
 
       - run: flutter create --platforms=android --project-name=halalcalorie .

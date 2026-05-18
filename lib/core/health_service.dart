@@ -1,49 +1,34 @@
 import 'dart:async';
-import 'package:pedometer/pedometer.dart';
+import 'dart:math';
+import 'package:sensors_plus/sensors_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class HealthService {
-  static StreamSubscription<StepCount>?        _stepSub;
-  static StreamSubscription<PedestrianStatus>? _statusSub;
+  static StreamSubscription? _accelSub;
   static Timer? _saveTimer;
+  static int    _steps    = 0;
+  static double _lastMag  = 0;
+  static bool   _stepUp   = false;
+  static const  _threshold = 11.0;
+  static double _heartRate  = 72;
+  static double _sleepHours = 7;
 
-  static int    _stepsToday  = 0;
-  static int    _stepOffset  = 0;
-  static bool   _offsetReady = false;
-  static double _heartRate   = 72;
-  static double _sleepHours  = 7;
-
-  static void Function(int)?    _onStep;
-  static void Function(String)? _onStatus;
-
-  static Future<bool> requestPermissions() async {
-    try { return (await Permission.activityRecognition.request()).isGranted; }
-    catch (_) { return true; }
-  }
-  static Future<bool> isAuthorized() async => true;
+  static Future<bool> requestPermissions() async => true;
+  static Future<bool> isAuthorized()       async => true;
 
   static Future<void> startStepTracking(void Function(int) onStep,
       {void Function(String)? onStatus}) async {
-    _onStep = onStep; _onStatus = onStatus;
-    await requestPermissions();
     await _load();
-    _onStep?.call(_stepsToday);
-    await _stepSub?.cancel();
-    await _statusSub?.cancel();
-
-    _stepSub = Pedometer.stepCountStream.listen((StepCount e) {
-      if (!_offsetReady) {
-        _offsetReady = true;
-        if (_stepOffset == 0) { _stepOffset = e.steps - _stepsToday; _saveOffset(); }
-      }
-      final t = (e.steps - _stepOffset).clamp(0, 999999);
-      if (t != _stepsToday) { _stepsToday = t; _onStep?.call(t); _throttleSave(); }
-    }, onError: (_) {}, cancelOnError: false);
-
-    _statusSub = Pedometer.pedestrianStatusStream.listen(
-        (PedestrianStatus e) => _onStatus?.call(e.status),
-        onError: (_) {}, cancelOnError: false);
+    onStep(_steps);
+    _accelSub?.cancel();
+    _accelSub = accelerometerEventStream().listen((e) {
+      final mag = sqrt(e.x * e.x + e.y * e.y + e.z * e.z);
+      if (!_stepUp && mag > _threshold) {
+        _stepUp = true; _steps++; onStep(_steps); _throttleSave();
+      } else if (_stepUp && mag < _threshold - 1.5) { _stepUp = false; }
+      _lastMag = mag;
+    }, cancelOnError: false);
   }
 
   static Future<void> _load() async {
@@ -51,43 +36,34 @@ class HealthService {
       final p = await SharedPreferences.getInstance();
       final today = DateTime.now().toIso8601String().substring(0, 10);
       if ((p.getString('steps_date') ?? '') == today) {
-        _stepsToday = p.getInt('steps_count')  ?? 0;
-        _stepOffset = p.getInt('steps_offset') ?? 0;
-        _offsetReady = _stepOffset != 0;
+        _steps = p.getInt('steps_count') ?? 0;
       } else {
-        _stepsToday = 0; _stepOffset = 0; _offsetReady = false;
+        _steps = 0;
         await p.setString('steps_date', today);
-        await p.setInt('steps_count',  0);
-        await p.setInt('steps_offset', 0);
+        await p.setInt('steps_count',   0);
       }
     } catch (_) {}
   }
 
   static void _throttleSave() {
     if (_saveTimer?.isActive ?? false) return;
-    _saveTimer = Timer(const Duration(seconds: 8), () async {
+    _saveTimer = Timer(const Duration(seconds: 10), () async {
       try { final p = await SharedPreferences.getInstance();
-            await p.setInt('steps_count', _stepsToday); } catch (_) {}
+            await p.setInt('steps_count', _steps); } catch (_) {}
     });
   }
 
-  static Future<void> _saveOffset() async {
-    try { final p = await SharedPreferences.getInstance();
-          await p.setInt('steps_offset', _stepOffset); } catch (_) {}
-  }
-
   static void stopTracking() {
-    _stepSub?.cancel();   _stepSub   = null;
-    _statusSub?.cancel(); _statusSub = null;
+    _accelSub?.cancel(); _accelSub = null;
     _saveTimer?.cancel(); _saveTimer = null;
   }
 
-  static void addSteps(int s) { _stepsToday += s; _throttleSave(); _onStep?.call(_stepsToday); }
+  static void addSteps(int s)              { _steps += s; _throttleSave(); }
   static void setManualHeartRate(double v) => _heartRate = v;
   static void setManualSleep(double v)     => _sleepHours = v;
-  static Future<int>    fetchTodaySteps() async => _stepsToday;
+  static Future<int>    fetchTodaySteps() async => _steps;
   static Future<double> fetchHeartRate()  async => _heartRate;
-  static int    get currentSteps     => _stepsToday;
+  static int    get currentSteps     => _steps;
   static double get currentHeartRate => _heartRate;
   static double get currentSleep     => _sleepHours;
 }
