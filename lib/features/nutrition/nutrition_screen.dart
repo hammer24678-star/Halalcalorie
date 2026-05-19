@@ -195,7 +195,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   ]),
               backgroundColor: sunnah != null
                 ? const Color(0xFF8B6914)
-                : AppColors.sunnahGreen,
+                : accent,
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -283,8 +283,8 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   width: 68, height: 68,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: [
-                      AppColors.sunnahGreen.withOpacity(0.18),
-                      AppColors.sunnahGreen.withOpacity(0.04)]),
+                      accent.withOpacity(0.18),
+                      accent.withOpacity(0.04)]),
                     borderRadius: BorderRadius.circular(20)),
                   child: Center(child: Text(foodEmoji(e.name),
                       style: const TextStyle(fontSize: 36)))),
@@ -330,8 +330,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                       SizedBox.expand(child: CircularProgressIndicator(
                         value: pctKcal, strokeWidth: 9,
                         backgroundColor: Colors.grey.withOpacity(0.15),
-                        valueColor: const AlwaysStoppedAnimation(
-                            AppColors.sunnahGreen),
+                        valueColor: AlwaysStoppedAnimation(calCol),
                         strokeCap: StrokeCap.round)),
                       Column(mainAxisSize: MainAxisSize.min, children: [
                         Text('${e.kcal}', style: const TextStyle(
@@ -413,10 +412,10 @@ class _NutritionState extends ConsumerState<NutritionScreen>
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppColors.sunnahGreen.withOpacity(0.06),
+                  color: (isRamadan ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.06),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                      color: AppColors.sunnahGreen.withOpacity(0.2))),
+                      color: (isRamadan ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.2))),
                 child: Row(children: [
                   const Text('📖', style: TextStyle(fontSize: 22)),
                   const SizedBox(width: 10),
@@ -464,7 +463,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           color: Colors.white,
                           fontWeight: FontWeight.w700)),
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.sunnahGreen,
+                      backgroundColor: accent,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14))),
@@ -597,7 +596,10 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     final pct   = goal > 0 ? (eaten / goal).clamp(0.0, 1.0) : 0.0;
     final calCol = eaten > goal ? AppColors.haramRed
         : eaten > goal * 0.85 ? AppColors.doubtOrange
-        : AppColors.sunnahGreen;
+        : isRamadan ? AppColors.barakahGold : AppColors.sunnahGreen;
+    // Ramadan accent — gold when Ramadan, green otherwise
+    final accent = isRamadan ? AppColors.barakahGold : AppColors.sunnahGreen;
+    final accentDark = isRamadan ? const Color(0xFFB88E2A) : const Color(0xFF1A6B3C);
 
     return Directionality(
       textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
@@ -605,7 +607,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
         backgroundColor: bg,
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () => _openAdd(context, isAr, isDark, isPremium),
-          backgroundColor: AppColors.sunnahGreen,
+          backgroundColor: accent,
           elevation: 4,
           icon: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
           label: Text(tl('أضف طعام', 'Add Food'),
@@ -615,9 +617,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
         ),
         appBar: AppBar(
           flexibleSpace: Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF1A6B3C), AppColors.sunnahGreen],
+                colors: isRamadan
+                    ? [AppColors.ramadanNight, AppColors.ramadanCard]
+                    : [const Color(0xFF1A6B3C), AppColors.sunnahGreen],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -639,7 +643,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
           ],
           bottom: TabBar(
             controller: _tab,
-            indicatorColor: Colors.white,
+            indicatorColor: isRamadan ? AppColors.barakahGold : Colors.white,
             indicatorWeight: 3,
             indicatorSize: TabBarIndicatorSize.label,
             labelStyle: const TextStyle(fontFamily: 'Cairo',
@@ -660,7 +664,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
           children: [
             // ══ TODAY TAB ══════════════════════════════════
             RefreshIndicator(
-              color: AppColors.sunnahGreen,
+              color: accent,
               onRefresh: () async {
                 ref.invalidate(caloriesProvider);
               },
@@ -694,10 +698,10 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
-                            color: AppColors.sunnahGreen.withOpacity(0.1),
+                            color: accent.withOpacity(0.1),
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
-                                color: AppColors.sunnahGreen.withOpacity(0.3)),
+                                color: accent.withOpacity(0.3)),
                           ),
                           child: Text('🎯 $goal ${tl(" سعرة", "kcal")}',
                             style: const TextStyle(fontFamily: 'Cairo',
