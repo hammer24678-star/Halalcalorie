@@ -257,8 +257,8 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
     ('fr', '🇫🇷', 'Français', 'French'),
     ('tr', '🇹🇷', 'Türkçe',   'Turkish'),
     ('ur', '🇵🇰', 'اردو',     'Urdu'),
-    ('ms', '🇲🇾', 'Melayu',   'Malay'),
-    ('id', '🇮🇩', 'Bahasa',   'Indonesian'),
+    ('ms', '🇲🇾', 'Bahasa Melayu',    'Malay'),
+    ('id', '🇮🇩', 'Bahasa Indonesia', 'Indonesian'),
   ];
 
   String _langLabel(String code) {

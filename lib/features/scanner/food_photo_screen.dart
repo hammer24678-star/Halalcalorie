@@ -5,6 +5,7 @@
 // ============================================================
 
 import 'dart:io'; import'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:image_picker/image_picker.dart'; import'../../core/theme.dart'; import'../../core/providers.dart'; import'../../core/ai_service.dart'; import'../../data/models/models.dart';
+import'../../core/l10n.dart';
 
 // ── Analysis state ─────────────────────────────
 enum AnalysisState { idle, analyzing, done, error }
@@ -53,9 +54,10 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         _result  = null;
         _error   = null;
       });
-    } catch (e) { final isAr = ref.read(languageProvider) =='ar';
+    } catch (e) {
+      final _l = L.fromLang(ref.read(languageProvider));
       if (mounted) setState(() {
-        _error = isAr ?'تعذّر فتح الكاميرا. تأكد من إذن الكاميرا في الإعدادات.' :'Could not open camera. Check camera permissions in settings.';
+        _error = _l.cameraError;
         _state = AnalysisState.error;
       });
     }

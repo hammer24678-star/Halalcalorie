@@ -303,7 +303,7 @@ class _FridayReport extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l    = L.fromLang(lang);
-    final days = ['S','M','T','W','T','F','S'];
+    final days = l.weekDaysShort;
     final avg  = week.isEmpty ? 0
         : week.fold(0, (s, r) => s + (r['score'] as int? ?? 0)) ~/ week.length;
     return Container(

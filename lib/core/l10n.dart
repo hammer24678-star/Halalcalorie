@@ -267,6 +267,25 @@ class L {
   String get barakahHomeCard => t6('نقاط بركتك', 'Barakah Score',
       'Score Barakah', 'Bereket Puanı', 'Mata Barakah', 'Skor Barakah');
 
+  // ── Scanner ───────────────────────────────────────────────────────────────
+  String get cameraError => t6(
+      'تعذّر فتح الكاميرا. تأكد من إذن الكاميرا في الإعدادات.',
+      'Could not open camera. Check camera permissions in settings.',
+      'Impossible d'ouvrir la caméra. Vérifiez les autorisations.',
+      'Kamera açılamadı. Kamera izinlerini ayarlardan kontrol edin.',
+      'Tidak dapat buka kamera. Semak kebenaran kamera dalam tetapan.',
+      'Tidak dapat membuka kamera. Periksa izin kamera di pengaturan.');
+
+  // Returns Sun→Sat single-letter initials for the Barakah weekly chart.
+  // Encoded as a comma-separated string then split — avoids a List getter.
+  List<String> get weekDaysShort => t6(
+      'أ,إ,ث,ر,خ,ج,س',
+      'S,M,T,W,T,F,S',
+      'D,L,M,M,J,V,S',
+      'Pa,Pt,Sa,Ça,Pe,Cu,Ct',
+      'Ah,Is,Se,Ra,Kh,Ju,Sa',
+      'Mi,Sn,Se,Ra,Ka,Ju,Sa').split(',');
+
   // ── Ramadan ───────────────────────────────────────────────────────────────
   String get ramadanKareem => t6('رمضان كريم',
       'Ramadan Kareem', 'Ramadan Karîm', 'Ramazan Kareem',
