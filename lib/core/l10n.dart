@@ -271,7 +271,7 @@ class L {
   String get cameraError => t6(
       'تعذّر فتح الكاميرا. تأكد من إذن الكاميرا في الإعدادات.',
       'Could not open camera. Check camera permissions in settings.',
-      'Impossible d'ouvrir la caméra. Vérifiez les autorisations.',
+      'Impossible d\'ouvrir la caméra. Vérifiez les autorisations.',
       'Kamera açılamadı. Kamera izinlerini ayarlardan kontrol edin.',
       'Tidak dapat buka kamera. Semak kebenaran kamera dalam tetapan.',
       'Tidak dapat membuka kamera. Periksa izin kamera di pengaturan.');

@@ -6,6 +6,7 @@
 
 import 'dart:io'; import'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:image_picker/image_picker.dart'; import'../../core/theme.dart'; import'../../core/providers.dart'; import'../../core/ai_service.dart'; import'../../data/models/models.dart';
 import'../../core/l10n.dart';
+import'../../core/l10n.dart';
 
 // ── Analysis state ─────────────────────────────
 enum AnalysisState { idle, analyzing, done, error }
