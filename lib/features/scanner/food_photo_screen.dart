@@ -316,8 +316,8 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         const SizedBox(height: 8),
         Text(
           isAr
-            ? 'أضف ANTHROPIC_API_KEY في إعدادات Codemagic ثم أعد البناء.'
-            : 'Add ANTHROPIC_API_KEY to your Codemagic secrets and rebuild.',
+            ? 'أضف ANTHROPIC_API_KEY في GitHub Secrets ثم أعد البناء:\nSettings → Secrets → Actions'
+            : 'Add ANTHROPIC_API_KEY to GitHub repo secrets and rebuild.\nSettings → Secrets and variables → Actions',
           style: const TextStyle(fontFamily: 'Cairo', fontSize: 12,
               color: Colors.white70, height: 1.5)),
         const SizedBox(height: 12),

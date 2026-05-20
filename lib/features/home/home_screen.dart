@@ -65,7 +65,7 @@ for (final p in list) {
 final t = (p['h'] as int) * 60 + (p['m'] as int);
 if (t > cur) {
 final d = t - cur;
-return d >= 60 ? '${d ~/ 60}س ${d % 60}د' : '${d}د';
+return d >= 60 ? '${d ~/ 60}h ${(d % 60).toString().padLeft(2,'0')}m' : '${d}m';
 }
 }
 return '--';
