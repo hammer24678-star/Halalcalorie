@@ -195,7 +195,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   ]),
               backgroundColor: sunnah != null
                 ? const Color(0xFF8B6914)
-                : accent,
+                : (ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen),
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
@@ -283,8 +283,8 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   width: 68, height: 68,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: [
-                      accent.withOpacity(0.18),
-                      accent.withOpacity(0.04)]),
+                      (ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.18),
+                      (ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.04)]),
                     borderRadius: BorderRadius.circular(20)),
                   child: Center(child: Text(foodEmoji(e.name),
                       style: const TextStyle(fontSize: 36)))),
@@ -330,7 +330,10 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                       SizedBox.expand(child: CircularProgressIndicator(
                         value: pctKcal, strokeWidth: 9,
                         backgroundColor: Colors.grey.withOpacity(0.15),
-                        valueColor: AlwaysStoppedAnimation(calCol),
+                        valueColor: AlwaysStoppedAnimation(
+                            ref.read(ramadanModeProvider)
+                                ? AppColors.barakahGold
+                                : AppColors.sunnahGreen),
                         strokeCap: StrokeCap.round)),
                       Column(mainAxisSize: MainAxisSize.min, children: [
                         Text('${e.kcal}', style: const TextStyle(
@@ -412,10 +415,10 @@ class _NutritionState extends ConsumerState<NutritionScreen>
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: (isRamadan ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.06),
+                  color: (ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.06),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                      color: (isRamadan ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.2))),
+                      color: (ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.2))),
                 child: Row(children: [
                   const Text('📖', style: TextStyle(fontSize: 22)),
                   const SizedBox(width: 10),
@@ -463,7 +466,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           color: Colors.white,
                           fontWeight: FontWeight.w700)),
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: accent,
+                      backgroundColor: (ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14))),
