@@ -796,7 +796,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                   backgroundColor:
                                       Colors.grey.shade200,
                                   valueColor:
-                                      AlwaysStoppedAnimation(calCol),
+                                      AlwaysStoppedAnimation((ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen)),
                                   strokeCap: StrokeCap.round,
                                 ),
                               ),
