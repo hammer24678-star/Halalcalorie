@@ -30,6 +30,7 @@ jobs:
       - run: flutter build apk --release --no-tree-shake-icons
               --dart-define=ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
               --dart-define=RC_GOOGLE_KEY=${{ secrets.RC_GOOGLE_KEY }}
+              --dart-define=RC_GOOGLE_KEY=${{ secrets.RC_GOOGLE_KEY }}
 
       - name: Release APK
         uses: softprops/action-gh-release@v1

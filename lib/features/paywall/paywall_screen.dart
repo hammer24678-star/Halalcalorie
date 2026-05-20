@@ -4,6 +4,7 @@
 // ============================================================
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../core/regional_pricing.dart';
@@ -81,7 +82,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
             style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.lightMuted, height: 1.5)),
           const SizedBox(height: 20),
           SizedBox(width: double.infinity, child: ElevatedButton(
-            onPressed: () { if (context.mounted) Navigator.pop(context); if (context.mounted) context.pop(); },
+            onPressed: () { if (context.mounted) Navigator.pop(context); },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.sunnahGreen),
             child: Text(isAr ? 'رائع! لنبدأ ⭐' : "Lets go ⭐",
               style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.w700)),
@@ -108,7 +109,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
           backgroundColor: Colors.transparent, elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.close, color: isDark ? AppColors.darkText : AppColors.lightText),
-            onPressed: () { if (context.mounted) context.pop(); },
+            onPressed: () { if (context.mounted) Navigator.pop(context); },
           ),
           actions: [
             TextButton(

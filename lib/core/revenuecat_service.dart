@@ -1,5 +1,5 @@
 // revenuecat_service.dart — HalalCalorie v1.0
-// RevenueCat wired up (Build 43).
+// RevenueCat wired up (Build 44).
 // Requires: purchases_flutter: ^8.0.0 in pubspec
 //           RC_GOOGLE_KEY dart-define in CI (secrets.RC_GOOGLE_KEY)
 //           RC_APPLE_KEY dart-define in CI (secrets.RC_APPLE_KEY)
@@ -130,7 +130,7 @@ class RevenueCatService {
       }
       final info = await Purchases.purchasePackage(
           offering.rcPackage as Package);
-      final active = info.customerInfo.entitlements.active
+      final active = info.entitlements.active
           .containsKey(RCConfig.entitlementId);
       return PurchaseResult(success: active);
     } on PurchasesErrorCode catch (e) {
