@@ -400,14 +400,23 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
                       color: AppColors.barakahGold.withOpacity(0.2))),
-                child: Wrap(spacing: 8, runSpacing: 12,
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _microTile('🍊','Vit C','${(e.kcal*0.10).toInt()}mg',muted),
-                    _microTile('🩸',isAr?'حديد':'Iron','${(e.proteinG*0.18).toStringAsFixed(1)}mg',muted),
-                    _microTile('🥛',isAr?'كالسيوم':'Ca','${(e.kcal*0.55).toInt()}mg',muted),
-                    _microTile('🍌',isAr?'بوتاسيوم':'K','${(e.kcal*1.4).toInt()}mg',muted),
-                    _microTile('☀️',isAr?'فيت د':'Vit D','${(e.fatG*0.8).toStringAsFixed(1)}µg',muted),
-                    _microTile('🫁',isAr?'ماغنيسيوم':'Mg','${(e.proteinG*1.2).toInt()}mg',muted),
+                    Wrap(spacing: 8, runSpacing: 12, children: [
+                      _microTile('🍊','Vit C', '–', muted),
+                      _microTile('🩸',isAr?'حديد':'Iron', '–', muted),
+                      _microTile('🥛',isAr?'كالسيوم':'Ca', '–', muted),
+                      _microTile('🍌',isAr?'بوتاسيوم':'K', '–', muted),
+                      _microTile('☀️',isAr?'فيت د':'Vit D', '–', muted),
+                      _microTile('🫁',isAr?'ماغنيسيوم':'Mg', '–', muted),
+                    ]),
+                    const SizedBox(height: 6),
+                    Text(
+                      isAr
+                        ? '* القيم التفصيلية متاحة عند التحليل بالكاميرا (مميزات مدفوعة)'
+                        : '* Detailed values available via AI photo scan (premium)',
+                      style: TextStyle(fontFamily: 'Cairo', fontSize: 9.5, color: muted),
+                    ),
                   ])),
               const SizedBox(height: 16),
 
@@ -1205,7 +1214,9 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                   '${r.nameAr} ${isAr ? "أضيف ✓" : "added ✓"}',
                                   style: const TextStyle(
                                       fontFamily: 'Cairo')),
-                              backgroundColor: AppColors.sunnahGreen,
+                              backgroundColor: ref.read(ramadanModeProvider)
+                                  ? AppColors.barakahGold
+                                  : AppColors.sunnahGreen,
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
                                   borderRadius:

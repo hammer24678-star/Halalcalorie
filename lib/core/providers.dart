@@ -243,8 +243,36 @@ final workoutWeekProvider = FutureProvider<Set<String>>((ref) async {
 
 final scanProvider = StateNotifierProvider<ScanNotifier, ScanState>((ref) => ScanNotifier());
 class ScanState { final List<ScanResult> history; final int todayCount; ScanState({required this.history, required this.todayCount}); }
-class ScanNotifier extends StateNotifier<ScanState> { ScanNotifier() : super(ScanState(history: [], todayCount: 0));
-  void addScan(ScanResult r) => state = ScanState(history: [r, ...state.history.take(49)], todayCount: state.todayCount + 1);
+class ScanNotifier extends StateNotifier<ScanState> {
+  static String _dateKey() => DateTime.now().toIso8601String().substring(0, 10);
+
+  ScanNotifier() : super(ScanState(history: [], todayCount: 0)) { _load(); }
+
+  Future<void> _load() async {
+    try {
+      final p     = await SharedPreferences.getInstance();
+      final today = _dateKey();
+      // Reset count if it's a new calendar day
+      if ((p.getString('scan_date') ?? '') != today) {
+        await p.setString('scan_date',  today);
+        await p.setInt(   'scan_count', 0);
+        state = ScanState(history: state.history, todayCount: 0);
+      } else {
+        final saved = p.getInt('scan_count') ?? 0;
+        state = ScanState(history: state.history, todayCount: saved);
+      }
+    } catch (_) {}
+  }
+
+  void addScan(ScanResult r) {
+    final newCount = state.todayCount + 1;
+    state = ScanState(history: [r, ...state.history.take(49)], todayCount: newCount);
+    // Persist asynchronously — fire-and-forget
+    SharedPreferences.getInstance().then((p) {
+      p.setString('scan_date',  _dateKey());
+      p.setInt(   'scan_count', newCount);
+    }).catchError((_) {});
+  }
 }
 
 final zakatProvider = StateNotifierProvider<ZakatNotifier, double>((ref) => ZakatNotifier());

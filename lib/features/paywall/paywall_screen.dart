@@ -81,7 +81,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
             style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.lightMuted, height: 1.5)),
           const SizedBox(height: 20),
           SizedBox(width: double.infinity, child: ElevatedButton(
-            onPressed: () { if (context.mounted) Navigator.pop(context); if (context.mounted) Navigator.pop(context); },
+            onPressed: () { if (context.mounted) Navigator.pop(context); if (context.mounted) context.pop(); },
             style: ElevatedButton.styleFrom(backgroundColor: AppColors.sunnahGreen),
             child: Text(isAr ? 'رائع! لنبدأ ⭐' : "Lets go ⭐",
               style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.w700)),
@@ -94,7 +94,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
   @override
   Widget build(BuildContext context) {
     final lang      = ref.watch(languageProvider);
-    final isAr      = lang == 'ar';
+    final isAr      = lang == 'ar' || lang == 'ur';
     final isDark    = ref.watch(themeProvider);
     final offerings = ref.watch(rcOfferingsProvider);
     final bg        = isDark ? AppColors.darkCard : Colors.white;
@@ -108,7 +108,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
           backgroundColor: Colors.transparent, elevation: 0,
           leading: IconButton(
             icon: Icon(Icons.close, color: isDark ? AppColors.darkText : AppColors.lightText),
-            onPressed: () { if (context.mounted) Navigator.pop(context); },
+            onPressed: () { if (context.mounted) context.pop(); },
           ),
           actions: [
             TextButton(
@@ -300,9 +300,9 @@ class _PaywallState extends ConsumerState<PaywallScreen>
   }
 
   List<_FP> _fallback(bool isAr) => [
-    _FP(isAr ? 'شهري' : 'Monthly',    'EGP 399',   isAr ? '/ شهر' : '/ month',   false, null),
-    _FP(isAr ? 'سنوي' : 'Yearly',     'EGP 3,299', isAr ? '/ سنة' : '/ year',    true,  isAr ? 'وفّر ٣٠٪' : 'Save 30%'),
-    _FP(isAr ? 'مدى الحياة' : 'Lifetime', 'EGP 7,999', isAr ? 'مرة واحدة' : 'one-time', false, null),
+    _FP(isAr ? 'شهري' : 'Monthly',       'EGP 99',    isAr ? '/ شهر' : '/ month',   false, null),
+    _FP(isAr ? 'سنوي' : 'Yearly',        'EGP 799',   isAr ? '/ سنة' : '/ year',    true,  isAr ? 'وفّر ٣٠٪' : 'Save 30%'),
+    _FP(isAr ? 'مدى الحياة' : 'Lifetime', 'EGP 1,999', isAr ? 'مرة واحدة' : 'one-time', false, null),
   ];
 
   Widget _badge(String emoji, String label) => Row(mainAxisSize: MainAxisSize.min, children: [
