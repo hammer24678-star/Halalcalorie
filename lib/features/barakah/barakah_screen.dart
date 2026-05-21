@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../core/l10n.dart';
+import 'package:go_router/go_router.dart';
 
 class BarakahScreen extends ConsumerStatefulWidget {
   const BarakahScreen({super.key});
@@ -47,12 +48,78 @@ class _BarakahState extends ConsumerState<BarakahScreen>
 
   @override
   Widget build(BuildContext context) {
+    final isPremium = ref.watch(premiumProvider);
     final barakah  = ref.watch(barakahProvider);
     final badges   = ref.watch(badgeProvider);
     final lang     = ref.watch(languageProvider);
     final isAr     = lang == 'ar' || lang == 'ur';
     final isDark   = ref.watch(themeProvider);
     final isRamadan= ref.watch(ramadanModeProvider);
+
+    // ── Premium gate ─────────────────────────────────────────────
+    if (!isPremium) {
+      final bg = isDark ? AppColors.darkBg : AppColors.lightBg;
+      return Directionality(
+        textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
+        child: Scaffold(
+          backgroundColor: bg,
+          body: SafeArea(child: Padding(
+            padding: const EdgeInsets.all(28),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text('✨', style: TextStyle(fontSize: 72)),
+                const SizedBox(height: 20),
+                Text(
+                  isAr ? 'محرك البركة — ميزة بريميوم'
+                       : 'Barakah Engine — Premium Feature',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'Cairo', fontWeight: FontWeight.w900,
+                    fontSize: 22,
+                    color: isDark ? AppColors.darkText : AppColors.lightText)),
+                const SizedBox(height: 12),
+                Text(
+                  isAr
+                    ? 'تتبع نقاط بركتك اليومية من الذكر والصيام والتمرين والتغذية — كل ذلك في مكان واحد.'
+                    : 'Track your daily Barakah score across dhikr, fasting, workout and nutrition — all in one place.',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontFamily: 'Cairo', fontSize: 14,
+                    color: AppColors.lightMuted, height: 1.6)),
+                const SizedBox(height: 32),
+                SizedBox(width: double.infinity, child: ElevatedButton(
+                  onPressed: () => context.push('/paywall'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.barakahGold,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16))),
+                  child: Text(
+                    isAr ? '⭐ ترقّ للبريميوم' : '⭐ Upgrade to Premium',
+                    style: const TextStyle(
+                      fontFamily: 'Cairo', fontSize: 16,
+                      fontWeight: FontWeight.w800, color: Colors.white)),
+                )),
+                const SizedBox(height: 14),
+                // Preview of what they'd get
+                Wrap(spacing: 10, runSpacing: 8,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    '🍽️ تغذية', '💧 ترطيب', '😴 نوم',
+                    '👟 حركة', '🌙 صيام', '💪 تمرين',
+                    '🤲 ذكر', '🏅 شارات',
+                  ].map((s) => Chip(
+                    label: Text(s, style: const TextStyle(fontFamily: 'Cairo', fontSize: 11)),
+                    backgroundColor: AppColors.barakahGold.withOpacity(0.12),
+                    side: BorderSide(color: AppColors.barakahGold.withOpacity(0.3)),
+                  )).toList()),
+              ],
+            ),
+          )),
+        ),
+      );
+    }
     final l        = L.fromLang(lang);
     final weekAsync= ref.watch(barakahWeekProvider);
 

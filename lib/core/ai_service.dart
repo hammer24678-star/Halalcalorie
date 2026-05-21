@@ -116,64 +116,81 @@ class AIService {
   // ════════════════════════════════════════════════
   //  FOOD PHOTO ANALYSIS
   // ════════════════════════════════════════════════
-  static Future<FoodPhotoResult> analyzeFoodPhoto({
+  // ── Multi-food analysis (returns list of all detected foods) ──────────
+  static Future<List<FoodPhotoResult>> analyzeFoodPhoto({
     required String imagePath,
-    required String language, // ar/en/fr/tr/ur/ms/id — all 7 supported
+    required String language,
   }) async {
     final langName = _langName(language);
-    final system = '''You are a professional dietitian and halal food expert.
-Respond with foodName, halalNote, sunnahNote fields in $langName; keep foodNameEn, halalNoteEn, sunnahNoteEn always in English as fallback.
-Analyze food images and return ONLY valid JSON with this exact structure — no markdown, no extra text:
+    final system = '''
+You are a professional dietitian and halal food expert.
+Analyze the food image and identify EVERY distinct food item visible.
+Return ONLY a valid JSON array — no markdown, no extra text.
+Each element must have this exact structure:
 {
-  "foodName": "<food name in $langName>",
-  "foodNameEn": "<food name in English>",
-  "kcal": <integer per serving>,
+  "foodName": "<name in $langName>",
+  "foodNameEn": "<name in English>",
+  "kcal": <integer for this portion>,
   "proteinG": <integer grams>,
   "carbsG": <integer grams>,
   "fatG": <integer grams>,
   "halalStatus": "<halal|doubtful|haram|unknown>",
-  "halalNote": "<halal explanation in $langName>",
-  "halalNoteEn": "<halal explanation in English>",
+  "halalNote": "<brief explanation in $langName>",
+  "halalNoteEn": "<brief explanation in English>",
   "confidence": <0.0-1.0>,
-  "ingredients": ["<main ingredient 1>", "<main ingredient 2>"],
-  "portionSize": "<e.g. 1 plate ~300g>",
+  "portionSize": "<estimated size>",
+  "ingredients": ["<ingredient 1>", "<ingredient 2>"],
   "sunnahNote": "<Sunnah/Islamic connection in $langName, or empty>",
-  "sunnahNoteEn": "<Sunnah/Islamic connection in English, or empty>"
+  "sunnahNoteEn": "<Sunnah connection in English, or empty>"
 }
 
 Rules:
-- Calories for visible/estimated portion (not 100g)
-- halalStatus: halal=clearly permissible, doubtful=contains uncertain additives, haram=contains pork/alcohol/blood, unknown=cannot determine
-- If multiple foods visible, analyze the main dish
-- Be conservative with halalStatus — when uncertain, use "doubtful"
-- sunnahNote: mention if food is referenced in Sunnah (dates, honey, olive oil, black seed, etc.)''';
+- List EVERY distinct item (rice, chicken, salad, bread, drink — all separate)
+- Estimate calories for the visible portion of EACH item
+- halalStatus: halal=permissible, doubtful=uncertain additives/processing, haram=pork/alcohol/blood, unknown=cannot determine
+- Be conservative — use doubtful when uncertain
+- sunnahNote: mention Sunnah foods (dates, honey, olive oil, black seed, zamzam, vinegar, figs, pomegranate)
+- If only one food is visible, return an array with one element
+- Never return an empty array — always at least one item
+''';
 
     final prompt = language == 'ar'
-      ? 'حلل هذا الطعام وأعطني القيم الغذائية والحكم الشرعي.'
-      : 'Analyze this food and provide nutritional values and halal assessment. Respond in $langName.';
+      ? 'حلل كل الأطعمة المرئية في هذه الصورة وأعطني القيم الغذائية والحكم الشرعي لكل منها.'
+      : 'Identify and analyze every food item visible in this image. Return each as a separate entry with nutritional values and halal assessment.';
 
     try {
-      final raw  = await _callVision(imagePath: imagePath, systemPrompt: system, userPrompt: prompt);
+      final raw   = await _callVision(
+          imagePath: imagePath, systemPrompt: system,
+          userPrompt: prompt, maxTokens: 1500);
       final clean = raw.replaceAll(RegExp(r'```json|```'), '').trim();
-      final json  = jsonDecode(clean) as Map<String, dynamic>;
-      return FoodPhotoResult(
-        foodName:         json['foodName']    as String? ?? 'Unknown',
-        foodNameEn:       json['foodNameEn']  as String? ?? 'Unknown',
-        kcal:             _safeInt(json['kcal']),
-        proteinG:         _safeDouble(json['proteinG']),
-        carbsG:           _safeDouble(json['carbsG']),
-        fatG:             _safeDouble(json['fatG']),
-        halalStatus:      _parseHalalStatus(json['halalStatus'] as String? ?? 'unknown'),
-        halalExplanation: json['halalNote']   as String? ?? '',
-        halalExplanationEn: json['halalNoteEn'] as String? ?? json['halalNote'] as String? ?? '',
-        sunnahNote:       json['sunnahNote']  as String? ?? '',
-        sunnahNoteEn:     json['sunnahNoteEn'] as String? ?? '',
-        confidence:   _safeDouble(json['confidence'], 0.75),
-        portionSize:  json['portionSize'] as String? ?? '',
-        ingredients:  (json['ingredients'] as List<dynamic>?)?.cast<String>() ?? const [],
-      );
+      final decoded = jsonDecode(clean);
+
+      // Handle both array and single-object responses
+      final List<dynamic> items = decoded is List
+          ? decoded
+          : [decoded];
+
+      return items.map((j) {
+        final m = j as Map<String, dynamic>;
+        return FoodPhotoResult(
+          foodName:           m['foodName']    as String? ?? 'Unknown',
+          foodNameEn:         m['foodNameEn']  as String? ?? 'Unknown',
+          kcal:               _safeInt(m['kcal']),
+          proteinG:           _safeDouble(m['proteinG']),
+          carbsG:             _safeDouble(m['carbsG']),
+          fatG:               _safeDouble(m['fatG']),
+          halalStatus:        _parseHalalStatus(m['halalStatus'] as String? ?? 'unknown'),
+          halalExplanation:   m['halalNote']    as String? ?? '',
+          halalExplanationEn: m['halalNoteEn']  as String? ?? '',
+          sunnahNote:         m['sunnahNote']   as String? ?? '',
+          sunnahNoteEn:       m['sunnahNoteEn'] as String? ?? '',
+          confidence:   _safeDouble(m['confidence'], 0.75),
+          portionSize:  m['portionSize'] as String? ?? '',
+          ingredients:  (m['ingredients'] as List<dynamic>?)?.cast<String>() ?? const [],
+        );
+      }).toList();
     } on FormatException {
-      return _fallbackFoodResult(language);
+      return [_fallbackFoodResult(language)];
     }
   }
 

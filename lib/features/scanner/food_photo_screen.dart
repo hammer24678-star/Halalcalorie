@@ -6,7 +6,6 @@
 
 import 'dart:io'; import'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:image_picker/image_picker.dart'; import'../../core/theme.dart'; import'../../core/providers.dart'; import'../../core/ai_service.dart'; import'../../data/models/models.dart';
 import'../../core/l10n.dart';
-import'../../core/l10n.dart';
 
 // ── Analysis state ─────────────────────────────
 enum AnalysisState { idle, analyzing, done, error }
@@ -21,9 +20,9 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
 
   final _picker = ImagePicker();
   File?           _image;
-  AnalysisState   _state  = AnalysisState.idle;
-  FoodPhotoResult? _result;
-  String?         _error;
+  AnalysisState         _state   = AnalysisState.idle;
+  List<FoodPhotoResult> _results = [];
+  String?               _error;
 
   // Shimmer animation for loading
   late AnimationController _shimmer;
@@ -52,7 +51,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       if (mounted) setState(() {
         _image   = File(xf.path);
         _state   = AnalysisState.idle;
-        _result  = null;
+        _results = [];
         _error   = null;
       });
     } catch (e) {
@@ -76,7 +75,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         language: lang,
       );
       if (!mounted) return;
-      if (mounted) setState(() { _result = result; _state = AnalysisState.done; });
+      if (mounted) setState(() { _results = result; _state = AnalysisState.done; });
     } catch (e) {
       if (!mounted) return;
       final errStr = e.toString();
@@ -85,7 +84,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         return;
       }
       final msg = errStr.contains('ANTHROPIC_API_KEY') || errStr.contains('401')
-        ? (lang == 'ar' ? 'مفتاح API غير مُعدّ — راجع إعدادات Codemagic' : 'API key not configured — check Codemagic secrets')
+        ? (lang == 'ar' ? 'مفتاح API غير مُعدّ — أضفه في GitHub Secrets' : 'API key not configured — add it to GitHub Secrets')
         : errStr.contains('timeout') || errStr.contains('TimeoutException')
         ? (lang == 'ar' ? 'انتهت مهلة الاتصال، حاول مجدداً' : 'Connection timed out, try again')
         : (lang == 'ar' ? 'تعذّر التحليل. تحقق من اتصالك بالإنترنت.' : 'Analysis failed. Check your internet connection.');
@@ -93,20 +92,46 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
     }
   }
 
-  // ── Add to tracker ────────────────────────────
-  void _addToTracker() {
-    if (_result == null) return;
-    final lang  = ref.read(languageProvider); final isAr  = lang =='ar';
+  // ── Add single result to tracker ──────────────
+  void _addToTracker(FoodPhotoResult r) {
+    final lang  = ref.read(languageProvider);
+    final isAr  = lang == 'ar';
     ref.read(caloriesProvider.notifier).addEntry(
-      isAr ? _result!.foodName : _result!.foodNameEn,
-      _result!.kcal,
-      proteinG: _result!.proteinG,
-      carbsG:   _result!.carbsG,
-      fatG:     _result!.fatG,
+      isAr ? r.foodName : r.foodNameEn,
+      r.kcal,
+      proteinG: r.proteinG,
+      carbsG:   r.carbsG,
+      fatG:     r.fatG,
     );
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar( content: Text(isAr ?'✓ تمت الإضافة للعداد' : '✓ Added to tracker', style: const TextStyle(fontFamily:'Cairo')),
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        isAr ? '✓ ${r.foodName} أُضيفت' : '✓ ${r.foodNameEn} added',
+        style: const TextStyle(fontFamily: 'Cairo')),
       backgroundColor: AppColors.sunnahGreen,
       duration: const Duration(seconds: 2),
+    ));
+  }
+
+  // ── Add ALL results to tracker ─────────────────
+  void _addAllToTracker() {
+    final lang = ref.read(languageProvider);
+    final isAr = lang == 'ar';
+    for (final r in _results) {
+      ref.read(caloriesProvider.notifier).addEntry(
+        isAr ? r.foodName : r.foodNameEn,
+        r.kcal,
+        proteinG: r.proteinG,
+        carbsG:   r.carbsG,
+        fatG:     r.fatG,
+      );
+    }
+    final total = _results.fold(0, (s, r) => s + r.kcal);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(
+        isAr ? '✓ أُضيفت كل الأطعمة ($total سعرة)' : '✓ All foods added ($total kcal)',
+        style: const TextStyle(fontFamily: 'Cairo')),
+      backgroundColor: AppColors.sunnahGreen,
+      duration: const Duration(seconds: 3),
     ));
   }
 
@@ -174,9 +199,33 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
               _errorCard(_error!, isAr, isDark),
 
             // ── Results ───────────────────────────────────
-            if (_state == AnalysisState.done && _result != null) ...[
+            if (_state == AnalysisState.done && _results.isNotEmpty) ...[
               const SizedBox(height: 16),
-              _resultCard(_result!, isAr, isDark, bg, muted),
+              // Total summary bar if multiple items
+              if (_results.length > 1) _totalSummaryBar(_results, isAr, isDark),
+              ..._results.asMap().entries.map((e) => Padding(
+                padding: const EdgeInsets.only(bottom: 14),
+                child: _resultCard(e.value, isAr, isDark, bg, muted,
+                    itemIndex: e.key + 1, totalItems: _results.length),
+              )),
+              // Add All button when multiple foods
+              if (_results.length > 1)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: SizedBox(width: double.infinity, child: ElevatedButton.icon(
+                    onPressed: _addAllToTracker,
+                    icon: const Icon(Icons.playlist_add, color: Colors.white),
+                    label: Text(
+                      isAr
+                        ? 'إضافة كل الأطعمة للعداد (${_results.fold(0,(s,r)=>s+r.kcal)} سعرة)'
+                        : 'Add All Foods to Tracker (${_results.fold(0,(s,r)=>s+r.kcal)} kcal)',
+                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.sunnahGreen,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                  )),
+                ),
             ],
 
             const SizedBox(height: 20),
@@ -345,7 +394,44 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
     );
   }
 
-  Widget _resultCard(FoodPhotoResult r, bool isAr, bool isDark, Color bg, Color muted) {
+  // ── Total summary bar ──────────────────────────
+  Widget _totalSummaryBar(List<FoodPhotoResult> items, bool isAr, bool isDark) {
+    final totalKcal  = items.fold(0,    (s, r) => s + r.kcal);
+    final totalProt  = items.fold(0.0,  (s, r) => s + r.proteinG);
+    final totalCarbs = items.fold(0.0,  (s, r) => s + r.carbsG);
+    final totalFat   = items.fold(0.0,  (s, r) => s + r.fatG);
+    final card = isDark ? AppColors.darkCard : Colors.white;
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.barakahGold.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.barakahGold.withOpacity(0.4))),
+      child: Column(children: [
+        Text(
+          isAr ? '📊 المجموع: $totalKcal سعرة' : '📊 Total: $totalKcal kcal',
+          style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800,
+              fontSize: 16, color: AppColors.barakahGold)),
+        const SizedBox(height: 8),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+          _macroChip('💪 P', '${totalProt.toInt()}g', AppColors.sunnahGreen),
+          _macroChip('🍚 C', '${totalCarbs.toInt()}g', AppColors.waterBlue),
+          _macroChip('🥑 F', '${totalFat.toInt()}g', AppColors.doubtOrange),
+          _macroChip('🍽️', '${items.length} ${isAr ? "صنف" : "items"}', AppColors.barakahGold),
+        ]),
+      ]),
+    );
+  }
+
+  Widget _macroChip(String label, String val, Color color) => Column(children: [
+    Text(label, style: const TextStyle(fontSize: 11, color: AppColors.lightMuted)),
+    Text(val, style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700,
+        fontSize: 13, color: color)),
+  ]);
+
+  Widget _resultCard(FoodPhotoResult r, bool isAr, bool isDark, Color bg, Color muted,
+      {int itemIndex = 1, int totalItems = 1}) {
     final statusColor = _statusColor(r.halalStatus);
     final name = isAr ? r.foodName : r.foodNameEn;
     final confPct = (r.confidence * 100).toInt();
@@ -365,6 +451,9 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
           Text(r.halalStatus.emoji, style: const TextStyle(fontSize: 32)),
           const SizedBox(width: 12),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            if (totalItems > 1)
+              Text('$itemIndex / $totalItems',
+                style: const TextStyle(fontFamily:'Cairo', fontSize: 10, color: AppColors.lightMuted)),
             Text(name, style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w900, fontSize: 18)),
             Text(isAr ? r.halalStatus.label : r.halalStatus.labelEn, style: TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700, fontSize: 13, color: statusColor)),
             if ((isAr ? r.halalExplanation : r.halalExplanationEn).isNotEmpty)
@@ -435,7 +524,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
         child: Row(children: [
           Expanded(child: ElevatedButton(
-            onPressed: _addToTracker,
+            onPressed: () => _addToTracker(r),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.sunnahGreen,
               padding: const EdgeInsets.symmetric(vertical: 12),

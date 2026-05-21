@@ -70,6 +70,11 @@ class _AppShellState extends ConsumerState<AppShell>
         isDark: isDark, isAr: isAr, isRamadan: isRamadan,
         onTap: (path) {
           HapticFeedback.lightImpact();
+          if (path == '/barakah' &&
+              !ref.read(premiumProvider)) {
+            context.push('/paywall');
+            return;
+          }
           context.go(path);
         },
       ),
