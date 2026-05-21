@@ -155,3 +155,22 @@ if os.path.exists(manifest_path):
         print("AndroidManifest: permissions already present")
 else:
     print("WARNING: AndroidManifest.xml not found — run after flutter create")
+
+# ── Kotlin version upgrade (required by purchases_flutter v8) ─────────
+# flutter create generates settings.gradle with kotlin 1.7.21
+# purchases_flutter v8 stdlib is compiled with 1.9.0 → version mismatch
+settings_gradle = 'android/settings.gradle'
+if os.path.exists(settings_gradle):
+    sg = open(settings_gradle).read()
+    sg_new = re.sub(
+        r'(id\s+"org\.jetbrains\.kotlin\.android"\s+version\s+")[^"]+(")',
+        r'\g<1>1.9.0\2',
+        sg
+    )
+    if sg_new != sg:
+        open(settings_gradle, 'w').write(sg_new)
+        print("settings.gradle: Kotlin upgraded to 1.9.0")
+    else:
+        print("settings.gradle: Kotlin already 1.9.0 or key line not found")
+else:
+    print("WARNING: android/settings.gradle not found — Kotlin not patched")
