@@ -87,7 +87,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         ? (lang == 'ar' ? 'مفتاح API غير مُعدّ — أضفه في GitHub Secrets' : 'API key not configured — add it to GitHub Secrets')
         : errStr.contains('timeout') || errStr.contains('TimeoutException')
         ? (lang == 'ar' ? 'انتهت مهلة الاتصال، حاول مجدداً' : 'Connection timed out, try again')
-        : (lang == 'ar' ? 'تعذّر التحليل. تحقق من اتصالك بالإنترنت.' : 'Analysis failed. Check your internet connection.');
+        : (lang == 'ar' ? 'تعذّر التحليل: $errStr' : 'Analysis failed: $errStr');
       if (mounted) setState(() { _error = msg; _state = AnalysisState.error; });
     }
   }
