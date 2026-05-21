@@ -148,6 +148,13 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       child: Scaffold(
         appBar: AppBar( title: Text(t('📸 تحليل الطعام بـ AI', '📸 AI Food Analyzer')),
           backgroundColor: AppColors.sunnahGreen,
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.flash_on_rounded, color: Colors.white),
+              tooltip: isAr ? 'إدخال سريع بالنص' : 'Quick Text Entry',
+              onPressed: () => _showQuickEntrySheet(isAr, isDark),
+            ),
+          ],
         ),
         body: ListView(
           padding: const EdgeInsets.all(16),
@@ -424,12 +431,6 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
     );
   }
 
-  Widget _macroChip(String label, String val, Color color) => Column(children: [
-    Text(label, style: const TextStyle(fontSize: 11, color: AppColors.lightMuted)),
-    Text(val, style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700,
-        fontSize: 13, color: color)),
-  ]);
-
   Widget _resultCard(FoodPhotoResult r, bool isAr, bool isDark, Color bg, Color muted,
       {int itemIndex = 1, int totalItems = 1}) {
     final statusColor = _statusColor(r.halalStatus);
@@ -533,7 +534,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
           )),
           const SizedBox(width: 10),
           OutlinedButton(
-            onPressed: () => setState(() { _image = null; _result = null; _state = AnalysisState.idle; }),
+            onPressed: () => setState(() { _image = null; _results = []; _state = AnalysisState.idle; }),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               side: const BorderSide(color: AppColors.sunnahGreen),
@@ -575,6 +576,23 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       child: Column(children: [ Text(val, style: TextStyle(fontFamily:'Cairo', fontSize: 16, fontWeight: FontWeight.w900, color: color)), Text(label, style: const TextStyle(fontFamily:'Cairo', fontSize: 9, color: AppColors.lightMuted)),
       ]),
     ));
+  }
+
+  // ── Quick Entry sheet launcher ──────────────────
+  void _showQuickEntrySheet(bool isAr, bool isDark) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => _QuickEntrySheet(
+        isAr: isAr,
+        isDark: isDark,
+        onAdd: (r) {
+          _addToTracker(r);
+          Navigator.of(context).pop();
+        },
+      ),
+    );
   }
 
   Widget _tipsCard(bool isAr, bool isDark, Color bg, Color muted) {

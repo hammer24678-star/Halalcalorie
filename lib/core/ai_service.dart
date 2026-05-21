@@ -14,7 +14,7 @@ import 'open_food_facts_service.dart';
 class ApiKeyMissingException implements Exception {
   final String message;
   const ApiKeyMissingException([this.message =
-    'ANTHROPIC_API_KEY is not set. Add it to your Codemagic secrets and rebuild.']);
+    'ANTHROPIC_API_KEY is not set. Add it to your GitHub Secrets and rebuild.']);
   @override String toString() => message;
 }
 
@@ -204,6 +204,98 @@ Rules:
     sunnahNote: '',
     sunnahNoteEn: '',
   );
+
+  // ════════════════════════════════════════════════
+  //  QUICK TEXT ENTRY (no image needed)
+  // ════════════════════════════════════════════════
+  /// Analyse a plain-text meal description and return nutrition results.
+  /// e.g. '2 boiled eggs and a cup of rice'
+  static Future<List<FoodPhotoResult>> quickTextEntry({
+    required String description,
+    required String language,
+  }) async {
+    if (_apiKey.isEmpty) throw const ApiKeyMissingException();
+    final langName = _langName(language);
+    final system = '''
+You are a professional dietitian and halal food expert.
+The user describes a meal in text. Identify every distinct food item.
+Return ONLY a valid JSON array — no markdown, no extra text.
+Each element must have this exact structure:
+{
+  "foodName": "<name in $langName>",
+  "foodNameEn": "<name in English>",
+  "kcal": <integer for this portion>,
+  "proteinG": <integer grams>,
+  "carbsG": <integer grams>,
+  "fatG": <integer grams>,
+  "halalStatus": "<halal|doubtful|haram|unknown>",
+  "halalNote": "<brief in $langName>",
+  "halalNoteEn": "<brief in English>",
+  "confidence": <0.0-1.0>,
+  "portionSize": "<estimated size>",
+  "ingredients": [],
+  "sunnahNote": "<Sunnah/Islamic note in $langName, or empty>",
+  "sunnahNoteEn": "<Sunnah note in English, or empty>"
+}
+Rules:
+- Split combined descriptions into individual items (e.g. '2 eggs + rice' → 2 entries)
+- Use reasonable standard portions when quantity is vague
+- halalStatus: conservative — use doubtful when uncertain
+- Never return an empty array
+''';
+
+    final prompt = language == 'ar'
+      ? 'حلل هذه الوجبة وأعطني القيم الغذائية لكل عنصر: $description'
+      : 'Analyze this meal and give nutritional values for each item: $description';
+
+    try {
+      final body = jsonEncode({
+        'model': _model, 'max_tokens': 1000, 'system': system,
+        'messages': [{'role': 'user', 'content': prompt}],
+      });
+      final resp = await http.post(
+        Uri.parse(_endpoint),
+        headers: {'Content-Type': 'application/json',
+                  'anthropic-version': _version, 'x-api-key': _apiKey},
+        body: body,
+      ).timeout(const Duration(seconds: 20));
+      if (resp.statusCode != 200) throw Exception('${resp.statusCode}');
+      final data    = jsonDecode(resp.body) as Map<String, dynamic>;
+      final content = data['content'];
+      if (content is! List || content.isEmpty) return [_fallbackFoodResult(language)];
+      final block = content.firstWhere(
+        (c) => c is Map && c['type'] == 'text',
+        orElse: () => <String, dynamic>{'text': '[]'},
+      );
+      final raw   = (block is Map ? block['text'] : null)?.toString() ?? '[]';
+      final clean = raw.replaceAll(RegExp(r'```json|```'), '').trim();
+      final arrMatch = RegExp(r'\[[\s\S]*\]').firstMatch(clean);
+      final decoded = jsonDecode(arrMatch?.group(0) ?? '[]');
+      final List<dynamic> items = decoded is List ? decoded : [decoded];
+      if (items.isEmpty) return [_fallbackFoodResult(language)];
+      return items.map((j) {
+        final m = j as Map<String, dynamic>;
+        return FoodPhotoResult(
+          foodName:           m['foodName']    as String? ?? 'Unknown',
+          foodNameEn:         m['foodNameEn']  as String? ?? 'Unknown',
+          kcal:               _safeInt(m['kcal']),
+          proteinG:           _safeDouble(m['proteinG']),
+          carbsG:             _safeDouble(m['carbsG']),
+          fatG:               _safeDouble(m['fatG']),
+          halalStatus:        _parseHalalStatus(m['halalStatus'] as String? ?? 'unknown'),
+          halalExplanation:   m['halalNote']    as String? ?? '',
+          halalExplanationEn: m['halalNoteEn']  as String? ?? '',
+          sunnahNote:         m['sunnahNote']   as String? ?? '',
+          sunnahNoteEn:       m['sunnahNoteEn'] as String? ?? '',
+          confidence:   _safeDouble(m['confidence'], 0.80),
+          portionSize:  m['portionSize'] as String? ?? '',
+          ingredients:  (m['ingredients'] as List<dynamic>?)?.cast<String>() ?? const [],
+        );
+      }).toList();
+    } catch (_) {
+      return [_fallbackFoodResult(language)];
+    }
+  }
 
   // ════════════════════════════════════════════════
   //  BODY PHOTO ANALYSIS (Premium)
