@@ -620,3 +620,233 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
     }
   }
 }
+
+// ======================================================================
+//  _QuickEntrySheet
+// ======================================================================
+class _QuickEntrySheet extends ConsumerStatefulWidget {
+  final bool isAr;
+  final bool isDark;
+  final void Function(FoodPhotoResult) onAdd;
+  const _QuickEntrySheet({required this.isAr, required this.isDark, required this.onAdd});
+  @override
+  ConsumerState<_QuickEntrySheet> createState() => _QuickEntrySheetState();
+}
+
+class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
+  final _ctrl = TextEditingController();
+  bool _loading = false;
+  List<FoodPhotoResult> _aiResults = [];
+  String? _error;
+
+  @override void dispose() { _ctrl.dispose(); super.dispose(); }
+
+  Future<void> _analyze() async {
+    final text = _ctrl.text.trim();
+    if (text.isEmpty) return;
+    setState(() { _loading = true; _aiResults = []; _error = null; });
+    try {
+      final lang = ref.read(languageProvider);
+      final results = await AIService.quickTextEntry(description: text, language: lang);
+      if (mounted) setState(() { _aiResults = results; _loading = false; });
+    } on ApiKeyMissingException {
+      if (mounted) setState(() {
+        _error = widget.isAr ? 'API key not configured' : 'API key not configured';
+        _loading = false;
+      });
+    } catch (e) {
+      if (mounted) setState(() {
+        _error = widget.isAr ? 'Error - try again' : 'Error - try again';
+        _loading = false;
+      });
+    }
+  }
+
+  void _addQuickFood(QuickFood food) {
+    final r = FoodPhotoResult(
+      foodName: widget.isAr ? food.name : food.nameEn,
+      foodNameEn: food.nameEn,
+      kcal: food.kcal,
+      proteinG: food.proteinG,
+      carbsG: food.carbsG,
+      fatG: food.fatG,
+      halalStatus: HalalStatus.halal,
+      halalExplanation: '',
+      halalExplanationEn: '',
+      sunnahNote: '',
+      sunnahNoteEn: '',
+    );
+    widget.onAdd(r);
+    Navigator.of(context).pop();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isAr  = widget.isAr;
+    final isDark = widget.isDark;
+    final bg    = isDark ? AppColors.darkCard  : Colors.white;
+    final surf  = isDark ? AppColors.darkBg    : const Color(0xFFF5F5F5);
+    final textC = isDark ? AppColors.darkText  : AppColors.lightText;
+    final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
+
+    return Directionality(
+      textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.88,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (_, scrollCtrl) => Container(
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              child: Container(
+                width: 40, height: 4,
+                decoration: BoxDecoration(
+                  color: muted.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(4)),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(children: [
+                const Icon(Icons.flash_on_rounded, color: AppColors.barakahGold, size: 22),
+                const SizedBox(width: 8),
+                Text('Quick Entry',
+                  style: TextStyle(fontFamily: 'Cairo', fontSize: 18,
+                      fontWeight: FontWeight.w900, color: textC)),
+              ]),
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(children: [
+                Expanded(child: TextField(
+                  controller: _ctrl,
+                  textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
+                  textInputAction: TextInputAction.search,
+                  onSubmitted: (_) => _analyze(),
+                  decoration: InputDecoration(
+                    hintText: isAr ? 'What did you eat?' : 'What did you eat? (e.g. 2 eggs and rice)',
+                    hintStyle: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted),
+                    filled: true, fillColor: surf,
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                  ),
+                  style: TextStyle(fontFamily: 'Cairo', color: textC, fontSize: 13),
+                )),
+                const SizedBox(width: 8),
+                ElevatedButton(
+                  onPressed: _loading ? null : _analyze,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.barakahGold,
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    minimumSize: Size.zero,
+                  ),
+                  child: _loading
+                      ? const SizedBox(width: 18, height: 18,
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : const Icon(Icons.auto_awesome, color: Colors.white, size: 20),
+                ),
+              ]),
+            ),
+            if (_error != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                child: Text(_error!,
+                    style: const TextStyle(fontFamily: 'Cairo',
+                        color: AppColors.haramRed, fontSize: 12)),
+              ),
+            if (_aiResults.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                  Text('AI Results',
+                    style: TextStyle(fontFamily: 'Cairo', fontSize: 13,
+                        fontWeight: FontWeight.w700, color: AppColors.barakahGold)),
+                  const SizedBox(height: 8),
+                  ..._aiResults.map((r) => Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: surf,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColors.barakahGold.withOpacity(0.3)),
+                    ),
+                    child: Row(children: [
+                      Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(isAr ? r.foodName : r.foodNameEn,
+                          style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700,
+                              fontSize: 14, color: textC)),
+                        Text('${r.kcal} kcal  P ${r.proteinG.toInt()}g  C ${r.carbsG.toInt()}g  F ${r.fatG.toInt()}g',
+                          style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: muted)),
+                      ])),
+                      ElevatedButton(
+                        onPressed: () => widget.onAdd(r),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.sunnahGreen,
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          minimumSize: Size.zero,
+                        ),
+                        child: const Text('+ Add',
+                          style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
+                              fontWeight: FontWeight.w700, color: Colors.white)),
+                      ),
+                    ]),
+                  )),
+                ]),
+              ),
+            Expanded(child: GridView.builder(
+              controller: scrollCtrl,
+              padding: const EdgeInsets.fromLTRB(12, 16, 12, 24),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 2.8,
+                crossAxisSpacing: 8,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: kQuickFoods.length,
+              itemBuilder: (_, i) {
+                final food = kQuickFoods[i];
+                return InkWell(
+                  onTap: () => _addQuickFood(food),
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: surf,
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: muted.withOpacity(0.2)),
+                    ),
+                    child: Row(children: [
+                      Expanded(child: Column(
+                        crossAxisAlignment: isAr ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(isAr ? food.name : food.nameEn,
+                            style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
+                                fontWeight: FontWeight.w600, color: textC),
+                            maxLines: 1, overflow: TextOverflow.ellipsis),
+                          Text('${food.kcal} kcal',
+                            style: TextStyle(fontFamily: 'Cairo', fontSize: 10, color: muted)),
+                        ],
+                      )),
+                      const SizedBox(width: 4),
+                      Icon(Icons.add_circle_outline, size: 18, color: AppColors.sunnahGreen),
+                    ]),
+                  ),
+                );
+              },
+            )),
+          ]),
+        ),
+      ),
+    );
+  }
+}
