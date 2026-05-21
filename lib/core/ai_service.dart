@@ -103,8 +103,11 @@ class AIService {
     // Extract raw text
     final raw = (textBlock is Map ? textBlock['text'] : null)?.toString() ?? '{}';
     // Claude sometimes adds preamble before JSON — extract only the {...} block
-    final match = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
-    return match?.group(0) ?? '{}';
+    // Try array first (analyzeFoodPhoto returns [...]), then object
+    final arrMatch = RegExp(r'\[[\s\S]*\]').firstMatch(raw);
+    if (arrMatch != null) return arrMatch.group(0)!;
+    final objMatch = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
+    return objMatch?.group(0) ?? '[]';
   }
 
   // helper: same extraction for text-only responses

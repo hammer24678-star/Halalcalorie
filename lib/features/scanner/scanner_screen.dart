@@ -54,7 +54,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
     final scan      = ref.read(scanProvider);
     final isPremium = ref.read(premiumProvider);
     final isAr      = ref.read(languageProvider) == 'ar';
-    if (!isPremium && scan.todayCount >= 10) { _showLimitDialog(isAr); return; }
+    if (!isPremium && scan.todayCount >= 3) { _showLimitDialog(isAr); return; }
 
     // 1. Local DB lookup (instant)
     final local = kProductsDB.cast<ScanResult?>().firstWhere(
@@ -114,7 +114,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
   }
 
   void _showLimitDialog(bool isAr) {
-    showDialog(context: context, builder: (_) => AlertDialog( title: Text(isAr ?'وصلت الحد اليومي' : 'Daily Limit Reached', style: const TextStyle(fontFamily:'Cairo')), content: Text(isAr ?'استخدمت ١٠ ماسحات اليوم.\nترقّ للبريميوم للمزيد.' : 'You\'ve used 10 scans today.\nUpgrade for unlimited.', style: const TextStyle(fontFamily:'Cairo')),
+    showDialog(context: context, builder: (_) => AlertDialog( title: Text(isAr ?'وصلت الحد اليومي' : 'Daily Limit Reached', style: const TextStyle(fontFamily:'Cairo')), content: Text(isAr ?'استخدمت ٣ ماسحات اليوم.\nترقّ للبريميوم للمزيد.' : 'You\'ve used 3 scans today.\nUpgrade for unlimited.', style: const TextStyle(fontFamily:'Cairo')),
       actions: [
         TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(isAr ?'إغلاق' : 'Close', style: const TextStyle(fontFamily: 'Cairo'))), ElevatedButton(onPressed: () { if (context.mounted) Navigator.pop(context); context.push('/paywall'); }, child: Text(isAr ?'⭐ ترقية' : '⭐ Upgrade', style: const TextStyle(fontFamily: 'Cairo'))),
       ],
@@ -224,7 +224,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               child: BarcodeScannerWidget(
                 isActive: true,
                 onDetected: (barcode) {
-                  if (!isPremium && scan.todayCount >= 10) {
+                  if (!isPremium && scan.todayCount >= 3) {
                     _showLimitDialog(isAr);
                     return;
                   }
@@ -242,7 +242,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               child: Text(
                 isPremium
                     ? (isAr ? '♾️ غير محدود' : '♾️ Unlimited')
-                    : '${t("متبقي", "Left")}: ${(10 - scan.todayCount).clamp(0, 10)}/10',
+                    : '${t("متبقي", "Left")}: ${(3 - scan.todayCount).clamp(0, 3)}/10',
                 style: const TextStyle(
                     fontFamily: 'Cairo', fontSize: 11,
                     color: Colors.white, fontWeight: FontWeight.w700),
