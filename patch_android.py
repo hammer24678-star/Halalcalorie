@@ -159,10 +159,11 @@ else:
 # ── Kotlin version upgrade (required by purchases_flutter v8) ─────────
 # flutter create generates settings.gradle with kotlin 1.7.21
 # purchases_flutter v8 stdlib is compiled with 1.9.0 → version mismatch
+import re as _re
 settings_gradle = 'android/settings.gradle'
 if os.path.exists(settings_gradle):
     sg = open(settings_gradle).read()
-    sg_new = re.sub(
+    sg_new = _re.sub(
         r'(id\s+"org\.jetbrains\.kotlin\.android"\s+version\s+")[^"]+(")',
         r'\g<1>1.9.0\2',
         sg
