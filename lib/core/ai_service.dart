@@ -211,7 +211,6 @@ Rules:
           confidence:   _safeDouble(m['confidence'], 0.75),
           portionSize:  m['portionSize'] as String? ?? '',
           ingredients:  (m['ingredients'] as List<dynamic>?)?.cast<String>() ?? const [],
-        );
       }).toList();
     } on FormatException {
       return [_fallbackFoodResult(language)];
@@ -308,7 +307,6 @@ Rules:
           confidence:   _safeDouble(m['confidence'], 0.80),
           portionSize:  m['portionSize'] as String? ?? '',
           ingredients:  (m['ingredients'] as List<dynamic>?)?.cast<String>() ?? const [],
-        );
       }).toList();
     } catch (_) {
       return [_fallbackFoodResult(language)];
@@ -434,7 +432,6 @@ Request: $prompt
           (data['candidates'] as List?)
               ?.firstOrNull?['content']?['parts']
               ?.firstOrNull?['text']?.toString() ?? ''};
-        );
         return (block is Map ? block['text'] : null)?.toString() ?? '';
       }
       throw Exception('${resp.statusCode}');
