@@ -422,31 +422,9 @@ Request: $prompt
 ''';
 
     if (_apiKey.isEmpty) throw const ApiKeyMissingException();
-    final body = jsonEncode({
-      'model': _model,
-      'max_tokens': 600,
-      'system': system,
-      'messages': [
-        {'role': 'user', 'content': userMsg},
-      ],
-    });
-
     try {
-      final _url  = Uri.parse('\$_geminiBase/\$_model:generateContent?key=\$_apiKey');
-      final resp  = await http.post(_url,
-        headers: {'Content-Type': 'application/json'},
-        body: body,
-      ).timeout(const Duration(seconds: 20));
-
-      if (resp.statusCode == 200) {
-        final data = jsonDecode(resp.body) as Map<String, dynamic>;
-        final block = <String, dynamic>{'text':
-          (data['candidates'] as List?)
-              ?.firstOrNull?['content']?['parts']
-              ?.firstOrNull?['text']?.toString() ?? ''};
-        return (block is Map ? block['text'] : null)?.toString() ?? '';
-      }
-      throw Exception('${resp.statusCode}');
+      final result = await _callText(systemPrompt: system, userPrompt: userMsg, maxTokens: 600);
+      return result.trim().isNotEmpty ? result.trim() : fallback;
     } catch (_) {
       return language == 'ar'
         ? 'عذراً، حدث خطأ في الاتصال. تأكد من اتصالك بالإنترنت وحاول مرة أخرى.'
