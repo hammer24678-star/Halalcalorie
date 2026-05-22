@@ -82,7 +82,7 @@ class AIService {
     ).timeout(const Duration(seconds: 60));
 
     if (resp.statusCode != 200) {
-      throw Exception('API \${resp.statusCode}: \${resp.body}');
+      throw Exception('API ${resp.statusCode}: ${resp.body}');
     }
     final data = jsonDecode(resp.body) as Map<String, dynamic>;
     final raw  = _extractGemini(data);
@@ -114,7 +114,7 @@ class AIService {
     ).timeout(const Duration(seconds: 30));
 
     if (resp.statusCode != 200) {
-      throw Exception('API \${resp.statusCode}: \${resp.body}');
+      throw Exception('API ${resp.statusCode}: ${resp.body}');
     }
     final data = jsonDecode(resp.body) as Map<String, dynamic>;
     return _extractGemini(data);
@@ -281,7 +281,7 @@ Rules:
         headers: {'Content-Type': 'application/json'},
         body: body,
       ).timeout(const Duration(seconds: 20));
-      if (resp.statusCode != 200) throw Exception('\${resp.statusCode}');
+      if (resp.statusCode != 200) throw Exception('${resp.statusCode}');
       final data = jsonDecode(resp.body) as Map<String, dynamic>;
       final raw  = (data['candidates'] as List?)
           ?.firstOrNull?['content']?['parts']
