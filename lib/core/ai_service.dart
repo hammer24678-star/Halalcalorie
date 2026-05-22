@@ -14,14 +14,14 @@ import 'open_food_facts_service.dart';
 class ApiKeyMissingException implements Exception {
   final String message;
   const ApiKeyMissingException([this.message =
-    'ANTHROPIC_API_KEY is not set. Add it to your GitHub Secrets and rebuild.']);
+    'GEMINI_API_KEY is not set. Add it to your GitHub Secrets and rebuild.']);
   @override String toString() => message;
 }
 
 class AIService {
-  static const _endpoint = 'https://api.anthropic.com/v1/messages';
-  static const _apiKey = String.fromEnvironment('ANTHROPIC_API_KEY', defaultValue: '');
-  static const _model    = 'claude-sonnet-4-20250514';
+  static const _geminiBase = 'https://generativelanguage.googleapis.com/v1beta/models';
+  static const _model      = 'gemini-2.0-flash';
+  static const _apiKey     = String.fromEnvironment('GEMINI_API_KEY', defaultValue: '');
   /// Maps language code → human-readable name for AI prompts
   static String _langName(String code) => const {
     'ar': 'Arabic',
@@ -33,7 +33,6 @@ class AIService {
     'id': 'Indonesian',
   }[code] ?? 'English';
 
-  static const _version  = '2023-06-01';
 
   // ── Convert image file to base64 ──────────────
   static Future<String> _toBase64(String path) async {
@@ -52,6 +51,7 @@ class AIService {
   }
 
   // ── Core API call ─────────────────────────────
+  // ── Gemini vision call (image + text) ───────────────────────────────
   static Future<String> _callVision({
     required String imagePath,
     required String systemPrompt,
@@ -59,59 +59,82 @@ class AIService {
     int maxTokens = 800,
   }) async {
     if (_apiKey.isEmpty) throw const ApiKeyMissingException();
-    final b64   = await _toBase64(imagePath);
-    final mime  = _mimeType(imagePath);
+    final b64  = await _toBase64(imagePath);
+    final mime = _mimeType(imagePath);
 
+    final url = Uri.parse('$_geminiBase/$_model:generateContent?key=$_apiKey');
     final body = jsonEncode({
-      'model': _model,
-      'max_tokens': maxTokens,
-      'system': systemPrompt,
-      'messages': [
+      'system_instruction': {'parts': [{'text': systemPrompt}]},
+      'contents': [
         {
-          'role': 'user',
-          'content': [
-            {
-              'type': 'image',
-              'source': {'type': 'base64', 'media_type': mime, 'data': b64},
-            },
-            {'type': 'text', 'text': userPrompt},
-          ],
+          'parts': [
+            {'inline_data': {'mime_type': mime, 'data': b64}},
+            {'text': userPrompt},
+          ]
         }
       ],
+      'generationConfig': {'maxOutputTokens': maxTokens},
     });
 
-    final resp = await http.post(
-      Uri.parse(_endpoint),
-      headers: {
-        'Content-Type': 'application/json',
-        'anthropic-version': _version,
-        'x-api-key': _apiKey,
-      },
+    final resp = await http.post(url,
+      headers: {'Content-Type': 'application/json'},
       body: body,
     ).timeout(const Duration(seconds: 60));
 
     if (resp.statusCode != 200) {
-      throw Exception('API ${resp.statusCode}: ${resp.body}');
+      throw Exception('API \${resp.statusCode}: \${resp.body}');
     }
     final data = jsonDecode(resp.body) as Map<String, dynamic>;
-    final content = data['content'];
-    if (content is! List || content.isEmpty) return '{}';
-    final textBlock = content.firstWhere(
-      (c) => c is Map && c['type'] == 'text',
-      orElse: () => <String, dynamic>{'text': '{}'},
-    );
-    // Extract raw text
-    final raw = (textBlock is Map ? textBlock['text'] : null)?.toString() ?? '{}';
-    // Claude sometimes adds preamble before JSON — extract only the {...} block
-    // Try array first (analyzeFoodPhoto returns [...]), then object
+    final raw  = _extractGemini(data);
     final arrMatch = RegExp(r'\[[\s\S]*\]').firstMatch(raw);
     if (arrMatch != null) return arrMatch.group(0)!;
     final objMatch = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
     return objMatch?.group(0) ?? '[]';
   }
 
-  // helper: same extraction for text-only responses
+  // ── Gemini text-only call ─────────────────────────────────────────────
+  static Future<String> _callText({
+    required String systemPrompt,
+    required String userPrompt,
+    int maxTokens = 800,
+  }) async {
+    if (_apiKey.isEmpty) throw const ApiKeyMissingException();
+    final url = Uri.parse('$_geminiBase/$_model:generateContent?key=$_apiKey');
+    final body = jsonEncode({
+      'system_instruction': {'parts': [{'text': systemPrompt}]},
+      'contents': [
+        {'parts': [{'text': userPrompt}]}
+      ],
+      'generationConfig': {'maxOutputTokens': maxTokens},
+    });
+
+    final resp = await http.post(url,
+      headers: {'Content-Type': 'application/json'},
+      body: body,
+    ).timeout(const Duration(seconds: 30));
+
+    if (resp.statusCode != 200) {
+      throw Exception('API \${resp.statusCode}: \${resp.body}');
+    }
+    final data = jsonDecode(resp.body) as Map<String, dynamic>;
+    return _extractGemini(data);
+  }
+
+  // ── Extract text from Gemini response ─────────────────────────────────
+  static String _extractGemini(Map<String, dynamic> data) {
+    final candidates = data['candidates'] as List<dynamic>?;
+    if (candidates == null || candidates.isEmpty) return '{}';
+    final content = candidates[0]['content'] as Map<String, dynamic>?;
+    if (content == null) return '{}';
+    final parts = content['parts'] as List<dynamic>?;
+    if (parts == null || parts.isEmpty) return '{}';
+    return (parts[0]['text'] as String?) ?? '{}';
+  }
+
+  // ── helper: extract JSON object from text ─────────────────────────────
   static String _extractJson(String raw) {
+    final m = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
+
     final m = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
     return m?.group(0) ?? '{}';
   }
@@ -573,29 +596,9 @@ Request: $prompt
 
     if (_apiKey.isEmpty) throw const ApiKeyMissingException();
     try {
-      final body = jsonEncode({
-        'model': _model,
-        'max_tokens': 400,
-        'system': system,
-        'messages': [{'role': 'user', 'content': prompt}],
-      });
-
-      final resp = await http.post(
-        Uri.parse(_endpoint),
-        headers: {'Content-Type': 'application/json', 'anthropic-version': _version, 'x-api-key': _apiKey},
-        body: body,
-      ).timeout(const Duration(seconds: 15));
-
-      if (resp.statusCode == 200) {
-        final data = jsonDecode(resp.body);
-        final content = data['content'];
-        if (content is! List || content.isEmpty) throw Exception('empty');
-        final block = content.firstWhere(
-          (c) => c is Map && c['type'] == 'text',
-          orElse: () => <String, dynamic>{'text': '{}'},
-        );
-        final text = (block is Map ? block['text'] : null)?.toString() ?? '{}';
-        final clean = _extractJson(text);
+      final raw   = await _callText(systemPrompt: system, userPrompt: prompt, maxTokens: 400);
+      final clean = _extractJson(raw);
+      if (clean != '{}') {
         return jsonDecode(clean) as Map<String, dynamic>;
       }
     } catch (_) {}
