@@ -134,8 +134,6 @@ class AIService {
   // ── helper: extract JSON object from text ─────────────────────────────
   static String _extractJson(String raw) {
     final m = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
-
-    final m = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
     return m?.group(0) ?? '{}';
   }
 
@@ -275,25 +273,19 @@ Rules:
       : 'Analyze this meal and give nutritional values for each item: $description';
 
     try {
-      final body = jsonEncode({
-        'model': _model, 'max_tokens': 1000, 'system': system,
-        'messages': [{'role': 'user', 'content': prompt}],
+      final _url  = Uri.parse('\$_geminiBase/\$_model:generateContent?key=\$_apiKey');
+      final body  = jsonEncode({
+        'contents': [{'parts': [{'text': '\$system\n\n\$prompt'}]}],
       });
-      final resp = await http.post(
-        Uri.parse(_endpoint),
-        headers: {'Content-Type': 'application/json',
-                  'anthropic-version': _version, 'x-api-key': _apiKey},
+      final resp = await http.post(_url,
+        headers: {'Content-Type': 'application/json'},
         body: body,
       ).timeout(const Duration(seconds: 20));
-      if (resp.statusCode != 200) throw Exception('${resp.statusCode}');
-      final data    = jsonDecode(resp.body) as Map<String, dynamic>;
-      final content = data['content'];
-      if (content is! List || content.isEmpty) return [_fallbackFoodResult(language)];
-      final block = content.firstWhere(
-        (c) => c is Map && c['type'] == 'text',
-        orElse: () => <String, dynamic>{'text': '[]'},
-      );
-      final raw   = (block is Map ? block['text'] : null)?.toString() ?? '[]';
+      if (resp.statusCode != 200) throw Exception('\${resp.statusCode}');
+      final data = jsonDecode(resp.body) as Map<String, dynamic>;
+      final raw  = (data['candidates'] as List?)
+          ?.firstOrNull?['content']?['parts']
+          ?.firstOrNull?['text']?.toString() ?? '[]';
       final clean = raw.replaceAll(RegExp(r'```json|```'), '').trim();
       final arrMatch = RegExp(r'\[[\s\S]*\]').firstMatch(clean);
       final decoded = jsonDecode(arrMatch?.group(0) ?? '[]');
@@ -430,19 +422,18 @@ Request: $prompt
     });
 
     try {
-      final resp = await http.post(
-        Uri.parse(_endpoint),
-        headers: {'Content-Type': 'application/json', 'anthropic-version': _version, 'x-api-key': _apiKey},
+      final _url  = Uri.parse('\$_geminiBase/\$_model:generateContent?key=\$_apiKey');
+      final resp  = await http.post(_url,
+        headers: {'Content-Type': 'application/json'},
         body: body,
       ).timeout(const Duration(seconds: 20));
 
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body) as Map<String, dynamic>;
-        final content = data['content'];
-        if (content is! List || content.isEmpty) return '';
-        final block = content.firstWhere(
-          (c) => c is Map && c['type'] == 'text',
-          orElse: () => <String, dynamic>{'text': ''},
+        final block = <String, dynamic>{'text':
+          (data['candidates'] as List?)
+              ?.firstOrNull?['content']?['parts']
+              ?.firstOrNull?['text']?.toString() ?? ''};
         );
         return (block is Map ? block['text'] : null)?.toString() ?? '';
       }
