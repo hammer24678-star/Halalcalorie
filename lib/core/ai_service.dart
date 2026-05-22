@@ -14,14 +14,15 @@ import 'open_food_facts_service.dart';
 class ApiKeyMissingException implements Exception {
   final String message;
   const ApiKeyMissingException([this.message =
-    'GEMINI_API_KEY is not set. Add it to your GitHub Secrets and rebuild.']);
+    'GROQ_API_KEY is not set. Add it to your GitHub Secrets and rebuild.']);
   @override String toString() => message;
 }
 
 class AIService {
-  static const _geminiBase = 'https://generativelanguage.googleapis.com/v1beta/models';
-  static const _model      = 'gemini-2.0-flash';
-  static const _apiKey     = String.fromEnvironment('GEMINI_API_KEY', defaultValue: '');
+  static const _endpoint    = 'https://api.groq.com/openai/v1/chat/completions';
+  static const _visionModel = 'meta-llama/llama-4-scout-17b-16e-instruct';
+  static const _textModel   = 'llama-3.3-70b-versatile';
+  static const _apiKey      = String.fromEnvironment('GROQ_API_KEY', defaultValue: '');
   /// Maps language code → human-readable name for AI prompts
   static String _langName(String code) => const {
     'ar': 'Arabic',
@@ -51,33 +52,41 @@ class AIService {
   }
 
   // ── Core API call ─────────────────────────────
-  // ── Gemini vision call (image + text) ───────────────────────────────
+  // ── Groq vision call (image + text) ─────────────────────────────────
   static Future<String> _callVision({
     required String imagePath,
     required String systemPrompt,
     required String userPrompt,
-    int maxTokens = 800,
+    int maxTokens = 1024,
   }) async {
     if (_apiKey.isEmpty) throw const ApiKeyMissingException();
     final b64  = await _toBase64(imagePath);
     final mime = _mimeType(imagePath);
 
-    final url = Uri.parse('$_geminiBase/$_model:generateContent?key=$_apiKey');
     final body = jsonEncode({
-      'system_instruction': {'parts': [{'text': systemPrompt}]},
-      'contents': [
+      'model': _visionModel,
+      'max_tokens': maxTokens,
+      'messages': [
+        {'role': 'system', 'content': systemPrompt},
         {
-          'parts': [
-            {'inline_data': {'mime_type': mime, 'data': b64}},
-            {'text': userPrompt},
-          ]
+          'role': 'user',
+          'content': [
+            {
+              'type': 'image_url',
+              'image_url': {'url': 'data:$mime;base64,$b64'},
+            },
+            {'type': 'text', 'text': userPrompt},
+          ],
         }
       ],
-      'generationConfig': {'maxOutputTokens': maxTokens},
     });
 
-    final resp = await http.post(url,
-      headers: {'Content-Type': 'application/json'},
+    final resp = await http.post(
+      Uri.parse(_endpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $_apiKey',
+      },
       body: body,
     ).timeout(const Duration(seconds: 60));
 
@@ -85,31 +94,35 @@ class AIService {
       throw Exception('API ${resp.statusCode}: ${resp.body}');
     }
     final data = jsonDecode(resp.body) as Map<String, dynamic>;
-    final raw  = _extractGemini(data);
+    final raw  = _extractGroq(data);
     final arrMatch = RegExp(r'\[[\s\S]*\]').firstMatch(raw);
     if (arrMatch != null) return arrMatch.group(0)!;
     final objMatch = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
     return objMatch?.group(0) ?? '[]';
   }
 
-  // ── Gemini text-only call ─────────────────────────────────────────────
+  // ── Groq text-only call ───────────────────────────────────────────────
   static Future<String> _callText({
     required String systemPrompt,
     required String userPrompt,
     int maxTokens = 800,
   }) async {
     if (_apiKey.isEmpty) throw const ApiKeyMissingException();
-    final url = Uri.parse('$_geminiBase/$_model:generateContent?key=$_apiKey');
     final body = jsonEncode({
-      'system_instruction': {'parts': [{'text': systemPrompt}]},
-      'contents': [
-        {'parts': [{'text': userPrompt}]}
+      'model': _textModel,
+      'max_tokens': maxTokens,
+      'messages': [
+        {'role': 'system', 'content': systemPrompt},
+        {'role': 'user',   'content': userPrompt},
       ],
-      'generationConfig': {'maxOutputTokens': maxTokens},
     });
 
-    final resp = await http.post(url,
-      headers: {'Content-Type': 'application/json'},
+    final resp = await http.post(
+      Uri.parse(_endpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $_apiKey',
+      },
       body: body,
     ).timeout(const Duration(seconds: 30));
 
@@ -117,18 +130,15 @@ class AIService {
       throw Exception('API ${resp.statusCode}: ${resp.body}');
     }
     final data = jsonDecode(resp.body) as Map<String, dynamic>;
-    return _extractGemini(data);
+    return _extractGroq(data);
   }
 
-  // ── Extract text from Gemini response ─────────────────────────────────
-  static String _extractGemini(Map<String, dynamic> data) {
-    final candidates = data['candidates'] as List<dynamic>?;
-    if (candidates == null || candidates.isEmpty) return '{}';
-    final content = candidates[0]['content'] as Map<String, dynamic>?;
-    if (content == null) return '{}';
-    final parts = content['parts'] as List<dynamic>?;
-    if (parts == null || parts.isEmpty) return '{}';
-    return (parts[0]['text'] as String?) ?? '{}';
+  // ── Extract text from Groq/OpenAI response ────────────────────────────
+  static String _extractGroq(Map<String, dynamic> data) {
+    final choices = data['choices'] as List<dynamic>?;
+    if (choices == null || choices.isEmpty) return '{}';
+    final msg = choices[0]['message'] as Map<String, dynamic>?;
+    return (msg?['content'] as String?) ?? '{}';
   }
 
   // ── helper: extract JSON object from text ─────────────────────────────

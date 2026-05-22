@@ -83,7 +83,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         if (mounted) setState(() { _error = '__API_KEY_MISSING__'; _state = AnalysisState.error; });
         return;
       }
-      final msg = errStr.contains('GEMINI_API_KEY') || errStr.contains('401')
+      final msg = errStr.contains('GROQ_API_KEY') || errStr.contains('401')
         ? (lang == 'ar' ? 'مفتاح API غير مُعدّ — أضفه في GitHub Secrets' : 'API key not configured — add it to GitHub Secrets')
         : errStr.contains('timeout') || errStr.contains('TimeoutException')
         ? (lang == 'ar' ? 'انتهت مهلة الاتصال، حاول مجدداً' : 'Connection timed out, try again')
