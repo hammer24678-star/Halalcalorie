@@ -57,12 +57,14 @@ class HalalCalorieApp extends ConsumerWidget {
     final router    = ref.watch(routerProvider);
     final isDark    = ref.watch(themeProvider);
     final isRamadan = ref.watch(ramadanModeProvider);
+    final lang      = ref.watch(languageProvider);
     return MaterialApp.router(
       title: 'HalalCalorie',
       debugShowCheckedModeBanner: false,
       theme:     isRamadan ? AppTheme.lightRamadan : AppTheme.light,
       darkTheme: isRamadan ? AppTheme.darkRamadan  : AppTheme.dark,
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+      locale: Locale(lang),
       routerConfig: router,
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
