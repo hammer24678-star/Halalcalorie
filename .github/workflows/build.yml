@@ -27,11 +27,7 @@ jobs:
 
       - run: python3 patch_android.py
 
-      - name: Build APK
-        run: |
-          flutter build apk --release --no-tree-shake-icons \
-            --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }} \
-            --dart-define=RC_GOOGLE_KEY=${{ secrets.RC_GOOGLE_KEY || 'none' }}
+      - run: flutter build apk --release --no-tree-shake-icons --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }} --dart-define=RC_GOOGLE_KEY=none
 
       - name: Release APK
         uses: softprops/action-gh-release@v1
