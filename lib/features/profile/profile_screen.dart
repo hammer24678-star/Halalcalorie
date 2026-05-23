@@ -246,7 +246,7 @@ class ProfileScreen extends ConsumerWidget {
           child: Column(children: [
             _settingTile('📍', t('المدينة', 'City'), city, () => _showCityPicker(context, ref, isAr)),
             _settingTile('🌐', t('اللغة', 'Language'), isAr ? 'العربية' : 'English',
-              () => ref.read(languageProvider.notifier).set(isAr ? 'en' : 'ar')),
+              () => ref.read(languageProvider.notifier).set(_nextLang(lang))),
             _settingTile(isDark ? '☀️' : '🌙',
               isDark ? t('الوضع النهاري','Day Mode') : t('الوضع الليلي','Night Mode'),
               isDark ? t('مفعّل','Active') : t('معطّل','Off'),

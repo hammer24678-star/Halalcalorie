@@ -249,7 +249,7 @@ isDark: isDark,
 isText: true,
 onTap: () {
 HapticFeedback.lightImpact();
-ref.read(languageProvider.notifier).set(isAr ? 'en' : 'ar');
+ref.read(languageProvider.notifier).set(_nextLang(lang));
 },
 ),
 _IconBtn(
