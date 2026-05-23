@@ -8,6 +8,7 @@ import 'core/providers.dart';
 import 'core/notifications.dart';
 import 'core/database.dart';
 import 'core/auth_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runZonedGuarded(() async {
@@ -41,6 +42,15 @@ void main() {
 
     try { await AppDatabase.db.timeout(const Duration(seconds: 5)); } catch (e) { debugPrint('DB init: $e'); }
     try { await NotificationService.init(); } catch (e) { debugPrint('Notif init: $e'); }
+    try {
+      final _p = await SharedPreferences.getInstance();
+      if (!(_p.getBool('notifs_scheduled') ?? false)) {
+        await NotificationService.scheduleMealReminder();
+        await NotificationService.scheduleWaterReminder();
+        await NotificationService.scheduleBarakahNudge();
+        await _p.setBool('notifs_scheduled', true);
+      }
+    } catch (e) { debugPrint('Notif schedule: $e'); }
     try { await AuthService.init(); } catch (e) { debugPrint('Auth init: $e'); }
 
     runApp(const ProviderScope(child: HalalCalorieApp()));
