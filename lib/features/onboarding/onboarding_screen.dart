@@ -226,7 +226,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
           ),
           const SizedBox(width: 14),
           _GenderCard(
-            emoji: '🧕', labelAr: 'أخت', labelEn: 'Sister',
+            emoji: '🧕', labelAr: 'أخت', labelEn: 'Female',
             selected: _gender == 'sisters',
             color: AppColors.barakahGold,
             isDark: isDark,
