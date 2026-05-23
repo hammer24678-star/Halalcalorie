@@ -6,7 +6,7 @@ APP_BUILD_GRADLE = """plugins {
 
 android {
     namespace "com.halalcalorie.app"
-    compileSdk 34
+    compileSdk 35
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -21,7 +21,7 @@ android {
     defaultConfig {
         applicationId "com.halalcalorie.app"
         minSdk 24
-        targetSdk 34
+        targetSdk 35
         versionCode 1
         versionName "1.0.0"
     }
