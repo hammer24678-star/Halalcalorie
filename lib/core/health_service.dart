@@ -1,6 +1,7 @@
 // health_service.dart — HalalCalorie Build 56
 // Uses pedometer package (compatible with Flutter 3.22 / Dart 3.4)
 import 'dart:async';
+import 'package:flutter/widgets.dart';
 import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
