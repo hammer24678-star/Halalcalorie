@@ -21,7 +21,7 @@ class ApiKeyMissingException implements Exception {
 class AIService {
   static const _endpoint    = 'https://api.groq.com/openai/v1/chat/completions';
   static const _visionModel = 'meta-llama/llama-4-scout-17b-16e-instruct';
-  static const _textModel   = 'llama-3.3-70b-versatile';
+  static const _textModel   = 'llama-3.1-8b-instant';
   static const _apiKey      = String.fromEnvironment('GROQ_API_KEY', defaultValue: '');
   /// Maps language code → human-readable name for AI prompts
   static String _langName(String code) => const {
