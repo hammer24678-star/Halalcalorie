@@ -40,19 +40,19 @@ flutter {
 }
 
 dependencies {
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.0.21"
 }
 """
 
 PROJECT_BUILD_GRADLE = """buildscript {
-    ext.kotlin_version = '1.9.0'
+    ext.kotlin_version = '2.0.21'
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0"
+        classpath 'com.android.tools.build:gradle:8.5.2'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.21"
     }
 }
 
@@ -80,7 +80,7 @@ GRADLE_WRAPPER = """distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
-distributionUrl=https\\://services.gradle.org/distributions/gradle-7.6.3-all.zip
+distributionUrl=https\\://services.gradle.org/distributions/gradle-8.7-all.zip
 """
 
 with open('android/app/build.gradle', 'w') as f:
