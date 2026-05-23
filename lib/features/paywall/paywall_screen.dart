@@ -163,7 +163,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
       ...(isAr ? [
         ['💪', 'نسبة الدهون الدقيقة ٪ + كتلة العضلات + LBM'],
         ['📸', 'تحليل الجسم والطعام بالصورة — AI بلا حدود'],
-        ['📷', 'ماسحات حلال غير محدودة'],
+        ['📷', 'ماسحات حلال غير محدودة (مقابل ٣ مجانية/يوم)'],
         ['🏃', '١٨٠ خطة تمرين + رمضان + ما بعد الولادة'],
         ['🌿', 'مخطط وجبات AI مخصص لجسمك'],
         ['🧬', 'تحليل تركيبة الجسم الكامل'],
@@ -171,7 +171,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
       ] : [
         ['💪', 'Exact body fat % + Muscle mass + Lean Body Mass'],
         ['📸', 'Unlimited AI food & body photo analysis'],
-        ['📷', 'Unlimited halal scans (vs 10 free/day)'],
+        ['📷', 'Unlimited halal scans (vs 3 free/day)'],
         ['🏃', '180 workouts + Ramadan + Postnatal plans'],
         ['🌿', 'AI meal planner personalized to your body'],
         ['🧬', 'Full body composition analysis'],
@@ -301,9 +301,9 @@ class _PaywallState extends ConsumerState<PaywallScreen>
   }
 
   List<_FP> _fallback(bool isAr) => [
-    _FP(isAr ? 'شهري' : 'Monthly',       'EGP 99',    isAr ? '/ شهر' : '/ month',   false, null),
-    _FP(isAr ? 'سنوي' : 'Yearly',        'EGP 799',   isAr ? '/ سنة' : '/ year',    true,  isAr ? 'وفّر ٣٠٪' : 'Save 30%'),
-    _FP(isAr ? 'مدى الحياة' : 'Lifetime', 'EGP 1,999', isAr ? 'مرة واحدة' : 'one-time', false, null),
+    _FP(isAr ? 'شهري' : 'Monthly',        isAr ? '٢.٩٩ \$' : '\$2.99',  isAr ? '/ شهر' : '/ month',   false, null),
+    _FP(isAr ? 'سنوي' : 'Yearly',         isAr ? '١٩.٩٩ \$' : '\$19.99', isAr ? '/ سنة' : '/ year',    true,  isAr ? 'وفّر ٤٤٪' : 'Save 44%'),
+    _FP(isAr ? 'مدى الحياة' : 'Lifetime', isAr ? '٤٩.٩٩ \$' : '\$49.99', isAr ? 'مرة واحدة' : 'one-time', false, null),
   ];
 
   Widget _badge(String emoji, String label) => Row(mainAxisSize: MainAxisSize.min, children: [

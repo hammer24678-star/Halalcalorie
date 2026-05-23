@@ -8,13 +8,34 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../core/l10n.dart';
-import 'package:go_router/go_router.dart';
 import '../../core/revenuecat_service.dart';
 import '../../data/models/user_profile.dart';
 
 // ══════════════════════════════════════════════════
 //  ProfileScreen
 // ══════════════════════════════════════════════════
+
+// Cycle to next language in the supported list
+String _nextLang(String current) {
+  const langs = ['ar', 'en', 'fr', 'tr', 'ur', 'ms', 'id'];
+  final idx = langs.indexOf(current);
+  return langs[(idx + 1) % langs.length];
+}
+
+// Short display label for current lang
+String _langLabel(String lang) {
+  switch (lang) {
+    case 'ar': return 'ع';
+    case 'en': return 'EN';
+    case 'fr': return 'FR';
+    case 'tr': return 'TR';
+    case 'ur': return 'اردو';
+    case 'ms': return 'MY';
+    case 'id': return 'ID';
+    default:   return 'EN';
+  }
+}
+
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
@@ -49,12 +70,12 @@ class ProfileScreen extends ConsumerWidget {
         actions: [
           // Language toggle
           GestureDetector(
-            onTap: () => ref.read(languageProvider.notifier).set(isAr ? 'en' : 'ar'),
+            onTap: () => ref.read(languageProvider.notifier).set(_nextLang(lang)),
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 10),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
-              child: Text(isAr ? 'EN' : 'ع', style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
+              child: Text(_langLabel(lang), style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
             ),
           ),
           // Dark toggle

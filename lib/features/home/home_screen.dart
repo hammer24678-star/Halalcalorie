@@ -14,6 +14,28 @@ import '../../data/models/models.dart';
 import '../../data/models/user_profile.dart';
 import '../barakah/barakah_screen.dart' show kBadges;
 
+
+// Cycle to next language in the supported list
+String _nextLang(String current) {
+  const langs = ['ar', 'en', 'fr', 'tr', 'ur', 'ms', 'id'];
+  final idx = langs.indexOf(current);
+  return langs[(idx + 1) % langs.length];
+}
+
+// Short display label for current lang
+String _langLabel(String lang) {
+  switch (lang) {
+    case 'ar': return 'ع';
+    case 'en': return 'EN';
+    case 'fr': return 'FR';
+    case 'tr': return 'TR';
+    case 'ur': return 'اردو';
+    case 'ms': return 'MY';
+    case 'id': return 'ID';
+    default:   return 'EN';
+  }
+}
+
 class HomeScreen extends ConsumerStatefulWidget {
 const HomeScreen({super.key});
 @override ConsumerState<HomeScreen> createState() => _HomeState();
@@ -222,7 +244,7 @@ ref.read(themeProvider.notifier).toggle();
 },
 ),
 _IconBtn(
-icon: isAr ? 'EN' : 'ع',
+icon: _langLabel(lang),
 isDark: isDark,
 isText: true,
 onTap: () {
