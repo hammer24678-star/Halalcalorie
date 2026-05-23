@@ -32,10 +32,6 @@ class HealthService {
 
     if (!_ready) {
       try {
-        await _counter.setNotificationContent(
-          title: 'HalalCalorie',
-          body: 'Counting your steps...',
-        );
         await _counter.initializeLogging(useBackgroundIsolate: false);
         await _counter.start(config: StepDetectorConfig.walking());
         await _counter.startLogging(config: StepRecordConfig.aggregated());

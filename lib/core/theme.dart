@@ -95,7 +95,7 @@ class AppTheme {
         elevation: 0,
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       color: AppColors.darkCard,
       shape: RoundedRectangleBorder(
@@ -154,7 +154,7 @@ class AppTheme {
         elevation: 0,
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       color: AppColors.lightCard,
       shape: RoundedRectangleBorder(
@@ -231,7 +231,7 @@ class AppTheme {
         textStyle: TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.w600),
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       color: AppColors.ramadanCard,
       shape: RoundedRectangleBorder(
@@ -240,7 +240,7 @@ class AppTheme {
       ),
     ),
     dividerColor: AppColors.ramadanBorder,
-    tabBarTheme: const TabBarTheme(
+    tabBarTheme: const TabBarThemeData(
       indicatorColor:     AppColors.ramadanGold,
       labelColor:         AppColors.ramadanGold,
       unselectedLabelColor: AppColors.ramadanMuted,
@@ -328,7 +328,7 @@ class AppTheme {
         textStyle: TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.w600),
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 0,
       color: AppColors.ramadanDayCard,
       shape: RoundedRectangleBorder(
@@ -337,7 +337,7 @@ class AppTheme {
       ),
     ),
     dividerColor: const Color(0xFFD4A043),
-    tabBarTheme: const TabBarTheme(
+    tabBarTheme: const TabBarThemeData(
       indicatorColor:       AppColors.barakahGold,
       labelColor:           AppColors.barakahGold,
       unselectedLabelColor: Color(0xFFB8940A),
