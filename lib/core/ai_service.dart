@@ -424,7 +424,7 @@ Request: $prompt
     if (_apiKey.isEmpty) throw const ApiKeyMissingException();
     try {
       final result = await _callText(systemPrompt: system, userPrompt: userMsg, maxTokens: 600);
-      return result.trim().isNotEmpty ? result.trim() : fallback;
+      return result.trim();
     } catch (_) {
       return language == 'ar'
         ? 'عذراً، حدث خطأ في الاتصال. تأكد من اتصالك بالإنترنت وحاول مرة أخرى.'
