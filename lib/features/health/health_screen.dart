@@ -13,7 +13,7 @@ class HealthScreen extends ConsumerStatefulWidget {
 }
 
 class _HealthScreenState extends ConsumerState<HealthScreen>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   late TabController _tab;
   String? _expandedArticle;
   bool _stepServiceRunning = false;
@@ -33,6 +33,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _tab = TabController(length: 3, vsync: this);
     _tab.addListener(() {
       setState(() {});
@@ -45,7 +46,13 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    HealthService.onAppStateChange(state);
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     HealthService.stopTracking();
     _tab.dispose();
     _stagger.dispose();

@@ -20,7 +20,7 @@ android {
 
     defaultConfig {
         applicationId "com.halalcalorie.app"
-        minSdk 21
+        minSdk 24
         targetSdk 34
         versionCode 1
         versionName "1.0.0"
@@ -142,17 +142,28 @@ print("Launcher icons written")
 manifest_path = "android/app/src/main/AndroidManifest.xml"
 if os.path.exists(manifest_path):
     with open(manifest_path, "r") as f: manifest = f.read()
-    step_perms = (
-        '    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />\n'
-        '    <uses-permission android:name="android.hardware.sensor.stepcounter" />\n'
-        '    <uses-feature android:name="android.hardware.sensor.stepcounter" android:required="false" />\n'
-    )
-    if "ACTIVITY_RECOGNITION" not in manifest:
-        manifest = manifest.replace("<application", step_perms + "    <application", 1)
-        with open(manifest_path, "w") as f: f.write(manifest)
-        print("AndroidManifest: step counter permissions added")
+    needed = [
+        ('ACTIVITY_RECOGNITION',
+         '    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />'),
+        ('FOREGROUND_SERVICE"',
+         '    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />'),
+        ('FOREGROUND_SERVICE_HEALTH',
+         '    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />'),
+        ('POST_NOTIFICATIONS',
+         '    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />'),
+        ('sensor.stepcounter',
+         '    <uses-feature android:name="android.hardware.sensor.stepcounter" android:required="false" />'),
+    ]
+    inserted = False
+    for marker, line in needed:
+        if marker not in manifest:
+            manifest = manifest.replace('<application', line + '\n    <application', 1)
+            inserted = True
+    if inserted:
+        with open(manifest_path, 'w') as f: f.write(manifest)
+        print('AndroidManifest: foreground service permissions added')
     else:
-        print("AndroidManifest: permissions already present")
+        print('AndroidManifest: all permissions already present')
 else:
     print("WARNING: AndroidManifest.xml not found — run after flutter create")
 
