@@ -1277,6 +1277,7 @@ old.pct != pct || old.color != color;
 // STATS ROW
 // ════════════════════════════════════════════════════════════
 class _StatsRow extends StatelessWidget {
+final String lang;
 final WaterState water;
 final SleepState sleep;
 final int streak, wMin;
@@ -1623,6 +1624,7 @@ class _BarakahPulseCard extends ConsumerWidget {
 // QUICK GRID
 // ════════════════════════════════════════════════════════════
 class _QuickGrid extends StatelessWidget {
+final String lang;
 final bool isAr, isDark;
 final Color card, border, text, muted;
 final void Function(String) onTap;
