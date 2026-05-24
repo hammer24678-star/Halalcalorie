@@ -387,7 +387,7 @@ if (needsPush) context.push(r); else context.go(r);
 // ════════════════════════════════════════════════════════════
 // PRAYER CARD
 // ════════════════════════════════════════════════════════════
-class _PrayerCard extends StatelessWidget {
+class _PrayerCard extends ConsumerWidget {
 final Map next;
 final String countdown;
 final List prayers;
@@ -682,7 +682,8 @@ class _SunnahFastBanner extends StatelessWidget {
     required this.card, required this.border,
   });
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final lang = ref.watch(languageProvider);
     String t(String ar, String en) => tLang(lang, ar, en);
     final dayName = DateTime.now().weekday == DateTime.monday
       ? t('الاثنين', 'Monday') : t('الخميس', 'Thursday');

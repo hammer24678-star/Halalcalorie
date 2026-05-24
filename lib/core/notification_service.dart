@@ -179,6 +179,7 @@ class NotificationService {
       body:  'Move your body — the Prophet ﷺ walked daily',
     );
   }
+  }
 
   // ── Barakah Engine nudge (Asr time ~15:45) ─────────────────
   /// Fires at 15:45 if the user has not updated their Barakah

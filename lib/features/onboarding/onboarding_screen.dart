@@ -913,6 +913,7 @@ class _AdjustBtn extends StatelessWidget {
 //  SUMMARY PAGE
 // ═══════════════════════════════════════════════════════════
 class _SummaryPage extends ConsumerWidget {
+  final String lang;
   final String gender;
   final int age, goalIdx, activityIdx;
   final double height, weight;
@@ -1102,6 +1103,7 @@ class _SummaryTile extends StatelessWidget {
 //  TOP BAR
 // ═══════════════════════════════════════════════════════════
 class _TopBar extends ConsumerWidget {
+  final String lang;
   final int page, total;
   final bool isDark, showBack;
   final VoidCallback onBack;
@@ -1167,6 +1169,7 @@ class _TopBar extends ConsumerWidget {
 }
 
 class _BottomBar extends ConsumerWidget {
+  final String lang;
   final int page;
   final bool isLast, isQuestion, isDark;
   final VoidCallback onNext;
