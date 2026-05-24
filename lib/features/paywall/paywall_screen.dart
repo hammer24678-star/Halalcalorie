@@ -241,7 +241,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
 
   Widget _plansList(List<RCOffering> offerings, bool isAr, bool isDark, Color bg) {
     // Use RC offerings if available, otherwise fallback
-    final plans = offerings.isNotEmpty ? offerings : _fallback(isAr);
+    final plans = offerings.isNotEmpty ? offerings : _fallback(isAr, lang);
     return Column(
       children: plans.asMap().entries.map((e) {
         final idx   = e.key;
@@ -296,7 +296,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
     );
   }
 
-  List<_FP> _fallback(bool isAr) => [
+  List<_FP> _fallback(bool isAr, String lang) => [
     _FP(tLang(lang, 'شهري', 'Monthly', 'Mensuel', 'Aylık', 'Bulanan', 'Bulanan'),        tLang(lang, '٢.٩٩ \$', '\$2.99', '\$2.99', '\$2.99', '\$2.99', '\$2.99'),  tLang(lang, '/ شهر', '/ month', '/ mois', '/ ay', '/ bulan', '/ bulan'),   false, null),
     _FP(tLang(lang, 'سنوي', 'Yearly', 'Annuel', 'Yıllık', 'Tahunan', 'Tahunan'),         tLang(lang, '١٩.٩٩ \$', '\$19.99', '\$19.99', '\$19.99', '\$19.99', '\$19.99'), tLang(lang, '/ سنة', '/ year', '/ an', '/ yıl', '/ tahun', '/ tahun'),    true,  tLang(lang, 'وفّر ٤٤٪', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%')),
     _FP(tLang(lang, 'مدى الحياة', 'Lifetime', 'À vie', 'Ömür boyu', 'Seumur Hidup', 'Seumur Hidup'), tLang(lang, '٤٩.٩٩ \$', '\$49.99', '\$49.99', '\$49.99', '\$49.99', '\$49.99'), tLang(lang, 'مرة واحدة', 'one-time', 'unique', 'tek seferlik', 'sekali sahaja', 'sekali bayar'), false, null),
