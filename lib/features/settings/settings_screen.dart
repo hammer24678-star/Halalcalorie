@@ -497,7 +497,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
   void _confirmClearDay(BuildContext context, bool isAr) {
     showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'مسح سجل اليوم؟', 'Clear Today Log?', 'Effacer le journal?', 'Bugünkü Veriyi Sil?', 'Padam Log Hari Ini?', 'Hapus Log Hari Ini?')s Data?', style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700)),
       content: Text(
-        tLang(lang, 'سيُمسح سجل الوجبات والخطوات والماء لليوم فقط. لا يمكن التراجع.', 'Today\', 'Today\', 'Today\', 'Today\', 'Today\')s meals, steps, and water will be cleared. Cannot be undone.', style: const TextStyle(fontFamily:'Cairo', fontSize: 13, height: 1.5)),
+        tLang(lang, 'سيُمسح سجل الوجبات والخطوات والماء لليوم فقط. لا يمكن التراجع.', 'Today\'s meals, steps, and water will be cleared. Cannot be undone.', 'Les repas, étapes et eau d\'aujourd\'hui seront effacés. Irréversible.', 'Bugünün öğünleri, adımları ve suyu silinecek. Geri alınamaz.', 'Makanan, langkah dan air hari ini akan dipadam. Tidak boleh dibatalkan.', 'Makanan, langkah dan air hari ini akan dihapus. Tidak dapat dibatalkan.'), style: const TextStyle(fontFamily:'Cairo', fontSize: 13, height: 1.5)),
       actions: [
         TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Annuler', 'İptal', 'Batal', 'Batal'), style: const TextStyle(fontFamily:'Cairo'))),
         ElevatedButton(
