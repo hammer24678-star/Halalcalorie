@@ -5,6 +5,7 @@
 // ============================================================
 
 import 'dart:io'; import'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:image_picker/image_picker.dart'; import'../../core/theme.dart'; import'../../core/providers.dart'; import'../../core/ai_service.dart'; import'../../data/models/models.dart';
+import '../../core/l10n.dart';
 import'../../core/l10n.dart';
 
 // ── Analysis state ─────────────────────────────
@@ -17,6 +18,7 @@ class FoodPhotoScreen extends ConsumerStatefulWidget {
 
 class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
     with SingleTickerProviderStateMixin {
+  String get lang => ref.read(languageProvider);
 
   final _picker = ImagePicker();
   File?           _image;
@@ -649,12 +651,12 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
       if (mounted) setState(() { _aiResults = results; _loading = false; });
     } on ApiKeyMissingException {
       if (mounted) setState(() {
-        _error = widget.tLang(lang, 'API key not configured', 'API key not configured', 'Clé API non configurée', 'API anahtarı yapılandırılmamış', 'Kunci API tidak dikonfigurasi', 'Kunci API belum dikonfigurasi');
+        _error = tLang(lang, 'API key not configured', 'API key not configured', 'Clé API non configurée', 'API anahtarı yapılandırılmamış', 'Kunci API tidak dikonfigurasi', 'Kunci API belum dikonfigurasi');
         _loading = false;
       });
     } catch (e) {
       if (mounted) setState(() {
-        _error = widget.tLang(lang, 'Error - try again', 'Error - try again', 'Erreur - réessayez', 'Hata - tekrar deneyin', 'Ralat - cuba lagi', 'Error - coba lagi');
+        _error = tLang(lang, 'Error - try again', 'Error - try again', 'Erreur - réessayez', 'Hata - tekrar deneyin', 'Ralat - cuba lagi', 'Error - coba lagi');
         _loading = false;
       });
     }

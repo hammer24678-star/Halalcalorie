@@ -4,6 +4,7 @@
 //  Animations: particle bg, spring transitions, counter anim
 // ============================================================
 import 'dart:math';
+import '../../core/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

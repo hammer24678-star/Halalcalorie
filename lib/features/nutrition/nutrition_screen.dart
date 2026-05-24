@@ -93,6 +93,7 @@ class NutritionScreen extends ConsumerStatefulWidget {
 
 class _NutritionState extends ConsumerState<NutritionScreen>
     with TickerProviderStateMixin {
+  String get lang => ref.read(languageProvider);
   late TabController _tab;
   late AnimationController _stagger;
 
@@ -1528,7 +1529,7 @@ class _MealSectionState extends State<_MealSection> {
                     Icon(Icons.add_rounded,
                         color: accentCol, size: 16),
                     const SizedBox(width: 3),
-                    Text(widget.tLang(lang, 'أضف', 'Add', 'Ajouter', 'Ekle', 'Tambah', 'Tambah'),
+                    Text(tLang(lang, 'أضف', 'Add', 'Ajouter', 'Ekle', 'Tambah', 'Tambah'),
                         style: TextStyle(fontFamily: 'Cairo',
                             fontSize: 11,
                             color: accentCol,
@@ -1552,7 +1553,7 @@ class _MealSectionState extends State<_MealSection> {
                   left: 16, right: 16, bottom: 14),
               child: Row(children: [
                 const SizedBox(width: 32),
-                Text(widget.tLang(lang, 'لم تسجل وجبات بعد', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet'),
+                Text(tLang(lang, 'لم تسجل وجبات بعد', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet'),
                     style: TextStyle(fontFamily: 'Cairo',
                         fontSize: 12, color: widget.muted)),
               ]),

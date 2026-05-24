@@ -14,6 +14,7 @@ class HealthScreen extends ConsumerStatefulWidget {
 
 class _HealthScreenState extends ConsumerState<HealthScreen>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
+  String get lang => ref.read(languageProvider);
   late TabController _tab;
   String? _expandedArticle;
   bool _stepServiceRunning = false;

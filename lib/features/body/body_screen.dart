@@ -4,6 +4,7 @@
 //  BMR, TDEE, macro targets, ideal weight, water needs
 // ============================================================
 import 'package:flutter/material.dart';
+import '../../core/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';

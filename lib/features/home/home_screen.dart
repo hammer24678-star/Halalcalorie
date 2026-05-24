@@ -419,7 +419,7 @@ return false;
 }
 
 @override
-Widget build(BuildContext context) {
+Widget build(BuildContext context, WidgetRef ref) {
 final h = next['h'] as int;
 final m = next['m'] as int;
 final nm = isAr ? next['ar'] as String : next['en'] as String;
@@ -674,7 +674,7 @@ if (pct >= 0.90)
 // ════════════════════════════════════════════════════════════
 // SUNNAH FAST BANNER
 // ════════════════════════════════════════════════════════════
-class _SunnahFastBanner extends StatelessWidget {
+class _SunnahFastBanner extends ConsumerWidget {
   final bool isAr, isDark;
   final String lang;
   final Color card, border;
