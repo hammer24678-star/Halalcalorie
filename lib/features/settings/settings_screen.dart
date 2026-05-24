@@ -219,7 +219,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             tile( emoji:'✏️', title: t('تعديل ملفي الشخصي', 'Edit My Profile'), subtitle: t('الطول، الوزن، العمر، الهدف', 'Height, weight, age, goal'),
               trailing: const Icon(Icons.chevron_right), onTap: () { context.pop(); context.go('/body'); },
             ),
-            tile( emoji:'🗑️', title: t('مسح سجل اليوم', 'Clear Today\'s Data'), subtitle: t('الوجبات والخطوات والماء', 'Meals, steps, water'),
+            tile( emoji:'🗑️', title: t('مسح سجل اليوم', 'Clear Todays Data'), subtitle: t('الوجبات والخطوات والماء', 'Meals, steps, water'),
               trailing: const Icon(Icons.chevron_right),
               titleColor: AppColors.haramRed,
               onTap: () => _confirmClearDay(context, isAr),
@@ -495,7 +495,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
   }
 
   void _confirmClearDay(BuildContext context, bool isAr) {
-    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'مسح سجل اليوم؟', 'Clear Today\', 'Clear Today\', 'Clear Today\', 'Clear Today\', 'Clear Today\')s Data?', style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700)),
+    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'مسح سجل اليوم؟', 'Clear Today, 'Clear Today, 'Clear Today, 'Clear Today, 'Clear Today)s Data?', style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700)),
       content: Text(
         tLang(lang, 'سيُمسح سجل الوجبات والخطوات والماء لليوم فقط. لا يمكن التراجع.', 'Today\', 'Today\', 'Today\', 'Today\', 'Today\')s meals, steps, and water will be cleared. Cannot be undone.', style: const TextStyle(fontFamily:'Cairo', fontSize: 13, height: 1.5)),
       actions: [
@@ -507,7 +507,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             await ref.read(waterProvider.notifier).set(0);
             await ref.read(healthProvider.notifier).setSteps(0);
             if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar( content: Text(tLang(lang, '✅ تم مسح سجل اليوم', '✅ Today\', '✅ Today\', '✅ Today\', '✅ Today\', '✅ Today\')s log cleared', style: const TextStyle(fontFamily:'Cairo')),
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar( content: Text(tLang(lang, '✅ تم مسح سجل اليوم', '✅ Today, '✅ Today, '✅ Today, '✅ Today, '✅ Today)s log cleared', style: const TextStyle(fontFamily:'Cairo')),
                 backgroundColor: AppColors.sunnahGreen,
               ));
             }
