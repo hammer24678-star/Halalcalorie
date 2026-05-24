@@ -133,7 +133,7 @@ class NotificationService {
       await _daily(
         id: kWater + h,
         hour: h, minute: 0,
-        title: tLang(lang, '💧 تذكير بشرب الماء', '💧 Water Reminder', '💧 Water Reminder', '💧 Water Reminder', '💧 Water Reminder', '💧 Water Reminder'),
+        title: tLang(lang, '💧 تذكير بشرب الماء', '💧 Water Reminder', '💧 Rappel eau', '💧 Su Hatırlatıcısı', '💧 Peringatan Air', '💧 Pengingat Air'),
         body:  tLang(lang, 'لا تنسَ شرب كوب ماء — الجسم أمانة ﷺ', 'Stay hydrated — your body is an amanah ﷺ', 'Stay hydrated — your body is an amanah ﷺ', 'Stay hydrated — your body is an amanah ﷺ', 'Stay hydrated — your body is an amanah ﷺ', 'Stay hydrated — your body is an amanah ﷺ'),
       );
     }
@@ -153,18 +153,18 @@ class NotificationService {
     }
     await _daily(
       id: kBreakfast, hour: 7, minute: 30,
-      title: tLang(lang, '🌅 وقت الإفطار', '🌅 Breakfast Time', '🌅 Breakfast Time', '🌅 Breakfast Time', '🌅 Breakfast Time', '🌅 Breakfast Time'),
-      body:  tLang(lang, 'قُل بسم الله وسجّل إفطارك ✨', 'Say Bismillah and log your breakfast ✨', 'Say Bismillah and log your breakfast ✨', 'Say Bismillah and log your breakfast ✨', 'Say Bismillah and log your breakfast ✨', 'Say Bismillah and log your breakfast ✨'),
+      title: tLang(lang, '🌅 وقت الإفطار', '🌅 Breakfast Time', '🌅 Heure du petit-déjeuner', '🌅 Kahvaltı Vakti', '🌅 Waktu Sarapan', '🌅 Waktu Sarapan'),
+      body:  tLang(lang, 'قُل بسم الله وسجّل إفطارك ✨', 'Say Bismillah and log your breakfast ✨', 'Dites Bismillah et enregistrez votre petit-déjeuner ✨', 'Bismillah de ve kahvaltını kaydet ✨', 'Sebut Bismillah dan log sarapan anda ✨', 'Ucapkan Bismillah dan catat sarapan Anda ✨'),
     );
     await _daily(
       id: kLunch, hour: 13, minute: 0,
-      title: tLang(lang, '☀️ وقت الغداء', '☀️ Lunch Time', '☀️ Lunch Time', '☀️ Lunch Time', '☀️ Lunch Time', '☀️ Lunch Time'),
+      title: tLang(lang, '☀️ وقت الغداء', '☀️ Lunch Time', '☀️ Heure du déjeuner', '☀️ Öğle Vakti', '☀️ Waktu Makan Tengah Hari', '☀️ Waktu Makan Siang'),
       body:  isAr ? 'لا تنسَ تسجيل غداءك في HalalCalorie' : "Don't forget to log your lunch",
     );
     await _daily(
       id: kDinner, hour: 19, minute: 30,
-      title: tLang(lang, '🌙 وقت العشاء', '🌙 Dinner Time', '🌙 Dinner Time', '🌙 Dinner Time', '🌙 Dinner Time', '🌙 Dinner Time'),
-      body:  tLang(lang, 'سجّل عشاءك واكمل هدفك اليومي 🌙', 'Log your dinner and hit your daily goal 🌙', 'Log your dinner and hit your daily goal 🌙', 'Log your dinner and hit your daily goal 🌙', 'Log your dinner and hit your daily goal 🌙', 'Log your dinner and hit your daily goal 🌙'),
+      title: tLang(lang, '🌙 وقت العشاء', '🌙 Dinner Time', '🌙 Heure du dîner', '🌙 Akşam Yemeği Vakti', '🌙 Waktu Makan Malam', '🌙 Waktu Makan Malam'),
+      body:  tLang(lang, 'سجّل عشاءك واكمل هدفك اليومي 🌙', 'Log your dinner and hit your daily goal 🌙', 'Enregistrez votre dîner et atteignez votre objectif 🌙', 'Akşam yemeğinizi kaydedin ve günlük hedefinize ulaşın 🌙', 'Log makan malam dan capai matlamat harian 🌙', 'Catat makan malam dan capai target harian 🌙'),
     );
   }
 
@@ -175,7 +175,7 @@ class NotificationService {
     if (!enabled) { await _plugin.cancel(kWorkout); return; }
     await _daily(
       id: kWorkout, hour: 17, minute: 30,
-      title: tLang(lang, '💪 وقت الرياضة', '💪 Workout Time', '💪 Workout Time', '💪 Workout Time', '💪 Workout Time', '💪 Workout Time'),
+      title: tLang(lang, '💪 وقت الرياضة', '💪 Workout Time', '💪 Heure d\'entraînement', '💪 Antrenman Vakti', '💪 Waktu Senaman', '💪 Waktu Olahraga'),
       body:  tLang(lang, 'حرّك جسمك — النبي ﷺ كان يمشي كثيراً', 'Move your body — the Prophet ﷺ walked daily', 'Move your body — the Prophet ﷺ walked daily', 'Move your body — the Prophet ﷺ walked daily', 'Move your body — the Prophet ﷺ walked daily', 'Move your body — the Prophet ﷺ walked daily'),
     );
   }
@@ -189,7 +189,7 @@ class NotificationService {
     if (!on) { await _plugin.cancel(kBarakah); return; }
     await _daily(
       id: kBarakah, hour: 15, minute: 45,
-      title: tLang(lang, '✨ نقاط بركتك تنتظرك', '✨ Your Barakah score is waiting', '✨ Your Barakah score is waiting', '✨ Your Barakah score is waiting', '✨ Your Barakah score is waiting', '✨ Your Barakah score is waiting'),
+      title: tLang(lang, '✨ نقاط بركتك تنتظرك', '✨ Your Barakah score is waiting', '✨ Votre score Barakah vous attend', '✨ Bereket skorunuz bekliyor', '✨ Skor Barakah anda menanti', '✨ Skor Barakah Anda menunggu'),
       body:  tLang(lang, 'سجّل ذكرك ومائك وخطواتك — حافظ على بركتك اليوم', 'Log your dhikr, water & steps — keep your Barakah alive', 'Log your dhikr, water & steps — keep your Barakah alive', 'Log your dhikr, water & steps — keep your Barakah alive', 'Log your dhikr, water & steps — keep your Barakah alive', 'Log your dhikr, water & steps — keep your Barakah alive'),
     );
   }

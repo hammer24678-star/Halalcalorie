@@ -153,7 +153,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
           actions: [
             IconButton(
               icon: const Icon(Icons.flash_on_rounded, color: Colors.white),
-              tooltip: tLang(lang, 'إدخال سريع بالنص', 'Quick Text Entry', 'Quick Text Entry', 'Quick Text Entry', 'Quick Text Entry', 'Quick Text Entry'),
+              tooltip: tLang(lang, 'إدخال سريع بالنص', 'Quick Text Entry', 'Saisie rapide', 'Hızlı Metin Girişi', 'Kemasukan Teks Pantas', 'Entri Teks Cepat'),
               onPressed: () => _showQuickEntrySheet(isAr, isDark),
             ),
           ],
@@ -265,7 +265,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
           textAlign: TextAlign.center, style: const TextStyle(fontFamily:'Cairo', fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white, height: 1.5),
         ),
         const SizedBox(height: 10),
-        Wrap(spacing: 10, runSpacing: 6, children: [ _badge('🔥', tLang(lang, 'سعرات', 'Calories', 'Calories', 'Calories', 'Calories', 'Calories')), _badge('🥩', tLang(lang, 'بروتين', 'Protein', 'Protein', 'Protein', 'Protein', 'Protein')), _badge('🍚', tLang(lang, 'كربوهيدرات', 'Carbs', 'Carbs', 'Carbs', 'Carbs', 'Carbs')), _badge('✅', tLang(lang, 'حكم حلال', 'Halal Check', 'Halal Check', 'Halal Check', 'Halal Check', 'Halal Check')),
+        Wrap(spacing: 10, runSpacing: 6, children: [ _badge('🔥', tLang(lang, 'سعرات', 'Calories', 'Calories', 'Kalori', 'Kalori', 'Kalori')), _badge('🥩', tLang(lang, 'بروتين', 'Protein', 'Protéines', 'Protein', 'Protein', 'Protein')), _badge('🍚', tLang(lang, 'كربوهيدرات', 'Carbs', 'Glucides', 'Karbonhidrat', 'Karbohidrat', 'Karbohidrat')), _badge('✅', tLang(lang, 'حكم حلال', 'Halal Check', 'Vérification Halal', 'Helal Kontrol', 'Semakan Halal', 'Cek Halal')),
         ]),
       ]),
     );
@@ -335,7 +335,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
           ),
         ),
         const SizedBox(height: 10),
-        Text( tLang(lang, 'جاري التحليل…', 'Analyzing…', 'Analyzing…', 'Analyzing…', 'Analyzing…', 'Analyzing…'), style: const TextStyle(fontFamily:'Cairo', fontSize: 16, fontWeight: FontWeight.w700),
+        Text( tLang(lang, 'جاري التحليل…', 'Analyzing…', 'Analyse en cours…', 'Analiz ediliyor…', 'Menganalisis…', 'Menganalisis…'), style: const TextStyle(fontFamily:'Cairo', fontSize: 16, fontWeight: FontWeight.w700),
         ),
         const SizedBox(height: 4),
         Text(
@@ -365,7 +365,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
           const Text('⚠️', style: TextStyle(fontSize: 20)),
           const SizedBox(width: 8),
           Expanded(child: Text(
-            tLang(lang, 'مفتاح AI غير مُعدّ', 'AI Key Not Configured', 'AI Key Not Configured', 'AI Key Not Configured', 'AI Key Not Configured', 'AI Key Not Configured'),
+            tLang(lang, 'مفتاح AI غير مُعدّ', 'AI Key Not Configured', 'Clé AI non configurée', 'AI Anahtarı Yapılandırılmamış', 'Kunci AI Tidak Dikonfigurasi', 'Kunci AI Belum Dikonfigurasi'),
             style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800,
                 fontSize: 14, color: AppColors.doubtOrange))),
         ]),
@@ -477,9 +477,9 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       Container(
         color: bg,
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        child: Row(children: [ _macroChip(tLang(lang, 'بروتين', 'Protein', 'Protein', 'Protein', 'Protein', 'Protein'), '${r.proteinG}g', AppColors.halalGreen),
-          const SizedBox(width: 8), _macroChip(tLang(lang, 'كربوهيدرات', 'Carbs', 'Carbs', 'Carbs', 'Carbs', 'Carbs'), '${r.carbsG}g', AppColors.waterBlue),
-          const SizedBox(width: 8), _macroChip(tLang(lang, 'دهون', 'Fat', 'Fat', 'Fat', 'Fat', 'Fat'), '${r.fatG}g', AppColors.barakahGold),
+        child: Row(children: [ _macroChip(tLang(lang, 'بروتين', 'Protein', 'Protéines', 'Protein', 'Protein', 'Protein'), '${r.proteinG}g', AppColors.halalGreen),
+          const SizedBox(width: 8), _macroChip(tLang(lang, 'كربوهيدرات', 'Carbs', 'Glucides', 'Karbonhidrat', 'Karbohidrat', 'Karbohidrat'), '${r.carbsG}g', AppColors.waterBlue),
+          const SizedBox(width: 8), _macroChip(tLang(lang, 'دهون', 'Fat', 'Lipides', 'Yağ', 'Lemak', 'Lemak'), '${r.fatG}g', AppColors.barakahGold),
         ]),
       ),
 
@@ -507,7 +507,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         Container(
           color: bg,
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(tLang(lang, '🥗 المكونات الرئيسية:', '🥗 Main ingredients:', '🥗 Main ingredients:', '🥗 Main ingredients:', '🥗 Main ingredients:', '🥗 Main ingredients:'), style: const TextStyle(fontFamily:'Cairo', fontSize: 12, fontWeight: FontWeight.w700)),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(tLang(lang, '🥗 المكونات الرئيسية:', '🥗 Main ingredients:', '🥗 Ingrédients principaux :', '🥗 Ana malzemeler:', '🥗 Bahan-bahan utama:', '🥗 Bahan-bahan utama:'), style: const TextStyle(fontFamily:'Cairo', fontSize: 12, fontWeight: FontWeight.w700)),
             const SizedBox(height: 6),
             Wrap(spacing: 6, runSpacing: 4, children: r.ingredients.map((ing) => Chip( label: Text(ing, style: const TextStyle(fontFamily:'Cairo', fontSize: 10, color: Colors.white)),
               backgroundColor: AppColors.sunnahGreen,
@@ -528,7 +528,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
               backgroundColor: AppColors.sunnahGreen,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ), child: Text(tLang(lang, '+ أضف للعداد', '+ Add to Tracker', '+ Add to Tracker', '+ Add to Tracker', '+ Add to Tracker', '+ Add to Tracker'), style: const TextStyle(fontFamily:'Cairo', color: Colors.white, fontWeight: FontWeight.w700)),
+            ), child: Text(tLang(lang, '+ أضف للعداد', '+ Add to Tracker', '+ Ajouter au suivi', '+ Takibe Ekle', '+ Tambah ke Penjejak', '+ Tambah ke Pelacak'), style: const TextStyle(fontFamily:'Cairo', color: Colors.white, fontWeight: FontWeight.w700)),
           )),
           const SizedBox(width: 10),
           OutlinedButton(
@@ -537,7 +537,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               side: const BorderSide(color: AppColors.sunnahGreen),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ), child: Text(tLang(lang, '↺ جديد', '↺ New', '↺ New', '↺ New', '↺ New', '↺ New'), style: const TextStyle(fontFamily: 'Cairo', color: AppColors.sunnahGreen)),
+            ), child: Text(tLang(lang, '↺ جديد', '↺ New', '↺ Nouveau', '↺ Yeni', '↺ Baru', '↺ Baru'), style: const TextStyle(fontFamily: 'Cairo', color: AppColors.sunnahGreen)),
           ),
         ]),
       ),
@@ -598,7 +598,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16),
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8)]),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(tLang(lang, '💡 نصائح للحصول على نتائج أدق', '💡 Tips for better results', '💡 Tips for better results', '💡 Tips for better results', '💡 Tips for better results', '💡 Tips for better results'), style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700, fontSize: 13)),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(tLang(lang, '💡 نصائح للحصول على نتائج أدق', '💡 Tips for better results', '💡 Conseils pour de meilleurs résultats', '💡 Daha iyi sonuçlar için ipucu', '💡 Petua untuk hasil lebih baik', '💡 Tips untuk hasil lebih baik'), style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700, fontSize: 13)),
         const SizedBox(height: 8),
         ...(isAr ? [ '📸 التقط الصورة من فوق مباشرةً', '💡 استخدم إضاءة جيدة', '🍽️ اجعل الطبق يملأ معظم الصورة', '🚫 تجنب الصور المعتمة أو المضببة', '✅ الأطعمة المفردة تعطي نتائج أدق',
         ] : [ '📸 Take the photo from directly above', '💡 Use good lighting', '🍽️ Fill the frame with the food', '🚫 Avoid dark or blurry photos', '✅ Single food items give more accurate results',
@@ -649,12 +649,12 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
       if (mounted) setState(() { _aiResults = results; _loading = false; });
     } on ApiKeyMissingException {
       if (mounted) setState(() {
-        _error = widget.tLang(lang, 'API key not configured', 'API key not configured', 'API key not configured', 'API key not configured', 'API key not configured', 'API key not configured');
+        _error = widget.tLang(lang, 'API key not configured', 'API key not configured', 'Clé API non configurée', 'API anahtarı yapılandırılmamış', 'Kunci API tidak dikonfigurasi', 'Kunci API belum dikonfigurasi');
         _loading = false;
       });
     } catch (e) {
       if (mounted) setState(() {
-        _error = widget.tLang(lang, 'Error - try again', 'Error - try again', 'Error - try again', 'Error - try again', 'Error - try again', 'Error - try again');
+        _error = widget.tLang(lang, 'Error - try again', 'Error - try again', 'Erreur - réessayez', 'Hata - tekrar deneyin', 'Ralat - cuba lagi', 'Error - coba lagi');
         _loading = false;
       });
     }
@@ -728,7 +728,7 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
                   textInputAction: TextInputAction.search,
                   onSubmitted: (_) => _analyze(),
                   decoration: InputDecoration(
-                    hintText: tLang(lang, 'What did you eat?', 'What did you eat? (e.g. 2 eggs and rice)', 'What did you eat? (e.g. 2 eggs and rice)', 'What did you eat? (e.g. 2 eggs and rice)', 'What did you eat? (e.g. 2 eggs and rice)', 'What did you eat? (e.g. 2 eggs and rice)'),
+                    hintText: tLang(lang, 'What did you eat?', 'What did you eat? (e.g. 2 eggs and rice)', 'Qu\'avez-vous mangé ? (ex: 2 œufs et riz)', 'Ne yediniz? (örn: 2 yumurta ve pirinç)', 'Apa yang anda makan? (cth: 2 telur dan nasi)', 'Apa yang Anda makan? (misal: 2 telur dan nasi)'),
                     hintStyle: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted),
                     filled: true, fillColor: surf,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),

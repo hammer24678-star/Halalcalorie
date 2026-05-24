@@ -455,7 +455,7 @@ const SizedBox(width: 12),
 Expanded(child: Column(
 crossAxisAlignment: CrossAxisAlignment.start,
 children: [
-Text(tLang(lang, 'الصلاة القادمة', 'Next Prayer', 'Next Prayer', 'Next Prayer', 'Next Prayer', 'Next Prayer'),
+Text(tLang(lang, 'الصلاة القادمة', 'Next Prayer', 'Prochaine prière', 'Sonraki Namaz', 'Solat Seterusnya', 'Shalat Berikutnya'),
 style: TextStyle(fontFamily: 'Cairo',
 fontSize: 11, color: muted)),
 Text(nm, style: const TextStyle(
@@ -1299,7 +1299,7 @@ Widget build(BuildContext context) => Row(children: [
 _Stat(
 emoji: '💧',
 value: '${water.cups}', total: '/${water.goal}',
-label: tLang(lang, 'ماء', 'Water', 'Water', 'Water', 'Water', 'Water'),
+label: tLang(lang, 'ماء', 'Water', 'Eau', 'Su', 'Air', 'Air'),
 color: AppColors.waterBlue,
 pct: water.percent,
 isDark: isDark, card: card, border: border, muted: muted,
@@ -1310,7 +1310,7 @@ const SizedBox(width: 10),
 _Stat(
 emoji: '😴',
 value: '${sleep.hours.toInt()}', total: '/${sleep.goal.toInt()}h',
-label: tLang(lang, 'نوم', 'Sleep', 'Sleep', 'Sleep', 'Sleep', 'Sleep'),
+label: tLang(lang, 'نوم', 'Sleep', 'Sommeil', 'Uyku', 'Tidur', 'Tidur'),
 color: AppColors.sleepPurple,
 pct: sleep.percent,
 isDark: isDark, card: card, border: border, muted: muted,
@@ -1321,7 +1321,7 @@ _Stat(
 emoji: '🔥',
 value: '$streak',
 total: tLang(lang, ' يوم', 'd', 'd', 'd', 'd', 'd'),
-label: tLang(lang, 'تتابع', 'Streak', 'Streak', 'Streak', 'Streak', 'Streak'),
+label: tLang(lang, 'تتابع', 'Streak', 'Série', 'Seri', 'Streak', 'Streak'),
 color: AppColors.haramRed,
 pct: (streak / 30).clamp(0.0, 1.0),
 isDark: isDark, card: card, border: border, muted: muted,
@@ -1332,7 +1332,7 @@ _Stat(
 emoji: '🏃',
 value: wMin > 0 ? '$wMin' : '0',
 total: tLang(lang, 'د', 'm', 'm', 'm', 'm', 'm'),
-label: tLang(lang, 'تمرين', 'Workout', 'Workout', 'Workout', 'Workout', 'Workout'),
+label: tLang(lang, 'تمرين', 'Workout', 'Entraînement', 'Antrenman', 'Senaman', 'Olahraga'),
 color: AppColors.halalGreen,
 pct: (wMin / 30).clamp(0.0, 1.0),
 isDark: isDark, card: card, border: border, muted: muted,
@@ -1424,12 +1424,12 @@ fontFamily: 'Cairo', fontSize: 9, color: widget.muted)),
 // ════════════════════════════════════════════════════════════
 void _showStreakDialog(BuildContext context, int streak, bool isAr, Color card, Color border) {
   final msg = streak == 0
-    ? (tLang(lang, 'ابدأ يومك بتسجيل وجبة! 💪', 'Log a meal today to start your streak! 💪', 'Log a meal today to start your streak! 💪', 'Log a meal today to start your streak! 💪', 'Log a meal today to start your streak! 💪', 'Log a meal today to start your streak! 💪'))
+    ? (tLang(lang, 'ابدأ يومك بتسجيل وجبة! 💪', 'Log a meal today to start your streak! 💪', 'Enregistrez un repas aujourd\'hui pour démarrer votre série ! 💪', 'Serinizi başlatmak için bugün öğün kaydedin! 💪', 'Log makanan hari ini untuk mulakan streak! 💪', 'Catat makan hari ini untuk mulai streak! 💪'))
     : streak < 7
-    ? (tLang(lang, 'رائع! استمر للحصول على أسبوع كامل 🌟', 'Great start! Keep going for a full week 🌟', 'Great start! Keep going for a full week 🌟', 'Great start! Keep going for a full week 🌟', 'Great start! Keep going for a full week 🌟', 'Great start! Keep going for a full week 🌟'))
+    ? (tLang(lang, 'رائع! استمر للحصول على أسبوع كامل 🌟', 'Great start! Keep going for a full week 🌟', 'Bon début ! Continuez une semaine complète 🌟', 'Harika başlangıç! Tam bir hafta devam et 🌟', 'Permulaan hebat! Teruskan seminggu penuh 🌟', 'Awal yang bagus! Teruskan seminggu penuh 🌟'))
     : streak < 30
     ? (isAr ? 'أنت على المسار الصحيح! 🔥' : "You're on fire! 🔥")
-    : (tLang(lang, 'مبارك! تتابع رائع جداً 🏆', 'Masha Allah! Incredible streak 🏆', 'Masha Allah! Incredible streak 🏆', 'Masha Allah! Incredible streak 🏆', 'Masha Allah! Incredible streak 🏆', 'Masha Allah! Incredible streak 🏆'));
+    : (tLang(lang, 'مبارك! تتابع رائع جداً 🏆', 'Masha Allah! Incredible streak 🏆', 'Masha Allah ! Série incroyable 🏆', 'Maşaallah! İnanılmaz seri 🏆', 'Masha Allah! Streak yang luar biasa 🏆', 'Masha Allah! Streak yang luar biasa 🏆'));
   showDialog(context: context, builder: (_) => Dialog(
     backgroundColor: card,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),
@@ -1441,7 +1441,7 @@ void _showStreakDialog(BuildContext context, int streak, bool isAr, Color card, 
         Text('$streak', style: const TextStyle(
           fontFamily: 'Cairo', fontSize: 48,
           fontWeight: FontWeight.w900, color: AppColors.haramRed)),
-        Text(tLang(lang, 'يوم تتابع', 'day streak', 'day streak', 'day streak', 'day streak', 'day streak'), style: const TextStyle(
+        Text(tLang(lang, 'يوم تتابع', 'day streak', 'jours de suite', 'günlük seri', 'hari berturut', 'hari berturut'), style: const TextStyle(
           fontFamily: 'Cairo', fontSize: 14, color: AppColors.haramRed)),
         const SizedBox(height: 16),
         Text(msg, textAlign: TextAlign.center, style: const TextStyle(
@@ -1460,7 +1460,7 @@ void _showStreakDialog(BuildContext context, int streak, bool isAr, Color card, 
               color: AppColors.haramRed))),
         const SizedBox(height: 16),
         TextButton(onPressed: () => Navigator.pop(context),
-          child: Text(tLang(lang, 'حسناً 👍', 'Got it 👍', 'Got it 👍', 'Got it 👍', 'Got it 👍', 'Got it 👍'),
+          child: Text(tLang(lang, 'حسناً 👍', 'Got it 👍', 'Compris 👍', 'Anlaşıldı 👍', 'Faham 👍', 'Mengerti 👍'),
             style: const TextStyle(fontFamily: 'Cairo',
               color: AppColors.sunnahGreen, fontWeight: FontWeight.w700))),
       ],
@@ -1637,22 +1637,22 @@ required this.text, required this.muted, required this.onTap,
 @override
 Widget build(BuildContext context) {
 final items = [
-_Q('📸', tLang(lang, 'صوّر طعامك', 'Photo Food', 'Photo Food', 'Photo Food', 'Photo Food', 'Photo Food'),
-tLang(lang, 'AI يحلل فوراً', 'AI instant', 'AI instant', 'AI instant', 'AI instant', 'AI instant'), '/food-photo',
+_Q('📸', tLang(lang, 'صوّر طعامك', 'Photo Food', 'Photo alimentaire', 'Fotoğraflı Yiyecek', 'Foto Makanan', 'Foto Makanan'),
+tLang(lang, 'AI يحلل فوراً', 'AI instant', 'IA instantanée', 'Anlık AI', 'AI Segera', 'AI Instan'), '/food-photo',
 const Color(0xFF238636)),
-_Q('📷', tLang(lang, 'باركود', 'Barcode', 'Barcode', 'Barcode', 'Barcode', 'Barcode'),
-tLang(lang, 'فحص الحلال', 'Halal check', 'Halal check', 'Halal check', 'Halal check', 'Halal check'), '/scanner',
+_Q('📷', tLang(lang, 'باركود', 'Barcode', 'Code-barres', 'Barkod', 'Kod Bar', 'Barcode'),
+tLang(lang, 'فحص الحلال', 'Halal check', 'Vérification halal', 'Helal kontrol', 'Semakan halal', 'Cek halal'), '/scanner',
 const Color(0xFF1F6FEB)),
-_Q('🏃', tLang(lang, 'تمارين', 'Workouts', 'Workouts', 'Workouts', 'Workouts', 'Workouts'),
-tLang(lang, '١٨٠ خطة', '180 plans', '180 plans', '180 plans', '180 plans', '180 plans'), '/fitness',
+_Q('🏃', tLang(lang, 'تمارين', 'Workouts', 'Entraînements', 'Antrenmanlar', 'Senaman', 'Olahraga'),
+tLang(lang, '١٨٠ خطة', '180 plans', '180 plans', '180 plan', '180 rancangan', '180 rencana'), '/fitness',
 const Color(0xFF8957E5)),
-_Q('💪', tLang(lang, 'مقاييس', 'Body', 'Body', 'Body', 'Body', 'Body'),
-tLang(lang, 'BMI وأكثر', 'BMI & more', 'BMI & more', 'BMI & more', 'BMI & more', 'BMI & more'), '/body',
+_Q('💪', tLang(lang, 'مقاييس', 'Body', 'Corps', 'Vücut', 'Badan', 'Tubuh'),
+tLang(lang, 'BMI وأكثر', 'BMI & more', 'IMC & plus', 'VKİ & daha fazlası', 'BMI & lagi', 'IMT & lebih'), '/body',
 const Color(0xFFBF8700)),
  ];
 
 return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-Text(tLang(lang, 'ابدأ الآن', 'Quick Actions', 'Quick Actions', 'Quick Actions', 'Quick Actions', 'Quick Actions'),
+Text(tLang(lang, 'ابدأ الآن', 'Quick Actions', 'Actions rapides', 'Hızlı İşlemler', 'Tindakan Pantas', 'Tindakan Cepat'),
 style: TextStyle(fontFamily: 'Cairo',
 fontSize: 13, fontWeight: FontWeight.w700, color: muted)),
 const SizedBox(height: 10),

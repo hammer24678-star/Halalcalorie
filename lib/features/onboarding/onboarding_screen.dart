@@ -954,8 +954,8 @@ class _SummaryPage extends ConsumerWidget {
     // Bilingual value strings
     final weightStr = '${weight.toStringAsFixed(1)} ${tLang(lang, 'كجم', 'kg', 'kg', 'kg', 'kg', 'kg')}';
     final heightStr = '${height.toStringAsFixed(0)} ${tLang(lang, 'سم', 'cm', 'cm', 'cm', 'cm', 'cm')}';
-    final ageStr    = '$age ${tLang(lang, 'سنة', 'yrs', 'yrs', 'yrs', 'yrs', 'yrs')}';
-    final kcalStr   = '$kcal ${tLang(lang, 'سعرة', 'kcal', 'kcal', 'kcal', 'kcal', 'kcal')}';
+    final ageStr    = '$age ${tLang(lang, 'سنة', 'yrs', 'ans', 'yıl', 'thn', 'thn')}';
+    final kcalStr   = '$kcal ${tLang(lang, 'سعرة', 'kcal', 'kcal', 'kcal', 'kcal', 'kkal')}';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
@@ -1144,7 +1144,7 @@ class _TopBar extends ConsumerWidget {
           if (onSkip != null)
             GestureDetector(
               onTap: onSkip,
-              child: Text(tLang(lang, 'تخطي', 'Skip', 'Skip', 'Skip', 'Skip', 'Skip'),
+              child: Text(tLang(lang, 'تخطي', 'Skip', 'Passer', 'Atla', 'Langkau', 'Lewati'),
                 style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
                   fontWeight: FontWeight.w700, color: AppColors.halalGreen)),
             )
@@ -1180,8 +1180,8 @@ class _BottomBar extends ConsumerWidget {
     final lang  = ref.watch(languageProvider);
     final isAr  = lang == 'ar' || lang == 'ur';
     final label = isLast
-      ? (tLang(lang, 'ابدأ رحلتك 🌿', 'Start your journey 🌿', 'Start your journey 🌿', 'Start your journey 🌿', 'Start your journey 🌿', 'Start your journey 🌿'))
-      : (tLang(lang, 'التالي →', 'Next →', 'Next →', 'Next →', 'Next →', 'Next →'));
+      ? (tLang(lang, 'ابدأ رحلتك 🌿', 'Start your journey 🌿', 'Commencez votre voyage 🌿', 'Yolculuğuna başla 🌿', 'Mulakan perjalanan anda 🌿', 'Mulailah perjalanan Anda 🌿'))
+      : (tLang(lang, 'التالي →', 'Next →', 'Suivant →', 'İleri →', 'Seterusnya →', 'Berikutnya →'));
     return Padding(
       padding: EdgeInsets.fromLTRB(
         24, 12, 24, MediaQuery.of(context).padding.bottom + 20),

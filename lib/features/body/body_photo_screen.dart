@@ -58,7 +58,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
     } catch (e) {
       final isAr = ref.read(languageProvider) == 'ar';
       if (mounted) setState(() {
-        _error = tLang(lang, 'تعذّر فتح الكاميرا.', 'Could not open camera.', 'Could not open camera.', 'Could not open camera.', 'Could not open camera.', 'Could not open camera.');
+        _error = tLang(lang, 'تعذّر فتح الكاميرا.', 'Could not open camera.', 'Impossible d\'ouvrir la caméra.', 'Kamera açılamadı.', 'Tidak dapat buka kamera.', 'Tidak dapat membuka kamera.');
         _state = BodyAnalysisState.error;
       });
     }
@@ -218,7 +218,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         const Text('🔒', style: TextStyle(fontSize: 44)),
         const SizedBox(height: 12),
         Text(
-          tLang(lang, 'قبل المتابعة — موافقة الخصوصية', 'Before continuing — Privacy Consent', 'Before continuing — Privacy Consent', 'Before continuing — Privacy Consent', 'Before continuing — Privacy Consent', 'Before continuing — Privacy Consent'),
+          tLang(lang, 'قبل المتابعة — موافقة الخصوصية', 'Before continuing — Privacy Consent', 'Avant de continuer — Consentement confidentialité', 'Devam etmeden — Gizlilik Onayı', 'Sebelum teruskan — Persetujuan Privasi', 'Sebelum melanjutkan — Persetujuan Privasi'),
           textAlign: TextAlign.center,
           style: const TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.w800),
         ),
@@ -252,7 +252,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         SizedBox(width: double.infinity, child: ElevatedButton(
           onPressed: () => setState(() => _privacyConsented = true),
           style: ElevatedButton.styleFrom(backgroundColor: AppColors.sunnahGreen, padding: const EdgeInsets.symmetric(vertical: 13)),
-          child: Text(tLang(lang, '✓ أوافق وأكمل', '✓ I Agree & Continue', '✓ I Agree & Continue', '✓ I Agree & Continue', '✓ I Agree & Continue', '✓ I Agree & Continue'),
+          child: Text(tLang(lang, '✓ أوافق وأكمل', '✓ I Agree & Continue', '✓ J\'accepte & continue', '✓ Kabul ediyorum & devam', '✓ Saya Setuju & Teruskan', '✓ Saya Setuju & Lanjutkan'),
               style: const TextStyle(fontFamily: 'Cairo', fontSize: 14, color: Colors.white, fontWeight: FontWeight.w700)),
         )),
       ]),
@@ -274,7 +274,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         const Text('💪', style: TextStyle(fontSize: 44)),
         const SizedBox(height: 8),
         Text(
-          tLang(lang, 'كيف تحصل على نتائج دقيقة؟', 'How to get accurate results?', 'How to get accurate results?', 'How to get accurate results?', 'How to get accurate results?', 'How to get accurate results?'),
+          tLang(lang, 'كيف تحصل على نتائج دقيقة؟', 'How to get accurate results?', 'Comment obtenir des résultats précis ?', 'Doğru sonuçlar nasıl elde edilir?', 'Bagaimana mendapat hasil tepat?', 'Cara mendapat hasil akurat?'),
           style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
         ),
         const SizedBox(height: 10),
@@ -393,7 +393,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           // ── Header ──────────────────────────────────────
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text(tLang(lang, '🧬 نتائج التحليل', '🧬 Analysis Results', '🧬 Analysis Results', '🧬 Analysis Results', '🧬 Analysis Results', '🧬 Analysis Results'),
+            Text(tLang(lang, '🧬 نتائج التحليل', '🧬 Analysis Results', '🧬 Résultats d\'analyse', '🧬 Analiz Sonuçları', '🧬 Keputusan Analisis', '🧬 Hasil Analisis'),
                 style: const TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.w900)),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -414,17 +414,17 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
           Row(children: [
             _bigMetric(
               '${r.bodyFatPercent.toStringAsFixed(1)}%',
-              tLang(lang, 'نسبة الدهون', 'Body Fat %', 'Body Fat %', 'Body Fat %', 'Body Fat %', 'Body Fat %'),
+              tLang(lang, 'نسبة الدهون', 'Body Fat %', '% Graisse corporelle', 'Vücut Yağ %', '% Lemak Badan', '% Lemak Tubuh'),
               bfColor,
             ),
             const SizedBox(width: 12),
             _bigMetric(
               '${r.muscleMassKg.toStringAsFixed(1)} kg',
-              tLang(lang, 'كتلة العضلات', 'Muscle Mass', 'Muscle Mass', 'Muscle Mass', 'Muscle Mass', 'Muscle Mass'),
+              tLang(lang, 'كتلة العضلات', 'Muscle Mass', 'Masse musculaire', 'Kas Kitlesi', 'Jisim Otot', 'Massa Otot'),
               AppColors.halalGreen,
             ),
             const SizedBox(width: 12),
-            _bigMetric(btype, tLang(lang, 'نوع الجسم', 'Body Type', 'Body Type', 'Body Type', 'Body Type', 'Body Type'), AppColors.waterBlue, small: true),
+            _bigMetric(btype, tLang(lang, 'نوع الجسم', 'Body Type', 'Type de corps', 'Vücut Tipi', 'Jenis Badan', 'Tipe Tubuh'), AppColors.waterBlue, small: true),
           ]),
           const SizedBox(height: 16),
 
@@ -434,7 +434,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
 
           // ── Posture note ─────────────────────────────────
           if (postureN.isNotEmpty) ...[
-            Text(tLang(lang, '🦴 ملاحظات الوضعية:', '🦴 Posture Notes:', '🦴 Posture Notes:', '🦴 Posture Notes:', '🦴 Posture Notes:', '🦴 Posture Notes:'),
+            Text(tLang(lang, '🦴 ملاحظات الوضعية:', '🦴 Posture Notes:', '🦴 Notes de posture :', '🦴 Duruş Notları:', '🦴 Nota Postur:', '🦴 Catatan Postur:'),
                 style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 13)),
             const SizedBox(height: 6),
             Container(
@@ -451,7 +451,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
 
           // ── Recommendations ───────────────────────────────
           if (recs.isNotEmpty) ...[
-            Text(tLang(lang, '💡 توصيات مخصصة لك:', '💡 Personalized Recommendations:', '💡 Personalized Recommendations:', '💡 Personalized Recommendations:', '💡 Personalized Recommendations:', '💡 Personalized Recommendations:'),
+            Text(tLang(lang, '💡 توصيات مخصصة لك:', '💡 Personalized Recommendations:', '💡 Recommandations personnalisées :', '💡 Kişisel Tavsiyeler:', '💡 Cadangan Diperibadikan:', '💡 Rekomendasi Personal:'),
                 style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 13)),
             const SizedBox(height: 8),
             ...recs.asMap().entries.map((e) => Padding(
@@ -480,13 +480,13 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(children: [
-                Text(tLang(lang, '📊 مقارنة مع حسابات ملفك', '📊 Comparison with Profile Calculations', '📊 Comparison with Profile Calculations', '📊 Comparison with Profile Calculations', '📊 Comparison with Profile Calculations', '📊 Comparison with Profile Calculations'),
+                Text(tLang(lang, '📊 مقارنة مع حسابات ملفك', '📊 Comparison with Profile Calculations', '📊 Comparaison avec calculs du profil', '📊 Profil Hesaplamalarıyla Karşılaştırma', '📊 Perbandingan dengan Pengiraan Profil', '📊 Perbandingan dengan Perhitungan Profil'),
                     style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 12, color: AppColors.sunnahGreen)),
                 const SizedBox(height: 8),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                  _compareRow(tLang(lang, 'صورة', 'Photo', 'Photo', 'Photo', 'Photo', 'Photo'), '${r.bodyFatPercent.toStringAsFixed(1)}%', AppColors.barakahGold),
+                  _compareRow(tLang(lang, 'صورة', 'Photo', 'Photo', 'Fotoğraf', 'Foto', 'Foto'), '${r.bodyFatPercent.toStringAsFixed(1)}%', AppColors.barakahGold),
                   const Text('vs', style: TextStyle(fontFamily: 'Cairo', color: AppColors.lightMuted, fontSize: 12)),
-                  _compareRow(tLang(lang, 'حساب', 'Calc.', 'Calc.', 'Calc.', 'Calc.', 'Calc.'), '${profile.bodyFatPercent.toStringAsFixed(1)}%', AppColors.sunnahGreen),
+                  _compareRow(tLang(lang, 'حساب', 'Calc.', 'Calc.', 'Hesapla.', 'Kira.', 'Hitung.'), '${profile.bodyFatPercent.toStringAsFixed(1)}%', AppColors.sunnahGreen),
                 ]),
               ]),
             ),
@@ -506,7 +506,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
           SizedBox(width: double.infinity, child: OutlinedButton.icon(
             onPressed: () => setState(() { _image = null; _result = null; _state = BodyAnalysisState.idle; }),
             icon: const Icon(Icons.refresh, size: 16),
-            label: Text(tLang(lang, 'تحليل صورة جديدة', 'Analyze New Photo', 'Analyze New Photo', 'Analyze New Photo', 'Analyze New Photo', 'Analyze New Photo'),
+            label: Text(tLang(lang, 'تحليل صورة جديدة', 'Analyze New Photo', 'Analyser une nouvelle photo', 'Yeni Fotoğraf Analiz Et', 'Analisis Foto Baru', 'Analisis Foto Baru'),
                 style: const TextStyle(fontFamily: 'Cairo')),
             style: OutlinedButton.styleFrom(foregroundColor: AppColors.barakahGold, side: const BorderSide(color: AppColors.barakahGold)),
           )),
@@ -550,7 +550,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
 
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(tLang(lang, 'مقياس الدهون:', 'Fat Scale:', 'Fat Scale:', 'Fat Scale:', 'Fat Scale:', 'Fat Scale:'),
+        Text(tLang(lang, 'مقياس الدهون:', 'Fat Scale:', 'Échelle de graisse :', 'Yağ Ölçeği:', 'Skala Lemak:', 'Skala Lemak:'),
             style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.w700)),
         Text(isAr ? catAr : catEn,
             style: TextStyle(fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.w700, color: bfCol)),

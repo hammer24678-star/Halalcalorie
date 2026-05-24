@@ -93,7 +93,7 @@ class _BarakahState extends ConsumerState<BarakahScreen>
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16))),
                   child: Text(
-                    tLang(lang, '⭐ ترقّ للبريميوم', '⭐ Upgrade to Premium', '⭐ Upgrade to Premium', '⭐ Upgrade to Premium', '⭐ Upgrade to Premium', '⭐ Upgrade to Premium'),
+                    tLang(lang, '⭐ ترقّ للبريميوم', '⭐ Upgrade to Premium', '⭐ Passer à Premium', '⭐ Premium\'a Yükselt', '⭐ Naik Taraf ke Premium', '⭐ Upgrade ke Premium'),
                     style: const TextStyle(
                       fontFamily: 'Cairo', fontSize: 16,
                       fontWeight: FontWeight.w800, color: Colors.white)),

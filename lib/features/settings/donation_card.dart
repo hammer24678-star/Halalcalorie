@@ -45,7 +45,7 @@ class _DonationCardState extends ConsumerState<DonationCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.tLang(lang, 'ادعم التطبيق — صدقة جارية', 'Support the app', 'Support the app', 'Support the app', 'Support the app', 'Support the app'),
+                    widget.tLang(lang, 'ادعم التطبيق — صدقة جارية', 'Support the app', 'Soutenir l\'application', 'Uygulamayı destekle', 'Sokong aplikasi', 'Dukung aplikasi'),
                     style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 14, fontWeight: FontWeight.w800,

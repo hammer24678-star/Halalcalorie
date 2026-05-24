@@ -1,0 +1,1500 @@
+{
+  "\"The strong believer is better & more beloved to Allah\" — Muslim": {
+    "fr": "\"Le croyant fort est meilleur & plus aimé d'Allah\" — Muslim",
+    "tr": "\"Güçlü mümin, Allah'a zayıf müminden daha sevgilidir\" — Müslim",
+    "ur": "«مضبوط مومن کمزور مومن سے بہتر اور اللہ کو زیادہ محبوب ہے» — مسلم",
+    "ms": "«Mukmin yang kuat lebih baik & lebih dicintai Allah» — Muslim",
+    "id": "«Mukmin yang kuat lebih baik & lebih dicintai Allah» — Muslim"
+  },
+  "+ Add to Tracker": {
+    "fr": "+ Ajouter au suivi",
+    "tr": "+ Takibe Ekle",
+    "ur": "+ ٹریکر میں شامل کریں",
+    "ms": "+ Tambah ke Penjejak",
+    "id": "+ Tambah ke Pelacak"
+  },
+  "+ Cup": {
+    "fr": "+ Verre",
+    "tr": "+ Bardak",
+    "ur": "+ کپ",
+    "ms": "+ Cawan",
+    "id": "+ Gelas"
+  },
+  "+ Log": {
+    "fr": "+ Enregistrer",
+    "tr": "+ Kaydet",
+    "ur": "+ درج کریں",
+    "ms": "+ Log",
+    "id": "+ Catat"
+  },
+  "- Cup": {
+    "fr": "- Verre",
+    "tr": "- Bardak",
+    "ur": "- کپ",
+    "ms": "- Cawan",
+    "id": "- Gelas"
+  },
+  "/ month": {
+    "fr": "/ mois",
+    "tr": "/ ay",
+    "ur": "/ مہینہ",
+    "ms": "/ bulan",
+    "id": "/ bulan"
+  },
+  "/ year": {
+    "fr": "/ an",
+    "tr": "/ yıl",
+    "ur": "/ سال",
+    "ms": "/ tahun",
+    "id": "/ tahun"
+  },
+  "180 plans": {
+    "fr": "180 plans",
+    "tr": "180 plan",
+    "ur": "180 منصوبے",
+    "ms": "180 rancangan",
+    "id": "180 rencana"
+  },
+  "AI Body Photo Analysis 🤖": {
+    "fr": "Analyse corporelle IA 🤖",
+    "tr": "AI Vücut Fotoğraf Analizi 🤖",
+    "ur": "AI جسمانی تصویر تجزیہ 🤖",
+    "ms": "Analisis Foto Badan AI 🤖",
+    "id": "Analisis Foto Tubuh AI 🤖"
+  },
+  "AI Key Not Configured": {
+    "fr": "Clé AI non configurée",
+    "tr": "AI Anahtarı Yapılandırılmamış",
+    "ur": "AI کلید ترتیب نہیں",
+    "ms": "Kunci AI Tidak Dikonfigurasi",
+    "id": "Kunci AI Belum Dikonfigurasi"
+  },
+  "AI instant": {
+    "fr": "IA instantanée",
+    "tr": "Anlık AI",
+    "ur": "فوری AI",
+    "ms": "AI Segera",
+    "id": "AI Instan"
+  },
+  "API key not configured": {
+    "fr": "Clé API non configurée",
+    "tr": "API anahtarı yapılandırılmamış",
+    "ur": "API کلید ترتیب نہیں",
+    "ms": "Kunci API tidak dikonfigurasi",
+    "id": "Kunci API belum dikonfigurasi"
+  },
+  "Add": {
+    "fr": "Ajouter",
+    "tr": "Ekle",
+    "ur": "شامل کریں",
+    "ms": "Tambah",
+    "id": "Tambah"
+  },
+  "Add This Food": {
+    "fr": "Ajouter cet aliment",
+    "tr": "Bu Yiyeceği Ekle",
+    "ur": "یہ کھانا شامل کریں",
+    "ms": "Tambah Makanan Ini",
+    "id": "Tambah Makanan Ini"
+  },
+  "Adjusted for your goal": {
+    "fr": "Ajusté selon votre objectif",
+    "tr": "Hedefinize göre ayarlandı",
+    "ur": "آپ کے ہدف کے مطابق",
+    "ms": "Disesuaikan dengan matlamat anda",
+    "id": "Disesuaikan dengan tujuan Anda"
+  },
+  "Analyze New Photo": {
+    "fr": "Analyser une nouvelle photo",
+    "tr": "Yeni Fotoğraf Analiz Et",
+    "ur": "نئی تصویر کا تجزیہ",
+    "ms": "Analisis Foto Baru",
+    "id": "Analisis Foto Baru"
+  },
+  "Analyzing…": {
+    "fr": "Analyse en cours…",
+    "tr": "Analiz ediliyor…",
+    "ur": "تجزیہ ہو رہا ہے…",
+    "ms": "Menganalisis…",
+    "id": "Menganalisis…"
+  },
+  "Are you sure?": {
+    "fr": "Êtes-vous sûr ?",
+    "tr": "Emin misiniz?",
+    "ur": "کیا آپ یقین رکھتے ہیں؟",
+    "ms": "Adakah anda pasti?",
+    "id": "Anda yakin?"
+  },
+  "BMI": {
+    "fr": "IMC",
+    "tr": "VKİ",
+    "ur": "BMI",
+    "ms": "BMI",
+    "id": "IMT"
+  },
+  "BMI & more": {
+    "fr": "IMC & plus",
+    "tr": "VKİ & daha fazlası",
+    "ur": "BMI اور مزید",
+    "ms": "BMI & lagi",
+    "id": "IMT & lebih"
+  },
+  "BMI Calculator": {
+    "fr": "Calculateur IMC",
+    "tr": "VKİ Hesaplayıcı",
+    "ur": "BMI کیلکولیٹر",
+    "ms": "Kalkulator BMI",
+    "id": "Kalkulator IMT"
+  },
+  "BMR": {
+    "fr": "MB",
+    "tr": "BMH",
+    "ur": "BMR",
+    "ms": "BMR",
+    "id": "BMR"
+  },
+  "Barcode": {
+    "fr": "Code-barres",
+    "tr": "Barkod",
+    "ur": "بارکوڈ",
+    "ms": "Kod Bar",
+    "id": "Barcode"
+  },
+  "Basal Metabolic Rate (BMR)": {
+    "fr": "Métabolisme de base (MB)",
+    "tr": "Bazal Metabolizma Hızı (BMH)",
+    "ur": "بنیادی میٹابولک شرح (BMR)",
+    "ms": "Kadar Metabolisme Basal (BMR)",
+    "id": "Laju Metabolisme Basal (BMR)"
+  },
+  "Before continuing — Privacy Consent": {
+    "fr": "Avant de continuer — Consentement confidentialité",
+    "tr": "Devam etmeden — Gizlilik Onayı",
+    "ur": "جاری رکھنے سے پہلے — رازداری کی رضامندی",
+    "ms": "Sebelum teruskan — Persetujuan Privasi",
+    "id": "Sebelum melanjutkan — Persetujuan Privasi"
+  },
+  "Body": {
+    "fr": "Corps",
+    "tr": "Vücut",
+    "ur": "جسم",
+    "ms": "Badan",
+    "id": "Tubuh"
+  },
+  "Body Analysis 💪": {
+    "fr": "Analyse corporelle 💪",
+    "tr": "Vücut Analizi 💪",
+    "ur": "جسمانی تجزیہ 💪",
+    "ms": "Analisis Badan 💪",
+    "id": "Analisis Tubuh 💪"
+  },
+  "Body Fat %": {
+    "fr": "% Graisse corporelle",
+    "tr": "Vücut Yağ %",
+    "ur": "جسمانی چربی %",
+    "ms": "% Lemak Badan",
+    "id": "% Lemak Tubuh"
+  },
+  "Body Fat % (Deurenberg)": {
+    "fr": "% Graisse (Deurenberg)",
+    "tr": "Vücut Yağ % (Deurenberg)",
+    "ur": "جسمانی چربی % (Deurenberg)",
+    "ms": "% Lemak Badan (Deurenberg)",
+    "id": "% Lemak Tubuh (Deurenberg)"
+  },
+  "Body Mass Index": {
+    "fr": "Indice de masse corporelle",
+    "tr": "Vücut Kitle İndeksi",
+    "ur": "جسمانی کمیت اشاریہ",
+    "ms": "Indeks Jisim Badan",
+    "id": "Indeks Massa Tubuh"
+  },
+  "Body Type": {
+    "fr": "Type de corps",
+    "tr": "Vücut Tipi",
+    "ur": "جسمانی قسم",
+    "ms": "Jenis Badan",
+    "id": "Tipe Tubuh"
+  },
+  "Bone Mass (estimate)": {
+    "fr": "Masse osseuse (estimation)",
+    "tr": "Kemik Kitlesi (tahmin)",
+    "ur": "ہڈیوں کی کمیت (اندازہ)",
+    "ms": "Jisim Tulang (anggaran)",
+    "id": "Massa Tulang (perkiraan)"
+  },
+  "Calc.": {
+    "fr": "Calc.",
+    "tr": "Hesapla.",
+    "ur": "حساب",
+    "ms": "Kira.",
+    "id": "Hitung."
+  },
+  "Calculate BMI": {
+    "fr": "Calculer l'IMC",
+    "tr": "VKİ Hesapla",
+    "ur": "BMI حساب کریں",
+    "ms": "Kira BMI",
+    "id": "Hitung IMT"
+  },
+  "Calorie Goal": {
+    "fr": "Objectif calorique",
+    "tr": "Kalori Hedefi",
+    "ur": "کیلوری کا ہدف",
+    "ms": "Sasaran Kalori",
+    "id": "Target Kalori"
+  },
+  "Calories": {
+    "fr": "Calories",
+    "tr": "Kalori",
+    "ur": "کیلوریز",
+    "ms": "Kalori",
+    "id": "Kalori"
+  },
+  "Calories Burned in 30 min": {
+    "fr": "Calories brûlées en 30 min",
+    "tr": "30 dakikada yakılan kalori",
+    "ur": "30 منٹ میں جلی کیلوریز",
+    "ms": "Kalori Dibakar dalam 30 min",
+    "id": "Kalori Terbakar dalam 30 menit"
+  },
+  "Cancel": {
+    "fr": "Annuler",
+    "tr": "İptal",
+    "ur": "منسوخ",
+    "ms": "Batal",
+    "id": "Batal"
+  },
+  "Cancel Subscription": {
+    "fr": "Annuler l'abonnement",
+    "tr": "Aboneliği İptal Et",
+    "ur": "سبسکرپشن منسوخ کریں",
+    "ms": "Batalkan Langganan",
+    "id": "Batalkan Langganan"
+  },
+  "Carbs": {
+    "fr": "Glucides",
+    "tr": "Karbonhidrat",
+    "ur": "کاربس",
+    "ms": "Karbohidrat",
+    "id": "Karbohidrat"
+  },
+  "Choose Your City": {
+    "fr": "Choisissez votre ville",
+    "tr": "Şehrinizi Seçin",
+    "ur": "اپنا شہر چنیں",
+    "ms": "Pilih Bandar Anda",
+    "id": "Pilih Kota Anda"
+  },
+  "Clear": {
+    "fr": "Effacer",
+    "tr": "Temizle",
+    "ur": "صاف کریں",
+    "ms": "Padam",
+    "id": "Hapus"
+  },
+  "Close": {
+    "fr": "Fermer",
+    "tr": "Kapat",
+    "ur": "بند کریں",
+    "ms": "Tutup",
+    "id": "Tutup"
+  },
+  "Complete your profile setup first": {
+    "fr": "Complétez d'abord votre profil",
+    "tr": "Önce profilinizi tamamlayın",
+    "ur": "پہلے اپنا پروفائل مکمل کریں",
+    "ms": "Lengkapkan profil anda dahulu",
+    "id": "Lengkapi profil Anda terlebih dahulu"
+  },
+  "Connection timed out, try again": {
+    "fr": "Connexion expirée, réessayez",
+    "tr": "Bağlantı zaman aşımına uğradı, tekrar deneyin",
+    "ur": "کنکشن ختم ہوگیا، دوبارہ کوشش کریں",
+    "ms": "Sambungan tamat masa, cuba lagi",
+    "id": "Koneksi habis waktu, coba lagi"
+  },
+  "Could not open camera.": {
+    "fr": "Impossible d'ouvrir la caméra.",
+    "tr": "Kamera açılamadı.",
+    "ur": "کیمرہ نہیں کھل سکا۔",
+    "ms": "Tidak dapat buka kamera.",
+    "id": "Tidak dapat membuka kamera."
+  },
+  "Current Weight": {
+    "fr": "Poids actuel",
+    "tr": "Mevcut Ağırlık",
+    "ur": "موجودہ وزن",
+    "ms": "Berat Semasa",
+    "id": "Berat Saat Ini"
+  },
+  "Daily Limit Reached": {
+    "fr": "Limite journalière atteinte",
+    "tr": "Günlük Limit Aşıldı",
+    "ur": "یومیہ حد پہنچ گئی",
+    "ms": "Had Harian Dicapai",
+    "id": "Batas Harian Tercapai"
+  },
+  "Daily Water": {
+    "fr": "Eau quotidienne",
+    "tr": "Günlük Su",
+    "ur": "یومیہ پانی",
+    "ms": "Air Harian",
+    "id": "Air Harian"
+  },
+  "Daily Water Goal": {
+    "fr": "Objectif eau quotidien",
+    "tr": "Günlük Su Hedefi",
+    "ur": "یومیہ پانی کا ہدف",
+    "ms": "Sasaran Air Harian",
+    "id": "Target Air Harian"
+  },
+  "Daily at 5:30pm": {
+    "fr": "Quotidien à 17h30",
+    "tr": "Her gün 17:30'da",
+    "ur": "روزانہ شام 5:30 بجے",
+    "ms": "Harian pada 5:30ptg",
+    "id": "Harian pukul 17:30"
+  },
+  "Delete": {
+    "fr": "Supprimer",
+    "tr": "Sil",
+    "ur": "حذف کریں",
+    "ms": "Padam",
+    "id": "Hapus"
+  },
+  "Details": {
+    "fr": "Détails",
+    "tr": "Detaylar",
+    "ur": "تفصیلات",
+    "ms": "Butiran",
+    "id": "Detail"
+  },
+  "Difference from Ideal": {
+    "fr": "Écart de l'idéal",
+    "tr": "İdealden Fark",
+    "ur": "مثالی سے فرق",
+    "ms": "Perbezaan dari Ideal",
+    "id": "Perbedaan dari Ideal"
+  },
+  "Distance": {
+    "fr": "Distance",
+    "tr": "Mesafe",
+    "ur": "فاصلہ",
+    "ms": "Jarak",
+    "id": "Jarak"
+  },
+  "Energy at complete rest": {
+    "fr": "Énergie au repos total",
+    "tr": "Tam dinlenmede enerji",
+    "ur": "مکمل آرام میں توانائی",
+    "ms": "Tenaga semasa rehat penuh",
+    "id": "Energi saat istirahat total"
+  },
+  "English": {
+    "fr": "Français",
+    "tr": "Türkçe",
+    "ur": "اردو",
+    "ms": "Melayu",
+    "id": "Indonesia"
+  },
+  "Error - try again": {
+    "fr": "Erreur - réessayez",
+    "tr": "Hata - tekrar deneyin",
+    "ur": "خطا - دوبارہ کوشش کریں",
+    "ms": "Ralat - cuba lagi",
+    "id": "Error - coba lagi"
+  },
+  "Every 2h 8am–10pm": {
+    "fr": "Toutes les 2h 8h–22h",
+    "tr": "Her 2 saatte 8:00–22:00",
+    "ur": "ہر 2 گھنٹے صبح 8 تا رات 10",
+    "ms": "Setiap 2j 8pg–10mlm",
+    "id": "Setiap 2j pukul 8–22"
+  },
+  "Fat": {
+    "fr": "Lipides",
+    "tr": "Yağ",
+    "ur": "چربی",
+    "ms": "Lemak",
+    "id": "Lemak"
+  },
+  "Fat Scale:": {
+    "fr": "Échelle de graisse :",
+    "tr": "Yağ Ölçeği:",
+    "ur": "چربی کا پیمانہ:",
+    "ms": "Skala Lemak:",
+    "id": "Skala Lemak:"
+  },
+  "Got it 👍": {
+    "fr": "Compris 👍",
+    "tr": "Anlaşıldı 👍",
+    "ur": "سمجھ آ گئی 👍",
+    "ms": "Faham 👍",
+    "id": "Mengerti 👍"
+  },
+  "Great start! Keep going for a full week 🌟": {
+    "fr": "Bon début ! Continuez une semaine complète 🌟",
+    "tr": "Harika başlangıç! Tam bir hafta devam et 🌟",
+    "ur": "زبردست آغاز! پوری ہفتہ جاری رکھیں 🌟",
+    "ms": "Permulaan hebat! Teruskan seminggu penuh 🌟",
+    "id": "Awal yang bagus! Teruskan seminggu penuh 🌟"
+  },
+  "Halal Check": {
+    "fr": "Vérification Halal",
+    "tr": "Helal Kontrol",
+    "ur": "حلال جانچ",
+    "ms": "Semakan Halal",
+    "id": "Cek Halal"
+  },
+  "Halal check": {
+    "fr": "Vérification halal",
+    "tr": "Helal kontrol",
+    "ur": "حلال جانچ",
+    "ms": "Semakan halal",
+    "id": "Cek halal"
+  },
+  "Height (cm)": {
+    "fr": "Taille (cm)",
+    "tr": "Boy (cm)",
+    "ur": "قد (سینٹی میٹر)",
+    "ms": "Tinggi (cm)",
+    "id": "Tinggi (cm)"
+  },
+  "Height cm": {
+    "fr": "Taille cm",
+    "tr": "Boy cm",
+    "ur": "قد سینٹی میٹر",
+    "ms": "Tinggi cm",
+    "id": "Tinggi cm"
+  },
+  "High Cal": {
+    "fr": "Cal. élevées",
+    "tr": "Yüksek Kal.",
+    "ur": "زیادہ کیلوری",
+    "ms": "Kal Tinggi",
+    "id": "Kal Tinggi"
+  },
+  "High Protein": {
+    "fr": "Riche en protéines",
+    "tr": "Yüksek Protein",
+    "ur": "زیادہ پروٹین",
+    "ms": "Protein Tinggi",
+    "id": "Protein Tinggi"
+  },
+  "How to get accurate results?": {
+    "fr": "Comment obtenir des résultats précis ?",
+    "tr": "Doğru sonuçlar nasıl elde edilir?",
+    "ur": "درست نتائج کیسے حاصل کریں؟",
+    "ms": "Bagaimana mendapat hasil tepat?",
+    "id": "Cara mendapat hasil akurat?"
+  },
+  "Ideal Weight": {
+    "fr": "Poids idéal",
+    "tr": "İdeal Ağırlık",
+    "ur": "مثالی وزن",
+    "ms": "Berat Ideal",
+    "id": "Berat Ideal"
+  },
+  "Ideal Weight (Devine)": {
+    "fr": "Poids idéal (Devine)",
+    "tr": "İdeal Ağırlık (Devine)",
+    "ur": "مثالی وزن (Devine)",
+    "ms": "Berat Ideal (Devine)",
+    "id": "Berat Ideal (Devine)"
+  },
+  "Iron": {
+    "fr": "Fer",
+    "tr": "Demir",
+    "ur": "آئرن",
+    "ms": "Zat Besi",
+    "id": "Zat Besi"
+  },
+  "Islamic Health Articles": {
+    "fr": "Articles de santé islamique",
+    "tr": "İslami Sağlık Makaleleri",
+    "ur": "اسلامی صحت کے مضامین",
+    "ms": "Artikel Kesihatan Islam",
+    "id": "Artikel Kesehatan Islami"
+  },
+  "JazakAllah Khayran": {
+    "fr": "JazakAllah Khayran",
+    "tr": "JazakAllah Khayran",
+    "ur": "جزاک اللہ خیرا",
+    "ms": "JazakAllah Khayran",
+    "id": "JazakAllah Khayran"
+  },
+  "LIVE": {
+    "fr": "EN DIRECT",
+    "tr": "CANLI",
+    "ur": "براہ راست",
+    "ms": "LANGSUNG",
+    "id": "LANGSUNG"
+  },
+  "Lean Body Mass (LBM)": {
+    "fr": "Masse maigre (MM)",
+    "tr": "Yağsız Vücut Kitlesi (YVK)",
+    "ur": "دبلی جسمانی کمیت (LBM)",
+    "ms": "Jisim Badan Tanpa Lemak (LBM)",
+    "id": "Massa Tubuh Tanpa Lemak (LBM)"
+  },
+  "Lifetime": {
+    "fr": "À vie",
+    "tr": "Ömür boyu",
+    "ur": "زندگی بھر",
+    "ms": "Seumur Hidup",
+    "id": "Seumur Hidup"
+  },
+  "Light": {
+    "fr": "Léger",
+    "tr": "Hafif",
+    "ur": "ہلکا",
+    "ms": "Ringan",
+    "id": "Ringan"
+  },
+  "Log Again": {
+    "fr": "Enregistrer à nouveau",
+    "tr": "Tekrar Kaydet",
+    "ur": "دوبارہ درج کریں",
+    "ms": "Log Lagi",
+    "id": "Catat Lagi"
+  },
+  "Log Your Weight": {
+    "fr": "Enregistrez votre poids",
+    "tr": "Ağırlığınızı Kaydedin",
+    "ur": "اپنا وزن درج کریں",
+    "ms": "Log Berat Anda",
+    "id": "Catat Berat Anda"
+  },
+  "Log a meal today to start your streak! 💪": {
+    "fr": "Enregistrez un repas aujourd'hui pour démarrer votre série ! 💪",
+    "tr": "Serinizi başlatmak için bugün öğün kaydedin! 💪",
+    "ur": "آج کھانا درج کریں اور سلسلہ شروع کریں! 💪",
+    "ms": "Log makanan hari ini untuk mulakan streak! 💪",
+    "id": "Catat makan hari ini untuk mulai streak! 💪"
+  },
+  "Log again tomorrow to see your trend": {
+    "fr": "Enregistrez demain pour voir votre tendance",
+    "tr": "Trendini görmek için yarın tekrar kaydet",
+    "ur": "اپنا رجحان دیکھنے کے لیے کل دوبارہ درج کریں",
+    "ms": "Log lagi esok untuk lihat trend anda",
+    "id": "Catat lagi besok untuk melihat tren Anda"
+  },
+  "Log your dinner and hit your daily goal 🌙": {
+    "fr": "Enregistrez votre dîner et atteignez votre objectif 🌙",
+    "tr": "Akşam yemeğinizi kaydedin ve günlük hedefinize ulaşın 🌙",
+    "ur": "اپنا رات کا کھانا درج کریں اور یومیہ ہدف پورا کریں 🌙",
+    "ms": "Log makan malam dan capai matlamat harian 🌙",
+    "id": "Catat makan malam dan capai target harian 🌙"
+  },
+  "Low Carb": {
+    "fr": "Faible en glucides",
+    "tr": "Düşük Karbonhidrat",
+    "ur": "کم کاربس",
+    "ms": "Rendah Karbohidrat",
+    "id": "Rendah Karbohidrat"
+  },
+  "Low Fat": {
+    "fr": "Faible en gras",
+    "tr": "Düşük Yağ",
+    "ur": "کم چربی",
+    "ms": "Rendah Lemak",
+    "id": "Rendah Lemak"
+  },
+  "Macro Plans": {
+    "fr": "Plans macro",
+    "tr": "Makro Planlar",
+    "ur": "میکرو منصوبے",
+    "ms": "Pelan Makro",
+    "id": "Rencana Makro"
+  },
+  "Manage Your Subscription": {
+    "fr": "Gérer votre abonnement",
+    "tr": "Aboneliğinizi Yönetin",
+    "ur": "اپنی سبسکرپشن منظم کریں",
+    "ms": "Urus Langganan Anda",
+    "id": "Kelola Langganan Anda"
+  },
+  "Manual adjust:": {
+    "fr": "Ajustement manuel :",
+    "tr": "Manuel ayar:",
+    "ur": "دستی ایڈجسٹ:",
+    "ms": "Laraskan manual:",
+    "id": "Sesuaikan manual:"
+  },
+  "Masha Allah! Incredible streak 🏆": {
+    "fr": "Masha Allah ! Série incroyable 🏆",
+    "tr": "Maşaallah! İnanılmaz seri 🏆",
+    "ur": "ماشاء اللہ! ناقابل یقین سلسلہ 🏆",
+    "ms": "Masha Allah! Streak yang luar biasa 🏆",
+    "id": "Masha Allah! Streak yang luar biasa 🏆"
+  },
+  "Measure": {
+    "fr": "Mesurer",
+    "tr": "Ölç",
+    "ur": "ناپیں",
+    "ms": "Ukur",
+    "id": "Ukur"
+  },
+  "Monthly": {
+    "fr": "Mensuel",
+    "tr": "Aylık",
+    "ur": "ماہانہ",
+    "ms": "Bulanan",
+    "id": "Bulanan"
+  },
+  "Most Popular": {
+    "fr": "Le plus populaire",
+    "tr": "En Popüler",
+    "ur": "سب سے مقبول",
+    "ms": "Paling Popular",
+    "id": "Paling Populer"
+  },
+  "Muscle Mass": {
+    "fr": "Masse musculaire",
+    "tr": "Kas Kitlesi",
+    "ur": "عضلاتی کمیت",
+    "ms": "Jisim Otot",
+    "id": "Massa Otot"
+  },
+  "Muscle Mass (estimate)": {
+    "fr": "Masse musculaire (estimation)",
+    "tr": "Kas Kitlesi (tahmin)",
+    "ur": "عضلاتی کمیت (اندازہ)",
+    "ms": "Jisim Otot (anggaran)",
+    "id": "Massa Otot (perkiraan)"
+  },
+  "My Body Metrics 💪": {
+    "fr": "Mes métriques corporelles 💪",
+    "tr": "Vücut Metriklerim 💪",
+    "ur": "میری جسمانی پیمائش 💪",
+    "ms": "Metrik Badan Saya 💪",
+    "id": "Metrik Tubuh Saya 💪"
+  },
+  "NEW!": {
+    "fr": "NOUVEAU !",
+    "tr": "YENİ!",
+    "ur": "نیا!",
+    "ms": "BARU!",
+    "id": "BARU!"
+  },
+  "Next Prayer": {
+    "fr": "Prochaine prière",
+    "tr": "Sonraki Namaz",
+    "ur": "اگلی نماز",
+    "ms": "Solat Seterusnya",
+    "id": "Shalat Berikutnya"
+  },
+  "Next →": {
+    "fr": "Suivant →",
+    "tr": "İleri →",
+    "ur": "اگلا →",
+    "ms": "Seterusnya →",
+    "id": "Berikutnya →"
+  },
+  "No data — try AI Analysis": {
+    "fr": "Pas de données — essayez l'analyse IA",
+    "tr": "Veri yok — AI Analizini deneyin",
+    "ur": "کوئی ڈیٹا نہیں — AI تجزیہ آزمائیں",
+    "ms": "Tiada data — cuba Analisis AI",
+    "id": "Tidak ada data — coba Analisis AI"
+  },
+  "No purchases found": {
+    "fr": "Aucun achat trouvé",
+    "tr": "Satın alma bulunamadı",
+    "ur": "کوئی خریداری نہیں ملی",
+    "ms": "Tiada pembelian dijumpai",
+    "id": "Tidak ada pembelian ditemukan"
+  },
+  "No scans yet": {
+    "fr": "Aucun scan encore",
+    "tr": "Henüz tarama yok",
+    "ur": "ابھی تک کوئی اسکین نہیں",
+    "ms": "Belum ada imbasan",
+    "id": "Belum ada pemindaian"
+  },
+  "Normal": {
+    "fr": "Normal",
+    "tr": "Normal",
+    "ur": "نارمل",
+    "ms": "Normal",
+    "id": "Normal"
+  },
+  "Normal: 60-100 bpm": {
+    "fr": "Normal : 60-100 bpm",
+    "tr": "Normal: 60-100 bpm",
+    "ur": "نارمل: 60-100 bpm",
+    "ms": "Normal: 60-100 bpm",
+    "id": "Normal: 60-100 bpm"
+  },
+  "Nutrition": {
+    "fr": "Nutrition",
+    "tr": "Beslenme",
+    "ur": "غذائیت",
+    "ms": "Pemakanan",
+    "id": "Nutrisi"
+  },
+  "Obese": {
+    "fr": "Obèse",
+    "tr": "Obez",
+    "ur": "موٹاپا",
+    "ms": "Obes",
+    "id": "Obesitas"
+  },
+  "Over": {
+    "fr": "Au-dessus",
+    "tr": "Üzerinde",
+    "ur": "زیادہ",
+    "ms": "Melebihi",
+    "id": "Melebihi"
+  },
+  "Overview": {
+    "fr": "Aperçu",
+    "tr": "Genel Bakış",
+    "ur": "جائزہ",
+    "ms": "Gambaran Keseluruhan",
+    "id": "Ikhtisar"
+  },
+  "Photo": {
+    "fr": "Photo",
+    "tr": "Fotoğraf",
+    "ur": "تصویر",
+    "ms": "Foto",
+    "id": "Foto"
+  },
+  "Photo Food": {
+    "fr": "Photo alimentaire",
+    "tr": "Fotoğraflı Yiyecek",
+    "ur": "کھانے کی تصویر",
+    "ms": "Foto Makanan",
+    "id": "Foto Makanan"
+  },
+  "Plan generation failed, try again": {
+    "fr": "Génération du plan échouée, réessayez",
+    "tr": "Plan oluşturma başarısız, tekrar deneyin",
+    "ur": "منصوبہ بنانا ناکام، دوبارہ کوشش کریں",
+    "ms": "Penjanaan pelan gagal, cuba lagi",
+    "id": "Pembuatan rencana gagal, coba lagi"
+  },
+  "Processing...": {
+    "fr": "Traitement...",
+    "tr": "İşleniyor...",
+    "ur": "پروسیسنگ...",
+    "ms": "Memproses...",
+    "id": "Memproses..."
+  },
+  "Protein": {
+    "fr": "Protéines",
+    "tr": "Protein",
+    "ur": "پروٹین",
+    "ms": "Protein",
+    "id": "Protein"
+  },
+  "Purchase failed. Please try again.": {
+    "fr": "Achat échoué. Veuillez réessayer.",
+    "tr": "Satın alma başarısız. Lütfen tekrar deneyin.",
+    "ur": "خریداری ناکام۔ دوبارہ کوشش کریں۔",
+    "ms": "Pembelian gagal. Sila cuba lagi.",
+    "id": "Pembelian gagal. Silakan coba lagi."
+  },
+  "Quick Actions": {
+    "fr": "Actions rapides",
+    "tr": "Hızlı İşlemler",
+    "ur": "فوری اقدامات",
+    "ms": "Tindakan Pantas",
+    "id": "Tindakan Cepat"
+  },
+  "Quick Text Entry": {
+    "fr": "Saisie rapide",
+    "tr": "Hızlı Metin Girişi",
+    "ur": "فوری متن داخل",
+    "ms": "Kemasukan Teks Pantas",
+    "id": "Entri Teks Cepat"
+  },
+  "Recommended Calorie Goal": {
+    "fr": "Objectif calorique recommandé",
+    "tr": "Önerilen Kalori Hedefi",
+    "ur": "تجویز کردہ کیلوری ہدف",
+    "ms": "Sasaran Kalori Disyorkan",
+    "id": "Target Kalori yang Direkomendasikan"
+  },
+  "Recommended daily protein:": {
+    "fr": "Protéines quotidiennes recommandées :",
+    "tr": "Günlük önerilen protein:",
+    "ur": "روزانہ تجویز کردہ پروٹین:",
+    "ms": "Protein harian disyorkan:",
+    "id": "Protein harian yang direkomendasikan:"
+  },
+  "Restore Purchases": {
+    "fr": "Restaurer les achats",
+    "tr": "Satın Almaları Geri Yükle",
+    "ur": "خریداریاں بحال کریں",
+    "ms": "Pulihkan Pembelian",
+    "id": "Pulihkan Pembelian"
+  },
+  "Save": {
+    "fr": "Enregistrer",
+    "tr": "Kaydet",
+    "ur": "محفوظ کریں",
+    "ms": "Simpan",
+    "id": "Simpan"
+  },
+  "Save 30%": {
+    "fr": "Économisez 30%",
+    "tr": "%30 Tasarruf",
+    "ur": "30% بچائیں",
+    "ms": "Jimat 30%",
+    "id": "Hemat 30%"
+  },
+  "Say Bismillah and log your breakfast ✨": {
+    "fr": "Dites Bismillah et enregistrez votre petit-déjeuner ✨",
+    "tr": "Bismillah de ve kahvaltını kaydet ✨",
+    "ur": "بسم اللہ کہیں اور ناشتہ درج کریں ✨",
+    "ms": "Sebut Bismillah dan log sarapan anda ✨",
+    "id": "Ucapkan Bismillah dan catat sarapan Anda ✨"
+  },
+  "Scan History": {
+    "fr": "Historique des scans",
+    "tr": "Tarama Geçmişi",
+    "ur": "اسکین تاریخ",
+    "ms": "Sejarah Imbasan",
+    "id": "Riwayat Pemindaian"
+  },
+  "See: Exact body fat % • Muscle mass • Lean body mass": {
+    "fr": "Voir : % graisse exact • Masse musculaire • Masse maigre",
+    "tr": "Gör: Kesin yağ oranı • Kas kitlesi • Yağsız kütle",
+    "ur": "دیکھیں: چربی % • عضلاتی کمیت • دبلی کمیت",
+    "ms": "Lihat: % lemak tepat • Jisim otot • Jisim tanpa lemak",
+    "id": "Lihat: % lemak tepat • Massa otot • Massa tanpa lemak"
+  },
+  "Setup My Profile": {
+    "fr": "Configurer mon profil",
+    "tr": "Profilimi Kur",
+    "ur": "میرا پروفائل ترتیب دیں",
+    "ms": "Sediakan Profil Saya",
+    "id": "Atur Profil Saya"
+  },
+  "Sign Out": {
+    "fr": "Se déconnecter",
+    "tr": "Çıkış Yap",
+    "ur": "سائن آؤٹ",
+    "ms": "Log Keluar",
+    "id": "Keluar"
+  },
+  "Skip": {
+    "fr": "Passer",
+    "tr": "Atla",
+    "ur": "چھوڑیں",
+    "ms": "Langkau",
+    "id": "Lewati"
+  },
+  "Sleep": {
+    "fr": "Sommeil",
+    "tr": "Uyku",
+    "ur": "نیند",
+    "ms": "Tidur",
+    "id": "Tidur"
+  },
+  "Sleep Goal": {
+    "fr": "Objectif sommeil",
+    "tr": "Uyku Hedefi",
+    "ur": "نیند کا ہدف",
+    "ms": "Sasaran Tidur",
+    "id": "Target Tidur"
+  },
+  "Some metrics require Premium — Tap ⭐ to unlock": {
+    "fr": "Certaines métriques nécessitent Premium — Appuyez sur ⭐",
+    "tr": "Bazı metrikler Premium gerektirir — ⭐'ya dokunun",
+    "ur": "کچھ پیمائش پریمیم درکار — ⭐ دبائیں",
+    "ms": "Sesetengah metrik perlu Premium — Ketuk ⭐",
+    "id": "Beberapa metrik perlu Premium — Ketuk ⭐"
+  },
+  "Start your journey 🌿": {
+    "fr": "Commencez votre voyage 🌿",
+    "tr": "Yolculuğuna başla 🌿",
+    "ur": "اپنا سفر شروع کریں 🌿",
+    "ms": "Mulakan perjalanan anda 🌿",
+    "id": "Mulailah perjalanan Anda 🌿"
+  },
+  "Streak": {
+    "fr": "Série",
+    "tr": "Seri",
+    "ur": "سلسلہ",
+    "ms": "Streak",
+    "id": "Streak"
+  },
+  "Support the app": {
+    "fr": "Soutenir l'application",
+    "tr": "Uygulamayı destekle",
+    "ur": "ایپ کی حمایت کریں",
+    "ms": "Sokong aplikasi",
+    "id": "Dukung aplikasi"
+  },
+  "TDEE": {
+    "fr": "DETJ",
+    "tr": "TGEH",
+    "ur": "TDEE",
+    "ms": "TDEE",
+    "id": "TDEE"
+  },
+  "Tap any article to read": {
+    "fr": "Appuyez sur un article pour lire",
+    "tr": "Okumak için herhangi bir makaleye dokun",
+    "ur": "پڑھنے کے لیے کوئی مضمون دبائیں",
+    "ms": "Ketuk mana-mana artikel untuk baca",
+    "id": "Ketuk artikel mana saja untuk membaca"
+  },
+  "Tap to log your weight today": {
+    "fr": "Appuyez pour enregistrer votre poids",
+    "tr": "Bugünkü ağırlığını kaydetmek için dokun",
+    "ur": "آج اپنا وزن درج کرنے کے لیے دبائیں",
+    "ms": "Ketuk untuk log berat anda hari ini",
+    "id": "Ketuk untuk mencatat berat Anda hari ini"
+  },
+  "Total Daily Energy (TDEE)": {
+    "fr": "Énergie quotidienne totale (DETJ)",
+    "tr": "Toplam Günlük Enerji (TGEH)",
+    "ur": "کل یومیہ توانائی (TDEE)",
+    "ms": "Jumlah Tenaga Harian (TDEE)",
+    "id": "Total Energi Harian (TDEE)"
+  },
+  "Total Daily Goal": {
+    "fr": "Objectif quotidien total",
+    "tr": "Toplam Günlük Hedef",
+    "ur": "کل یومیہ ہدف",
+    "ms": "Sasaran Harian Jumlah",
+    "id": "Target Harian Total"
+  },
+  "Under": {
+    "fr": "En dessous",
+    "tr": "Altında",
+    "ur": "کم",
+    "ms": "Di bawah",
+    "id": "Di bawah"
+  },
+  "Unknown": {
+    "fr": "Inconnu",
+    "tr": "Bilinmiyor",
+    "ur": "نامعلوم",
+    "ms": "Tidak diketahui",
+    "id": "Tidak diketahui"
+  },
+  "Unknown Product": {
+    "fr": "Produit inconnu",
+    "tr": "Bilinmeyen Ürün",
+    "ur": "نامعلوم مصنوع",
+    "ms": "Produk Tidak Diketahui",
+    "id": "Produk Tidak Diketahui"
+  },
+  "Unlock Premium": {
+    "fr": "Débloquer Premium",
+    "tr": "Premium'u Aç",
+    "ur": "پریمیم کھولیں",
+    "ms": "Buka Kunci Premium",
+    "id": "Buka Premium"
+  },
+  "Upgrade": {
+    "fr": "Mettre à niveau",
+    "tr": "Yükselt",
+    "ur": "اپ گریڈ کریں",
+    "ms": "Naik Taraf",
+    "id": "Upgrade"
+  },
+  "Via App Store or Google Play": {
+    "fr": "Via App Store ou Google Play",
+    "tr": "App Store veya Google Play üzerinden",
+    "ur": "ایپ اسٹور یا گوگل پلے کے ذریعے",
+    "ms": "Melalui App Store atau Google Play",
+    "id": "Melalui App Store atau Google Play"
+  },
+  "Waist cm": {
+    "fr": "Tour de taille cm",
+    "tr": "Bel cm",
+    "ur": "کمر سینٹی میٹر",
+    "ms": "Pinggang cm",
+    "id": "Pinggang cm"
+  },
+  "Water": {
+    "fr": "Eau",
+    "tr": "Su",
+    "ur": "پانی",
+    "ms": "Air",
+    "id": "Air"
+  },
+  "Weight (kg)": {
+    "fr": "Poids (kg)",
+    "tr": "Ağırlık (kg)",
+    "ur": "وزن (کلو)",
+    "ms": "Berat (kg)",
+    "id": "Berat (kg)"
+  },
+  "Weight Trend": {
+    "fr": "Tendance de poids",
+    "tr": "Ağırlık Trendi",
+    "ur": "وزن کا رجحان",
+    "ms": "Trend Berat",
+    "id": "Tren Berat"
+  },
+  "Weight in kg": {
+    "fr": "Poids en kg",
+    "tr": "Ağırlık kg cinsinden",
+    "ur": "وزن کلو میں",
+    "ms": "Berat dalam kg",
+    "id": "Berat dalam kg"
+  },
+  "Weight kg": {
+    "fr": "Poids kg",
+    "tr": "Ağırlık kg",
+    "ur": "وزن کلو",
+    "ms": "Berat kg",
+    "id": "Berat kg"
+  },
+  "What did you eat? (e.g. 2 eggs and rice)": {
+    "fr": "Qu'avez-vous mangé ? (ex: 2 œufs et riz)",
+    "tr": "Ne yediniz? (örn: 2 yumurta ve pirinç)",
+    "ur": "آپ نے کیا کھایا؟ (مثلاً 2 انڈے اور چاول)",
+    "ms": "Apa yang anda makan? (cth: 2 telur dan nasi)",
+    "id": "Apa yang Anda makan? (misal: 2 telur dan nasi)"
+  },
+  "What is BMI?": {
+    "fr": "Qu'est-ce que l'IMC ?",
+    "tr": "VKİ nedir?",
+    "ur": "BMI کیا ہے؟",
+    "ms": "Apakah BMI?",
+    "id": "Apa itu IMT?"
+  },
+  "With your activity level": {
+    "fr": "Avec votre niveau d'activité",
+    "tr": "Aktivite seviyenizle",
+    "ur": "آپ کی سرگرمی کی سطح کے ساتھ",
+    "ms": "Dengan tahap aktiviti anda",
+    "id": "Dengan tingkat aktivitas Anda"
+  },
+  "Workout": {
+    "fr": "Entraînement",
+    "tr": "Antrenman",
+    "ur": "ورزش",
+    "ms": "Senaman",
+    "id": "Olahraga"
+  },
+  "Workouts": {
+    "fr": "Entraînements",
+    "tr": "Antrenmanlar",
+    "ur": "ورزشیں",
+    "ms": "Senaman",
+    "id": "Olahraga"
+  },
+  "Yearly": {
+    "fr": "Annuel",
+    "tr": "Yıllık",
+    "ur": "سالانہ",
+    "ms": "Tahunan",
+    "id": "Tahunan"
+  },
+  "bpm": {
+    "fr": "bpm",
+    "tr": "bpm",
+    "ur": "bpm",
+    "ms": "bpm",
+    "id": "bpm"
+  },
+  "cm": {
+    "fr": "cm",
+    "tr": "cm",
+    "ur": "سینٹی میٹر",
+    "ms": "cm",
+    "id": "cm"
+  },
+  "cups": {
+    "fr": "verres",
+    "tr": "bardak",
+    "ur": "کپ",
+    "ms": "cawan",
+    "id": "gelas"
+  },
+  "day streak": {
+    "fr": "jours de suite",
+    "tr": "günlük seri",
+    "ur": "دن کا سلسلہ",
+    "ms": "hari berturut",
+    "id": "hari berturut"
+  },
+  "hrs": {
+    "fr": "h",
+    "tr": "sa",
+    "ur": "گھنٹے",
+    "ms": "jam",
+    "id": "jam"
+  },
+  "kcal": {
+    "fr": "kcal",
+    "tr": "kcal",
+    "ur": "kcal",
+    "ms": "kcal",
+    "id": "kkal"
+  },
+  "kcal burned": {
+    "fr": "kcal brûlées",
+    "tr": "kcal yakıldı",
+    "ur": "kcal جلے",
+    "ms": "kcal dibakar",
+    "id": "kkal terbakar"
+  },
+  "kg": {
+    "fr": "kg",
+    "tr": "kg",
+    "ur": "کلو",
+    "ms": "kg",
+    "id": "kg"
+  },
+  "of goal": {
+    "fr": "de l'objectif",
+    "tr": "hedefe ulaşıldı",
+    "ur": "ہدف کا",
+    "ms": "daripada matlamat",
+    "id": "dari target"
+  },
+  "of your daily goal": {
+    "fr": "de votre objectif quotidien",
+    "tr": "günlük hedefinizin",
+    "ur": "آپ کے یومیہ ہدف کا",
+    "ms": "daripada matlamat harian anda",
+    "id": "dari target harian Anda"
+  },
+  "one-time": {
+    "fr": "unique",
+    "tr": "tek seferlik",
+    "ur": "ایک بار",
+    "ms": "sekali sahaja",
+    "id": "sekali bayar"
+  },
+  "yrs": {
+    "fr": "ans",
+    "tr": "yıl",
+    "ur": "سال",
+    "ms": "thn",
+    "id": "thn"
+  },
+  "↺ New": {
+    "fr": "↺ Nouveau",
+    "tr": "↺ Yeni",
+    "ur": "↺ نیا",
+    "ms": "↺ Baru",
+    "id": "↺ Baru"
+  },
+  "▶ Start": {
+    "fr": "▶ Démarrer",
+    "tr": "▶ Başlat",
+    "ur": "▶ شروع",
+    "ms": "▶ Mula",
+    "id": "▶ Mulai"
+  },
+  "☀️ Lunch Time": {
+    "fr": "☀️ Heure du déjeuner",
+    "tr": "☀️ Öğle Vakti",
+    "ur": "☀️ دوپہر کا کھانا وقت",
+    "ms": "☀️ Waktu Makan Tengah Hari",
+    "id": "☀️ Waktu Makan Siang"
+  },
+  "♾️ Unlimited": {
+    "fr": "♾️ Illimité",
+    "tr": "♾️ Sınırsız",
+    "ur": "♾️ لامحدود",
+    "ms": "♾️ Tanpa Had",
+    "id": "♾️ Tanpa Batas"
+  },
+  "⚠️ Check": {
+    "fr": "⚠️ Vérifier",
+    "tr": "⚠️ Kontrol Et",
+    "ur": "⚠️ جانچیں",
+    "ms": "⚠️ Semak",
+    "id": "⚠️ Periksa"
+  },
+  "⚡ Metabolism & Energy": {
+    "fr": "⚡ Métabolisme & Énergie",
+    "tr": "⚡ Metabolizma & Enerji",
+    "ur": "⚡ میٹابولزم اور توانائی",
+    "ms": "⚡ Metabolisme & Tenaga",
+    "id": "⚡ Metabolisme & Energi"
+  },
+  "⚡ Quick energy": {
+    "fr": "⚡ Énergie rapide",
+    "tr": "⚡ Hızlı enerji",
+    "ur": "⚡ فوری توانائی",
+    "ms": "⚡ Tenaga pantas",
+    "id": "⚡ Energi cepat"
+  },
+  "⚡ Recommended Now": {
+    "fr": "⚡ Recommandé maintenant",
+    "tr": "⚡ Şu an önerilen",
+    "ur": "⚡ ابھی تجویز کردہ",
+    "ms": "⚡ Disyorkan Sekarang",
+    "id": "⚡ Direkomendasikan Sekarang"
+  },
+  "✅ Added to tracker": {
+    "fr": "✅ Ajouté au suivi",
+    "tr": "✅ Takibe eklendi",
+    "ur": "✅ ٹریکر میں شامل",
+    "ms": "✅ Ditambah ke penjejak",
+    "id": "✅ Ditambahkan ke pelacak"
+  },
+  "✅ Subscription restored": {
+    "fr": "✅ Abonnement restauré",
+    "tr": "✅ Abonelik geri yüklendi",
+    "ur": "✅ سبسکرپشن بحال",
+    "ms": "✅ Langganan dipulihkan",
+    "id": "✅ Langganan dipulihkan"
+  },
+  "✏️ Update Your Data": {
+    "fr": "✏️ Mettez à jour vos données",
+    "tr": "✏️ Verilerinizi Güncelleyin",
+    "ur": "✏️ اپنا ڈیٹا اپ ڈیٹ کریں",
+    "ms": "✏️ Kemas Kini Data Anda",
+    "id": "✏️ Perbarui Data Anda"
+  },
+  "✓ Halal": {
+    "fr": "✓ Halal",
+    "tr": "✓ Helal",
+    "ur": "✓ حلال",
+    "ms": "✓ Halal",
+    "id": "✓ Halal"
+  },
+  "✓ I Agree & Continue": {
+    "fr": "✓ J'accepte & continue",
+    "tr": "✓ Kabul ediyorum & devam",
+    "ur": "✓ میں متفق ہوں اور جاری رکھتا ہوں",
+    "ms": "✓ Saya Setuju & Teruskan",
+    "id": "✓ Saya Setuju & Lanjutkan"
+  },
+  "✨ Halal & Sunnah protein sources:": {
+    "fr": "✨ Sources de protéines halal & sunnah :",
+    "tr": "✨ Helal & Sünnet protein kaynakları:",
+    "ur": "✨ حلال اور سنت پروٹین کے ذرائع:",
+    "ms": "✨ Sumber protein halal & sunnah:",
+    "id": "✨ Sumber protein halal & sunnah:"
+  },
+  "✨ Your Barakah score is waiting": {
+    "fr": "✨ Votre score Barakah vous attend",
+    "tr": "✨ Bereket skorunuz bekliyor",
+    "ur": "✨ آپ کا برکت اسکور انتظار میں ہے",
+    "ms": "✨ Skor Barakah anda menanti",
+    "id": "✨ Skor Barakah Anda menunggu"
+  },
+  "⭐ Ready": {
+    "fr": "⭐ Prêt",
+    "tr": "⭐ Hazır",
+    "ur": "⭐ تیار",
+    "ms": "⭐ Sedia",
+    "id": "⭐ Siap"
+  },
+  "⭐ Upgrade": {
+    "fr": "⭐ Mettre à niveau",
+    "tr": "⭐ Yükselt",
+    "ur": "⭐ اپ گریڈ",
+    "ms": "⭐ Naik Taraf",
+    "id": "⭐ Upgrade"
+  },
+  "⭐ Upgrade to Premium": {
+    "fr": "⭐ Passer à Premium",
+    "tr": "⭐ Premium'a Yükselt",
+    "ur": "⭐ پریمیم میں اپ گریڈ",
+    "ms": "⭐ Naik Taraf ke Premium",
+    "id": "⭐ Upgrade ke Premium"
+  },
+  "🌅 Breakfast Time": {
+    "fr": "🌅 Heure du petit-déjeuner",
+    "tr": "🌅 Kahvaltı Vakti",
+    "ur": "🌅 ناشتے کا وقت",
+    "ms": "🌅 Waktu Sarapan",
+    "id": "🌅 Waktu Sarapan"
+  },
+  "🌙 Dinner Time": {
+    "fr": "🌙 Heure du dîner",
+    "tr": "🌙 Akşam Yemeği Vakti",
+    "ur": "🌙 رات کے کھانے کا وقت",
+    "ms": "🌙 Waktu Makan Malam",
+    "id": "🌙 Waktu Makan Malam"
+  },
+  "🌿 Sunnah Food!": {
+    "fr": "🌿 Aliment Sunnah !",
+    "tr": "🌿 Sünnet Gıdası!",
+    "ur": "🌿 سنت کا کھانا!",
+    "ms": "🌿 Makanan Sunnah!",
+    "id": "🌿 Makanan Sunnah!"
+  },
+  "🍚 Carbohydrates": {
+    "fr": "🍚 Glucides",
+    "tr": "🍚 Karbonhidratlar",
+    "ur": "🍚 کاربوہائیڈریٹ",
+    "ms": "🍚 Karbohidrat",
+    "id": "🍚 Karbohidrat"
+  },
+  "🍽️ Meal reminders": {
+    "fr": "🍽️ Rappels de repas",
+    "tr": "🍽️ Öğün hatırlatıcıları",
+    "ur": "🍽️ کھانے کی یاد دہانی",
+    "ms": "🍽️ Peringatan makanan",
+    "id": "🍽️ Pengingat makan"
+  },
+  "💡 Personalized Recommendations:": {
+    "fr": "💡 Recommandations personnalisées :",
+    "tr": "💡 Kişisel Tavsiyeler:",
+    "ur": "💡 ذاتی سفارشات:",
+    "ms": "💡 Cadangan Diperibadikan:",
+    "id": "💡 Rekomendasi Personal:"
+  },
+  "💡 Tips for better results": {
+    "fr": "💡 Conseils pour de meilleurs résultats",
+    "tr": "💡 Daha iyi sonuçlar için ipucu",
+    "ur": "💡 بہتر نتائج کے لیے تجاویز",
+    "ms": "💡 Petua untuk hasil lebih baik",
+    "id": "💡 Tips untuk hasil lebih baik"
+  },
+  "💧 Hydration": {
+    "fr": "💧 Hydratation",
+    "tr": "💧 Hidrasyon",
+    "ur": "💧 پانی کی مقدار",
+    "ms": "💧 Penghidratan",
+    "id": "💧 Hidrasi"
+  },
+  "💧 Water Reminder": {
+    "fr": "💧 Rappel eau",
+    "tr": "💧 Su Hatırlatıcısı",
+    "ur": "💧 پانی یاد دہانی",
+    "ms": "💧 Peringatan Air",
+    "id": "💧 Pengingat Air"
+  },
+  "💧 Water reminder": {
+    "fr": "💧 Rappel eau",
+    "tr": "💧 Su hatırlatıcısı",
+    "ur": "💧 پانی یاد دہانی",
+    "ms": "💧 Peringatan air",
+    "id": "💧 Pengingat air"
+  },
+  "💪 Builds muscle": {
+    "fr": "💪 Construit du muscle",
+    "tr": "💪 Kas yapar",
+    "ur": "💪 عضلات بناتا ہے",
+    "ms": "💪 Membina otot",
+    "id": "💪 Membangun otot"
+  },
+  "💪 Workout Time": {
+    "fr": "💪 Heure d'entraînement",
+    "tr": "💪 Antrenman Vakti",
+    "ur": "💪 ورزش کا وقت",
+    "ms": "💪 Waktu Senaman",
+    "id": "💪 Waktu Olahraga"
+  },
+  "💪 Workout reminder": {
+    "fr": "💪 Rappel entraînement",
+    "tr": "💪 Antrenman hatırlatıcısı",
+    "ur": "💪 ورزش یاد دہانی",
+    "ms": "💪 Peringatan senaman",
+    "id": "💪 Pengingat olahraga"
+  },
+  "📈 Weight Trend": {
+    "fr": "📈 Tendance de poids",
+    "tr": "📈 Ağırlık Trendi",
+    "ur": "📈 وزن کا رجحان",
+    "ms": "📈 Trend Berat",
+    "id": "📈 Tren Berat"
+  },
+  "📊 Comparison with Profile Calculations": {
+    "fr": "📊 Comparaison avec calculs du profil",
+    "tr": "📊 Profil Hesaplamalarıyla Karşılaştırma",
+    "ur": "📊 پروفائل حسابات سے موازنہ",
+    "ms": "📊 Perbandingan dengan Pengiraan Profil",
+    "id": "📊 Perbandingan dengan Perhitungan Profil"
+  },
+  "📊 Reference Metrics": {
+    "fr": "📊 Métriques de référence",
+    "tr": "📊 Referans Metrikler",
+    "ur": "📊 حوالہ جاتی پیمائش",
+    "ms": "📊 Metrik Rujukan",
+    "id": "📊 Metrik Referensi"
+  },
+  "🔒 Requires Premium": {
+    "fr": "🔒 Nécessite Premium",
+    "tr": "🔒 Premium Gerektirir",
+    "ur": "🔒 پریمیم درکار",
+    "ms": "🔒 Memerlukan Premium",
+    "id": "🔒 Memerlukan Premium"
+  },
+  "🔔 Notification Settings": {
+    "fr": "🔔 Paramètres de notification",
+    "tr": "🔔 Bildirim Ayarları",
+    "ur": "🔔 اطلاع کی ترتیبات",
+    "ms": "🔔 Tetapan Pemberitahuan",
+    "id": "🔔 Pengaturan Notifikasi"
+  },
+  "🔥 Calorie Distribution": {
+    "fr": "🔥 Distribution calorique",
+    "tr": "🔥 Kalori Dağılımı",
+    "ur": "🔥 کیلوری تقسیم",
+    "ms": "🔥 Pengagihan Kalori",
+    "id": "🔥 Distribusi Kalori"
+  },
+  "🔬 Macronutrients": {
+    "fr": "🔬 Macronutriments",
+    "tr": "🔬 Makrobesinler",
+    "ur": "🔬 میکروغذائیں",
+    "ms": "🔬 Makronutrien",
+    "id": "🔬 Makronutrien"
+  },
+  "🥗 Main ingredients:": {
+    "fr": "🥗 Ingrédients principaux :",
+    "tr": "🥗 Ana malzemeler:",
+    "ur": "🥗 مرکزی اجزاء:",
+    "ms": "🥗 Bahan-bahan utama:",
+    "id": "🥗 Bahan-bahan utama:"
+  },
+  "🥩 Protein": {
+    "fr": "🥩 Protéines",
+    "tr": "🥩 Protein",
+    "ur": "🥩 پروٹین",
+    "ms": "🥩 Protein",
+    "id": "🥩 Protein"
+  },
+  "🥩 Protein & Muscle": {
+    "fr": "🥩 Protéines & Muscle",
+    "tr": "🥩 Protein & Kas",
+    "ur": "🥩 پروٹین اور عضلات",
+    "ms": "🥩 Protein & Otot",
+    "id": "🥩 Protein & Otot"
+  },
+  "🦴 Posture Notes:": {
+    "fr": "🦴 Notes de posture :",
+    "tr": "🦴 Duruş Notları:",
+    "ur": "🦴 کرنسی نوٹس:",
+    "ms": "🦴 Nota Postur:",
+    "id": "🦴 Catatan Postur:"
+  },
+  "🧈 Healthy Fats": {
+    "fr": "🧈 Graisses saines",
+    "tr": "🧈 Sağlıklı Yağlar",
+    "ur": "🧈 صحت مند چربی",
+    "ms": "🧈 Lemak Sihat",
+    "id": "🧈 Lemak Sehat"
+  },
+  "🧠 Brain health": {
+    "fr": "🧠 Santé cérébrale",
+    "tr": "🧠 Beyin sağlığı",
+    "ur": "🧠 دماغی صحت",
+    "ms": "🧠 Kesihatan otak",
+    "id": "🧠 Kesehatan otak"
+  },
+  "🧬 Analysis Results": {
+    "fr": "🧬 Résultats d'analyse",
+    "tr": "🧬 Analiz Sonuçları",
+    "ur": "🧬 تجزیاتی نتائج",
+    "ms": "🧬 Keputusan Analisis",
+    "id": "🧬 Hasil Analisis"
+  },
+  "🧬 Body Composition": {
+    "fr": "🧬 Composition corporelle",
+    "tr": "🧬 Vücut Kompozisyonu",
+    "ur": "🧬 جسمانی ترکیب",
+    "ms": "🧬 Komposisi Badan",
+    "id": "🧬 Komposisi Tubuh"
+  }
+}

@@ -44,7 +44,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
       await ref.read(premiumProvider.notifier).onPurchaseSuccess();
       _showSuccess();
     } else if (!result.cancelled) {
-      if (mounted) setState(() => _errorMsg = result.error ?? (_tLang(lang, 'حدث خطأ. حاول مجدداً.', 'Purchase failed. Please try again.', 'Purchase failed. Please try again.', 'Purchase failed. Please try again.', 'Purchase failed. Please try again.', 'Purchase failed. Please try again.')));
+      if (mounted) setState(() => _errorMsg = result.error ?? (_tLang(lang, 'حدث خطأ. حاول مجدداً.', 'Purchase failed. Please try again.', 'Achat échoué. Veuillez réessayer.', 'Satın alma başarısız. Lütfen tekrar deneyin.', 'Pembelian gagal. Sila cuba lagi.', 'Pembelian gagal. Silakan coba lagi.')));
     }
   }
 
@@ -210,7 +210,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
           ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)),
               const SizedBox(width: 12),
-              Text(_tLang(lang, 'جاري المعالجة...', 'Processing...', 'Processing...', 'Processing...', 'Processing...', 'Processing...'), style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, color: Colors.white)),
+              Text(_tLang(lang, 'جاري المعالجة...', 'Processing...', 'Traitement...', 'İşleniyor...', 'Memproses...', 'Memproses...'), style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, color: Colors.white)),
             ])
           : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               const Text('⭐', style: TextStyle(fontSize: 20)),
@@ -278,7 +278,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
                     const SizedBox(width: 8),
                     Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(color: AppColors.barakahGold, borderRadius: BorderRadius.circular(20)),
-                      child: Text(tLang(lang, 'الأكثر شعبية', 'Most Popular', 'Most Popular', 'Most Popular', 'Most Popular', 'Most Popular'),
+                      child: Text(tLang(lang, 'الأكثر شعبية', 'Most Popular', 'Le plus populaire', 'En Popüler', 'Paling Popular', 'Paling Populer'),
                         style: const TextStyle(fontFamily: 'Cairo', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white))),
                   ],
                 ]),
@@ -297,9 +297,9 @@ class _PaywallState extends ConsumerState<PaywallScreen>
   }
 
   List<_FP> _fallback(bool isAr) => [
-    _FP(tLang(lang, 'شهري', 'Monthly', 'Monthly', 'Monthly', 'Monthly', 'Monthly'),        tLang(lang, '٢.٩٩ \$', '\$2.99', '\$2.99', '\$2.99', '\$2.99', '\$2.99'),  tLang(lang, '/ شهر', '/ month', '/ month', '/ month', '/ month', '/ month'),   false, null),
-    _FP(tLang(lang, 'سنوي', 'Yearly', 'Yearly', 'Yearly', 'Yearly', 'Yearly'),         tLang(lang, '١٩.٩٩ \$', '\$19.99', '\$19.99', '\$19.99', '\$19.99', '\$19.99'), tLang(lang, '/ سنة', '/ year', '/ year', '/ year', '/ year', '/ year'),    true,  tLang(lang, 'وفّر ٤٤٪', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%')),
-    _FP(tLang(lang, 'مدى الحياة', 'Lifetime', 'Lifetime', 'Lifetime', 'Lifetime', 'Lifetime'), tLang(lang, '٤٩.٩٩ \$', '\$49.99', '\$49.99', '\$49.99', '\$49.99', '\$49.99'), tLang(lang, 'مرة واحدة', 'one-time', 'one-time', 'one-time', 'one-time', 'one-time'), false, null),
+    _FP(tLang(lang, 'شهري', 'Monthly', 'Mensuel', 'Aylık', 'Bulanan', 'Bulanan'),        tLang(lang, '٢.٩٩ \$', '\$2.99', '\$2.99', '\$2.99', '\$2.99', '\$2.99'),  tLang(lang, '/ شهر', '/ month', '/ mois', '/ ay', '/ bulan', '/ bulan'),   false, null),
+    _FP(tLang(lang, 'سنوي', 'Yearly', 'Annuel', 'Yıllık', 'Tahunan', 'Tahunan'),         tLang(lang, '١٩.٩٩ \$', '\$19.99', '\$19.99', '\$19.99', '\$19.99', '\$19.99'), tLang(lang, '/ سنة', '/ year', '/ an', '/ yıl', '/ tahun', '/ tahun'),    true,  tLang(lang, 'وفّر ٤٤٪', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%')),
+    _FP(tLang(lang, 'مدى الحياة', 'Lifetime', 'À vie', 'Ömür boyu', 'Seumur Hidup', 'Seumur Hidup'), tLang(lang, '٤٩.٩٩ \$', '\$49.99', '\$49.99', '\$49.99', '\$49.99', '\$49.99'), tLang(lang, 'مرة واحدة', 'one-time', 'unique', 'tek seferlik', 'sekali sahaja', 'sekali bayar'), false, null),
   ];
 
   Widget _badge(String emoji, String label) => Row(mainAxisSize: MainAxisSize.min, children: [
