@@ -330,6 +330,7 @@ const SizedBox(height: 12),
 
 // ── 3 STATS ROW ─────────────────────────────
 _anim(2, _StatsRow(
+    lang: lang,
 water: water, sleep: sleep,
 streak: streak, wMin: wMin,
 isAr: isAr, isDark: isDark,
@@ -366,6 +367,7 @@ const SizedBox(height: 12),
 
 // ── 5 QUICK ACTIONS ─────────────────────────
 _anim(5, _QuickGrid(
+    lang: lang,
 isAr: isAr, isDark: isDark,
 card: card, border: border, text: text, muted: muted,
 onTap: (r) {
@@ -1287,6 +1289,7 @@ final Color card, border, muted;
 final VoidCallback onWater, onSleep, onWorkout;
 final VoidCallback? onRemoveWater;
 const _StatsRow({
+required this.lang,
 required this.water, required this.sleep,
 required this.streak, required this.wMin,
 required this.isAr, required this.isDark,
@@ -1630,6 +1633,7 @@ final bool isAr, isDark;
 final Color card, border, text, muted;
 final void Function(String) onTap;
 const _QuickGrid({
+required this.lang,
 required this.isAr, required this.isDark,
 required this.card, required this.border,
 required this.text, required this.muted, required this.onTap,

@@ -44,7 +44,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
       await ref.read(premiumProvider.notifier).onPurchaseSuccess();
       _showSuccess();
     } else if (!result.cancelled) {
-      if (mounted) setState(() => _errorMsg = result.error ?? (_tLang(lang, 'حدث خطأ. حاول مجدداً.', 'Purchase failed. Please try again.', 'Achat échoué. Veuillez réessayer.', 'Satın alma başarısız. Lütfen tekrar deneyin.', 'Pembelian gagal. Sila cuba lagi.', 'Pembelian gagal. Silakan coba lagi.')));
+      if (mounted) setState(() => _errorMsg = result.error ?? (_'Purchase failed. Please try again.'));
     }
   }
 
@@ -57,7 +57,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
       await ref.read(premiumProvider.notifier).onPurchaseSuccess();
       _showSuccess();
     } else {
-      if (mounted) setState(() => _errorMsg = _tLang(lang, 'لم نجد مشتريات سابقة لهذا الحساب.', 'No previous purchases found for this account.', 'No previous purchases found for this account.', 'No previous purchases found for this account.', 'No previous purchases found for this account.', 'No previous purchases found for this account.'));
+      if (mounted) setState(() => _errorMsg = _'No previous purchases found for this account.');
     }
   }
 
@@ -73,7 +73,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
             textAlign: TextAlign.center,
             style: const TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
-          Text(tLang(lang, 'تم فتح نسبة الدهون الدقيقة وكتلة العضلات والمميزات الكاملة!', 'Exact body fat %, muscle mass & all premium features unlocked!', 'Exact body fat %, muscle mass & all premium features unlocked!', 'Exact body fat %, muscle mass & all premium features unlocked!', 'Exact body fat %, muscle mass & all premium features unlocked!', 'Exact body fat %, muscle mass & all premium features unlocked!'),
+          Text('Exact body fat %, muscle mass & all premium features unlocked!',
             textAlign: TextAlign.center,
             style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.lightMuted, height: 1.5)),
           const SizedBox(height: 20),

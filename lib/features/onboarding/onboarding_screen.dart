@@ -151,6 +151,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
 
             // Top bar: back + progress + skip
             _TopBar(
+        lang: lang,
               page: _page,
               total: _kTotalPages,
               isDark: isDark,
@@ -183,6 +184,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
 
             // Bottom CTA
             _BottomBar(
+        lang: lang,
               page: _page,
               isLast: _isLast,
               isQuestion: _isQuestion,
@@ -341,6 +343,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
 
       // ── Summary ─────────────────────────────────────────
       default: return _SummaryPage(
+      lang: lang,
         gender: _gender,
         age: _age,
         height: _height,
@@ -919,6 +922,7 @@ class _SummaryPage extends ConsumerWidget {
   final double height, weight;
   final bool isDark;
   const _SummaryPage({
+    required this.lang,
     required this.gender, required this.age,
     required this.height, required this.weight,
     required this.goalIdx, required this.activityIdx,
@@ -1109,6 +1113,7 @@ class _TopBar extends ConsumerWidget {
   final VoidCallback onBack;
   final VoidCallback? onSkip;
   const _TopBar({
+    required this.lang,
     required this.page, required this.total, required this.isDark,
     required this.showBack, required this.onBack, this.onSkip,
   });
@@ -1174,6 +1179,7 @@ class _BottomBar extends ConsumerWidget {
   final bool isLast, isQuestion, isDark;
   final VoidCallback onNext;
   const _BottomBar({
+    required this.lang,
     required this.page, required this.isLast,
     required this.isQuestion, required this.isDark, required this.onNext,
   });
