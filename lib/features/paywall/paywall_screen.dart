@@ -166,7 +166,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
         ['📥', 'يعمل بدون إنترنت + تاريخ كامل'],
       ] : [
         ['💪', 'Exact body fat % + Muscle mass + Lean Body Mass'],
-        ['📸', 'Unlimited AI food & body photo analysis'],
+        ['📸', 'Unlimited AI food & body photo analysis (vs 3 free/day)'],
         ['📷', 'Unlimited halal scans (vs 3 free/day)'],
         ['🏃', '180 workouts + Ramadan + Postnatal plans'],
         ['🌿', 'AI meal planner personalized to your body'],

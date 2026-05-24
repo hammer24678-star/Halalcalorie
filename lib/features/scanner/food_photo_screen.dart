@@ -76,6 +76,8 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       );
       if (!mounted) return;
       if (mounted) setState(() { _results = result; _state = AnalysisState.done; });
+      // Increment daily AI scan counter
+      ref.read(aiPhotoScanProvider.notifier).increment();
     } catch (e) {
       if (!mounted) return;
       final errStr = e.toString();

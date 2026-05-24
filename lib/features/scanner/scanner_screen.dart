@@ -242,7 +242,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               child: Text(
                 isPremium
                     ? (tLang(lang, '♾️ غير محدود', '♾️ Unlimited', '♾️ Unlimited', '♾️ Unlimited', '♾️ Unlimited', '♾️ Unlimited'))
-                    : '${t("متبقي", "Left")}: ${(3 - scan.todayCount).clamp(0, 3)}/10',
+                    : '${t("متبقي", "Left")}: ${(3 - scan.todayCount).clamp(0, 3)}/3',
                 style: const TextStyle(
                     fontFamily: 'Cairo', fontSize: 11,
                     color: Colors.white, fontWeight: FontWeight.w700),

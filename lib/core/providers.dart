@@ -242,6 +242,39 @@ final workoutWeekProvider = FutureProvider<Set<String>>((ref) async {
 });
 
 final scanProvider = StateNotifierProvider<ScanNotifier, ScanState>((ref) => ScanNotifier());
+
+// ── AI Photo Scan daily counter (free: 3/day) ────────────────────────
+final aiPhotoScanProvider = StateNotifierProvider<AiPhotoScanNotifier, int>(
+    (ref) => AiPhotoScanNotifier());
+
+class AiPhotoScanNotifier extends StateNotifier<int> {
+  AiPhotoScanNotifier() : super(0) { _load(); }
+
+  static String _dateKey() => DateTime.now().toIso8601String().substring(0, 10);
+
+  Future<void> _load() async {
+    try {
+      final p = await SharedPreferences.getInstance();
+      final today = _dateKey();
+      if ((p.getString('ai_photo_date') ?? '') != today) {
+        await p.setString('ai_photo_date', today);
+        await p.setInt('ai_photo_count', 0);
+        state = 0;
+      } else {
+        state = p.getInt('ai_photo_count') ?? 0;
+      }
+    } catch (_) {}
+  }
+
+  Future<void> increment() async {
+    state = state + 1;
+    try {
+      final p = await SharedPreferences.getInstance();
+      await p.setString('ai_photo_date', _dateKey());
+      await p.setInt('ai_photo_count', state);
+    } catch (_) {}
+  }
+}
 class ScanState { final List<ScanResult> history; final int todayCount; ScanState({required this.history, required this.todayCount}); }
 class ScanNotifier extends StateNotifier<ScanState> {
   static String _dateKey() => DateTime.now().toIso8601String().substring(0, 10);
