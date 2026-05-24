@@ -290,13 +290,13 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                     color: AppColors.lightMuted.withOpacity(0.4),
                     borderRadius: BorderRadius.circular(2))),
                 const SizedBox(height: 16),
-                Text(isAr ? '🔔 إعدادات الإشعارات' : '🔔 Notification Settings',
+                Text(tLang(lang, '🔔 إعدادات الإشعارات', '🔔 Notification Settings', '🔔 Notification Settings', '🔔 Notification Settings', '🔔 Notification Settings', '🔔 Notification Settings'),
                   style: TextStyle(fontFamily: 'Cairo', fontSize: 16,
                     fontWeight: FontWeight.w800, color: text)),
                 const SizedBox(height: 16),
                 _NotifToggle(
-                  label: isAr ? '💧 تذكير الماء' : '💧 Water reminder',
-                  sub:   isAr ? 'كل ساعتين 8ص–10م' : 'Every 2h 8am–10pm',
+                  label: tLang(lang, '💧 تذكير الماء', '💧 Water reminder', '💧 Water reminder', '💧 Water reminder', '💧 Water reminder', '💧 Water reminder'),
+                  sub:   tLang(lang, 'كل ساعتين 8ص–10م', 'Every 2h 8am–10pm', 'Every 2h 8am–10pm', 'Every 2h 8am–10pm', 'Every 2h 8am–10pm', 'Every 2h 8am–10pm'),
                   prefKey: 'notif_water',
                   isDark: isDark,
                   onChange: (v) async {
@@ -305,9 +305,8 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                   },
                 ),
                 _NotifToggle(
-                  label: isAr ? '🍽️ تذكير الوجبات' : '🍽️ Meal reminders',
-                  sub:   isAr ? 'الإفطار 7:30 • الغداء 1:00 • العشاء 7:30م'
-                              : 'Breakfast 7:30 • Lunch 1:00 • Dinner 7:30pm',
+                  label: tLang(lang, '🍽️ تذكير الوجبات', '🍽️ Meal reminders', '🍽️ Meal reminders', '🍽️ Meal reminders', '🍽️ Meal reminders', '🍽️ Meal reminders'),
+                  sub:   tLang(lang, 'الإفطار 7:30 • الغداء 1:00 • العشاء 7:30م', 'Breakfast 7:30 • Lunch 1:00 • Dinner 7:30pm', 'Breakfast 7:30 • Lunch 1:00 • Dinner 7:30pm', 'Breakfast 7:30 • Lunch 1:00 • Dinner 7:30pm', 'Breakfast 7:30 • Lunch 1:00 • Dinner 7:30pm', 'Breakfast 7:30 • Lunch 1:00 • Dinner 7:30pm'),
                   prefKey: 'notif_meals',
                   isDark: isDark,
                   onChange: (v) async {
@@ -316,8 +315,8 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                   },
                 ),
                 _NotifToggle(
-                  label: isAr ? '💪 تذكير الرياضة' : '💪 Workout reminder',
-                  sub:   isAr ? 'كل يوم 5:30م' : 'Daily at 5:30pm',
+                  label: tLang(lang, '💪 تذكير الرياضة', '💪 Workout reminder', '💪 Workout reminder', '💪 Workout reminder', '💪 Workout reminder', '💪 Workout reminder'),
+                  sub:   tLang(lang, 'كل يوم 5:30م', 'Daily at 5:30pm', 'Daily at 5:30pm', 'Daily at 5:30pm', 'Daily at 5:30pm', 'Daily at 5:30pm'),
                   prefKey: 'notif_workout',
                   isDark: isDark,
                   onChange: (v) async {
@@ -332,7 +331,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                     backgroundColor: AppColors.sunnahGreen,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12))),
-                  child: Text(isAr ? 'حفظ' : 'Save',
+                  child: Text(tLang(lang, 'حفظ', 'Save', 'Save', 'Save', 'Save', 'Save'),
                     style: const TextStyle(fontFamily: 'Cairo',
                         color: Colors.white, fontWeight: FontWeight.w700)),
                 )),
@@ -364,7 +363,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                 color: AppColors.lightMuted.withOpacity(0.4),
                 borderRadius: BorderRadius.circular(2))),
             const SizedBox(height: 16),
-            Text(isAr ? 'خطط الماكرو' : 'Macro Plans',
+            Text(tLang(lang, 'خطط الماكرو', 'Macro Plans', 'Macro Plans', 'Macro Plans', 'Macro Plans', 'Macro Plans'),
               style: TextStyle(fontFamily: 'Cairo', fontSize: 16,
                 fontWeight: FontWeight.w800, color: text)),
             const SizedBox(height: 8),
@@ -452,21 +451,21 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
 
   void _editWaterGoal(BuildContext context, bool isAr) {
     final ctrl = TextEditingController( text:'${ref.read(waterProvider).goal}');
-    showDialog(context: context, builder: (_) => AlertDialog( title: Text(isAr ?'هدف الماء اليومي' : 'Daily Water Goal', style: const TextStyle(fontFamily:'Cairo')),
+    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'هدف الماء اليومي', 'Daily Water Goal', 'Daily Water Goal', 'Daily Water Goal', 'Daily Water Goal', 'Daily Water Goal'), style: const TextStyle(fontFamily:'Cairo')),
       content: TextField(
         controller: ctrl, keyboardType: TextInputType.number,
-        decoration: InputDecoration( hintText: isAr ?'عدد الأكواب' : 'Number of cups', suffixText: isAr ?'كوب' : 'cups',
+        decoration: InputDecoration( hintText: tLang(lang, 'عدد الأكواب', 'Number of cups', 'Number of cups', 'Number of cups', 'Number of cups', 'Number of cups'), suffixText: tLang(lang, 'كوب', 'cups', 'cups', 'cups', 'cups', 'cups'),
         ),
         autofocus: true,
       ),
       actions: [
-        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(isAr ?'إلغاء' : 'Cancel', style: const TextStyle(fontFamily:'Cairo'))),
+        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Cancel', 'Cancel', 'Cancel', 'Cancel'), style: const TextStyle(fontFamily:'Cairo'))),
         ElevatedButton(
           onPressed: () {
             final n = int.tryParse(ctrl.text.trim()) ?? 8;
             ref.read(waterProvider.notifier).setGoal(n.clamp(4, 20));
             if (context.mounted) Navigator.pop(context);
-          }, child: Text(isAr ?'حفظ' : 'Save', style: const TextStyle(fontFamily:'Cairo')),
+          }, child: Text(tLang(lang, 'حفظ', 'Save', 'Save', 'Save', 'Save', 'Save'), style: const TextStyle(fontFamily:'Cairo')),
         ),
       ],
     ));
@@ -475,32 +474,32 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
   void _editSleepGoal(BuildContext context, bool isAr) {
     final ctrl = TextEditingController(
         text: ref.read(sleepProvider).goal.toStringAsFixed(1));
-    showDialog(context: context, builder: (_) => AlertDialog( title: Text(isAr ?'هدف النوم' : 'Sleep Goal', style: const TextStyle(fontFamily:'Cairo')),
+    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'هدف النوم', 'Sleep Goal', 'Sleep Goal', 'Sleep Goal', 'Sleep Goal', 'Sleep Goal'), style: const TextStyle(fontFamily:'Cairo')),
       content: TextField(
         controller: ctrl,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        decoration: InputDecoration( hintText: isAr ?'عدد الساعات' : 'Number of hours', suffixText: isAr ?'ساعة' : 'hrs',
+        decoration: InputDecoration( hintText: tLang(lang, 'عدد الساعات', 'Number of hours', 'Number of hours', 'Number of hours', 'Number of hours', 'Number of hours'), suffixText: tLang(lang, 'ساعة', 'hrs', 'hrs', 'hrs', 'hrs', 'hrs'),
         ),
         autofocus: true,
       ),
       actions: [
-        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(isAr ?'إلغاء' : 'Cancel', style: const TextStyle(fontFamily:'Cairo'))),
+        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Cancel', 'Cancel', 'Cancel', 'Cancel'), style: const TextStyle(fontFamily:'Cairo'))),
         ElevatedButton(
           onPressed: () { final h = double.tryParse(ctrl.text.trim().replaceAll(',', '.')) ?? 8.0;
             ref.read(sleepProvider.notifier).set(h.clamp(4.0, 12.0));
             if (context.mounted) Navigator.pop(context);
-          }, child: Text(isAr ?'حفظ' : 'Save', style: const TextStyle(fontFamily:'Cairo')),
+          }, child: Text(tLang(lang, 'حفظ', 'Save', 'Save', 'Save', 'Save', 'Save'), style: const TextStyle(fontFamily:'Cairo')),
         ),
       ],
     ));
   }
 
   void _confirmClearDay(BuildContext context, bool isAr) {
-    showDialog(context: context, builder: (_) => AlertDialog( title: Text(isAr ?'مسح سجل اليوم؟' : 'Clear Today\'s Data?', style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700)),
+    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'مسح سجل اليوم؟', 'Clear Today\', 'Clear Today\', 'Clear Today\', 'Clear Today\', 'Clear Today\')s Data?', style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700)),
       content: Text(
-        isAr ?'سيُمسح سجل الوجبات والخطوات والماء لليوم فقط. لا يمكن التراجع.' :'Today\'s meals, steps, and water will be cleared. Cannot be undone.', style: const TextStyle(fontFamily:'Cairo', fontSize: 13, height: 1.5)),
+        tLang(lang, 'سيُمسح سجل الوجبات والخطوات والماء لليوم فقط. لا يمكن التراجع.', 'Today\', 'Today\', 'Today\', 'Today\', 'Today\')s meals, steps, and water will be cleared. Cannot be undone.', style: const TextStyle(fontFamily:'Cairo', fontSize: 13, height: 1.5)),
       actions: [
-        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(isAr ?'إلغاء' : 'Cancel', style: const TextStyle(fontFamily:'Cairo'))),
+        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Cancel', 'Cancel', 'Cancel', 'Cancel'), style: const TextStyle(fontFamily:'Cairo'))),
         ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: AppColors.haramRed),
           onPressed: () async {
@@ -508,11 +507,11 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             await ref.read(waterProvider.notifier).set(0);
             await ref.read(healthProvider.notifier).setSteps(0);
             if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar( content: Text(isAr ?'✅ تم مسح سجل اليوم' : '✅ Today\'s log cleared', style: const TextStyle(fontFamily:'Cairo')),
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar( content: Text(tLang(lang, '✅ تم مسح سجل اليوم', '✅ Today\', '✅ Today\', '✅ Today\', '✅ Today\', '✅ Today\')s log cleared', style: const TextStyle(fontFamily:'Cairo')),
                 backgroundColor: AppColors.sunnahGreen,
               ));
             }
-          }, child: Text(isAr ?'مسح' : 'Clear', style: const TextStyle(fontFamily:'Cairo', color: Colors.white)),
+          }, child: Text(tLang(lang, 'مسح', 'Clear', 'Clear', 'Clear', 'Clear', 'Clear'), style: const TextStyle(fontFamily:'Cairo', color: Colors.white)),
         ),
       ],
     ));

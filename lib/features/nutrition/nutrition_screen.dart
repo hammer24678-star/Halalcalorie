@@ -177,7 +177,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                       Text(sunnah.$1,
                         style: const TextStyle(fontSize: 20)),
                       const SizedBox(width: 8),
-                      Text(isAr ? '🌿 طعام سنة نبوية!' : '🌿 Sunnah Food!',
+                      Text(tLang(lang, '🌿 طعام سنة نبوية!', '🌿 Sunnah Food!', '🌿 Sunnah Food!', '🌿 Sunnah Food!', '🌿 Sunnah Food!', '🌿 Sunnah Food!'),
                         style: const TextStyle(fontFamily: 'Cairo',
                             fontWeight: FontWeight.w800, fontSize: 14,
                             color: Colors.white)),
@@ -222,34 +222,27 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     final pctF    = fGoal > 0 ? (e.fatG     / fGoal).clamp(0.0,1.0) : 0.0;
 
     final tags = <Map<String,dynamic>>[];
-    if (e.proteinG >= 20) tags.add({'l':isAr?'بروتين عالٍ':'High Protein','c':AppColors.halalGreen,'e':'💪'});
-    if (e.carbsG   <= 10) tags.add({'l':isAr?'كارب منخفض':'Low Carb',    'c':AppColors.waterBlue,'e':'🥗'});
-    if (e.fatG     <=  5) tags.add({'l':isAr?'دهون منخفضة':'Low Fat',    'c':AppColors.barakahGold,'e':'✨'});
-    if (e.kcal     <= 150) tags.add({'l':isAr?'خفيف':'Light',            'c':AppColors.sunnahGreen,'e':'🌿'});
-    if (e.kcal     >= 500) tags.add({'l':isAr?'سعرات عالية':'High Cal',  'c':AppColors.haramRed,'e':'🔥'});
+    if (e.proteinG >= 20) tags.add({'l':tLang(lang, 'بروتين عالٍ', 'High Protein', 'High Protein', 'High Protein', 'High Protein', 'High Protein'),'c':AppColors.halalGreen,'e':'💪'});
+    if (e.carbsG   <= 10) tags.add({'l':tLang(lang, 'كارب منخفض', 'Low Carb', 'Low Carb', 'Low Carb', 'Low Carb', 'Low Carb'),    'c':AppColors.waterBlue,'e':'🥗'});
+    if (e.fatG     <=  5) tags.add({'l':tLang(lang, 'دهون منخفضة', 'Low Fat', 'Low Fat', 'Low Fat', 'Low Fat', 'Low Fat'),    'c':AppColors.barakahGold,'e':'✨'});
+    if (e.kcal     <= 150) tags.add({'l':tLang(lang, 'خفيف', 'Light', 'Light', 'Light', 'Light', 'Light'),            'c':AppColors.sunnahGreen,'e':'🌿'});
+    if (e.kcal     >= 500) tags.add({'l':tLang(lang, 'سعرات عالية', 'High Cal', 'High Cal', 'High Cal', 'High Cal', 'High Cal'),  'c':AppColors.haramRed,'e':'🔥'});
 
     String islamicNote() {
       final n = e.name.toLowerCase();
       if (n.contains('date')||n.contains('تمر'))
-        return isAr?'«أفطروا على تمر» — النبي ﷺ أوصى بالتمر'
-                   :'"Break fast with dates" — Prophet ﷺ';
+        return tLang(lang, '«أفطروا على تمر» — النبي ﷺ أوصى بالتمر', '"Break fast with dates" — Prophet ﷺ', '"Break fast with dates" — Prophet ﷺ', '"Break fast with dates" — Prophet ﷺ', '"Break fast with dates" — Prophet ﷺ', '"Break fast with dates" — Prophet ﷺ');
       if (n.contains('honey')||n.contains('عسل'))
-        return isAr?'«فيه شفاء للناس» — القرآن الكريم 16:69'
-                   :'"In it is healing for people" — Quran 16:69';
+        return tLang(lang, '«فيه شفاء للناس» — القرآن الكريم 16:69', '"In it is healing for people" — Quran 16:69', '"In it is healing for people" — Quran 16:69', '"In it is healing for people" — Quran 16:69', '"In it is healing for people" — Quran 16:69', '"In it is healing for people" — Quran 16:69');
       if (n.contains('olive')||n.contains('زيتون'))
-        return isAr?'«كلوا الزيت وادهنوا به» — الزيتون مبارك'
-                   :'"Eat olive oil" — blessed in the Sunnah';
+        return tLang(lang, '«كلوا الزيت وادهنوا به» — الزيتون مبارك', '"Eat olive oil" — blessed in the Sunnah', '"Eat olive oil" — blessed in the Sunnah', '"Eat olive oil" — blessed in the Sunnah', '"Eat olive oil" — blessed in the Sunnah', '"Eat olive oil" — blessed in the Sunnah');
       if (n.contains('milk')||n.contains('حليب'))
-        return isAr?'الحليب غذاء متكامل — ذكره النبي ﷺ'
-                   :'Milk is a complete food — praised in Sunnah';
+        return tLang(lang, 'الحليب غذاء متكامل — ذكره النبي ﷺ', 'Milk is a complete food — praised in Sunnah', 'Milk is a complete food — praised in Sunnah', 'Milk is a complete food — praised in Sunnah', 'Milk is a complete food — praised in Sunnah', 'Milk is a complete food — praised in Sunnah');
       if (n.contains('fish')||n.contains('سمك'))
-        return isAr?'السمك حلال — من أطيب المأكولات الإسلامية'
-                   :'Fish is halal — highly recommended in Islam';
+        return tLang(lang, 'السمك حلال — من أطيب المأكولات الإسلامية', 'Fish is halal — highly recommended in Islam', 'Fish is halal — highly recommended in Islam', 'Fish is halal — highly recommended in Islam', 'Fish is halal — highly recommended in Islam', 'Fish is halal — highly recommended in Islam');
       if (n.contains('meat')||n.contains('chicken')||n.contains('لحم')||n.contains('دجاج'))
-        return isAr?'تأكد من المصدر الحلال — الذبح الشرعي شرط'
-                   :'Verify halal source — Islamic slaughter required';
-      return isAr?'«كلوا من طيبات ما رزقناكم» — البقرة 172'
-                 :'"Eat of the good things We provided" — 2:172';
+        return tLang(lang, 'تأكد من المصدر الحلال — الذبح الشرعي شرط', 'Verify halal source — Islamic slaughter required', 'Verify halal source — Islamic slaughter required', 'Verify halal source — Islamic slaughter required', 'Verify halal source — Islamic slaughter required', 'Verify halal source — Islamic slaughter required');
+      return tLang(lang, '«كلوا من طيبات ما رزقناكم» — البقرة 172', '"Eat of the good things We provided" — 2:172', '"Eat of the good things We provided" — 2:172', '"Eat of the good things We provided" — 2:172', '"Eat of the good things We provided" — 2:172', '"Eat of the good things We provided" — 2:172');
     }
 
     showModalBottomSheet(
@@ -340,7 +333,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                             fontFamily: 'Cairo', fontSize: 20,
                             fontWeight: FontWeight.w900,
                             color: AppColors.sunnahGreen)),
-                        Text(isAr?'سعرة':'kcal', style: TextStyle(
+                        Text(tLang(lang, 'سعرة', 'kcal', 'kcal', 'kcal', 'kcal', 'kcal'), style: TextStyle(
                             fontFamily: 'Cairo', fontSize: 9,
                             color: muted)),
                       ]),
@@ -353,7 +346,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         style: const TextStyle(fontFamily: 'Cairo',
                             fontSize: 32, fontWeight: FontWeight.w900,
                             color: AppColors.sunnahGreen)),
-                    Text(isAr?'من هدفك اليومي':'of your daily goal',
+                    Text(tLang(lang, 'من هدفك اليومي', 'of your daily goal', 'of your daily goal', 'of your daily goal', 'of your daily goal', 'of your daily goal'),
                         style: TextStyle(fontFamily: 'Cairo',
                             fontSize: 11, color: muted)),
                     const SizedBox(height: 4),
@@ -367,27 +360,26 @@ class _NutritionState extends ConsumerState<NutritionScreen>
               const SizedBox(height: 16),
 
               // Macros
-              Text(isAr?'🔬 المغذيات الكبرى':'🔬 Macronutrients',
+              Text(tLang(lang, '🔬 المغذيات الكبرى', '🔬 Macronutrients', '🔬 Macronutrients', '🔬 Macronutrients', '🔬 Macronutrients', '🔬 Macronutrients'),
                   style: TextStyle(fontFamily: 'Cairo',
                       fontSize: 14, fontWeight: FontWeight.w800,
                       color: textC)),
               const SizedBox(height: 10),
-              _detailBar(isAr?'بروتين':'Protein', e.proteinG,
+              _detailBar(tLang(lang, 'بروتين', 'Protein', 'Protein', 'Protein', 'Protein', 'Protein'), e.proteinG,
                   pGoal, pctP, AppColors.halalGreen,
-                  isAr?'💪 يبني العضلات':'💪 Builds muscle', isDark),
+                  tLang(lang, '💪 يبني العضلات', '💪 Builds muscle', '💪 Builds muscle', '💪 Builds muscle', '💪 Builds muscle', '💪 Builds muscle'), isDark),
               const SizedBox(height: 8),
-              _detailBar(isAr?'كربوهيدرات':'Carbs', e.carbsG,
+              _detailBar(tLang(lang, 'كربوهيدرات', 'Carbs', 'Carbs', 'Carbs', 'Carbs', 'Carbs'), e.carbsG,
                   cGoal, pctC, AppColors.waterBlue,
-                  isAr?'⚡ طاقة سريعة':'⚡ Quick energy', isDark),
+                  tLang(lang, '⚡ طاقة سريعة', '⚡ Quick energy', '⚡ Quick energy', '⚡ Quick energy', '⚡ Quick energy', '⚡ Quick energy'), isDark),
               const SizedBox(height: 8),
-              _detailBar(isAr?'دهون':'Fat', e.fatG,
+              _detailBar(tLang(lang, 'دهون', 'Fat', 'Fat', 'Fat', 'Fat', 'Fat'), e.fatG,
                   fGoal, pctF, AppColors.barakahGold,
-                  isAr?'🧠 صحة الدماغ':'🧠 Brain health', isDark),
+                  tLang(lang, '🧠 صحة الدماغ', '🧠 Brain health', '🧠 Brain health', '🧠 Brain health', '🧠 Brain health', '🧠 Brain health'), isDark),
               const SizedBox(height: 16),
 
               // Micronutrients
-              Text(isAr?'🧪 مغذيات دقيقة (تقديرية)'
-                       :'🧪 Micronutrients (estimated)',
+              Text(tLang(lang, '🧪 مغذيات دقيقة (تقديرية)', '🧪 Micronutrients (estimated)', '🧪 Micronutrients (estimated)', '🧪 Micronutrients (estimated)', '🧪 Micronutrients (estimated)', '🧪 Micronutrients (estimated)'),
                   style: TextStyle(fontFamily: 'Cairo',
                       fontSize: 14, fontWeight: FontWeight.w800,
                       color: textC)),
@@ -404,17 +396,15 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   children: [
                     Wrap(spacing: 8, runSpacing: 12, children: [
                       _microTile('🍊','Vit C', '–', muted),
-                      _microTile('🩸',isAr?'حديد':'Iron', '–', muted),
-                      _microTile('🥛',isAr?'كالسيوم':'Ca', '–', muted),
-                      _microTile('🍌',isAr?'بوتاسيوم':'K', '–', muted),
-                      _microTile('☀️',isAr?'فيت د':'Vit D', '–', muted),
-                      _microTile('🫁',isAr?'ماغنيسيوم':'Mg', '–', muted),
+                      _microTile('🩸',tLang(lang, 'حديد', 'Iron', 'Iron', 'Iron', 'Iron', 'Iron'), '–', muted),
+                      _microTile('🥛',tLang(lang, 'كالسيوم', 'Ca', 'Ca', 'Ca', 'Ca', 'Ca'), '–', muted),
+                      _microTile('🍌',tLang(lang, 'بوتاسيوم', 'K', 'K', 'K', 'K', 'K'), '–', muted),
+                      _microTile('☀️',tLang(lang, 'فيت د', 'Vit D', 'Vit D', 'Vit D', 'Vit D', 'Vit D'), '–', muted),
+                      _microTile('🫁',tLang(lang, 'ماغنيسيوم', 'Mg', 'Mg', 'Mg', 'Mg', 'Mg'), '–', muted),
                     ]),
                     const SizedBox(height: 6),
                     Text(
-                      isAr
-                        ? '* القيم التفصيلية متاحة عند التحليل بالكاميرا (مميزات مدفوعة)'
-                        : '* Detailed values available via AI photo scan (premium)',
+                      tLang(lang, '* القيم التفصيلية متاحة عند التحليل بالكاميرا (مميزات مدفوعة)', '* Detailed values available via AI photo scan (premium)', '* Detailed values available via AI photo scan (premium)', '* Detailed values available via AI photo scan (premium)', '* Detailed values available via AI photo scan (premium)', '* Detailed values available via AI photo scan (premium)'),
                       style: TextStyle(fontFamily: 'Cairo', fontSize: 9.5, color: muted),
                     ),
                   ])),
@@ -448,7 +438,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   },
                   icon: const Icon(Icons.delete_outline,
                       color: AppColors.haramRed, size: 18),
-                  label: Text(isAr?'حذف':'Delete',
+                  label: Text(tLang(lang, 'حذف', 'Delete', 'Delete', 'Delete', 'Delete', 'Delete'),
                       style: const TextStyle(fontFamily: 'Cairo',
                           color: AppColors.haramRed,
                           fontWeight: FontWeight.w700)),
@@ -470,7 +460,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   },
                   icon: const Icon(Icons.add_circle_outline,
                       color: Colors.white, size: 18),
-                  label: Text(isAr?'أضف مرة أخرى':'Log Again',
+                  label: Text(tLang(lang, 'أضف مرة أخرى', 'Log Again', 'Log Again', 'Log Again', 'Log Again', 'Log Again'),
                       style: const TextStyle(fontFamily: 'Cairo',
                           color: Colors.white,
                           fontWeight: FontWeight.w700)),
@@ -701,8 +691,8 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                 fontSize: 18, fontWeight: FontWeight.w800,
                                 color: textC)),
                             Text(
-                              DateFormat(isAr ? 'EEEE، d MMMM' : 'EEEE, MMMM d',
-                                  isAr ? 'ar' : 'en').format(DateTime.now()),
+                              DateFormat(tLang(lang, 'EEEE، d MMMM', 'EEEE, MMMM d', 'EEEE, MMMM d', 'EEEE, MMMM d', 'EEEE, MMMM d', 'EEEE, MMMM d'),
+                                  tLang(lang, 'ar', 'en', 'en', 'en', 'en', 'en')).format(DateTime.now()),
                               style: TextStyle(fontFamily: 'Cairo',
                                   fontSize: 11, color: muted)),
                           ]),
@@ -1538,7 +1528,7 @@ class _MealSectionState extends State<_MealSection> {
                     Icon(Icons.add_rounded,
                         color: accentCol, size: 16),
                     const SizedBox(width: 3),
-                    Text(widget.isAr ? 'أضف' : 'Add',
+                    Text(widget.tLang(lang, 'أضف', 'Add', 'Add', 'Add', 'Add', 'Add'),
                         style: TextStyle(fontFamily: 'Cairo',
                             fontSize: 11,
                             color: accentCol,
@@ -1562,9 +1552,7 @@ class _MealSectionState extends State<_MealSection> {
                   left: 16, right: 16, bottom: 14),
               child: Row(children: [
                 const SizedBox(width: 32),
-                Text(widget.isAr
-                    ? 'لم تسجل وجبات بعد'
-                    : 'No foods logged yet',
+                Text(widget.tLang(lang, 'لم تسجل وجبات بعد', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet'),
                     style: TextStyle(fontFamily: 'Cairo',
                         fontSize: 12, color: widget.muted)),
               ]),
@@ -2104,9 +2092,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text(
-                                isAr
-                                    ? 'أدخل الاسم والسعرات'
-                                    : 'Enter name and calories',
+                                tLang(lang, 'أدخل الاسم والسعرات', 'Enter name and calories', 'Enter name and calories', 'Enter name and calories', 'Enter name and calories', 'Enter name and calories'),
                                 style: const TextStyle(
                                     fontFamily: 'Cairo')),
                             backgroundColor: AppColors.haramRed,
@@ -2609,8 +2595,8 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             ),
             child: Text(
                 halal == true
-                    ? (isAr ? '✓ حلال' : '✓ Halal')
-                    : (isAr ? '⚠️ راجع' : '⚠️ Check'),
+                    ? (tLang(lang, '✓ حلال', '✓ Halal', '✓ Halal', '✓ Halal', '✓ Halal', '✓ Halal'))
+                    : (tLang(lang, '⚠️ راجع', '⚠️ Check', '⚠️ Check', '⚠️ Check', '⚠️ Check', '⚠️ Check')),
                 style: TextStyle(fontFamily: 'Cairo',
                     fontSize: 10,
                     color: halal == true
@@ -2623,16 +2609,16 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
         // 4 macro boxes
         Row(children: [
           _aiMacroBox('🔥', '${kcal.round()}',
-              isAr ? 'سعرة' : 'kcal', AppColors.haramRed),
+              tLang(lang, 'سعرة', 'kcal', 'kcal', 'kcal', 'kcal', 'kcal'), AppColors.haramRed),
           const SizedBox(width: 6),
           _aiMacroBox('💪', '${protein.toStringAsFixed(1)}g',
-              isAr ? 'بروتين' : 'Protein', AppColors.halalGreen),
+              tLang(lang, 'بروتين', 'Protein', 'Protein', 'Protein', 'Protein', 'Protein'), AppColors.halalGreen),
           const SizedBox(width: 6),
           _aiMacroBox('🍚', '${carbs.toStringAsFixed(1)}g',
-              isAr ? 'كارب' : 'Carbs', AppColors.waterBlue),
+              tLang(lang, 'كارب', 'Carbs', 'Carbs', 'Carbs', 'Carbs', 'Carbs'), AppColors.waterBlue),
           const SizedBox(width: 6),
           _aiMacroBox('🥑', '${fat.toStringAsFixed(1)}g',
-              isAr ? 'دهون' : 'Fat', AppColors.barakahGold),
+              tLang(lang, 'دهون', 'Fat', 'Fat', 'Fat', 'Fat', 'Fat'), AppColors.barakahGold),
         ]),
         const SizedBox(height: 14),
         SizedBox(width: double.infinity,
@@ -2641,7 +2627,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             icon: const Icon(Icons.add_rounded,
                 color: Colors.white, size: 20),
             label: Text(
-                isAr ? 'اضف هذا الطعام' : 'Add This Food',
+                tLang(lang, 'اضف هذا الطعام', 'Add This Food', 'Add This Food', 'Add This Food', 'Add This Food', 'Add This Food'),
                 style: const TextStyle(fontFamily: 'Cairo',
                     color: Colors.white,
                     fontWeight: FontWeight.w800,
@@ -3065,9 +3051,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                         color: widget.textC)),
                 if (widget.profile != null)
                   Text(
-                      isAr
-                          ? 'هدفك: ${widget.profile.calorieGoalKcal.toInt()} kcal'
-                          : 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal',
+                      tLang(lang, 'هدفك: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal'),
                       style: const TextStyle(fontFamily: 'Cairo',
                           fontSize: 11,
                           color: AppColors.sunnahGreen)),
@@ -3082,9 +3066,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
               style: const TextStyle(
                   fontFamily: 'Cairo', fontSize: 13),
               decoration: InputDecoration(
-                hintText: isAr
-                    ? 'مثال: رمضان، نباتي، قليل الكربوهيدرات...'
-                    : 'e.g. Ramadan, vegetarian, low carb...',
+                hintText: tLang(lang, 'مثال: رمضان، نباتي، قليل الكربوهيدرات...', 'e.g. Ramadan, vegetarian, low carb...', 'e.g. Ramadan, vegetarian, low carb...', 'e.g. Ramadan, vegetarian, low carb...', 'e.g. Ramadan, vegetarian, low carb...', 'e.g. Ramadan, vegetarian, low carb...'),
                 hintStyle: TextStyle(fontFamily: 'Cairo',
                     fontSize: 12, color: widget.muted),
                 filled: true,
@@ -3140,10 +3122,10 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
               const SizedBox(height: 8),
               Text(
                 _genError!.contains('API_KEY') || _genError!.contains('401')
-                  ? (isAr ? 'مفتاح API غير مُعدّ' : 'API key not configured')
+                  ? (tLang(lang, 'مفتاح API غير مُعدّ', 'API key not configured', 'API key not configured', 'API key not configured', 'API key not configured', 'API key not configured'))
                   : _genError!.contains('timeout')
-                  ? (isAr ? 'انتهت مهلة الاتصال، حاول مجدداً' : 'Connection timed out, try again')
-                  : (isAr ? 'فشل توليد الخطة، حاول مجدداً' : 'Plan generation failed, try again'),
+                  ? (tLang(lang, 'انتهت مهلة الاتصال، حاول مجدداً', 'Connection timed out, try again', 'Connection timed out, try again', 'Connection timed out, try again', 'Connection timed out, try again', 'Connection timed out, try again'))
+                  : (tLang(lang, 'فشل توليد الخطة، حاول مجدداً', 'Plan generation failed, try again', 'Plan generation failed, try again', 'Plan generation failed, try again', 'Plan generation failed, try again', 'Plan generation failed, try again')),
                 style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
                   color: AppColors.haramRed, fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
@@ -3167,8 +3149,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                         style: TextStyle(fontSize: 40)),
                     const SizedBox(height: 8),
                     Text(
-                        isAr ? 'حدث خطأ، حاول مجدداً'
-                            : 'An error occurred, try again',
+                        tLang(lang, 'حدث خطأ، حاول مجدداً', 'An error occurred, try again', 'An error occurred, try again', 'An error occurred, try again', 'An error occurred, try again', 'An error occurred, try again'),
                         style: TextStyle(fontFamily: 'Cairo',
                             color: widget.muted)),
                   ]))

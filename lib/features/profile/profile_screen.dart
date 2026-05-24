@@ -245,7 +245,7 @@ class ProfileScreen extends ConsumerWidget {
             boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 14, offset: const Offset(0, 3))]),
           child: Column(children: [
             _settingTile('📍', t('المدينة', 'City'), city, () => _showCityPicker(context, ref, isAr)),
-            _settingTile('🌐', t('اللغة', 'Language'), isAr ? 'العربية' : 'English',
+            _settingTile('🌐', t('اللغة', 'Language'), tLang(lang, 'العربية', 'English', 'English', 'English', 'English', 'English'),
               () => ref.read(languageProvider.notifier).set(_nextLang(lang))),
             _settingTile(isDark ? '☀️' : '🌙',
               isDark ? t('الوضع النهاري','Day Mode') : t('الوضع الليلي','Night Mode'),
@@ -430,7 +430,7 @@ class ProfileScreen extends ConsumerWidget {
   void _showCityPicker(BuildContext context, WidgetRef ref, bool isAr) {
     const cities = ['Cairo', 'Alexandria', 'Giza', 'Riyadh', 'Jeddah', 'Dubai', 'Abu Dhabi', 'Jakarta', 'Kuala Lumpur', 'Istanbul', 'London'];
     showModalBottomSheet(context: context, builder: (_) => ListView(padding: const EdgeInsets.all(16), children: [
-      Text(isAr ? 'اختر مدينتك' : 'Choose Your City',
+      Text(tLang(lang, 'اختر مدينتك', 'Choose Your City', 'Choose Your City', 'Choose Your City', 'Choose Your City', 'Choose Your City'),
           style: const TextStyle(fontFamily: 'Cairo', fontSize: 20, fontWeight: FontWeight.w700)),
       const SizedBox(height: 12),
       ...cities.map((c) => ListTile(
@@ -453,7 +453,7 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           const Text('⭐', style: TextStyle(fontSize: 40)),
           const SizedBox(height: 8),
-          Text(isAr ? 'إدارة اشتراكك' : 'Manage Your Subscription',
+          Text(tLang(lang, 'إدارة اشتراكك', 'Manage Your Subscription', 'Manage Your Subscription', 'Manage Your Subscription', 'Manage Your Subscription', 'Manage Your Subscription'),
             style: const TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
           Text(
@@ -470,9 +470,9 @@ class ProfileScreen extends ConsumerWidget {
           const SizedBox(height: 20),
           if (planName != 'lifetime') ListTile(
             leading: const Text('📱', style: TextStyle(fontSize: 22)),
-            title: Text(isAr ? 'إلغاء الاشتراك' : 'Cancel Subscription',
+            title: Text(tLang(lang, 'إلغاء الاشتراك', 'Cancel Subscription', 'Cancel Subscription', 'Cancel Subscription', 'Cancel Subscription', 'Cancel Subscription'),
               style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w600, color: AppColors.haramRed)),
-            subtitle: Text(isAr ? 'من خلال App Store أو Google Play' : 'Via App Store or Google Play',
+            subtitle: Text(tLang(lang, 'من خلال App Store أو Google Play', 'Via App Store or Google Play', 'Via App Store or Google Play', 'Via App Store or Google Play', 'Via App Store or Google Play', 'Via App Store or Google Play'),
               style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.lightMuted)),
             onTap: () {
               if (context.mounted) Navigator.pop(context);
@@ -483,15 +483,15 @@ class ProfileScreen extends ConsumerWidget {
           ),
           ListTile(
             leading: const Text('🔄', style: TextStyle(fontSize: 22)),
-            title: Text(isAr ? 'استعادة المشتريات' : 'Restore Purchases',
+            title: Text(tLang(lang, 'استعادة المشتريات', 'Restore Purchases', 'Restore Purchases', 'Restore Purchases', 'Restore Purchases', 'Restore Purchases'),
               style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w600)),
             onTap: () async {
               if (context.mounted) Navigator.pop(context);
               final result = await RevenueCatService.restore();
               if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text(result.success
-                  ? (isAr ? '✅ تم استعادة الاشتراك' : '✅ Subscription restored')
-                  : (isAr ? 'لم يتم العثور على مشتريات' : 'No purchases found'),
+                  ? (tLang(lang, '✅ تم استعادة الاشتراك', '✅ Subscription restored', '✅ Subscription restored', '✅ Subscription restored', '✅ Subscription restored', '✅ Subscription restored'))
+                  : (tLang(lang, 'لم يتم العثور على مشتريات', 'No purchases found', 'No purchases found', 'No purchases found', 'No purchases found', 'No purchases found')),
                 style: const TextStyle(fontFamily: 'Cairo')),
                 backgroundColor: result.success ? AppColors.sunnahGreen : AppColors.haramRed,
               ));
@@ -505,13 +505,13 @@ class ProfileScreen extends ConsumerWidget {
 
   Future<void> _signOut(BuildContext context, WidgetRef ref, bool isAr) async {
     final ok = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
-      title: Text(isAr ? 'تسجيل الخروج' : 'Sign Out', style: const TextStyle(fontFamily: 'Cairo')),
-      content: Text(isAr ? 'هل أنت متأكد؟' : 'Are you sure?', style: const TextStyle(fontFamily: 'Cairo')),
+      title: Text(tLang(lang, 'تسجيل الخروج', 'Sign Out', 'Sign Out', 'Sign Out', 'Sign Out', 'Sign Out'), style: const TextStyle(fontFamily: 'Cairo')),
+      content: Text(tLang(lang, 'هل أنت متأكد؟', 'Are you sure?', 'Are you sure?', 'Are you sure?', 'Are you sure?', 'Are you sure?'), style: const TextStyle(fontFamily: 'Cairo')),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context, false),
-          child: Text(isAr ? 'إلغاء' : 'Cancel', style: const TextStyle(fontFamily: 'Cairo'))),
+          child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Cancel', 'Cancel', 'Cancel', 'Cancel'), style: const TextStyle(fontFamily: 'Cairo'))),
         TextButton(onPressed: () => Navigator.pop(context, true),
-          child: Text(isAr ? 'خروج' : 'Sign Out',
+          child: Text(tLang(lang, 'خروج', 'Sign Out', 'Sign Out', 'Sign Out', 'Sign Out', 'Sign Out'),
             style: const TextStyle(fontFamily: 'Cairo', color: AppColors.haramRed))),
       ],
     ));

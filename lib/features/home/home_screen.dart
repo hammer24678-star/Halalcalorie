@@ -455,7 +455,7 @@ const SizedBox(width: 12),
 Expanded(child: Column(
 crossAxisAlignment: CrossAxisAlignment.start,
 children: [
-Text(isAr ? 'الصلاة القادمة' : 'Next Prayer',
+Text(tLang(lang, 'الصلاة القادمة', 'Next Prayer', 'Next Prayer', 'Next Prayer', 'Next Prayer', 'Next Prayer'),
 style: TextStyle(fontFamily: 'Cairo',
 fontSize: 11, color: muted)),
 Text(nm, style: const TextStyle(
@@ -1298,7 +1298,7 @@ Widget build(BuildContext context) => Row(children: [
 _Stat(
 emoji: '💧',
 value: '${water.cups}', total: '/${water.goal}',
-label: isAr ? 'ماء' : 'Water',
+label: tLang(lang, 'ماء', 'Water', 'Water', 'Water', 'Water', 'Water'),
 color: AppColors.waterBlue,
 pct: water.percent,
 isDark: isDark, card: card, border: border, muted: muted,
@@ -1309,7 +1309,7 @@ const SizedBox(width: 10),
 _Stat(
 emoji: '😴',
 value: '${sleep.hours.toInt()}', total: '/${sleep.goal.toInt()}h',
-label: isAr ? 'نوم' : 'Sleep',
+label: tLang(lang, 'نوم', 'Sleep', 'Sleep', 'Sleep', 'Sleep', 'Sleep'),
 color: AppColors.sleepPurple,
 pct: sleep.percent,
 isDark: isDark, card: card, border: border, muted: muted,
@@ -1319,8 +1319,8 @@ const SizedBox(width: 10),
 _Stat(
 emoji: '🔥',
 value: '$streak',
-total: isAr ? ' يوم' : 'd',
-label: isAr ? 'تتابع' : 'Streak',
+total: tLang(lang, ' يوم', 'd', 'd', 'd', 'd', 'd'),
+label: tLang(lang, 'تتابع', 'Streak', 'Streak', 'Streak', 'Streak', 'Streak'),
 color: AppColors.haramRed,
 pct: (streak / 30).clamp(0.0, 1.0),
 isDark: isDark, card: card, border: border, muted: muted,
@@ -1330,8 +1330,8 @@ const SizedBox(width: 10),
 _Stat(
 emoji: '🏃',
 value: wMin > 0 ? '$wMin' : '0',
-total: isAr ? 'د' : 'm',
-label: isAr ? 'تمرين' : 'Workout',
+total: tLang(lang, 'د', 'm', 'm', 'm', 'm', 'm'),
+label: tLang(lang, 'تمرين', 'Workout', 'Workout', 'Workout', 'Workout', 'Workout'),
 color: AppColors.halalGreen,
 pct: (wMin / 30).clamp(0.0, 1.0),
 isDark: isDark, card: card, border: border, muted: muted,
@@ -1423,12 +1423,12 @@ fontFamily: 'Cairo', fontSize: 9, color: widget.muted)),
 // ════════════════════════════════════════════════════════════
 void _showStreakDialog(BuildContext context, int streak, bool isAr, Color card, Color border) {
   final msg = streak == 0
-    ? (isAr ? 'ابدأ يومك بتسجيل وجبة! 💪' : 'Log a meal today to start your streak! 💪')
+    ? (tLang(lang, 'ابدأ يومك بتسجيل وجبة! 💪', 'Log a meal today to start your streak! 💪', 'Log a meal today to start your streak! 💪', 'Log a meal today to start your streak! 💪', 'Log a meal today to start your streak! 💪', 'Log a meal today to start your streak! 💪'))
     : streak < 7
-    ? (isAr ? 'رائع! استمر للحصول على أسبوع كامل 🌟' : 'Great start! Keep going for a full week 🌟')
+    ? (tLang(lang, 'رائع! استمر للحصول على أسبوع كامل 🌟', 'Great start! Keep going for a full week 🌟', 'Great start! Keep going for a full week 🌟', 'Great start! Keep going for a full week 🌟', 'Great start! Keep going for a full week 🌟', 'Great start! Keep going for a full week 🌟'))
     : streak < 30
     ? (isAr ? 'أنت على المسار الصحيح! 🔥' : "You're on fire! 🔥")
-    : (isAr ? 'مبارك! تتابع رائع جداً 🏆' : 'Masha Allah! Incredible streak 🏆');
+    : (tLang(lang, 'مبارك! تتابع رائع جداً 🏆', 'Masha Allah! Incredible streak 🏆', 'Masha Allah! Incredible streak 🏆', 'Masha Allah! Incredible streak 🏆', 'Masha Allah! Incredible streak 🏆', 'Masha Allah! Incredible streak 🏆'));
   showDialog(context: context, builder: (_) => Dialog(
     backgroundColor: card,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),
@@ -1440,7 +1440,7 @@ void _showStreakDialog(BuildContext context, int streak, bool isAr, Color card, 
         Text('$streak', style: const TextStyle(
           fontFamily: 'Cairo', fontSize: 48,
           fontWeight: FontWeight.w900, color: AppColors.haramRed)),
-        Text(isAr ? 'يوم تتابع' : 'day streak', style: const TextStyle(
+        Text(tLang(lang, 'يوم تتابع', 'day streak', 'day streak', 'day streak', 'day streak', 'day streak'), style: const TextStyle(
           fontFamily: 'Cairo', fontSize: 14, color: AppColors.haramRed)),
         const SizedBox(height: 16),
         Text(msg, textAlign: TextAlign.center, style: const TextStyle(
@@ -1454,13 +1454,12 @@ void _showStreakDialog(BuildContext context, int streak, bool isAr, Color card, 
           minHeight: 6,
         ),
         if (streak > 0) Padding(padding: const EdgeInsets.only(top: 6),
-          child: Text(isAr ? '${streak % 30}/30 يوم للجائزة التالية 🎁'
-                           : '${streak % 30}/30 days to next milestone 🎁',
+          child: Text(tLang(lang, '${streak % 30}/30 يوم للجائزة التالية 🎁', '${streak % 30}/30 days to next milestone 🎁', '${streak % 30}/30 days to next milestone 🎁', '${streak % 30}/30 days to next milestone 🎁', '${streak % 30}/30 days to next milestone 🎁', '${streak % 30}/30 days to next milestone 🎁'),
             style: const TextStyle(fontFamily: 'Cairo', fontSize: 10,
               color: AppColors.haramRed))),
         const SizedBox(height: 16),
         TextButton(onPressed: () => Navigator.pop(context),
-          child: Text(isAr ? 'حسناً 👍' : 'Got it 👍',
+          child: Text(tLang(lang, 'حسناً 👍', 'Got it 👍', 'Got it 👍', 'Got it 👍', 'Got it 👍', 'Got it 👍'),
             style: const TextStyle(fontFamily: 'Cairo',
               color: AppColors.sunnahGreen, fontWeight: FontWeight.w700))),
       ],
@@ -1636,22 +1635,22 @@ required this.text, required this.muted, required this.onTap,
 @override
 Widget build(BuildContext context) {
 final items = [
-_Q('📸', isAr ? 'صوّر طعامك' : 'Photo Food',
-isAr ? 'AI يحلل فوراً' : 'AI instant', '/food-photo',
+_Q('📸', tLang(lang, 'صوّر طعامك', 'Photo Food', 'Photo Food', 'Photo Food', 'Photo Food', 'Photo Food'),
+tLang(lang, 'AI يحلل فوراً', 'AI instant', 'AI instant', 'AI instant', 'AI instant', 'AI instant'), '/food-photo',
 const Color(0xFF238636)),
-_Q('📷', isAr ? 'باركود' : 'Barcode',
-isAr ? 'فحص الحلال' : 'Halal check', '/scanner',
+_Q('📷', tLang(lang, 'باركود', 'Barcode', 'Barcode', 'Barcode', 'Barcode', 'Barcode'),
+tLang(lang, 'فحص الحلال', 'Halal check', 'Halal check', 'Halal check', 'Halal check', 'Halal check'), '/scanner',
 const Color(0xFF1F6FEB)),
-_Q('🏃', isAr ? 'تمارين' : 'Workouts',
-isAr ? '١٨٠ خطة' : '180 plans', '/fitness',
+_Q('🏃', tLang(lang, 'تمارين', 'Workouts', 'Workouts', 'Workouts', 'Workouts', 'Workouts'),
+tLang(lang, '١٨٠ خطة', '180 plans', '180 plans', '180 plans', '180 plans', '180 plans'), '/fitness',
 const Color(0xFF8957E5)),
-_Q('💪', isAr ? 'مقاييس' : 'Body',
-isAr ? 'BMI وأكثر' : 'BMI & more', '/body',
+_Q('💪', tLang(lang, 'مقاييس', 'Body', 'Body', 'Body', 'Body', 'Body'),
+tLang(lang, 'BMI وأكثر', 'BMI & more', 'BMI & more', 'BMI & more', 'BMI & more', 'BMI & more'), '/body',
 const Color(0xFFBF8700)),
  ];
 
 return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-Text(isAr ? 'ابدأ الآن' : 'Quick Actions',
+Text(tLang(lang, 'ابدأ الآن', 'Quick Actions', 'Quick Actions', 'Quick Actions', 'Quick Actions', 'Quick Actions'),
 style: TextStyle(fontFamily: 'Cairo',
 fontSize: 13, fontWeight: FontWeight.w700, color: muted)),
 const SizedBox(height: 10),

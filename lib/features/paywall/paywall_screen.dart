@@ -44,7 +44,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
       await ref.read(premiumProvider.notifier).onPurchaseSuccess();
       _showSuccess();
     } else if (!result.cancelled) {
-      if (mounted) setState(() => _errorMsg = result.error ?? (_isAr ? 'حدث خطأ. حاول مجدداً.' : 'Purchase failed. Please try again.'));
+      if (mounted) setState(() => _errorMsg = result.error ?? (_tLang(lang, 'حدث خطأ. حاول مجدداً.', 'Purchase failed. Please try again.', 'Purchase failed. Please try again.', 'Purchase failed. Please try again.', 'Purchase failed. Please try again.', 'Purchase failed. Please try again.')));
     }
   }
 
@@ -57,9 +57,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
       await ref.read(premiumProvider.notifier).onPurchaseSuccess();
       _showSuccess();
     } else {
-      if (mounted) setState(() => _errorMsg = _isAr
-        ? 'لم نجد مشتريات سابقة لهذا الحساب.'
-        : 'No previous purchases found for this account.');
+      if (mounted) setState(() => _errorMsg = _tLang(lang, 'لم نجد مشتريات سابقة لهذا الحساب.', 'No previous purchases found for this account.', 'No previous purchases found for this account.', 'No previous purchases found for this account.', 'No previous purchases found for this account.', 'No previous purchases found for this account.'));
     }
   }
 
@@ -75,9 +73,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
             textAlign: TextAlign.center,
             style: const TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.w800)),
           const SizedBox(height: 8),
-          Text(isAr
-            ? 'تم فتح نسبة الدهون الدقيقة وكتلة العضلات والمميزات الكاملة!'
-            : 'Exact body fat %, muscle mass & all premium features unlocked!',
+          Text(tLang(lang, 'تم فتح نسبة الدهون الدقيقة وكتلة العضلات والمميزات الكاملة!', 'Exact body fat %, muscle mass & all premium features unlocked!', 'Exact body fat %, muscle mass & all premium features unlocked!', 'Exact body fat %, muscle mass & all premium features unlocked!', 'Exact body fat %, muscle mass & all premium features unlocked!', 'Exact body fat %, muscle mass & all premium features unlocked!'),
             textAlign: TextAlign.center,
             style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.lightMuted, height: 1.5)),
           const SizedBox(height: 20),
@@ -214,7 +210,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
           ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)),
               const SizedBox(width: 12),
-              Text(_isAr ? 'جاري المعالجة...' : 'Processing...', style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, color: Colors.white)),
+              Text(_tLang(lang, 'جاري المعالجة...', 'Processing...', 'Processing...', 'Processing...', 'Processing...', 'Processing...'), style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, color: Colors.white)),
             ])
           : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               const Text('⭐', style: TextStyle(fontSize: 20)),
@@ -282,7 +278,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
                     const SizedBox(width: 8),
                     Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                       decoration: BoxDecoration(color: AppColors.barakahGold, borderRadius: BorderRadius.circular(20)),
-                      child: Text(isAr ? 'الأكثر شعبية' : 'Most Popular',
+                      child: Text(tLang(lang, 'الأكثر شعبية', 'Most Popular', 'Most Popular', 'Most Popular', 'Most Popular', 'Most Popular'),
                         style: const TextStyle(fontFamily: 'Cairo', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white))),
                   ],
                 ]),
@@ -301,9 +297,9 @@ class _PaywallState extends ConsumerState<PaywallScreen>
   }
 
   List<_FP> _fallback(bool isAr) => [
-    _FP(isAr ? 'شهري' : 'Monthly',        isAr ? '٢.٩٩ \$' : '\$2.99',  isAr ? '/ شهر' : '/ month',   false, null),
-    _FP(isAr ? 'سنوي' : 'Yearly',         isAr ? '١٩.٩٩ \$' : '\$19.99', isAr ? '/ سنة' : '/ year',    true,  isAr ? 'وفّر ٤٤٪' : 'Save 44%'),
-    _FP(isAr ? 'مدى الحياة' : 'Lifetime', isAr ? '٤٩.٩٩ \$' : '\$49.99', isAr ? 'مرة واحدة' : 'one-time', false, null),
+    _FP(tLang(lang, 'شهري', 'Monthly', 'Monthly', 'Monthly', 'Monthly', 'Monthly'),        tLang(lang, '٢.٩٩ \$', '\$2.99', '\$2.99', '\$2.99', '\$2.99', '\$2.99'),  tLang(lang, '/ شهر', '/ month', '/ month', '/ month', '/ month', '/ month'),   false, null),
+    _FP(tLang(lang, 'سنوي', 'Yearly', 'Yearly', 'Yearly', 'Yearly', 'Yearly'),         tLang(lang, '١٩.٩٩ \$', '\$19.99', '\$19.99', '\$19.99', '\$19.99', '\$19.99'), tLang(lang, '/ سنة', '/ year', '/ year', '/ year', '/ year', '/ year'),    true,  tLang(lang, 'وفّر ٤٤٪', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%')),
+    _FP(tLang(lang, 'مدى الحياة', 'Lifetime', 'Lifetime', 'Lifetime', 'Lifetime', 'Lifetime'), tLang(lang, '٤٩.٩٩ \$', '\$49.99', '\$49.99', '\$49.99', '\$49.99', '\$49.99'), tLang(lang, 'مرة واحدة', 'one-time', 'one-time', 'one-time', 'one-time', 'one-time'), false, null),
   ];
 
   Widget _badge(String emoji, String label) => Row(mainAxisSize: MainAxisSize.min, children: [

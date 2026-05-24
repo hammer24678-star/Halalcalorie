@@ -133,10 +133,8 @@ class NotificationService {
       await _daily(
         id: kWater + h,
         hour: h, minute: 0,
-        title: isAr ? '💧 تذكير بشرب الماء' : '💧 Water Reminder',
-        body:  isAr
-          ? 'لا تنسَ شرب كوب ماء — الجسم أمانة ﷺ'
-          : 'Stay hydrated — your body is an amanah ﷺ',
+        title: tLang(lang, '💧 تذكير بشرب الماء', '💧 Water Reminder', '💧 Water Reminder', '💧 Water Reminder', '💧 Water Reminder', '💧 Water Reminder'),
+        body:  tLang(lang, 'لا تنسَ شرب كوب ماء — الجسم أمانة ﷺ', 'Stay hydrated — your body is an amanah ﷺ', 'Stay hydrated — your body is an amanah ﷺ', 'Stay hydrated — your body is an amanah ﷺ', 'Stay hydrated — your body is an amanah ﷺ', 'Stay hydrated — your body is an amanah ﷺ'),
       );
     }
   }
@@ -155,18 +153,18 @@ class NotificationService {
     }
     await _daily(
       id: kBreakfast, hour: 7, minute: 30,
-      title: isAr ? '🌅 وقت الإفطار' : '🌅 Breakfast Time',
-      body:  isAr ? 'قُل بسم الله وسجّل إفطارك ✨' : 'Say Bismillah and log your breakfast ✨',
+      title: tLang(lang, '🌅 وقت الإفطار', '🌅 Breakfast Time', '🌅 Breakfast Time', '🌅 Breakfast Time', '🌅 Breakfast Time', '🌅 Breakfast Time'),
+      body:  tLang(lang, 'قُل بسم الله وسجّل إفطارك ✨', 'Say Bismillah and log your breakfast ✨', 'Say Bismillah and log your breakfast ✨', 'Say Bismillah and log your breakfast ✨', 'Say Bismillah and log your breakfast ✨', 'Say Bismillah and log your breakfast ✨'),
     );
     await _daily(
       id: kLunch, hour: 13, minute: 0,
-      title: isAr ? '☀️ وقت الغداء' : '☀️ Lunch Time',
+      title: tLang(lang, '☀️ وقت الغداء', '☀️ Lunch Time', '☀️ Lunch Time', '☀️ Lunch Time', '☀️ Lunch Time', '☀️ Lunch Time'),
       body:  isAr ? 'لا تنسَ تسجيل غداءك في HalalCalorie' : "Don't forget to log your lunch",
     );
     await _daily(
       id: kDinner, hour: 19, minute: 30,
-      title: isAr ? '🌙 وقت العشاء' : '🌙 Dinner Time',
-      body:  isAr ? 'سجّل عشاءك واكمل هدفك اليومي 🌙' : 'Log your dinner and hit your daily goal 🌙',
+      title: tLang(lang, '🌙 وقت العشاء', '🌙 Dinner Time', '🌙 Dinner Time', '🌙 Dinner Time', '🌙 Dinner Time', '🌙 Dinner Time'),
+      body:  tLang(lang, 'سجّل عشاءك واكمل هدفك اليومي 🌙', 'Log your dinner and hit your daily goal 🌙', 'Log your dinner and hit your daily goal 🌙', 'Log your dinner and hit your daily goal 🌙', 'Log your dinner and hit your daily goal 🌙', 'Log your dinner and hit your daily goal 🌙'),
     );
   }
 
@@ -177,10 +175,8 @@ class NotificationService {
     if (!enabled) { await _plugin.cancel(kWorkout); return; }
     await _daily(
       id: kWorkout, hour: 17, minute: 30,
-      title: isAr ? '💪 وقت الرياضة' : '💪 Workout Time',
-      body:  isAr
-        ? 'حرّك جسمك — النبي ﷺ كان يمشي كثيراً'
-        : 'Move your body — the Prophet ﷺ walked daily',
+      title: tLang(lang, '💪 وقت الرياضة', '💪 Workout Time', '💪 Workout Time', '💪 Workout Time', '💪 Workout Time', '💪 Workout Time'),
+      body:  tLang(lang, 'حرّك جسمك — النبي ﷺ كان يمشي كثيراً', 'Move your body — the Prophet ﷺ walked daily', 'Move your body — the Prophet ﷺ walked daily', 'Move your body — the Prophet ﷺ walked daily', 'Move your body — the Prophet ﷺ walked daily', 'Move your body — the Prophet ﷺ walked daily'),
     );
   }
 
@@ -193,10 +189,8 @@ class NotificationService {
     if (!on) { await _plugin.cancel(kBarakah); return; }
     await _daily(
       id: kBarakah, hour: 15, minute: 45,
-      title: isAr ? '✨ نقاط بركتك تنتظرك' : '✨ Your Barakah score is waiting',
-      body:  isAr
-        ? 'سجّل ذكرك ومائك وخطواتك — حافظ على بركتك اليوم'
-        : 'Log your dhikr, water & steps — keep your Barakah alive',
+      title: tLang(lang, '✨ نقاط بركتك تنتظرك', '✨ Your Barakah score is waiting', '✨ Your Barakah score is waiting', '✨ Your Barakah score is waiting', '✨ Your Barakah score is waiting', '✨ Your Barakah score is waiting'),
+      body:  tLang(lang, 'سجّل ذكرك ومائك وخطواتك — حافظ على بركتك اليوم', 'Log your dhikr, water & steps — keep your Barakah alive', 'Log your dhikr, water & steps — keep your Barakah alive', 'Log your dhikr, water & steps — keep your Barakah alive', 'Log your dhikr, water & steps — keep your Barakah alive', 'Log your dhikr, water & steps — keep your Barakah alive'),
     );
   }
 

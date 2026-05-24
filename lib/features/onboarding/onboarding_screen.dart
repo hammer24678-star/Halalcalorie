@@ -952,10 +952,10 @@ class _SummaryPage extends ConsumerWidget {
     final goal = FitnessGoal.values[goalIdx.clamp(0, FitnessGoal.values.length - 1)];
 
     // Bilingual value strings
-    final weightStr = '${weight.toStringAsFixed(1)} ${isAr ? 'كجم' : 'kg'}';
-    final heightStr = '${height.toStringAsFixed(0)} ${isAr ? 'سم' : 'cm'}';
-    final ageStr    = '$age ${isAr ? 'سنة' : 'yrs'}';
-    final kcalStr   = '$kcal ${isAr ? 'سعرة' : 'kcal'}';
+    final weightStr = '${weight.toStringAsFixed(1)} ${tLang(lang, 'كجم', 'kg', 'kg', 'kg', 'kg', 'kg')}';
+    final heightStr = '${height.toStringAsFixed(0)} ${tLang(lang, 'سم', 'cm', 'cm', 'cm', 'cm', 'cm')}';
+    final ageStr    = '$age ${tLang(lang, 'سنة', 'yrs', 'yrs', 'yrs', 'yrs', 'yrs')}';
+    final kcalStr   = '$kcal ${tLang(lang, 'سعرة', 'kcal', 'kcal', 'kcal', 'kcal', 'kcal')}';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
@@ -1144,7 +1144,7 @@ class _TopBar extends ConsumerWidget {
           if (onSkip != null)
             GestureDetector(
               onTap: onSkip,
-              child: Text(isAr ? 'تخطي' : 'Skip',
+              child: Text(tLang(lang, 'تخطي', 'Skip', 'Skip', 'Skip', 'Skip', 'Skip'),
                 style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
                   fontWeight: FontWeight.w700, color: AppColors.halalGreen)),
             )
@@ -1180,8 +1180,8 @@ class _BottomBar extends ConsumerWidget {
     final lang  = ref.watch(languageProvider);
     final isAr  = lang == 'ar' || lang == 'ur';
     final label = isLast
-      ? (isAr ? 'ابدأ رحلتك 🌿' : 'Start your journey 🌿')
-      : (isAr ? 'التالي →' : 'Next →');
+      ? (tLang(lang, 'ابدأ رحلتك 🌿', 'Start your journey 🌿', 'Start your journey 🌿', 'Start your journey 🌿', 'Start your journey 🌿', 'Start your journey 🌿'))
+      : (tLang(lang, 'التالي →', 'Next →', 'Next →', 'Next →', 'Next →', 'Next →'));
     return Padding(
       padding: EdgeInsets.fromLTRB(
         24, 12, 24, MediaQuery.of(context).padding.bottom + 20),

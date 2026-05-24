@@ -39,10 +39,10 @@ class _ScannerState extends ConsumerState<ScannerScreen>
   void _unknownProduct(String barcode, bool isAr) {
     final r = ScanResult(
       barcode: barcode,
-      name:   isAr ? 'منتج غير معروف' : 'Unknown Product',
-      brand:  isAr ? 'غير معروف'       : 'Unknown',
+      name:   tLang(lang, 'منتج غير معروف', 'Unknown Product', 'Unknown Product', 'Unknown Product', 'Unknown Product', 'Unknown Product'),
+      brand:  tLang(lang, 'غير معروف', 'Unknown', 'Unknown', 'Unknown', 'Unknown', 'Unknown'),
       status: HalalStatus.unknown,
-      notes:  isAr ? 'لا توجد بيانات — جرّب تحليل AI' : 'No data — try AI Analysis',
+      notes:  tLang(lang, 'لا توجد بيانات — جرّب تحليل AI', 'No data — try AI Analysis', 'No data — try AI Analysis', 'No data — try AI Analysis', 'No data — try AI Analysis', 'No data — try AI Analysis'),
     );
     ref.read(scanProvider.notifier).addScan(r);
     if (mounted) setState(() { _result = r; _scanning = false; });
@@ -93,7 +93,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
           final status = _halalCheck(ing);
           final r = ScanResult(
             barcode:  barcode,
-            name:     name.isEmpty ? (isAr ? 'منتج مجهول' : 'Unknown') : name,
+            name:     name.isEmpty ? (tLang(lang, 'منتج مجهول', 'Unknown', 'Unknown', 'Unknown', 'Unknown', 'Unknown')) : name,
             brand:    brand,
             status:   status,
             kcal:     kcal > 0 ? kcal : null,
@@ -114,9 +114,9 @@ class _ScannerState extends ConsumerState<ScannerScreen>
   }
 
   void _showLimitDialog(bool isAr) {
-    showDialog(context: context, builder: (_) => AlertDialog( title: Text(isAr ?'وصلت الحد اليومي' : 'Daily Limit Reached', style: const TextStyle(fontFamily:'Cairo')), content: Text(isAr ?'استخدمت ٣ ماسحات اليوم.\nترقّ للبريميوم للمزيد.' : 'You\'ve used 3 scans today.\nUpgrade for unlimited.', style: const TextStyle(fontFamily:'Cairo')),
+    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'وصلت الحد اليومي', 'Daily Limit Reached', 'Daily Limit Reached', 'Daily Limit Reached', 'Daily Limit Reached', 'Daily Limit Reached'), style: const TextStyle(fontFamily:'Cairo')), content: Text(tLang(lang, 'استخدمت ٣ ماسحات اليوم.\nترقّ للبريميوم للمزيد.', 'You\', 'You\', 'You\', 'You\', 'You\')ve used 3 scans today.\nUpgrade for unlimited.', style: const TextStyle(fontFamily:'Cairo')),
       actions: [
-        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(isAr ?'إغلاق' : 'Close', style: const TextStyle(fontFamily: 'Cairo'))), ElevatedButton(onPressed: () { if (context.mounted) Navigator.pop(context); context.push('/paywall'); }, child: Text(isAr ?'⭐ ترقية' : '⭐ Upgrade', style: const TextStyle(fontFamily: 'Cairo'))),
+        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إغلاق', 'Close', 'Close', 'Close', 'Close', 'Close'), style: const TextStyle(fontFamily: 'Cairo'))), ElevatedButton(onPressed: () { if (context.mounted) Navigator.pop(context); context.push('/paywall'); }, child: Text(tLang(lang, '⭐ ترقية', '⭐ Upgrade', '⭐ Upgrade', '⭐ Upgrade', '⭐ Upgrade', '⭐ Upgrade'), style: const TextStyle(fontFamily: 'Cairo'))),
       ],
     ));
   }
@@ -241,7 +241,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               ),
               child: Text(
                 isPremium
-                    ? (isAr ? '♾️ غير محدود' : '♾️ Unlimited')
+                    ? (tLang(lang, '♾️ غير محدود', '♾️ Unlimited', '♾️ Unlimited', '♾️ Unlimited', '♾️ Unlimited', '♾️ Unlimited'))
                     : '${t("متبقي", "Left")}: ${(3 - scan.todayCount).clamp(0, 3)}/10',
                 style: const TextStyle(
                     fontFamily: 'Cairo', fontSize: 11,
@@ -340,8 +340,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
                 color: AppColors.sunnahGreen, strokeWidth: 2.5),
               const SizedBox(height: 10),
               Text(
-                isAr ? '📡 جارٍ البحث في Open Food Facts…'
-                     : '📡 Searching Open Food Facts…',
+                tLang(lang, '📡 جارٍ البحث في Open Food Facts…', '📡 Searching Open Food Facts…', '📡 Searching Open Food Facts…', '📡 Searching Open Food Facts…', '📡 Searching Open Food Facts…', '📡 Searching Open Food Facts…'),
                 style: const TextStyle(
                   fontFamily: 'Cairo', fontSize: 13,
                   color: AppColors.sunnahGreen,
@@ -428,7 +427,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
                   ref.read(caloriesProvider.notifier).addEntry(
                       r.name, r.kcal!);
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                    content: Text(isAr ? '✅ أُضيف للعداد' : '✅ Added to tracker',
+                    content: Text(tLang(lang, '✅ أُضيف للعداد', '✅ Added to tracker', '✅ Added to tracker', '✅ Added to tracker', '✅ Added to tracker', '✅ Added to tracker'),
                         style: const TextStyle(fontFamily: 'Cairo')),
                     backgroundColor: AppColors.sunnahGreen,
                     duration: const Duration(seconds: 2),
@@ -476,9 +475,9 @@ class _ScannerState extends ConsumerState<ScannerScreen>
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(22))),
       builder: (_) => Column(children: [
         Padding(
-          padding: const EdgeInsets.all(14), child: Text(isAr ?'سجل الماسحات' : 'Scan History', style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700, fontSize: 16)),
+          padding: const EdgeInsets.all(14), child: Text(tLang(lang, 'سجل الماسحات', 'Scan History', 'Scan History', 'Scan History', 'Scan History', 'Scan History'), style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700, fontSize: 16)),
         ),
-        if (history.isEmpty) Expanded(child: Center(child: Text(isAr ?'لا توجد ماسحات بعد' : 'No scans yet', style: const TextStyle(fontFamily:'Cairo', color: AppColors.lightMuted))))
+        if (history.isEmpty) Expanded(child: Center(child: Text(tLang(lang, 'لا توجد ماسحات بعد', 'No scans yet', 'No scans yet', 'No scans yet', 'No scans yet', 'No scans yet'), style: const TextStyle(fontFamily:'Cairo', color: AppColors.lightMuted))))
         else
           Expanded(child: ListView(children: history.map((r) => ListTile(
             leading: Text(_statusEmoji(r.status), style: const TextStyle(fontSize: 22)), title: Text(r.name, style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w600, fontSize: 13)), subtitle: Text(r.brand ??'', style: const TextStyle(fontFamily: 'Cairo', fontSize: 11)),

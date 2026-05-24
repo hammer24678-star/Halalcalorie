@@ -45,7 +45,7 @@ class _DonationCardState extends ConsumerState<DonationCard> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.isAr ? 'ادعم التطبيق — صدقة جارية' : 'Support the app',
+                    widget.tLang(lang, 'ادعم التطبيق — صدقة جارية', 'Support the app', 'Support the app', 'Support the app', 'Support the app', 'Support the app'),
                     style: const TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 14, fontWeight: FontWeight.w800,
@@ -53,9 +53,7 @@ class _DonationCardState extends ConsumerState<DonationCard> {
                     ),
                   ),
                   Text(
-                    widget.isAr
-                        ? 'كل دعم يساعدنا على الاستمرار في خدمة المسلمين'
-                        : 'Help us keep serving the Muslim community',
+                    widget.tLang(lang, 'كل دعم يساعدنا على الاستمرار في خدمة المسلمين', 'Help us keep serving the Muslim community', 'Help us keep serving the Muslim community', 'Help us keep serving the Muslim community', 'Help us keep serving the Muslim community', 'Help us keep serving the Muslim community'),
                     style: TextStyle(
                       fontFamily: 'Cairo',
                       fontSize: 11,
@@ -85,7 +83,7 @@ class _DonationCardState extends ConsumerState<DonationCard> {
           const Text('💛', style: TextStyle(fontSize: 48)),
           const SizedBox(height: 12),
           Text(
-            widget.isAr ? 'جزاك الله خيراً' : 'JazakAllah Khayran',
+            widget.tLang(lang, 'جزاك الله خيراً', 'JazakAllah Khayran', 'JazakAllah Khayran', 'JazakAllah Khayran', 'JazakAllah Khayran', 'JazakAllah Khayran'),
             style: const TextStyle(
               fontFamily: 'Cairo', fontSize: 22,
               fontWeight: FontWeight.w900, color: AppColors.barakahGold,
@@ -93,9 +91,7 @@ class _DonationCardState extends ConsumerState<DonationCard> {
           ),
           const SizedBox(height: 8),
           Text(
-            widget.isAr
-                ? 'دعمك يجعل هذا التطبيق صدقة جارية\nتستمر في خدمة المسلمين'
-                : 'Your support keeps this app as Sadaqah Jariyah',
+            widget.tLang(lang, 'دعمك يجعل هذا التطبيق صدقة جارية\nتستمر في خدمة المسلمين', 'Your support keeps this app as Sadaqah Jariyah', 'Your support keeps this app as Sadaqah Jariyah', 'Your support keeps this app as Sadaqah Jariyah', 'Your support keeps this app as Sadaqah Jariyah', 'Your support keeps this app as Sadaqah Jariyah'),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontFamily: 'Cairo', fontSize: 13,

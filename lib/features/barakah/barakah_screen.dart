@@ -71,8 +71,7 @@ class _BarakahState extends ConsumerState<BarakahScreen>
                 const Text('✨', style: TextStyle(fontSize: 72)),
                 const SizedBox(height: 20),
                 Text(
-                  isAr ? 'محرك البركة — ميزة بريميوم'
-                       : 'Barakah Engine — Premium Feature',
+                  tLang(lang, 'محرك البركة — ميزة بريميوم', 'Barakah Engine — Premium Feature', 'Barakah Engine — Premium Feature', 'Barakah Engine — Premium Feature', 'Barakah Engine — Premium Feature', 'Barakah Engine — Premium Feature'),
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'Cairo', fontWeight: FontWeight.w900,
@@ -80,9 +79,7 @@ class _BarakahState extends ConsumerState<BarakahScreen>
                     color: isDark ? AppColors.darkText : AppColors.lightText)),
                 const SizedBox(height: 12),
                 Text(
-                  isAr
-                    ? 'تتبع نقاط بركتك اليومية من الذكر والصيام والتمرين والتغذية — كل ذلك في مكان واحد.'
-                    : 'Track your daily Barakah score across dhikr, fasting, workout and nutrition — all in one place.',
+                  tLang(lang, 'تتبع نقاط بركتك اليومية من الذكر والصيام والتمرين والتغذية — كل ذلك في مكان واحد.', 'Track your daily Barakah score across dhikr, fasting, workout and nutrition — all in one place.', 'Track your daily Barakah score across dhikr, fasting, workout and nutrition — all in one place.', 'Track your daily Barakah score across dhikr, fasting, workout and nutrition — all in one place.', 'Track your daily Barakah score across dhikr, fasting, workout and nutrition — all in one place.', 'Track your daily Barakah score across dhikr, fasting, workout and nutrition — all in one place.'),
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontFamily: 'Cairo', fontSize: 14,
@@ -96,7 +93,7 @@ class _BarakahState extends ConsumerState<BarakahScreen>
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16))),
                   child: Text(
-                    isAr ? '⭐ ترقّ للبريميوم' : '⭐ Upgrade to Premium',
+                    tLang(lang, '⭐ ترقّ للبريميوم', '⭐ Upgrade to Premium', '⭐ Upgrade to Premium', '⭐ Upgrade to Premium', '⭐ Upgrade to Premium', '⭐ Upgrade to Premium'),
                     style: const TextStyle(
                       fontFamily: 'Cairo', fontSize: 16,
                       fontWeight: FontWeight.w800, color: Colors.white)),

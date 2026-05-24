@@ -313,7 +313,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.waterBlue,
               side: const BorderSide(color: AppColors.waterBlue)),
-          child: Text(isAr ? 'كوب -' : '- Cup',
+          child: Text(tLang(lang, 'كوب -', '- Cup', '- Cup', '- Cup', '- Cup', '- Cup'),
               style: const TextStyle(fontFamily: 'Cairo')),
         )),
         const SizedBox(width: 8),
@@ -321,7 +321,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           onPressed: () => ref.read(waterProvider.notifier).add(),
           style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.waterBlue),
-          child: Text(isAr ? '+ كوب' : '+ Cup',
+          child: Text(tLang(lang, '+ كوب', '+ Cup', '+ Cup', '+ Cup', '+ Cup', '+ Cup'),
               style: const TextStyle(fontFamily: 'Cairo', color: Colors.white)),
         )),
       ]),
@@ -382,9 +382,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       Padding(
         padding: const EdgeInsets.only(top: 5),
         child: Text(
-            isAr
-                ? 'الهدف: ${sleep.goal.toInt()} ساعات'
-                : 'Goal: ${sleep.goal.toInt()} hours',
+            tLang(lang, 'الهدف: ${sleep.goal.toInt()} ساعات', 'Goal: ${sleep.goal.toInt()} hours', 'Goal: ${sleep.goal.toInt()} hours', 'Goal: ${sleep.goal.toInt()} hours', 'Goal: ${sleep.goal.toInt()} hours', 'Goal: ${sleep.goal.toInt()} hours'),
             textAlign: TextAlign.center,
             style: TextStyle(fontFamily: 'Cairo', fontSize: 10, color: muted)),
       ),
@@ -424,7 +422,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                         color: AppColors.halalGreen,
                         shape: BoxShape.circle)),
                   const SizedBox(width: 4),
-                  Text(isAr?'مباشر':'LIVE',
+                  Text(tLang(lang, 'مباشر', 'LIVE', 'LIVE', 'LIVE', 'LIVE', 'LIVE'),
                       style: const TextStyle(fontFamily: 'Cairo',
                           fontSize: 10, fontWeight: FontWeight.w800,
                           color: AppColors.halalGreen)),
@@ -438,7 +436,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                   decoration: BoxDecoration(
                     color: Colors.orange.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(8)),
-                  child: Text(isAr?'▶ تشغيل':'▶ Start',
+                  child: Text(tLang(lang, '▶ تشغيل', '▶ Start', '▶ Start', '▶ Start', '▶ Start', '▶ Start'),
                       style: const TextStyle(fontFamily: 'Cairo',
                           fontSize: 10, fontWeight: FontWeight.w800,
                           color: Colors.orange)))),
@@ -470,14 +468,14 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       ]),
       const SizedBox(height: 12),
       Row(children: [
-        _stepStat('🗺️', distStr,   isAr?'مسافة':'Distance', AppColors.waterBlue),
+        _stepStat('🗺️', distStr,   tLang(lang, 'مسافة', 'Distance', 'Distance', 'Distance', 'Distance', 'Distance'), AppColors.waterBlue),
         const SizedBox(width: 8),
-        _stepStat('🔥', '$kcalBurn', isAr?'سعرة محروقة':'kcal burned', AppColors.haramRed),
+        _stepStat('🔥', '$kcalBurn', tLang(lang, 'سعرة محروقة', 'kcal burned', 'kcal burned', 'kcal burned', 'kcal burned', 'kcal burned'), AppColors.haramRed),
         const SizedBox(width: 8),
-        _stepStat('🎯', '${(pct*100).toInt()}%', isAr?'من الهدف':'of goal', AppColors.halalGreen),
+        _stepStat('🎯', '${(pct*100).toInt()}%', tLang(lang, 'من الهدف', 'of goal', 'of goal', 'of goal', 'of goal', 'of goal'), AppColors.halalGreen),
       ]),
       const SizedBox(height: 12),
-      Text(isAr?'ضبط يدوي:':'Manual adjust:',
+      Text(tLang(lang, 'ضبط يدوي:', 'Manual adjust:', 'Manual adjust:', 'Manual adjust:', 'Manual adjust:', 'Manual adjust:'),
           style: TextStyle(fontFamily: 'Cairo', fontSize: 10,
               color: isDark?AppColors.darkMuted:AppColors.lightMuted)),
       const SizedBox(height: 6),
@@ -553,9 +551,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         Padding(
           padding: const EdgeInsets.only(top: 10),
           child: Text(
-              isAr
-                  ? 'سجلت مزاجك: ${health.mood}'
-                  : 'Mood recorded: ${health.mood}',
+              tLang(lang, 'سجلت مزاجك: ${health.mood}', 'Mood recorded: ${health.mood}', 'Mood recorded: ${health.mood}', 'Mood recorded: ${health.mood}', 'Mood recorded: ${health.mood}', 'Mood recorded: ${health.mood}'),
               textAlign: TextAlign.center,
               style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
                   fontWeight: FontWeight.w700,
@@ -582,14 +578,14 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
               style: const TextStyle(fontFamily: 'Cairo', fontSize: 32,
                   fontWeight: FontWeight.w900,
                   color: AppColors.haramRed)),
-          Text(isAr ? 'نبضة/دقيقة' : 'bpm',
+          Text(tLang(lang, 'نبضة/دقيقة', 'bpm', 'bpm', 'bpm', 'bpm', 'bpm'),
               style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
                   color: AppColors.lightMuted)),
         ]),
         const SizedBox(width: 20),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-          Text(isAr ? 'المعدل الطبيعي: 60-100' : 'Normal: 60-100 bpm',
+          Text(tLang(lang, 'المعدل الطبيعي: 60-100', 'Normal: 60-100 bpm', 'Normal: 60-100 bpm', 'Normal: 60-100 bpm', 'Normal: 60-100 bpm', 'Normal: 60-100 bpm'),
               style: const TextStyle(fontFamily: 'Cairo', fontSize: 12)),
           const SizedBox(height: 6),
           LinearProgressIndicator(
@@ -628,7 +624,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.halalGreen,
               padding: const EdgeInsets.symmetric(vertical: 8)),
-          child: Text(isAr ? 'قياس' : 'Measure',
+          child: Text(tLang(lang, 'قياس', 'Measure', 'Measure', 'Measure', 'Measure', 'Measure'),
               style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
                   color: Colors.white)),
         )),
@@ -643,7 +639,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     final bmi    = health.quickBmi;
 
     return ListView(padding: const EdgeInsets.all(14), children: [
-      _sectionTitle(isAr ? 'حاسبة BMI' : 'BMI Calculator', isDark),
+      _sectionTitle(tLang(lang, 'حاسبة BMI', 'BMI Calculator', 'BMI Calculator', 'BMI Calculator', 'BMI Calculator', 'BMI Calculator'), isDark),
       _card(bg, Column(children: [
         Row(children: [
           Expanded(child: TextField(
@@ -651,7 +647,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
             keyboardType: TextInputType.number,
             textDirection: TextDirection.ltr,
             decoration: InputDecoration(
-                labelText: isAr ? 'الوزن (كجم)' : 'Weight (kg)',
+                labelText: tLang(lang, 'الوزن (كجم)', 'Weight (kg)', 'Weight (kg)', 'Weight (kg)', 'Weight (kg)', 'Weight (kg)'),
                 hintText: '70'),
           )),
           const SizedBox(width: 10),
@@ -660,7 +656,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
             keyboardType: TextInputType.number,
             textDirection: TextDirection.ltr,
             decoration: InputDecoration(
-                labelText: isAr ? 'الطول (سم)' : 'Height (cm)',
+                labelText: tLang(lang, 'الطول (سم)', 'Height (cm)', 'Height (cm)', 'Height (cm)', 'Height (cm)', 'Height (cm)'),
                 hintText: '170'),
           )),
         ]),
@@ -673,7 +669,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
               ref.read(healthProvider.notifier).setBMI(w, h);
             }
           },
-          child: Text(isAr ? 'احسب BMI' : 'Calculate BMI',
+          child: Text(tLang(lang, 'احسب BMI', 'Calculate BMI', 'Calculate BMI', 'Calculate BMI', 'Calculate BMI', 'Calculate BMI'),
               style: const TextStyle(fontFamily: 'Cairo')),
         )),
         if (bmi != null) ...[
@@ -690,7 +686,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       ])),
       const SizedBox(height: 16),
       _sectionTitle(
-          isAr ? 'سعرات محروقة في 30 دقيقة' : 'Calories Burned in 30 min',
+          tLang(lang, 'سعرات محروقة في 30 دقيقة', 'Calories Burned in 30 min', 'Calories Burned in 30 min', 'Calories Burned in 30 min', 'Calories Burned in 30 min', 'Calories Burned in 30 min'),
           isDark),
       _card(bg, Column(children: [
         ...(isAr
@@ -718,11 +714,11 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
 
     return ListView(padding: const EdgeInsets.all(14), children: [
-      Text(isAr ? 'مقالات صحية إسلامية' : 'Islamic Health Articles',
+      Text(tLang(lang, 'مقالات صحية إسلامية', 'Islamic Health Articles', 'Islamic Health Articles', 'Islamic Health Articles', 'Islamic Health Articles', 'Islamic Health Articles'),
           style: const TextStyle(fontFamily: 'Cairo', fontSize: 15,
               fontWeight: FontWeight.w700)),
       const SizedBox(height: 4),
-      Text(isAr ? 'اضغط على أي مقال للقراءة' : 'Tap any article to read',
+      Text(tLang(lang, 'اضغط على أي مقال للقراءة', 'Tap any article to read', 'Tap any article to read', 'Tap any article to read', 'Tap any article to read', 'Tap any article to read'),
           style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: muted)),
       const SizedBox(height: 14),
       ...kHealthArticles.map((a) {
