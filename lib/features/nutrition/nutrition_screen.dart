@@ -1458,6 +1458,7 @@ class _MealSection extends StatefulWidget {
 }
 
 class _MealSectionState extends State<_MealSection> {
+  String get lang => context.read(languageProvider);
   bool _expanded = true;
 
   int get _totalKcal => widget.entries.fold(0, (s, e) => s + e.kcal);
