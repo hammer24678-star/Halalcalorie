@@ -1436,7 +1436,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
 // ══════════════════════════════════════════════════════════════
 // MEAL SECTION WIDGET
 // ══════════════════════════════════════════════════════════════
-class _MealSection extends StatefulWidget {
+class _MealSection extends ConsumerStatefulWidget {
   final String emoji, title;
   final List<MealEntry> entries;
   final bool isAr, isDark;
@@ -1457,8 +1457,8 @@ class _MealSection extends StatefulWidget {
   @override State<_MealSection> createState() => _MealSectionState();
 }
 
-class _MealSectionState extends State<_MealSection> {
-  String get lang => context.read(languageProvider);
+class _MealSectionState extends ConsumerState<_MealSection> {
+  String get lang => ref.read(languageProvider);
   bool _expanded = true;
 
   int get _totalKcal => widget.entries.fold(0, (s, e) => s + e.kcal);
