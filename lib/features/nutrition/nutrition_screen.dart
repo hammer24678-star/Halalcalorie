@@ -1673,6 +1673,7 @@ class _AddFoodSheet extends ConsumerStatefulWidget {
 
 class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
     with SingleTickerProviderStateMixin {
+  String get lang => ref.read(languageProvider);
   late TabController _tab;
   final _searchCtrl  = TextEditingController();
   final _nameCtrl    = TextEditingController();
@@ -2919,6 +2920,7 @@ class _AIPlanTab extends ConsumerStatefulWidget {
 }
 
 class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
+  String get lang => ref.read(languageProvider);
   final _ctrl   = TextEditingController();
   bool _loading = false;
   String? _result;

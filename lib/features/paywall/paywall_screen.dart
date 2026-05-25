@@ -3,6 +3,7 @@
 //  Full RevenueCat paywall with real Apple Pay / Google Pay
 // ============================================================
 import 'package:flutter/material.dart';
+import '../../core/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
@@ -17,6 +18,7 @@ class PaywallScreen extends ConsumerStatefulWidget {
 
 class _PaywallState extends ConsumerState<PaywallScreen>
     with SingleTickerProviderStateMixin {
+  String get lang => ref.watch(languageProvider);
   int     _selected  = 1;
   bool    _loading   = false;
   bool    _restoring = false;
@@ -44,7 +46,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
       await ref.read(premiumProvider.notifier).onPurchaseSuccess();
       _showSuccess();
     } else if (!result.cancelled) {
-      if (mounted) setState(() => _errorMsg = result.error ?? (_'Purchase failed. Please try again.'));
+      if (mounted) setState(() => _errorMsg = result.error ?? 'Purchase failed. Please try again.');
     }
   }
 
@@ -57,7 +59,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
       await ref.read(premiumProvider.notifier).onPurchaseSuccess();
       _showSuccess();
     } else {
-      if (mounted) setState(() => _errorMsg = _'No previous purchases found for this account.');
+      if (mounted) setState(() => _errorMsg = 'No previous purchases found for this account.');
     }
   }
 
@@ -210,7 +212,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
           ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)),
               const SizedBox(width: 12),
-              Text(_tLang(lang, 'جاري المعالجة...', 'Processing...', 'Traitement...', 'İşleniyor...', 'Memproses...', 'Memproses...'), style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, color: Colors.white)),
+              Text(tLang(lang, 'جاري المعالجة...', 'Processing...', 'Traitement...', 'İşleniyor...', 'Memproses...', 'Memproses...'), style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, color: Colors.white)),
             ])
           : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
               const Text('⭐', style: TextStyle(fontSize: 20)),

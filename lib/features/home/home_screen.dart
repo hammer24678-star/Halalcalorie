@@ -1330,7 +1330,7 @@ label: tLang(lang, 'تتابع', 'Streak', 'Série', 'Seri', 'Streak', 'Streak')
 color: AppColors.haramRed,
 pct: (streak / 30).clamp(0.0, 1.0),
 isDark: isDark, card: card, border: border, muted: muted,
-onTap: () => _showStreakDialog(context, streak, isAr, card, border),
+onTap: () => _showStreakDialog(context, streak, isAr, lang, card, border),
 ),
 const SizedBox(width: 10),
 _Stat(
@@ -1427,8 +1427,7 @@ fontFamily: 'Cairo', fontSize: 9, color: widget.muted)),
 // ════════════════════════════════════════════════════════════
 // STREAK DIALOG
 // ════════════════════════════════════════════════════════════
-void _showStreakDialog(BuildContext context, int streak, bool isAr, Color card, Color border) {
-  final lang = ref.read(languageProvider);
+void _showStreakDialog(BuildContext context, int streak, bool isAr, String lang, Color card, Color border) {
   final msg = streak == 0
     ? (tLang(lang, 'ابدأ يومك بتسجيل وجبة! 💪', 'Log a meal today to start your streak! 💪', 'Enregistrez un repas aujourd\'hui pour démarrer votre série ! 💪', 'Serinizi başlatmak için bugün öğün kaydedin! 💪', 'Log makanan hari ini untuk mulakan streak! 💪', 'Catat makan hari ini untuk mulai streak! 💪'))
     : streak < 7

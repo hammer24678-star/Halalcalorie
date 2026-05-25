@@ -506,6 +506,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Future<void> _signOut(BuildContext context, WidgetRef ref, bool isAr) async {
+    final lang = ref.read(languageProvider);
     final ok = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
       title: Text(tLang(lang, 'تسجيل الخروج', 'Sign Out', 'Se déconnecter', 'Çıkış Yap', 'Log Keluar', 'Keluar'), style: const TextStyle(fontFamily: 'Cairo')),
       content: Text(tLang(lang, 'هل أنت متأكد؟', 'Are you sure?', 'Êtes-vous sûr ?', 'Emin misiniz?', 'Adakah anda pasti?', 'Anda yakin?'), style: const TextStyle(fontFamily: 'Cairo')),
