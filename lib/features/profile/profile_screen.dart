@@ -428,6 +428,7 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   void _showCityPicker(BuildContext context, WidgetRef ref, bool isAr) {
+    final lang = ref.read(languageProvider);
     const cities = ['Cairo', 'Alexandria', 'Giza', 'Riyadh', 'Jeddah', 'Dubai', 'Abu Dhabi', 'Jakarta', 'Kuala Lumpur', 'Istanbul', 'London'];
     showModalBottomSheet(context: context, builder: (_) => ListView(padding: const EdgeInsets.all(16), children: [
       Text(tLang(lang, 'اختر مدينتك', 'Choose Your City', 'Choisissez votre ville', 'Şehrinizi Seçin', 'Pilih Bandar Anda', 'Pilih Kota Anda'),

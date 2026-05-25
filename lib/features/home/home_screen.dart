@@ -420,6 +420,7 @@ return false;
 
 @override
 Widget build(BuildContext context, WidgetRef ref) {
+final lang     = ref.watch(languageProvider);
 final h = next['h'] as int;
 final m = next['m'] as int;
 final nm = isAr ? next['ar'] as String : next['en'] as String;
@@ -1427,6 +1428,7 @@ fontFamily: 'Cairo', fontSize: 9, color: widget.muted)),
 // STREAK DIALOG
 // ════════════════════════════════════════════════════════════
 void _showStreakDialog(BuildContext context, int streak, bool isAr, Color card, Color border) {
+  final lang = ref.read(languageProvider);
   final msg = streak == 0
     ? (tLang(lang, 'ابدأ يومك بتسجيل وجبة! 💪', 'Log a meal today to start your streak! 💪', 'Enregistrez un repas aujourd\'hui pour démarrer votre série ! 💪', 'Serinizi başlatmak için bugün öğün kaydedin! 💪', 'Log makanan hari ini untuk mulakan streak! 💪', 'Catat makan hari ini untuk mulai streak! 💪'))
     : streak < 7
