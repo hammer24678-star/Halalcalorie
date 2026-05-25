@@ -263,7 +263,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       child: Column(children: [ const Text('📸', style: TextStyle(fontSize: 52)),
         const SizedBox(height: 10),
         Text(
-          tLang(lang, 'التقط صورة لطعامك\nوسأحلله فوراً', 'Take a photo of your food\nand I\', 'Take a photo of your food\nand I\', 'Take a photo of your food\nand I\', 'Take a photo of your food\nand I\', 'Take a photo of your food\nand I\')ll analyze it instantly',
+          tLang(lang, 'التقط صورة لطعامك\nوسأحلله فوراً', 'Take a photo of your food\nand I\'ll analyze it instantly', 'Prenez une photo de votre repas\net analysez-la instantanément', 'Yemeğinizin fotoğrafını çekin\nve anında analiz edeceğim', 'Ambil foto makanan anda\ndan saya akan menganalisisnya', 'Ambil foto makanan Anda\ndan saya akan menganalisisnya',
           textAlign: TextAlign.center, style: const TextStyle(fontFamily:'Cairo', fontSize: 18, fontWeight: FontWeight.w700, color: Colors.white, height: 1.5),
         ),
         const SizedBox(height: 10),

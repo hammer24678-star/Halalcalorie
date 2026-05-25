@@ -175,7 +175,7 @@ class NotificationService {
     if (!enabled) { await _plugin.cancel(kWorkout); return; }
     await _daily(
       id: kWorkout, hour: 17, minute: 30,
-      title: // tLang removed: '💪 وقت الرياضة', '💪 Workout Time', '💪 Heure d\'entraînement', '💪 Antrenman Vakti', '💪 Waktu Senaman', '💪 Waktu Olahraga'),
+      title: '💪 Workout Time',
       body:  'Move your body — the Prophet ﷺ walked daily',
     );
   }

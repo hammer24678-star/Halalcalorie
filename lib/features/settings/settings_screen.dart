@@ -8,6 +8,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 }
 
 class _SettingsState extends ConsumerState<SettingsScreen> {
+  String get lang => ref.read(languageProvider);
   bool _notifWater   = true;
   bool _notifWorkout = true;
   bool _notifMeal    = true;

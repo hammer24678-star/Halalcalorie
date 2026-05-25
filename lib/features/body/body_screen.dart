@@ -19,6 +19,7 @@ class BodyScreen extends ConsumerStatefulWidget {
 }
 
 class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProviderStateMixin {
+  String get lang => ref.read(languageProvider);
   late TabController _tab;
 
   // Edit mode

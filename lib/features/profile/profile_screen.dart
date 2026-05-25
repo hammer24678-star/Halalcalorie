@@ -261,7 +261,7 @@ class ProfileScreen extends ConsumerWidget {
                 () async {
                   // Refresh from RC then show management options
                   await ref.watch(premiumProvider.notifier).refresh();
-                  if (context.mounted) _showManageSubSheet(context, isAr, planName);
+                  if (context.mounted) _showManageSubSheet(context, ref, isAr, planName);
                 }),
             if (!isPremium)
               _settingTile('🔓', t('ترقية إلى بريميوم','Upgrade to Premium'), t('افتح كل الميزات','Unlock all features'),
@@ -444,7 +444,8 @@ class ProfileScreen extends ConsumerWidget {
     ]));
   }
 
-  void _showManageSubSheet(BuildContext context, bool isAr, String planName) {
+  void _showManageSubSheet(BuildContext context, WidgetRef ref, bool isAr, String planName) {
+    final lang = ref.read(languageProvider);
     // planName: monthly | yearly | lifetime
     showModalBottomSheet(context: context, shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(22))),

@@ -1,4 +1,5 @@
 import 'package:image_picker/image_picker.dart';
+import '../../core/l10n.dart';
 // ============================================================
 //  body_photo_screen.dart — HalalCalorie v1.0
 //  AI Body Composition Photo Analyzer — Premium Feature
@@ -23,6 +24,7 @@ class BodyPhotoScreen extends ConsumerStatefulWidget {
 
 class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
     with SingleTickerProviderStateMixin {
+  String get lang => ref.read(languageProvider);
 
   final _picker = ImagePicker();
   File?              _image;
