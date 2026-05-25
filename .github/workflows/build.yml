@@ -1,4 +1,4 @@
-name: Build APK
+name: Build APK & AAB
 on:
   push:
     branches: [master]
@@ -31,11 +31,17 @@ jobs:
         run: flutter build apk --release --no-tree-shake-icons --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
         shell: bash
 
-      - name: Release APK
+      - name: Build AAB
+        run: flutter build appbundle --release --no-tree-shake-icons --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
+        shell: bash
+
+      - name: Release APK & AAB
         uses: softprops/action-gh-release@v1
         with:
           tag_name: latest
           name: HalalCalorie Latest
-          files: build/app/outputs/flutter-apk/app-release.apk
+          files: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
