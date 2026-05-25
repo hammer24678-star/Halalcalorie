@@ -1454,7 +1454,7 @@ class _MealSection extends ConsumerStatefulWidget {
     required this.onDelete,
   });
 
-  @override State<_MealSection> createState() => _MealSectionState();
+  @override ConsumerState<_MealSection> createState() => _MealSectionState();
 }
 
 class _MealSectionState extends ConsumerState<_MealSection> {
