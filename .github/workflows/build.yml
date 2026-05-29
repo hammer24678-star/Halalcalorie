@@ -1,7 +1,7 @@
 name: Build APK & AAB
 on:
   push:
-    branches: [master]
+    branches: [main]
 
 permissions:
   contents: write
@@ -27,25 +27,29 @@ jobs:
 
       - run: python3 patch_android.py
 
-      - name: Build APK
       - name: Decode keystore
         run: |
           echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/sunnahstride.jks
 
-        run: flutter build apk --release --no-tree-shake-icons --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
+      - name: Build APK
+        run: >-
+          flutter build apk --release --no-tree-shake-icons
+          --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
+          --dart-define=ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
         env:
           KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
-        shell: bash
 
       - name: Build AAB
-        run: flutter build appbundle --release --no-tree-shake-icons --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
+        run: >-
+          flutter build appbundle --release --no-tree-shake-icons
+          --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
+          --dart-define=ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
         env:
           KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
-        shell: bash
 
       - name: Release APK & AAB
         uses: softprops/action-gh-release@v1
