@@ -27,11 +27,20 @@ android {
         versionName "1.0.0"
     }
 
+    signingConfigs {
+        release {
+            storeFile file("sunnahstride.jks")
+            storePassword System.getenv("STORE_PASSWORD") ?: ""
+            keyAlias     System.getenv("KEY_ALIAS")       ?: ""
+            keyPassword  System.getenv("KEY_PASSWORD")    ?: ""
+        }
+    }
+
     buildTypes {
         release {
             shrinkResources false
             minifyEnabled false
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
         }
     }
 }
@@ -145,16 +154,27 @@ manifest_path = "android/app/src/main/AndroidManifest.xml"
 if os.path.exists(manifest_path):
     with open(manifest_path, "r") as f: manifest = f.read()
     needed = [
+        # Core
+        ('android.permission.INTERNET',
+         '    <uses-permission android:name="android.permission.INTERNET" />'),
+        ('CAMERA',
+         '    <uses-permission android:name="android.permission.CAMERA" />'),
+        # Media (Android 13+)
+        ('READ_MEDIA_IMAGES',
+         '    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />'),
+        # Pedometer / health
         ('ACTIVITY_RECOGNITION',
          '    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />'),
+        ('sensor.stepcounter',
+         '    <uses-feature android:name="android.hardware.sensor.stepcounter" android:required="false" />'),
+        # Notifications
+        ('POST_NOTIFICATIONS',
+         '    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />'),
+        # Foreground service (workout timer)
         ('FOREGROUND_SERVICE"',
          '    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />'),
         ('FOREGROUND_SERVICE_HEALTH',
          '    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_HEALTH" />'),
-        ('POST_NOTIFICATIONS',
-         '    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />'),
-        ('sensor.stepcounter',
-         '    <uses-feature android:name="android.hardware.sensor.stepcounter" android:required="false" />'),
     ]
     inserted = False
     for marker, line in needed:
