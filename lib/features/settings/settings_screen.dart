@@ -406,22 +406,31 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: bg,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (_) => SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Container(width: 40, height: 4,
-              decoration: BoxDecoration(
-                color: AppColors.lightMuted.withOpacity(0.4),
-                borderRadius: BorderRadius.circular(2))),
-            const SizedBox(height: 16),
-            Text('🌐  Language / اللغة',
+      builder: (_) => DraggableScrollableSheet(
+        initialChildSize: 0.55,
+        minChildSize: 0.35,
+        maxChildSize: 0.85,
+        expand: false,
+        builder: (ctx, scrollCtrl) => SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+            child: Column(children: [
+              Container(width: 40, height: 4,
+                decoration: BoxDecoration(
+                  color: AppColors.lightMuted.withOpacity(0.4),
+                  borderRadius: BorderRadius.circular(2))),
+              const SizedBox(height: 16),
+              Text('🌐  Language / اللغة',
               style: TextStyle(fontFamily: 'Cairo', fontSize: 16,
                 fontWeight: FontWeight.w800, color: text)),
             const SizedBox(height: 16),
-            ..._kLangs.map((l) {
+            Expanded(
+              child: ListView(
+                controller: scrollCtrl,
+                children: _kLangs.map((l) {
               final (code, flag, name, sub) = l;
               final sel = current == code;
               return ListTile(
@@ -442,7 +451,9 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                   setState(() {});
                 },
               );
-            }),
+                }).toList(),
+              ),
+            ),
             const SizedBox(height: 8),
           ]),
         ),

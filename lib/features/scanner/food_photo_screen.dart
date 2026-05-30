@@ -42,6 +42,45 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
 
   // ── Pick image ────────────────────────────────
   Future<void> _pick(ImageSource src) async {
+    // ── Free-tier gate: 3 scans, then paywall ────────────────────
+    final isPremium  = ref.read(premiumProvider);
+    final scanCount  = ref.read(scanCountProvider.notifier);
+    if (!isPremium && !scanCount.canScan) {
+      if (mounted) {
+        final lang = ref.read(languageProvider);
+        final isAr = lang == 'ar' || lang == 'ur';
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Text(
+              isAr ? '🔒 وصلت للحد المجاني' : '🔒 Free limit reached',
+              style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800)),
+            content: Text(
+              isAr
+                ? 'لقد استخدمت 3 تحليلات مجانية.\nاشترك في البريميوم للحصول على تحليلات غير محدودة 🌟'
+                : 'You have used your 3 free AI scans.\nUpgrade to Premium for unlimited scans 🌟',
+              style: const TextStyle(fontFamily: 'Cairo', fontSize: 14, height: 1.5)),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(isAr ? 'لاحقاً' : 'Later')),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.sunnahGreen,
+                  foregroundColor: Colors.white),
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.push('/paywall');
+                },
+                child: Text(isAr ? 'ترقية 🌟' : 'Upgrade 🌟',
+                  style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800))),
+            ],
+          ),
+        );
+      }
+      return;
+    }
     try {
       final xf = await _picker.pickImage(
         source: src,
@@ -78,6 +117,10 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       );
       if (!mounted) return;
       if (mounted) setState(() { _results = result; _state = AnalysisState.done; });
+        // Increment free scan counter (no-op for premium)
+        if (!ref.read(premiumProvider)) {
+          ref.read(scanCountProvider.notifier).increment();
+        }
       // Increment daily AI scan counter
       ref.read(aiPhotoScanProvider.notifier).increment();
     } catch (e) {

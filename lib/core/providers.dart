@@ -704,3 +704,35 @@ final badgeProvider =
         (ref) => BadgeNotifier());
 
 final routerProvider = Provider<GoRouter>((ref) => AppRouter.router(ref));
+
+
+// ── AI Scan usage counter (free tier: 3 scans) ───────────────────────
+const _kScanCountKey = 'ai_scan_count';
+
+final scanCountProvider = StateNotifierProvider<ScanCountNotifier, int>((ref) {
+  return ScanCountNotifier();
+});
+
+class ScanCountNotifier extends StateNotifier<int> {
+  ScanCountNotifier() : super(0) { _load(); }
+
+  Future<void> _load() async {
+    final prefs = await SharedPreferences.getInstance();
+    state = prefs.getInt(_kScanCountKey) ?? 0;
+  }
+
+  Future<void> increment() async {
+    state++;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_kScanCountKey, state);
+  }
+
+  Future<void> reset() async {
+    state = 0;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_kScanCountKey);
+  }
+
+  bool get canScan => state < 3;
+}
+
