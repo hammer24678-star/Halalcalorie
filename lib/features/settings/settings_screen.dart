@@ -458,7 +458,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
           ]),
         ),
       ),
-    );
+    ));
   }
 
   void _editWaterGoal(BuildContext context, bool isAr) {

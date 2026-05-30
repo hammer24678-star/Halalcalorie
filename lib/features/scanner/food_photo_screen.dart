@@ -1,3 +1,4 @@
+import 'package:go_router/go_router.dart';
 // ============================================================
 //  food_photo_screen.dart — HalalCalorie v1.0
 //  AI-Powered Food Photo Analyzer
