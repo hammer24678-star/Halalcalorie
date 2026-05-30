@@ -28,8 +28,9 @@ jobs:
       - run: python3 patch_android.py
 
       - name: Decode keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/sunnahstride.jks
+        run: echo "$CM_KEYSTORE" | base64 --decode > android/app/keystore.jks
+        env:
+          CM_KEYSTORE: ${{ secrets.CM_KEYSTORE }}
 
       - name: Build APK
         run: >-
@@ -37,9 +38,10 @@ jobs:
           --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
           --dart-define=ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
         env:
-          KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
-          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          CM_KEY_ALIAS:         ${{ secrets.CM_KEY_ALIAS }}
+          CM_KEY_PASSWORD:      ${{ secrets.CM_KEY_PASSWORD }}
+          CM_KEYSTORE_PASSWORD: ${{ secrets.CM_KEYSTORE_PASSWORD }}
+          KEYSTORE_PATH:        android/app/keystore.jks
 
       - name: Build AAB
         run: >-
@@ -47,9 +49,10 @@ jobs:
           --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
           --dart-define=ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
         env:
-          KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
-          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+          CM_KEY_ALIAS:         ${{ secrets.CM_KEY_ALIAS }}
+          CM_KEY_PASSWORD:      ${{ secrets.CM_KEY_PASSWORD }}
+          CM_KEYSTORE_PASSWORD: ${{ secrets.CM_KEYSTORE_PASSWORD }}
+          KEYSTORE_PATH:        android/app/keystore.jks
 
       - name: Release APK & AAB
         uses: softprops/action-gh-release@v1
