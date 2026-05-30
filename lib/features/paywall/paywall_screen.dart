@@ -173,7 +173,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
         ['🏃', '180 workouts + Ramadan + Postnatal plans'],
         ['🌿', 'AI meal planner personalized to your body'],
         ['🧬', 'Full body composition analysis'],
-        ['📥', 'Works offline + full history'],
+        ['✨', 'Barakah advanced insights + weekly reports'],
       ]).map((f) => Padding(padding: const EdgeInsets.only(bottom: 10),
         child: Row(children: [
           Container(width: 36, height: 36,
