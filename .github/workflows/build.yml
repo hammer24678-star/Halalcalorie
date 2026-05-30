@@ -42,6 +42,15 @@ jobs:
           CM_KEY_PASSWORD:      ${{ secrets.CM_KEY_PASSWORD }}
           CM_KEY_ALIAS:         ${{ secrets.CM_KEY_ALIAS }}
 
+      - name: Debug signing
+        run: |
+          echo "=== key.properties ==="
+          cat android/key.properties 2>/dev/null || echo "FILE NOT FOUND"
+          echo "=== keystore size ==="
+          ls -la android/app/keystore.jks 2>/dev/null || echo "JKS NOT FOUND"
+          echo "=== keytool verify ==="
+          keytool -list -keystore android/app/keystore.jks -storepass HalalCalorie2025 2>&1 | head -5
+
       - name: Build APK
         run: >-
           flutter build apk --release --no-tree-shake-icons
