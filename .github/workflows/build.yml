@@ -30,12 +30,12 @@ jobs:
       - name: Setup signing
         run: |
           echo "$CM_KEYSTORE" | base64 -d > android/app/keystore.jks
-          cat > android/key.properties << KEYPROPS
-          storePassword=$CM_KEYSTORE_PASSWORD
-          keyPassword=$CM_KEY_PASSWORD
-          keyAlias=$CM_KEY_ALIAS
-          storeFile=app/keystore.jks
-          KEYPROPS
+          printf 'storeFile=app/keystore.jks\n' >  android/key.properties
+          printf 'storePassword=%s\n' "$CM_KEYSTORE_PASSWORD" >> android/key.properties
+          printf 'keyAlias=%s\n'      "$CM_KEY_ALIAS"         >> android/key.properties
+          printf 'keyPassword=%s\n'   "$CM_KEY_PASSWORD"      >> android/key.properties
+          echo "=== key.properties (masked) ==="
+          cat android/key.properties | sed 's/Password=.*/Password=***/'
         env:
           CM_KEYSTORE:          ${{ secrets.CM_KEYSTORE }}
           CM_KEYSTORE_PASSWORD: ${{ secrets.CM_KEYSTORE_PASSWORD }}
