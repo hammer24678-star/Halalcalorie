@@ -41,7 +41,7 @@ jobs:
           CM_KEY_ALIAS:         ${{ secrets.CM_KEY_ALIAS }}
           CM_KEY_PASSWORD:      ${{ secrets.CM_KEY_PASSWORD }}
           CM_KEYSTORE_PASSWORD: ${{ secrets.CM_KEYSTORE_PASSWORD }}
-          KEYSTORE_PATH:        android/app/keystore.jks
+          KEYSTORE_PATH: keystore.jks
 
       - name: Build AAB
         run: >-
@@ -52,7 +52,7 @@ jobs:
           CM_KEY_ALIAS:         ${{ secrets.CM_KEY_ALIAS }}
           CM_KEY_PASSWORD:      ${{ secrets.CM_KEY_PASSWORD }}
           CM_KEYSTORE_PASSWORD: ${{ secrets.CM_KEYSTORE_PASSWORD }}
-          KEYSTORE_PATH:        android/app/keystore.jks
+          KEYSTORE_PATH: keystore.jks
 
       - name: Release APK & AAB
         uses: softprops/action-gh-release@v1
