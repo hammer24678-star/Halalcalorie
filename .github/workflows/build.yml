@@ -27,10 +27,20 @@ jobs:
 
       - run: python3 patch_android.py
 
-      - name: Decode keystore
-        run: echo "$CM_KEYSTORE" | base64 --decode > android/app/keystore.jks
+      - name: Setup signing
+        run: |
+          echo "$CM_KEYSTORE" | base64 -d > android/app/keystore.jks
+          cat > android/key.properties << KEYPROPS
+          storePassword=$CM_KEYSTORE_PASSWORD
+          keyPassword=$CM_KEY_PASSWORD
+          keyAlias=$CM_KEY_ALIAS
+          storeFile=app/keystore.jks
+          KEYPROPS
         env:
-          CM_KEYSTORE: ${{ secrets.CM_KEYSTORE }}
+          CM_KEYSTORE:          ${{ secrets.CM_KEYSTORE }}
+          CM_KEYSTORE_PASSWORD: ${{ secrets.CM_KEYSTORE_PASSWORD }}
+          CM_KEY_PASSWORD:      ${{ secrets.CM_KEY_PASSWORD }}
+          CM_KEY_ALIAS:         ${{ secrets.CM_KEY_ALIAS }}
 
       - name: Build APK
         run: >-
