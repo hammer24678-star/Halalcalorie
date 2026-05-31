@@ -29,10 +29,10 @@ jobs:
 
       - name: Decode keystore
         run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/sunnahstride.jks
-          echo "Keystore size: $(wc -c < android/app/sunnahstride.jks) bytes"
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/halalcalorie.jks
+          echo "Keystore size: $(wc -c < android/app/halalcalorie.jks) bytes"
           keytool -list \
-            -keystore android/app/sunnahstride.jks \
+            -keystore android/app/halalcalorie.jks \
             -storepass "${{ secrets.STORE_PASSWORD }}" \
             2>&1 | head -6
 
@@ -42,6 +42,7 @@ jobs:
           --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
           --dart-define=ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
         env:
+          KEYSTORE_PATH:  halalcalorie.jks
           KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
@@ -52,6 +53,7 @@ jobs:
           --dart-define=GROQ_API_KEY=${{ secrets.GROQ_API_KEY }}
           --dart-define=ANTHROPIC_API_KEY=${{ secrets.ANTHROPIC_API_KEY }}
         env:
+          KEYSTORE_PATH:  halalcalorie.jks
           KEY_ALIAS:      ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD:   ${{ secrets.KEY_PASSWORD }}
           STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
