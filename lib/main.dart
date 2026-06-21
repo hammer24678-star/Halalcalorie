@@ -8,6 +8,7 @@ import 'core/providers.dart';
 import 'core/notifications.dart';
 import 'core/database.dart';
 import 'core/auth_service.dart';
+import 'core/revenuecat_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -52,6 +53,7 @@ void main() {
       }
     } catch (e) { debugPrint('Notif schedule: $e'); }
     try { await AuthService.init(); } catch (e) { debugPrint('Auth init: $e'); }
+    try { await RCConfig.configure(); } catch (e) { debugPrint('RevenueCat init: $e'); }
 
     runApp(const ProviderScope(child: HalalCalorieApp()));
 
