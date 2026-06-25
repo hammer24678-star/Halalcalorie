@@ -27,6 +27,7 @@ dependencies:
   accurate_step_counter: ^2.0.0
   permission_handler: ^11.3.0
   purchases_flutter: ^8.0.0
+  confetti: ^0.7.0
   share_plus: ^9.0.0
   flutter_local_notifications: ^17.2.0
   connectivity_plus: ^6.0.3

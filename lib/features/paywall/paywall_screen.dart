@@ -3,6 +3,7 @@
 //  Full RevenueCat paywall with real Apple Pay / Google Pay
 // ============================================================
 import 'package:flutter/material.dart';
+import 'package:confetti/confetti.dart';
 import '../../core/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -24,14 +25,16 @@ class _PaywallState extends ConsumerState<PaywallScreen>
   bool    _restoring = false;
   String? _errorMsg;
   late AnimationController _pulse;
+  late ConfettiController _confetti;
 
   @override
   void initState() {
     super.initState();
     _pulse = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100))
       ..repeat(reverse: true);
+    _confetti = ConfettiController(duration: const Duration(seconds: 4));
   }
-  @override void dispose() { _pulse.dispose(); super.dispose(); }
+  @override void dispose() { _pulse.dispose(); _confetti.dispose(); super.dispose(); }
 
   bool get _isAr => ref.read(languageProvider) == 'ar';
 
@@ -65,27 +68,63 @@ class _PaywallState extends ConsumerState<PaywallScreen>
 
   void _showSuccess() {
     final isAr = _isAr;
+    _confetti.play();
     showDialog(context: context, barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        content: Column(mainAxisSize: MainAxisSize.min, children: [
-          const Text('🎉', style: TextStyle(fontSize: 58)),
-          const SizedBox(height: 12),
-          Text(isAr ? 'تهانيّ! أصبحت عضواً بريميوم 🌟' : "Congratulations! You are Premium 🌟",
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.w800)),
-          const SizedBox(height: 8),
-          Text('Exact body fat %, muscle mass & all premium features unlocked!',
-            textAlign: TextAlign.center,
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.lightMuted, height: 1.5)),
-          const SizedBox(height: 20),
-          SizedBox(width: double.infinity, child: ElevatedButton(
-            onPressed: () { if (context.mounted) Navigator.pop(context); },
-            style: ElevatedButton.styleFrom(backgroundColor: AppColors.sunnahGreen),
-            child: Text(isAr ? 'رائع! لنبدأ ⭐' : "Lets go ⭐",
-              style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.w700)),
-          )),
-        ]),
+      builder: (_) => Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          ConfettiWidget(
+            confettiController: _confetti,
+            blastDirectionality: BlastDirectionality.explosive,
+            numberOfParticles: 30,
+            gravity: 0.3,
+            colors: const [
+              AppColors.sunnahGreen, AppColors.barakahGold,
+              AppColors.halalGreen, Colors.white,
+              Color(0xFF4CAF50), Color(0xFFFFD700),
+            ],
+          ),
+          AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            backgroundColor: const Color(0xFF1A2A1A),
+            content: Column(mainAxisSize: MainAxisSize.min, children: [
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.elasticOut,
+                builder: (_, v, child) => Transform.scale(scale: v, child: child),
+                child: const Text('🏆', style: TextStyle(fontSize: 72)),
+              ),
+              const SizedBox(height: 12),
+              Text(isAr ? 'تهانيّ! أصبحت عضواً بريميوم 🌟' : 'Congratulations! You are Premium 🌟',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontFamily: 'Cairo', fontSize: 18,
+                  fontWeight: FontWeight.w900, color: AppColors.barakahGold)),
+              const SizedBox(height: 8),
+              Text(isAr
+                ? 'تم فتح جميع الميزات المميزة! بارك الله فيك 🌙'
+                : 'All premium features unlocked! May Allah bless you 🌙',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
+                  color: Colors.white70, height: 1.5)),
+              const SizedBox(height: 24),
+              SizedBox(width: double.infinity, child: ElevatedButton(
+                onPressed: () {
+                  _confetti.stop();
+                  if (context.mounted) Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.barakahGold,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: Text(isAr ? '🌟 رائع! لنبدأ' : '🌟 Let\'s go!',
+                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 16,
+                    color: Colors.white, fontWeight: FontWeight.w800)),
+              )),
+            ]),
+          ),
+        ],
       ),
     );
   }
