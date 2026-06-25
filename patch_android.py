@@ -1,3 +1,16 @@
+import re as _vre
+
+# -- Read version from pubspec.yaml (single source of truth) --
+with open("pubspec.yaml", encoding="utf-8") as _f:
+    _pubspec_src = _f.read()
+_vm = _vre.search(r"^version:\s*([0-9]+\.[0-9]+\.[0-9]+)\+([0-9]+)\s*$",
+                   _pubspec_src, _vre.MULTILINE)
+if not _vm:
+    raise SystemExit("ERROR: couldn't find version: X.Y.Z+N in pubspec.yaml")
+VERSION_NAME = _vm.group(1)
+VERSION_CODE = int(_vm.group(2))
+print(f"Read from pubspec.yaml -> versionName={VERSION_NAME} versionCode={VERSION_CODE}")
+
 APP_BUILD_GRADLE = """plugins {
     id "com.android.application"
     id "kotlin-android"
@@ -23,8 +36,8 @@ android {
         applicationId "com.halalcalorie.app"
         minSdk 24
         targetSdk 36
-        versionCode 1
-        versionName "1.0.0"
+        versionCode __VERSION_CODE__
+        versionName "__VERSION_NAME__"
     }
 
     signingConfigs {
@@ -54,6 +67,9 @@ dependencies {
     coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'
 }
 """
+APP_BUILD_GRADLE = (APP_BUILD_GRADLE
+    .replace("__VERSION_CODE__", str(VERSION_CODE))
+    .replace("__VERSION_NAME__", VERSION_NAME))
 
 PROJECT_BUILD_GRADLE = """buildscript {
     ext.kotlin_version = '2.0.21'
