@@ -745,6 +745,5 @@ class ScanCountNotifier extends StateNotifier<int> {
     await prefs.remove(_kScanCountKey);
   }
 
-  bool get canScan => state < 3;
 }
 
