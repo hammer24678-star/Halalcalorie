@@ -716,15 +716,27 @@ final scanCountProvider = StateNotifierProvider<ScanCountNotifier, int>((ref) {
 class ScanCountNotifier extends StateNotifier<int> {
   ScanCountNotifier() : super(0) { _load(); }
 
+  static String _today() => DateTime.now().toIso8601String().substring(0, 10);
+
   Future<void> _load() async {
     final prefs = await SharedPreferences.getInstance();
-    state = prefs.getInt(_kScanCountKey) ?? 0;
+    final savedDate = prefs.getString('ai_scan_date') ?? '';
+    if (savedDate != _today()) {
+      await prefs.setString('ai_scan_date', _today());
+      await prefs.setInt(_kScanCountKey, 0);
+      state = 0;
+    } else {
+      state = prefs.getInt(_kScanCountKey) ?? 0;
+    }
   }
+
+  bool get canScan => state < 3;
 
   Future<void> increment() async {
     state++;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_kScanCountKey, state);
+    await prefs.setString('ai_scan_date', _today());
   }
 
   Future<void> reset() async {
