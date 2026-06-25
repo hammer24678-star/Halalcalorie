@@ -18,7 +18,7 @@ class RCConfig {
       'RC_GOOGLE_KEY', defaultValue: '');
   static const appleApiKey  = String.fromEnvironment(
       'RC_APPLE_KEY',  defaultValue: '');
-  static const entitlementId = 'premium_access';
+  static const entitlementId = 'Halalcalorie Pro';
 
   static bool get isConfigured =>
       googleApiKey.isNotEmpty || appleApiKey.isNotEmpty;
@@ -139,7 +139,13 @@ class RevenueCatService {
       }
       return PurchaseResult(success: false, error: e.toString());
     } catch (e) {
-      return PurchaseResult(success: false, error: e.toString());
+      final msg = e.toString();
+      if (msg.contains('userCancelled') ||
+          msg.contains('PurchaseCancelledError') ||
+          msg.contains('USER_CANCELED')) {
+        return const PurchaseResult(success: false, cancelled: true);
+      }
+      return PurchaseResult(success: false, error: msg);
     }
   }
 
@@ -156,7 +162,13 @@ class RevenueCatService {
       return PurchaseResult(success: active,
           error: active ? null : 'No active subscription found');
     } catch (e) {
-      return PurchaseResult(success: false, error: e.toString());
+      final msg = e.toString();
+      if (msg.contains('userCancelled') ||
+          msg.contains('PurchaseCancelledError') ||
+          msg.contains('USER_CANCELED')) {
+        return const PurchaseResult(success: false, cancelled: true);
+      }
+      return PurchaseResult(success: false, error: msg);
     }
   }
 
