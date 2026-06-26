@@ -97,6 +97,7 @@ class RevenueCatService {
         final id        = pkg.packageType.name.toLowerCase();
         bool   isYearly = id.contains('annual') || id.contains('yearly');
         bool   isLife   = id.contains('lifetime');
+        if (isLife) continue; // CAP: lifetime tier removed — unlimited AI cost risk
         result.add(RCOffering(
           identifier:     product.identifier,
           titleAr:        isLife ? 'مدى الحياة' : isYearly ? 'سنوي' : 'شهري',
@@ -208,12 +209,6 @@ class RevenueCatService {
       savingsBadgeAr: 'وفّر ٣٠٪',
       savingsBadgeEn: 'Save 30%',
       isPopular: true,
-    ),
-    RCOffering(
-      identifier:  RCProducts.lifetime,
-      titleAr: 'مدى الحياة', titleEn: 'Lifetime',
-      priceString: 'EGP 1,999',
-      periodAr: 'مرة واحدة', periodEn: 'one-time',
     ),
   ];
 }
