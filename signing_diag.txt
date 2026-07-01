@@ -1,0 +1,38 @@
+=== Keystore-like files found anywhere under home ===
+-rw-------. 1 u0_a369 u0_a369 2692 Mar 30 20:15 /data/data/com.termux/files/home/halalcalorie.keystore
+-rw-------. 1 u0_a369 u0_a369 2712 May 26 13:15 /data/data/com.termux/files/home/tilawa-enhancer/tilawa_release.jks
+-rw-------. 1 u0_a369 u0_a369 2744 Apr 18 01:37 /data/data/com.termux/files/home/tilawa_release.jks
+-rw-------. 1 u0_a369 u0_a369 2756 May 31 00:37 /data/data/com.termux/files/home/halalcalorie.jks
+-rw-------. 1 u0_a369 u0_a369 2772 May 31 10:16 /data/data/com.termux/files/home/halalcalorie_fresh.jks
+-rw-------. 1 u0_a369 u0_a369 2756 May 31 14:00 /data/data/com.termux/files/home/halalcalorie_new.jks
+-rw-------. 1 u0_a369 u0_a369 2772 May 29 14:16 /data/data/com.termux/files/home/sunnahstride.jks
+
+=== android/key.properties ===
+(not found)
+
+=== android/app/build.gradle signing section ===
+
+=== android/app/build.gradle.kts signing section (if kts used) ===
+
+=== GitHub Actions workflow(s) - signing/secrets lines ===
+--- .github/workflows/build.yml ---
+30:      - name: Decode keystore
+31:        run: echo "$CM_KEYSTORE" | base64 --decode > android/app/keystore.jks
+33:          CM_KEYSTORE: ${{ secrets.CM_KEYSTORE }}
+37:          KEY_ALIAS:         ${{ secrets.KEY_ALIAS }}
+38:          KEY_PASSWORD:      ${{ secrets.KEY_PASSWORD }}
+39:          STORE_PASSWORD:    ${{ secrets.STORE_PASSWORD }}
+40:          KEYSTORE_PATH:        keystore.jks
+41:          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+42:          ANTHROPIC_API_KEY:    ${{ secrets.ANTHROPIC_API_KEY }}
+43:          RC_GOOGLE_KEY:        ${{ secrets.RC_GOOGLE_KEY }}
+52:          KEY_ALIAS:         ${{ secrets.KEY_ALIAS }}
+53:          KEY_PASSWORD:      ${{ secrets.KEY_PASSWORD }}
+54:          STORE_PASSWORD:    ${{ secrets.STORE_PASSWORD }}
+55:          KEYSTORE_PATH:        keystore.jks
+56:          GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+57:          ANTHROPIC_API_KEY:    ${{ secrets.ANTHROPIC_API_KEY }}
+58:          RC_GOOGLE_KEY:        ${{ secrets.RC_GOOGLE_KEY }}
+88:          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+=== If a keystore + key.properties exist, show actual fingerprint ===

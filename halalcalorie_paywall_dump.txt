@@ -1,0 +1,1205 @@
+=====================================================================
+FILE: ./lib/core/ai_service.dart
+=====================================================================
+// ============================================================
+//  ai_service.dart — HalalCalorie v1.0
+//  Anthropic Claude Vision API for:
+//  1. Food photo → nutrition analysis + halal check
+//  2. Body photo → composition estimate (Premium)
+// ============================================================
+
+import 'dart:convert';
+import 'dart:io';
+import 'package:http/http.dart' as http;
+import '../data/models/models.dart';
+import 'open_food_facts_service.dart';
+
+class ApiKeyMissingException implements Exception {
+  final String message;
+  const ApiKeyMissingException([this.message =
+    'GROQ_API_KEY is not set. Add it to your GitHub Secrets and rebuild.']);
+  @override String toString() => message;
+}
+
+class AIService {
+  static const _endpoint    = 'https://api.groq.com/openai/v1/chat/completions';
+  static const _visionModel = 'meta-llama/llama-4-scout-17b-16e-instruct';
+  static const _textModel   = 'llama-3.1-8b-instant';
+  static const _apiKey      = String.fromEnvironment('GROQ_API_KEY', defaultValue: '');
+  /// Maps language code → human-readable name for AI prompts
+  static String _langName(String code) => const {
+    'ar': 'Arabic',
+    'en': 'English',
+    'fr': 'French',
+    'tr': 'Turkish',
+    'ur': 'Urdu',
+    'ms': 'Malay',
+    'id': 'Indonesian',
+  }[code] ?? 'English';
+
+
+  // ── Convert image file to base64 ──────────────
+  static Future<String> _toBase64(String path) async {
+    final bytes = await File(path).readAsBytes();
+    return base64Encode(bytes);
+  }
+
+  static String _mimeType(String path) {
+    final ext = path.toLowerCase().split('.').last;
+    switch (ext) {
+      case 'png':  return 'image/png';
+      case 'webp': return 'image/webp';
+      case 'gif':  return 'image/gif';
+      default:     return 'image/jpeg';
+    }
+  }
+
+  // ── Core API call ─────────────────────────────
+  // ── Groq vision call (image + text) ─────────────────────────────────
+  static Future<String> _callVision({
+    required String imagePath,
+    required String systemPrompt,
+    required String userPrompt,
+    int maxTokens = 1024,
+  }) async {
+    if (_apiKey.isEmpty) throw const ApiKeyMissingException();
+    final b64  = await _toBase64(imagePath);
+    final mime = _mimeType(imagePath);
+
+    final body = jsonEncode({
+      'model': _visionModel,
+      'max_tokens': maxTokens,
+      'messages': [
+        {'role': 'system', 'content': systemPrompt},
+        {
+          'role': 'user',
+          'content': [
+            {
+              'type': 'image_url',
+              'image_url': {'url': 'data:$mime;base64,$b64'},
+            },
+            {'type': 'text', 'text': userPrompt},
+          ],
+        }
+      ],
+    });
+
+    final resp = await http.post(
+      Uri.parse(_endpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $_apiKey',
+      },
+      body: body,
+    ).timeout(const Duration(seconds: 60));
+
+    if (resp.statusCode != 200) {
+      throw Exception('API ${resp.statusCode}: ${resp.body}');
+    }
+    final data = jsonDecode(resp.body) as Map<String, dynamic>;
+    final raw  = _extractGroq(data);
+    final arrMatch = RegExp(r'\[[\s\S]*\]').firstMatch(raw);
+    if (arrMatch != null) return arrMatch.group(0)!;
+    final objMatch = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
+    return objMatch?.group(0) ?? '[]';
+  }
+
+  // ── Groq text-only call ───────────────────────────────────────────────
+  static Future<String> _callText({
+    required String systemPrompt,
+    required String userPrompt,
+    int maxTokens = 800,
+  }) async {
+    if (_apiKey.isEmpty) throw const ApiKeyMissingException();
+    final body = jsonEncode({
+      'model': _textModel,
+      'max_tokens': maxTokens,
+      'messages': [
+        {'role': 'system', 'content': systemPrompt},
+        {'role': 'user',   'content': userPrompt},
+      ],
+    });
+
+    final resp = await http.post(
+      Uri.parse(_endpoint),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $_apiKey',
+      },
+      body: body,
+    ).timeout(const Duration(seconds: 30));
+
+    if (resp.statusCode != 200) {
+      throw Exception('API ${resp.statusCode}: ${resp.body}');
+    }
+    final data = jsonDecode(resp.body) as Map<String, dynamic>;
+    return _extractGroq(data);
+  }
+
+  // ── Extract text from Groq/OpenAI response ────────────────────────────
+  static String _extractGroq(Map<String, dynamic> data) {
+    final choices = data['choices'] as List<dynamic>?;
+    if (choices == null || choices.isEmpty) return '{}';
+    final msg = choices[0]['message'] as Map<String, dynamic>?;
+    return (msg?['content'] as String?) ?? '{}';
+  }
+
+  // ── helper: extract JSON object from text ─────────────────────────────
+  static String _extractJson(String raw) {
+    final m = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
+    return m?.group(0) ?? '{}';
+  }
+
+  // ════════════════════════════════════════════════
+  //  FOOD PHOTO ANALYSIS
+  // ════════════════════════════════════════════════
+  // ── Multi-food analysis (returns list of all detected foods) ──────────
+  static Future<List<FoodPhotoResult>> analyzeFoodPhoto({
+    required String imagePath,
+    required String language,
+  }) async {
+    final langName = _langName(language);
+    final system = '''
+You are a professional dietitian and halal food expert.
+Analyze the food image and identify EVERY distinct food item visible.
+Return ONLY a valid JSON array — no markdown, no extra text.
+Each element must have this exact structure:
+{
+  "foodName": "<name in $langName>",
+  "foodNameEn": "<name in English>",
+  "kcal": <integer for this portion>,
+  "proteinG": <integer grams>,
+  "carbsG": <integer grams>,
+  "fatG": <integer grams>,
+  "halalStatus": "<halal|doubtful|haram|unknown>",
+  "halalNote": "<brief explanation in $langName>",
+  "halalNoteEn": "<brief explanation in English>",
+  "confidence": <0.0-1.0>,
+  "portionSize": "<estimated size>",
+  "ingredients": ["<ingredient 1>", "<ingredient 2>"],
+  "sunnahNote": "<Sunnah/Islamic connection in $langName, or empty>",
+  "sunnahNoteEn": "<Sunnah connection in English, or empty>"
+}
+
+Rules:
+- List EVERY distinct item (rice, chicken, salad, bread, drink — all separate)
+- Estimate calories for the visible portion of EACH item
+- halalStatus: halal=permissible, doubtful=uncertain additives/processing, haram=pork/alcohol/blood, unknown=cannot determine
+- Be conservative — use doubtful when uncertain
+- sunnahNote: mention Sunnah foods (dates, honey, olive oil, black seed, zamzam, vinegar, figs, pomegranate)
+- If only one food is visible, return an array with one element
+- Never return an empty array — always at least one item
+''';
+
+    final prompt = language == 'ar'
+      ? 'حلل كل الأطعمة المرئية في هذه الصورة وأعطني القيم الغذائية والحكم الشرعي لكل منها.'
+      : 'Identify and analyze every food item visible in this image. Return each as a separate entry with nutritional values and halal assessment.';
+
+    try {
+      final raw   = await _callVision(
+          imagePath: imagePath, systemPrompt: system,
+          userPrompt: prompt, maxTokens: 1500);
+      final clean = raw.replaceAll(RegExp(r'```json|```'), '').trim();
+      final decoded = jsonDecode(clean);
+
+      // Handle both array and single-object responses
+      final List<dynamic> items = decoded is List
+          ? decoded
+          : [decoded];
+
+      return items.map((j) {
+        final m = j as Map<String, dynamic>;
+        return FoodPhotoResult(
+          foodName:           m['foodName']    as String? ?? 'Unknown',
+          foodNameEn:         m['foodNameEn']  as String? ?? 'Unknown',
+          kcal:               _safeInt(m['kcal']),
+          proteinG:           _safeDouble(m['proteinG']),
+          carbsG:             _safeDouble(m['carbsG']),
+          fatG:               _safeDouble(m['fatG']),
+          halalStatus:        _parseHalalStatus(m['halalStatus'] as String? ?? 'unknown'),
+          halalExplanation:   m['halalNote']    as String? ?? '',
+          halalExplanationEn: m['halalNoteEn']  as String? ?? '',
+          sunnahNote:         m['sunnahNote']   as String? ?? '',
+          sunnahNoteEn:       m['sunnahNoteEn'] as String? ?? '',
+          confidence:   _safeDouble(m['confidence'], 0.75),
+          portionSize:  m['portionSize'] as String? ?? '',
+          ingredients:  (m['ingredients'] as List<dynamic>?)?.cast<String>() ?? const [],
+        );
+      }).toList();
+    } on FormatException {
+      return [_fallbackFoodResult(language)];
+    }
+  }
+
+  static FoodPhotoResult _fallbackFoodResult(String lang) => FoodPhotoResult(
+    foodName: lang == 'ar' ? 'وجبة مختلطة' : 'Mixed Meal',
+    foodNameEn: 'Mixed Meal',
+    kcal: 350, proteinG: 20, carbsG: 40, fatG: 12,
+    halalStatus: HalalStatus.unknown,
+    halalExplanation: lang == 'ar' ? 'التحليل غير متاح' : 'Analysis unavailable',
+    halalExplanationEn: 'Analysis unavailable',
+    sunnahNote: '',
+    sunnahNoteEn: '',
+  );
+
+  // ════════════════════════════════════════════════
+  //  QUICK TEXT ENTRY (no image needed)
+  // ════════════════════════════════════════════════
+  /// Analyse a plain-text meal description and return nutrition results.
+  /// e.g. '2 boiled eggs and a cup of rice'
+  static Future<List<FoodPhotoResult>> quickTextEntry({
+    required String description,
+    required String language,
+  }) async {
+    if (_apiKey.isEmpty) throw const ApiKeyMissingException();
+    final langName = _langName(language);
+    final system = '''
+You are a professional dietitian and halal food expert.
+The user describes a meal in text. Identify every distinct food item.
+Return ONLY a valid JSON array — no markdown, no extra text.
+Each element must have this exact structure:
+{
+  "foodName": "<name in $langName>",
+  "foodNameEn": "<name in English>",
+  "kcal": <integer for this portion>,
+  "proteinG": <integer grams>,
+  "carbsG": <integer grams>,
+  "fatG": <integer grams>,
+  "halalStatus": "<halal|doubtful|haram|unknown>",
+  "halalNote": "<brief in $langName>",
+  "halalNoteEn": "<brief in English>",
+  "confidence": <0.0-1.0>,
+  "portionSize": "<estimated size>",
+  "ingredients": [],
+  "sunnahNote": "<Sunnah/Islamic note in $langName, or empty>",
+  "sunnahNoteEn": "<Sunnah note in English, or empty>"
+}
+Rules:
+- Split combined descriptions into individual items (e.g. '2 eggs + rice' → 2 entries)
+- Use reasonable standard portions when quantity is vague
+- halalStatus: conservative — use doubtful when uncertain
+- Never return an empty array
+''';
+
+    final prompt = language == 'ar'
+      ? 'حلل هذه الوجبة وأعطني القيم الغذائية لكل عنصر: $description'
+      : 'Analyze this meal and give nutritional values for each item: $description';
+
+    try {
+      final _url  = Uri.parse('\$_geminiBase/\$_model:generateContent?key=\$_apiKey');
+      final body  = jsonEncode({
+        'contents': [{'parts': [{'text': '\$system\n\n\$prompt'}]}],
+      });
+      final resp = await http.post(_url,
+        headers: {'Content-Type': 'application/json'},
+        body: body,
+      ).timeout(const Duration(seconds: 20));
+      if (resp.statusCode != 200) throw Exception('${resp.statusCode}');
+      final data = jsonDecode(resp.body) as Map<String, dynamic>;
+      final raw  = (data['candidates'] as List?)
+          ?.firstOrNull?['content']?['parts']
+          ?.firstOrNull?['text']?.toString() ?? '[]';
+      final clean = raw.replaceAll(RegExp(r'```json|```'), '').trim();
+      final arrMatch = RegExp(r'\[[\s\S]*\]').firstMatch(clean);
+      final decoded = jsonDecode(arrMatch?.group(0) ?? '[]');
+      final List<dynamic> items = decoded is List ? decoded : [decoded];
+      if (items.isEmpty) return [_fallbackFoodResult(language)];
+      return items.map((j) {
+        final m = j as Map<String, dynamic>;
+        return FoodPhotoResult(
+          foodName:           m['foodName']    as String? ?? 'Unknown',
+          foodNameEn:         m['foodNameEn']  as String? ?? 'Unknown',
+          kcal:               _safeInt(m['kcal']),
+          proteinG:           _safeDouble(m['proteinG']),
+          carbsG:             _safeDouble(m['carbsG']),
+          fatG:               _safeDouble(m['fatG']),
+          halalStatus:        _parseHalalStatus(m['halalStatus'] as String? ?? 'unknown'),
+          halalExplanation:   m['halalNote']    as String? ?? '',
+          halalExplanationEn: m['halalNoteEn']  as String? ?? '',
+          sunnahNote:         m['sunnahNote']   as String? ?? '',
+          sunnahNoteEn:       m['sunnahNoteEn'] as String? ?? '',
+          confidence:   _safeDouble(m['confidence'], 0.80),
+          portionSize:  m['portionSize'] as String? ?? '',
+          ingredients:  (m['ingredients'] as List<dynamic>?)?.cast<String>() ?? const [],
+        );
+      }).toList();
+    } catch (_) {
+      return [_fallbackFoodResult(language)];
+    }
+  }
+
+  // ════════════════════════════════════════════════
+  //  BODY PHOTO ANALYSIS (Premium)
+  // ════════════════════════════════════════════════
+  static Future<BodyPhotoResult> analyzeBodyPhoto({
+    required String imagePath,
+    required bool isMale,
+    required double weightKg,
+    required double heightCm,
+    required int age,
+    required String language,
+  }) async {
+    final system = '''You are a professional fitness coach and body composition analyst.
+Analyze the body image and return ONLY valid JSON with this exact structure:
+{
+  "estimatedBodyFatPct": <number 5-50>,
+  "estimatedMuscleMassKg": <number>,
+  "bodyType": "<ectomorph|mesomorph|endomorph>",
+  "bodyTypeAr": "<نحيف|متوازن|ضخم>",
+  "postureNote": "<brief posture observation in English>",
+  "postureNoteAr": "<brief posture observation in Arabic>",
+  "recommendations": ["<English rec 1>", "<English rec 2>", "<English rec 3>"],
+  "recommendationsAr": ["<Arabic rec 1>", "<Arabic rec 2>", "<Arabic rec 3>"],
+  "confidence": <0.0-1.0>
+}
+
+IMPORTANT:
+- This is an ESTIMATE only — body fat from photos is not clinically accurate
+- Use visible muscle definition, fat distribution, and overall physique
+- Gender: ${isMale ? 'Male' : 'Female'}, Weight: ${weightKg}kg, Height: ${heightCm}cm, Age: $age
+- Recommendations should be practical, Islamic-friendly (no mixed-gender gyms reference)
+- Confidence should be lower (0.4-0.65) since photo analysis has inherent limitations
+- Focus on achievable, halal fitness goals''';
+
+    final prompt = language == 'ar'
+      ? 'قدّر تركيبة الجسم من الصورة. هذا للاستخدام الشخصي فقط.'
+      : 'Estimate body composition from this photo. This is for personal use only.';
+
+    try {
+      final raw   = await _callVision(imagePath: imagePath, systemPrompt: system, userPrompt: prompt, maxTokens: 1000);
+      final clean = raw.replaceAll(RegExp(r'```json|```'), '').trim();
+      final json  = jsonDecode(clean) as Map<String, dynamic>;
+      return BodyPhotoResult(
+        bodyFatPercent: (json['estimatedBodyFatPct'] as num?)?.toDouble() ?? 20.0,
+        muscleMassKg: (json['estimatedMuscleMassKg'] as num?)?.toDouble() ?? weightKg * 0.4,
+        leanBodyMassKg: weightKg * (1 - ((json['estimatedBodyFatPct'] as num?)?.toDouble() ?? 20.0) / 100),
+        bodyType: json['bodyTypeAr'] as String? ?? 'متوازن',
+        bodyTypeEn: json['bodyType'] as String? ?? 'mesomorph',
+        recommendationsAr: List<String>.from(json['recommendationsAr'] ?? []),
+        recommendationsEn: List<String>.from(json['recommendations'] ?? []),
+        rawAnalysis: '',
+        confidence:    (json['confidence'] as num?)?.toDouble() ?? 0.55,
+        postureNote:   json['postureNote']   as String? ?? '',
+        postureNoteAr: json['postureNoteAr'] as String? ?? '',
+      );
+    } catch (e) {
+      return _fallbackBodyResult(isMale, weightKg, language);
+    }
+  }
+
+  static BodyPhotoResult _fallbackBodyResult(bool isMale, double weightKg, String lang) {
+    final bf = isMale ? 18.0 : 28.0;
+    return BodyPhotoResult(
+      bodyFatPercent: bf,
+      muscleMassKg: weightKg * (1 - bf / 100) * 0.85,
+      leanBodyMassKg: weightKg * (1 - bf / 100),
+      bodyType: lang == 'ar' ? 'متوازن' : 'mesomorph',
+      bodyTypeEn: 'mesomorph',
+      recommendationsAr: ['زِد البروتين اليومي', 'امشِ ٣٠ دقيقة يومياً', 'نم ٨ ساعات'],
+      recommendationsEn: ['Increase protein intake', 'Walk 30 min daily', 'Sleep 8 hours'],
+      rawAnalysis: '',
+      confidence: 0.55,
+    );
+  }
+
+  // ════════════════════════════════════════════════
+  //  QUICK TEXT-ONLY MEAL SUGGESTION (no image)
+  // ════════════════════════════════════════════════
+  static Future<String> getMealSuggestion({
+    required String prompt,
+    required int calorieGoal,
+    required String dietType,
+    required String goal,
+    required String language,
+  }) async {
+    final system = '''You are a halal dietitian. Respond in ${_langName(language)}.
+Provide meal suggestions that are 100% halal, practical, and aligned with Islamic dietary guidelines.
+Mention Sunnah foods (dates, honey, olive oil, black seed) when relevant.
+Keep response concise and structured.''';
+
+    final userMsg = '''
+Calorie goal: $calorieGoal kcal/day
+Diet type: $dietType
+Goal: $goal
+Request: $prompt
+''';
+
+    if (_apiKey.isEmpty) throw const ApiKeyMissingException();
+    try {
+      final result = await _callText(systemPrompt: system, userPrompt: userMsg, maxTokens: 600);
+      return result.trim();
+    } catch (_) {
+      return language == 'ar'
+        ? 'عذراً، حدث خطأ في الاتصال. تأكد من اتصالك بالإنترنت وحاول مرة أخرى.'
+        : 'Sorry, connection error. Please check your internet and try again.';
+    }
+  }
+  // ════════════════════════════════════════════════
+  //  FOOD NUTRITION LOOKUP
+  // ════════════════════════════════════════════════
+  
+  // ── Local food database (works without internet) ────────
+  static Map<String, dynamic>? _localLookup(String name) {
+    final n = name.toLowerCase().trim();
+    // Map common foods to real values
+    const foods = {
+      'honey': {'name_ar': 'عسل', 'name_en': 'Honey', 'kcal': 304, 'protein_g': 0.3, 'carbs_g': 82.0, 'fat_g': 0.0, 'halal': true},
+      'عسل': {'name_ar': 'عسل', 'name_en': 'Honey', 'kcal': 304, 'protein_g': 0.3, 'carbs_g': 82.0, 'fat_g': 0.0, 'halal': true},
+      'date': {'name_ar': 'تمر', 'name_en': 'Dates', 'kcal': 277, 'protein_g': 1.8, 'carbs_g': 75.0, 'fat_g': 0.2, 'halal': true},
+      'dates': {'name_ar': 'تمر', 'name_en': 'Dates', 'kcal': 277, 'protein_g': 1.8, 'carbs_g': 75.0, 'fat_g': 0.2, 'halal': true},
+      'تمر': {'name_ar': 'تمر', 'name_en': 'Dates', 'kcal': 277, 'protein_g': 1.8, 'carbs_g': 75.0, 'fat_g': 0.2, 'halal': true},
+      'chicken': {'name_ar': 'دجاج مشوي', 'name_en': 'Grilled Chicken', 'kcal': 165, 'protein_g': 31.0, 'carbs_g': 0.0, 'fat_g': 4.0, 'halal': true},
+      'دجاج': {'name_ar': 'دجاج مشوي', 'name_en': 'Grilled Chicken', 'kcal': 165, 'protein_g': 31.0, 'carbs_g': 0.0, 'fat_g': 4.0, 'halal': true},
+      'egg': {'name_ar': 'بيضة', 'name_en': 'Egg', 'kcal': 78, 'protein_g': 6.0, 'carbs_g': 1.0, 'fat_g': 5.0, 'halal': true},
+      'eggs': {'name_ar': 'بيضة', 'name_en': 'Egg', 'kcal': 78, 'protein_g': 6.0, 'carbs_g': 1.0, 'fat_g': 5.0, 'halal': true},
+      'بيض': {'name_ar': 'بيضة', 'name_en': 'Egg', 'kcal': 78, 'protein_g': 6.0, 'carbs_g': 1.0, 'fat_g': 5.0, 'halal': true},
+      'rice': {'name_ar': 'أرز أبيض', 'name_en': 'White Rice', 'kcal': 206, 'protein_g': 4.0, 'carbs_g': 45.0, 'fat_g': 0.4, 'halal': true},
+      'أرز': {'name_ar': 'أرز أبيض', 'name_en': 'White Rice', 'kcal': 206, 'protein_g': 4.0, 'carbs_g': 45.0, 'fat_g': 0.4, 'halal': true},
+      'milk': {'name_ar': 'حليب', 'name_en': 'Milk', 'kcal': 130, 'protein_g': 7.0, 'carbs_g': 10.0, 'fat_g': 7.0, 'halal': true},
+      'حليب': {'name_ar': 'حليب', 'name_en': 'Milk', 'kcal': 130, 'protein_g': 7.0, 'carbs_g': 10.0, 'fat_g': 7.0, 'halal': true},
+      'banana': {'name_ar': 'موز', 'name_en': 'Banana', 'kcal': 105, 'protein_g': 1.0, 'carbs_g': 27.0, 'fat_g': 0.3, 'halal': true},
+      'موز': {'name_ar': 'موز', 'name_en': 'Banana', 'kcal': 105, 'protein_g': 1.0, 'carbs_g': 27.0, 'fat_g': 0.3, 'halal': true},
+      'apple': {'name_ar': 'تفاحة', 'name_en': 'Apple', 'kcal': 95, 'protein_g': 0.5, 'carbs_g': 25.0, 'fat_g': 0.3, 'halal': true},
+      'تفاح': {'name_ar': 'تفاحة', 'name_en': 'Apple', 'kcal': 95, 'protein_g': 0.5, 'carbs_g': 25.0, 'fat_g': 0.3, 'halal': true},
+      'olive oil': {'name_ar': 'زيت زيتون', 'name_en': 'Olive Oil', 'kcal': 119, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 14.0, 'halal': true},
+      'زيت زيتون': {'name_ar': 'زيت زيتون', 'name_en': 'Olive Oil', 'kcal': 119, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 14.0, 'halal': true},
+      'bread': {'name_ar': 'خبز', 'name_en': 'Bread', 'kcal': 265, 'protein_g': 9.0, 'carbs_g': 49.0, 'fat_g': 3.0, 'halal': true},
+      'خبز': {'name_ar': 'خبز', 'name_en': 'Bread', 'kcal': 265, 'protein_g': 9.0, 'carbs_g': 49.0, 'fat_g': 3.0, 'halal': true},
+      'tuna': {'name_ar': 'تونة', 'name_en': 'Tuna', 'kcal': 116, 'protein_g': 26.0, 'carbs_g': 0.0, 'fat_g': 1.0, 'halal': true},
+      'تونة': {'name_ar': 'تونة', 'name_en': 'Tuna', 'kcal': 116, 'protein_g': 26.0, 'carbs_g': 0.0, 'fat_g': 1.0, 'halal': true},
+      'oats': {'name_ar': 'شوفان', 'name_en': 'Oats', 'kcal': 166, 'protein_g': 6.0, 'carbs_g': 28.0, 'fat_g': 4.0, 'halal': true},
+      'شوفان': {'name_ar': 'شوفان', 'name_en': 'Oats', 'kcal': 166, 'protein_g': 6.0, 'carbs_g': 28.0, 'fat_g': 4.0, 'halal': true},
+      'yogurt': {'name_ar': 'زبادي', 'name_en': 'Yogurt', 'kcal': 150, 'protein_g': 8.0, 'carbs_g': 11.0, 'fat_g': 8.0, 'halal': true},
+      'زبادي': {'name_ar': 'زبادي', 'name_en': 'Yogurt', 'kcal': 150, 'protein_g': 8.0, 'carbs_g': 11.0, 'fat_g': 8.0, 'halal': true},
+      'lentils': {'name_ar': 'عدس', 'name_en': 'Lentils', 'kcal': 230, 'protein_g': 18.0, 'carbs_g': 40.0, 'fat_g': 1.0, 'halal': true},
+      'عدس': {'name_ar': 'عدس', 'name_en': 'Lentils', 'kcal': 230, 'protein_g': 18.0, 'carbs_g': 40.0, 'fat_g': 1.0, 'halal': true},
+      'beef': {'name_ar': 'لحم بقر', 'name_en': 'Beef', 'kcal': 215, 'protein_g': 26.0, 'carbs_g': 0.0, 'fat_g': 12.0, 'halal': true},
+      'لحم': {'name_ar': 'لحم بقر', 'name_en': 'Beef', 'kcal': 215, 'protein_g': 26.0, 'carbs_g': 0.0, 'fat_g': 12.0, 'halal': true},
+      'pork': {'name_ar': 'لحم خنزير', 'name_en': 'Pork', 'kcal': 242, 'protein_g': 27.0, 'carbs_g': 0.0, 'fat_g': 14.0, 'halal': false},
+      'خنزير': {'name_ar': 'لحم خنزير', 'name_en': 'Pork', 'kcal': 242, 'protein_g': 27.0, 'carbs_g': 0.0, 'fat_g': 14.0, 'halal': false},
+    };
+    // Extended local database — works offline instantly
+    const extraFoods = {
+      'كشري': {'name_ar': 'كشري', 'name_en': 'Koshari', 'kcal': 430, 'protein_g': 15.0, 'carbs_g': 85.0, 'fat_g': 5.0, 'halal': true},
+      'koshari': {'name_ar': 'كشري', 'name_en': 'Koshari', 'kcal': 430, 'protein_g': 15.0, 'carbs_g': 85.0, 'fat_g': 5.0, 'halal': true},
+      'falafel': {'name_ar': 'فلافل', 'name_en': 'Falafel', 'kcal': 180, 'protein_g': 7.0, 'carbs_g': 18.0, 'fat_g': 9.0, 'halal': true},
+      'فلافل': {'name_ar': 'فلافل', 'name_en': 'Falafel', 'kcal': 180, 'protein_g': 7.0, 'carbs_g': 18.0, 'fat_g': 9.0, 'halal': true},
+      'hummus': {'name_ar': 'حمص', 'name_en': 'Hummus', 'kcal': 166, 'protein_g': 8.0, 'carbs_g': 14.0, 'fat_g': 10.0, 'halal': true},
+      'حمص': {'name_ar': 'حمص', 'name_en': 'Hummus', 'kcal': 166, 'protein_g': 8.0, 'carbs_g': 14.0, 'fat_g': 10.0, 'halal': true},
+      'shawarma': {'name_ar': 'شاورما دجاج', 'name_en': 'Chicken Shawarma', 'kcal': 440, 'protein_g': 30.0, 'carbs_g': 45.0, 'fat_g': 14.0, 'halal': true},
+      'شاورما': {'name_ar': 'شاورما دجاج', 'name_en': 'Chicken Shawarma', 'kcal': 440, 'protein_g': 30.0, 'carbs_g': 45.0, 'fat_g': 14.0, 'halal': true},
+      'kabsa': {'name_ar': 'كبسة', 'name_en': 'Kabsa', 'kcal': 580, 'protein_g': 38.0, 'carbs_g': 68.0, 'fat_g': 16.0, 'halal': true},
+      'كبسة': {'name_ar': 'كبسة', 'name_en': 'Kabsa', 'kcal': 580, 'protein_g': 38.0, 'carbs_g': 68.0, 'fat_g': 16.0, 'halal': true},
+      'lamb': {'name_ar': 'لحم غنم', 'name_en': 'Lamb', 'kcal': 258, 'protein_g': 25.0, 'carbs_g': 0.0, 'fat_g': 17.0, 'halal': true},
+      'لحم غنم': {'name_ar': 'لحم غنم', 'name_en': 'Lamb', 'kcal': 258, 'protein_g': 25.0, 'carbs_g': 0.0, 'fat_g': 17.0, 'halal': true},
+      'shrimp': {'name_ar': 'جمبري', 'name_en': 'Shrimp', 'kcal': 99, 'protein_g': 24.0, 'carbs_g': 0.0, 'fat_g': 1.0, 'halal': true},
+      'جمبري': {'name_ar': 'جمبري', 'name_en': 'Shrimp', 'kcal': 99, 'protein_g': 24.0, 'carbs_g': 0.0, 'fat_g': 1.0, 'halal': true},
+      'labneh': {'name_ar': 'لبنة', 'name_en': 'Labneh', 'kcal': 150, 'protein_g': 10.0, 'carbs_g': 6.0, 'fat_g': 10.0, 'halal': true},
+      'لبنة': {'name_ar': 'لبنة', 'name_en': 'Labneh', 'kcal': 150, 'protein_g': 10.0, 'carbs_g': 6.0, 'fat_g': 10.0, 'halal': true},
+      'pomegranate': {'name_ar': 'رمان', 'name_en': 'Pomegranate', 'kcal': 83, 'protein_g': 1.7, 'carbs_g': 19.0, 'fat_g': 1.2, 'halal': true},
+      'رمان': {'name_ar': 'رمان', 'name_en': 'Pomegranate', 'kcal': 83, 'protein_g': 1.7, 'carbs_g': 19.0, 'fat_g': 1.2, 'halal': true},
+      'fig': {'name_ar': 'تين', 'name_en': 'Fig', 'kcal': 74, 'protein_g': 1.0, 'carbs_g': 19.0, 'fat_g': 0.3, 'halal': true},
+      'تين': {'name_ar': 'تين', 'name_en': 'Fig', 'kcal': 74, 'protein_g': 1.0, 'carbs_g': 19.0, 'fat_g': 0.3, 'halal': true},
+      'strawberry': {'name_ar': 'فراولة', 'name_en': 'Strawberry', 'kcal': 32, 'protein_g': 0.7, 'carbs_g': 8.0, 'fat_g': 0.3, 'halal': true},
+      'فراولة': {'name_ar': 'فراولة', 'name_en': 'Strawberry', 'kcal': 32, 'protein_g': 0.7, 'carbs_g': 8.0, 'fat_g': 0.3, 'halal': true},
+      'green tea': {'name_ar': 'شاي أخضر', 'name_en': 'Green Tea', 'kcal': 2, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 0.0, 'halal': true},
+      'شاي أخضر': {'name_ar': 'شاي أخضر', 'name_en': 'Green Tea', 'kcal': 2, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 0.0, 'halal': true},
+      'coffee': {'name_ar': 'قهوة', 'name_en': 'Coffee', 'kcal': 2, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 0.0, 'halal': true},
+      'قهوة': {'name_ar': 'قهوة', 'name_en': 'Coffee', 'kcal': 2, 'protein_g': 0.0, 'carbs_g': 0.0, 'fat_g': 0.0, 'halal': true},
+
+      // Gulf & Saudi
+       'مندي': {'name_ar': 'مندي', 'name_en': 'Mandi', 'kcal': 620, 'protein_g': 42.0, 'carbs_g': 65.0, 'fat_g': 18.0, 'halal': true},
+      'saleeg': {'name_ar': 'سليق', 'name_en': 'Saleeg', 'kcal': 520, 'protein_g': 30.0, 'carbs_g': 62.0, 'fat_g': 14.0, 'halal': true},
+      'قهوة عربية': {'name_ar': 'قهوة عربية', 'name_en': 'Arabic Coffee', 'kcal': 5, 'protein_g': 0.0, 'carbs_g': 1.0, 'fat_g': 0.0, 'halal': true},
+      'arabic coffee': {'name_ar': 'قهوة عربية', 'name_en': 'Arabic Coffee', 'kcal': 5, 'protein_g': 0.0, 'carbs_g': 1.0, 'fat_g': 0.0, 'halal': true},
+      // Western
+      'pizza': {'name_ar': 'بيتزا', 'name_en': 'Pizza slice', 'kcal': 272, 'protein_g': 12.0, 'carbs_g': 34.0, 'fat_g': 10.0, 'halal': true},
+      'بيتزا': {'name_ar': 'بيتزا', 'name_en': 'Pizza', 'kcal': 272, 'protein_g': 12.0, 'carbs_g': 34.0, 'fat_g': 10.0, 'halal': true},
+      'burger': {'name_ar': 'برجر', 'name_en': 'Burger', 'kcal': 490, 'protein_g': 30.0, 'carbs_g': 44.0, 'fat_g': 20.0, 'halal': true},
+      'برجر': {'name_ar': 'برجر', 'name_en': 'Burger', 'kcal': 490, 'protein_g': 30.0, 'carbs_g': 44.0, 'fat_g': 20.0, 'halal': true},
+      'pasta': {'name_ar': 'باستا', 'name_en': 'Pasta', 'kcal': 350, 'protein_g': 14.0, 'carbs_g': 58.0, 'fat_g': 8.0, 'halal': true},
+      'باستا': {'name_ar': 'باستا', 'name_en': 'Pasta', 'kcal': 350, 'protein_g': 14.0, 'carbs_g': 58.0, 'fat_g': 8.0, 'halal': true},
+      'salmon': {'name_ar': 'سالمون', 'name_en': 'Salmon', 'kcal': 280, 'protein_g': 34.0, 'carbs_g': 0.0, 'fat_g': 16.0, 'halal': true},
+      'سالمون': {'name_ar': 'سالمون', 'name_en': 'Salmon', 'kcal': 280, 'protein_g': 34.0, 'carbs_g': 0.0, 'fat_g': 16.0, 'halal': true},
+      'nutella': {'name_ar': 'نوتيلا', 'name_en': 'Nutella (2 tbsp)', 'kcal': 200, 'protein_g': 2.0, 'carbs_g': 23.0, 'fat_g': 11.0, 'halal': true},
+      'نوتيلا': {'name_ar': 'نوتيلا', 'name_en': 'Nutella', 'kcal': 200, 'protein_g': 2.0, 'carbs_g': 23.0, 'fat_g': 11.0, 'halal': true},
+      'whey protein': {'name_ar': 'بروتين واي', 'name_en': 'Whey protein', 'kcal': 120, 'protein_g': 25.0, 'carbs_g': 3.0, 'fat_g': 2.0, 'halal': true},
+      'protein': {'name_ar': 'بروتين واي', 'name_en': 'Whey protein', 'kcal': 120, 'protein_g': 25.0, 'carbs_g': 3.0, 'fat_g': 2.0, 'halal': true},
+      'latte': {'name_ar': 'لاتيه', 'name_en': 'Latte', 'kcal': 190, 'protein_g': 7.0, 'carbs_g': 18.0, 'fat_g': 7.0, 'halal': true},
+      'cappuccino': {'name_ar': 'كابوتشينو', 'name_en': 'Cappuccino', 'kcal': 120, 'protein_g': 5.0, 'carbs_g': 10.0, 'fat_g': 5.0, 'halal': true},
+      'smoothie': {'name_ar': 'سموذي', 'name_en': 'Smoothie', 'kcal': 200, 'protein_g': 4.0, 'carbs_g': 45.0, 'fat_g': 1.0, 'halal': true},
+      'dark chocolate': {'name_ar': 'شوكولاتة داكنة', 'name_en': 'Dark chocolate', 'kcal': 170, 'protein_g': 2.0, 'carbs_g': 13.0, 'fat_g': 12.0, 'halal': true},
+      'شوكولاتة': {'name_ar': 'شوكولاتة داكنة', 'name_en': 'Dark chocolate', 'kcal': 170, 'protein_g': 2.0, 'carbs_g': 13.0, 'fat_g': 12.0, 'halal': true},
+    };
+    // Check extra foods first
+    if (extraFoods.containsKey(n)) return Map<String, dynamic>.from(extraFoods[n]!);
+    for (final key in extraFoods.keys) {
+      if (n.contains(key) || key.contains(n)) {
+        return Map<String, dynamic>.from(extraFoods[key]!);
+      }
+    }
+    // Check exact match first
+    if (foods.containsKey(n)) return Map<String, dynamic>.from(foods[n]!);
+    // Check partial match
+    for (final key in foods.keys) {
+      if (n.contains(key) || key.contains(n)) {
+        return Map<String, dynamic>.from(foods[key]!);
+      }
+    }
+    return null;
+  }
+
+  static Future<Map<String, dynamic>> lookupFood(String foodName, {String language = 'ar', bool isPremium = false}) async {
+    final isAr = language == 'ar';
+    // 1. Local database (offline, instant)
+    final local = _localLookup(foodName);
+    if (local != null) {
+      local['serving_size'] = '100g';
+      return local;
+    }
+
+    // 2. Open Food Facts — real data, 3M+ products, free
+    try {
+      final off = await OpenFoodFactsService.searchByName(foodName);
+      if (off != null) return off;
+    } catch (_) {} // network error — fall through to AI
+
+    // 3. Anthropic AI — generates estimates when OFFs has no data
+    final jsonFmt = isPremium 
+        ? '{"name_ar":"...","name_en":"...","kcal":0,"protein_g":0.0,"carbs_g":0.0,"fat_g":0.0,"vitamin_c_mg":0.0,"iron_mg":0.0,"calcium_mg":0.0,"potassium_mg":0.0,"serving_size":"100g","halal":true}'
+        : '{"name_ar":"...","name_en":"...","kcal":0,"protein_g":0.0,"carbs_g":0.0,"fat_g":0.0,"serving_size":"100g","halal":true}';
+
+    final system = 'You are a nutrition database expert. When given a food name, return ONLY a JSON object with exact nutritional values per 100g serving. Return ONLY valid JSON, no other text. Required format: ' + jsonFmt;
+
+    final prompt = isAr
+        ? 'القيم الغذائية لـ: $foodName'
+        : 'Nutritional values for: $foodName';
+
+    if (_apiKey.isEmpty) throw const ApiKeyMissingException();
+    try {
+      final raw   = await _callText(systemPrompt: system, userPrompt: prompt, maxTokens: 400);
+      final clean = _extractJson(raw);
+      if (clean != '{}') {
+        return jsonDecode(clean) as Map<String, dynamic>;
+      }
+    } catch (_) {}
+    return {
+      'name_ar': foodName, 'name_en': foodName,
+      'kcal': 100, 'protein_g': 5.0, 'carbs_g': 15.0,
+      'fat_g': 3.0, 'serving_size': '100g', 'halal': true,
+    };
+  }
+
+  // ── Safe type conversion (prevents runtime cast errors) ──
+
+  static HalalStatus _parseHalalStatus(String s) {
+    switch (s.toLowerCase()) {
+      case 'halal':    return HalalStatus.halal;
+      case 'haram':    return HalalStatus.haram;
+      case 'doubtful': return HalalStatus.doubtful;
+      default:         return HalalStatus.unknown;
+    }
+  }
+
+  static double _safeDouble(dynamic v, [double fb = 0.0]) {
+    if (v == null) return fb;
+    if (v is double) return v;
+    if (v is int) return v.toDouble();
+    return double.tryParse(v.toString()) ?? fb;
+  }
+
+  static int _safeInt(dynamic v, [int fb = 0]) {
+    if (v == null) return fb;
+    if (v is int) return v;
+    if (v is double) return v.round();
+    return int.tryParse(v.toString()) ?? fb;
+  }
+
+
+}
+
+
+
+=====================================================================
+FILE: ./lib/core/revenuecat_service.dart
+=====================================================================
+// revenuecat_service.dart — HalalCalorie v1.0
+// RevenueCat wired up (Build 44).
+// Requires: purchases_flutter: ^8.0.0 in pubspec
+//           RC_GOOGLE_KEY dart-define in CI (secrets.RC_GOOGLE_KEY)
+//           RC_APPLE_KEY dart-define in CI (secrets.RC_APPLE_KEY)
+
+import 'package:purchases_flutter/purchases_flutter.dart';
+
+class RCProducts {
+  static const monthly  = 'halalcalorie_premium_monthly';
+  static const yearly   = 'halalcalorie_premium_yearly';
+  static const lifetime = 'halalcalorie_premium_lifetime';
+}
+
+class RCConfig {
+  // Keys injected at build time via --dart-define
+  static const googleApiKey = String.fromEnvironment(
+      'RC_GOOGLE_KEY', defaultValue: '');
+  static const appleApiKey  = String.fromEnvironment(
+      'RC_APPLE_KEY',  defaultValue: '');
+  static const entitlementId = 'Halalcalorie Pro';
+
+  static bool get isConfigured =>
+      googleApiKey.isNotEmpty || appleApiKey.isNotEmpty;
+
+  static Future<void> configure() async {
+    if (!isConfigured) return; // Keys not injected yet — stub mode
+    final config = PurchasesConfiguration(
+      // Platform selection is handled by purchases_flutter internally;
+      // we pass both and the SDK picks the right one at runtime.
+      googleApiKey.isNotEmpty ? googleApiKey : appleApiKey,
+    );
+    await Purchases.configure(config);
+  }
+}
+
+class PurchaseResult {
+  final bool    success;
+  final bool    cancelled;
+  final String? error;
+  const PurchaseResult({
+    required this.success,
+    this.cancelled = false,
+    this.error,
+  });
+}
+
+class RCOffering {
+  final String  identifier;
+  final String  titleAr;
+  final String  titleEn;
+  final String  priceString;
+  final String  periodAr;
+  final String  periodEn;
+  final String? savingsBadgeAr;
+  final String? savingsBadgeEn;
+  final bool    isPopular;
+  // Carries the underlying RC Package for purchase
+  final dynamic rcPackage; // Package? — typed as dynamic to avoid
+                           //             import leaking into callers
+
+  const RCOffering({
+    required this.identifier,
+    required this.titleAr, required this.titleEn,
+    required this.priceString,
+    required this.periodAr, required this.periodEn,
+    this.savingsBadgeAr, this.savingsBadgeEn,
+    this.isPopular = false,
+    this.rcPackage,
+  });
+}
+
+class RevenueCatService {
+  // ── isPremium ─────────────────────────────────────────────────────
+  static Future<bool> isPremium() async {
+    if (!RCConfig.isConfigured) return false;
+    try {
+      final info = await Purchases.getCustomerInfo();
+      return info.entitlements.active
+          .containsKey(RCConfig.entitlementId);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  // ── getOfferings ──────────────────────────────────────────────────
+  static Future<List<RCOffering>> getOfferings() async {
+    if (!RCConfig.isConfigured) return _localStubOfferings();
+    try {
+      final offerings = await Purchases.getOfferings();
+      final current   = offerings.current;
+      if (current == null) return _localStubOfferings();
+
+      final result = <RCOffering>[];
+      for (final pkg in current.availablePackages) {
+        final product   = pkg.storeProduct;
+        final id        = pkg.packageType.name.toLowerCase();
+        bool   isYearly = id.contains('annual') || id.contains('yearly');
+        bool   isLife   = id.contains('lifetime');
+        if (isLife) continue; // CAP: lifetime tier removed — unlimited AI cost risk
+        result.add(RCOffering(
+          identifier:     product.identifier,
+          titleAr:        isLife ? 'مدى الحياة' : isYearly ? 'سنوي' : 'شهري',
+          titleEn:        isLife ? 'Lifetime'    : isYearly ? 'Yearly' : 'Monthly',
+          priceString:    product.priceString,
+          periodAr:       isLife ? 'مرة واحدة' : isYearly ? '/ سنة' : '/ شهر',
+          periodEn:       isLife ? 'one-time'   : isYearly ? '/ year' : '/ month',
+          savingsBadgeAr: isYearly ? 'وفّر ٣٠٪' : null,
+          savingsBadgeEn: isYearly ? 'Save 30%' : null,
+          isPopular:      isYearly,
+          rcPackage:      pkg,
+        ));
+      }
+      return result.isEmpty ? _localStubOfferings() : result;
+    } catch (_) {
+      return _localStubOfferings();
+    }
+  }
+
+  // ── purchase ──────────────────────────────────────────────────────
+  static Future<PurchaseResult> purchase(RCOffering offering) async {
+    if (!RCConfig.isConfigured) {
+      return const PurchaseResult(
+          success: false,
+          error: 'RevenueCat key not configured — rebuild with RC_GOOGLE_KEY secret');
+    }
+    try {
+      if (offering.rcPackage == null) {
+        return const PurchaseResult(
+            success: false, error: 'Package data unavailable — refresh offerings');
+      }
+      final info = await Purchases.purchasePackage(
+          offering.rcPackage as Package);
+      final active = info.entitlements.active
+          .containsKey(RCConfig.entitlementId);
+      return PurchaseResult(success: active);
+    } on PurchasesErrorCode catch (e) {
+      if (e == PurchasesErrorCode.purchaseCancelledError) {
+        return const PurchaseResult(success: false, cancelled: true);
+      }
+      return PurchaseResult(success: false, error: e.toString());
+    } catch (e) {
+      final msg = e.toString();
+      if (msg.contains('userCancelled') ||
+          msg.contains('PurchaseCancelledError') ||
+          msg.contains('USER_CANCELED')) {
+        return const PurchaseResult(success: false, cancelled: true);
+      }
+      return PurchaseResult(success: false, error: msg);
+    }
+  }
+
+  // ── restore ───────────────────────────────────────────────────────
+  static Future<PurchaseResult> restore() async {
+    if (!RCConfig.isConfigured) {
+      return const PurchaseResult(
+          success: false, error: 'RevenueCat key not configured');
+    }
+    try {
+      final info   = await Purchases.restorePurchases();
+      final active = info.entitlements.active
+          .containsKey(RCConfig.entitlementId);
+      return PurchaseResult(success: active,
+          error: active ? null : 'No active subscription found');
+    } catch (e) {
+      final msg = e.toString();
+      if (msg.contains('userCancelled') ||
+          msg.contains('PurchaseCancelledError') ||
+          msg.contains('USER_CANCELED')) {
+        return const PurchaseResult(success: false, cancelled: true);
+      }
+      return PurchaseResult(success: false, error: msg);
+    }
+  }
+
+  // ── helpers ───────────────────────────────────────────────────────
+  static Future<void> setUserId(String userId) async {
+    if (!RCConfig.isConfigured) return;
+    try { await Purchases.logIn(userId); } catch (_) {}
+  }
+
+  static Future<void> logOut() async {
+    if (!RCConfig.isConfigured) return;
+    try { await Purchases.logOut(); } catch (_) {}
+  }
+
+  static Future<String> getActivePlanId() async {
+    if (!RCConfig.isConfigured) return 'free';
+    try {
+      final info = await Purchases.getCustomerInfo();
+      final ent  = info.entitlements.active[RCConfig.entitlementId];
+      return ent?.productIdentifier ?? 'free';
+    } catch (_) { return 'free'; }
+  }
+
+  // ── local stub (shown when RC key not yet configured) ─────────────
+  static List<RCOffering> _localStubOfferings() => const [
+    RCOffering(
+      identifier:  RCProducts.monthly,
+      titleAr: 'شهري',   titleEn: 'Monthly',
+      priceString: 'EGP 99',
+      periodAr: '/ شهر', periodEn: '/ month',
+    ),
+    RCOffering(
+      identifier:  RCProducts.yearly,
+      titleAr: 'سنوي',   titleEn: 'Yearly',
+      priceString: 'EGP 799',
+      periodAr: '/ سنة', periodEn: '/ year',
+      savingsBadgeAr: 'وفّر ٣٠٪',
+      savingsBadgeEn: 'Save 30%',
+      isPopular: true,
+    ),
+  ];
+}
+
+
+
+=====================================================================
+FILE: ./lib/features/paywall/paywall_screen.dart
+=====================================================================
+// ============================================================
+//  paywall_screen.dart — HalalCalorie v1.0
+//  Full RevenueCat paywall with real Apple Pay / Google Pay
+// ============================================================
+import 'package:flutter/material.dart';
+import 'package:confetti/confetti.dart';
+import '../../core/l10n.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import '../../core/theme.dart';
+import '../../core/providers.dart';
+import '../../core/regional_pricing.dart';
+import '../../core/revenuecat_service.dart';
+
+class PaywallScreen extends ConsumerStatefulWidget {
+  const PaywallScreen({super.key});
+  @override ConsumerState<PaywallScreen> createState() => _PaywallState();
+}
+
+class _PaywallState extends ConsumerState<PaywallScreen>
+    with SingleTickerProviderStateMixin {
+  String get lang => ref.watch(languageProvider);
+  int     _selected  = 1;
+  bool    _loading   = false;
+  bool    _restoring = false;
+  String? _errorMsg;
+  late AnimationController _pulse;
+  late ConfettiController _confetti;
+
+  @override
+  void initState() {
+    super.initState();
+    _pulse = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100))
+      ..repeat(reverse: true);
+    _confetti = ConfettiController(duration: const Duration(seconds: 4));
+  }
+  @override void dispose() { _pulse.dispose(); _confetti.dispose(); super.dispose(); }
+
+  bool get _isAr => ref.read(languageProvider) == 'ar';
+
+  Future<void> _purchase(List<RCOffering> offerings) async {
+    if (_loading || offerings.isEmpty) return;
+    if (mounted) setState(() { _loading = true; _errorMsg = null; });
+    final offering = offerings[_selected.clamp(0, offerings.length - 1)];
+    final result   = await RevenueCatService.purchase(offering);
+    if (!mounted) return;
+    if (mounted) setState(() => _loading = false);
+    if (result.success) {
+      await ref.read(premiumProvider.notifier).onPurchaseSuccess();
+      _showSuccess();
+    } else if (!result.cancelled) {
+      if (mounted) setState(() => _errorMsg = result.error ?? 'Purchase failed. Please try again.');
+    }
+  }
+
+  Future<void> _restore() async {
+    if (mounted) setState(() { _restoring = true; _errorMsg = null; });
+    final result = await RevenueCatService.restore();
+    if (!mounted) return;
+    if (mounted) setState(() => _restoring = false);
+    if (result.success) {
+      await ref.read(premiumProvider.notifier).onPurchaseSuccess();
+      _showSuccess();
+    } else {
+      if (mounted) setState(() => _errorMsg = 'No previous purchases found for this account.');
+    }
+  }
+
+  void _showSuccess() {
+    final isAr = _isAr;
+    _confetti.play();
+    showDialog(context: context, barrierDismissible: false,
+      builder: (_) => Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          ConfettiWidget(
+            confettiController: _confetti,
+            blastDirectionality: BlastDirectionality.explosive,
+            numberOfParticles: 30,
+            gravity: 0.3,
+            colors: const [
+              AppColors.sunnahGreen, AppColors.barakahGold,
+              AppColors.halalGreen, Colors.white,
+              Color(0xFF4CAF50), Color(0xFFFFD700),
+            ],
+          ),
+          AlertDialog(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            backgroundColor: const Color(0xFF1A2A1A),
+            content: Column(mainAxisSize: MainAxisSize.min, children: [
+              TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0.0, end: 1.0),
+                duration: const Duration(milliseconds: 600),
+                curve: Curves.elasticOut,
+                builder: (_, v, child) => Transform.scale(scale: v, child: child),
+                child: const Text('🏆', style: TextStyle(fontSize: 72)),
+              ),
+              const SizedBox(height: 12),
+              Text(isAr ? 'تهانيّ! أصبحت عضواً بريميوم 🌟' : 'Congratulations! You are Premium 🌟',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontFamily: 'Cairo', fontSize: 18,
+                  fontWeight: FontWeight.w900, color: AppColors.barakahGold)),
+              const SizedBox(height: 8),
+              Text(isAr
+                ? 'تم فتح جميع الميزات المميزة! بارك الله فيك 🌙'
+                : 'All premium features unlocked! May Allah bless you 🌙',
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
+                  color: Colors.white70, height: 1.5)),
+              const SizedBox(height: 24),
+              SizedBox(width: double.infinity, child: ElevatedButton(
+                onPressed: () {
+                  _confetti.stop();
+                  if (context.mounted) Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.barakahGold,
+                  padding: const EdgeInsets.symmetric(vertical: 14),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                ),
+                child: Text(isAr ? '🌟 رائع! لنبدأ' : '🌟 Let\'s go!',
+                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 16,
+                    color: Colors.white, fontWeight: FontWeight.w800)),
+              )),
+            ]),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final lang      = ref.watch(languageProvider);
+    final isAr      = lang == 'ar' || lang == 'ur';
+    final isDark    = ref.watch(themeProvider);
+    final offerings = ref.watch(rcOfferingsProvider);
+    final bg        = isDark ? AppColors.darkCard : Colors.white;
+    String t(String ar, String en) => isAr ? ar : en;
+
+    return Directionality(
+      textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
+      child: Scaffold(
+        backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent, elevation: 0,
+          leading: IconButton(
+            icon: Icon(Icons.close, color: isDark ? AppColors.darkText : AppColors.lightText),
+            onPressed: () { if (context.mounted) Navigator.pop(context); },
+          ),
+          actions: [
+            TextButton(
+              onPressed: _restoring ? null : _restore,
+              child: _restoring
+                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.lightMuted))
+                : Text(t('استعادة', 'Restore'), style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.lightMuted)),
+            ),
+          ],
+        ),
+        body: offerings.when(
+          loading: () => Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            const CircularProgressIndicator(color: AppColors.sunnahGreen, strokeWidth: 3),
+            const SizedBox(height: 12),
+            Text(t('جاري تحميل العروض...', 'Loading offers...'), style: const TextStyle(fontFamily: 'Cairo', color: AppColors.lightMuted)),
+          ])),
+          error: (_, __) => _buildContent([], isAr, isDark, bg, t),
+          data:  (list) => _buildContent(list, isAr, isDark, bg, t),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContent(List<RCOffering> offerings, bool isAr, bool isDark, Color bg, String Function(String,String) t) {
+    return ListView(padding: const EdgeInsets.fromLTRB(18, 0, 18, 32), children: [
+      // Hero
+      Container(
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(colors: [AppColors.sunnahGreen, AppColors.darkGreen]),
+          borderRadius: BorderRadius.circular(22),
+          boxShadow: [BoxShadow(color: AppColors.sunnahGreen.withOpacity(0.3), blurRadius: 20, offset: const Offset(0,8))],
+        ),
+        child: Column(children: [
+          const Text('🌟', style: TextStyle(fontSize: 72)),
+          const SizedBox(height: 10),
+          Text(t('HalalCalorie بريميوم', 'HalalCalorie Premium'),
+            style: const TextStyle(fontFamily: 'Cairo', fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white)),
+          const SizedBox(height: 6),
+          Text(t('حلال في كل لقمة • سنة في كل خطوة', 'Halal in every bite • Sunnah in every step'),
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: Colors.white70)),
+        ]),
+      ),
+      const SizedBox(height: 22),
+      // Features
+      Text(t('ما ستحصل عليه:', 'What you get:'),
+        style: TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700,
+          color: isDark ? AppColors.darkText : AppColors.lightText)),
+      const SizedBox(height: 12),
+      ...(isAr ? [
+        ['💪', 'نسبة الدهون الدقيقة ٪ + كتلة العضلات + LBM'],
+        ['📸', 'تحليل الجسم والطعام بالصورة — AI بلا حدود'],
+        ['📷', 'ماسحات حلال غير محدودة (مقابل ٣ مجانية/يوم)'],
+        ['🏃', '١٨٠ خطة تمرين + رمضان + ما بعد الولادة'],
+        ['🌿', 'مخطط وجبات AI مخصص لجسمك'],
+        ['🧬', 'تحليل تركيبة الجسم الكامل'],
+        ['📥', 'يعمل بدون إنترنت + تاريخ كامل'],
+      ] : [
+        ['💪', 'Exact body fat % + Muscle mass + Lean Body Mass'],
+        ['📸', 'Unlimited AI food & body photo analysis (vs 3 free/day)'],
+        ['📷', 'Unlimited halal scans (vs 3 free/day)'],
+        ['🏃', '180 workouts + Ramadan + Postnatal plans'],
+        ['🌿', 'AI meal planner personalized to your body'],
+        ['🧬', 'Full body composition analysis'],
+        ['✨', 'Barakah advanced insights + weekly reports'],
+      ]).map((f) => Padding(padding: const EdgeInsets.only(bottom: 10),
+        child: Row(children: [
+          Container(width: 36, height: 36,
+            decoration: BoxDecoration(color: AppColors.sunnahGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+            child: Center(child: Text(f[0], style: const TextStyle(fontSize: 18)))),
+          const SizedBox(width: 12),
+          Expanded(child: Text(f[1], style: TextStyle(fontFamily: 'Cairo', fontSize: 13,
+            color: isDark ? AppColors.darkText : AppColors.lightText))),
+          const Icon(Icons.check_circle, color: AppColors.halalGreen, size: 18),
+        ]))),
+      const SizedBox(height: 22),
+      // Plans
+      Text(t('اختر خطتك:', 'Choose your plan:'),
+        style: TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700,
+          color: isDark ? AppColors.darkText : AppColors.lightText)),
+      const SizedBox(height: 12),
+      _plansList(offerings, isAr, isDark, bg),
+      const SizedBox(height: 18),
+      if (_errorMsg != null) Container(
+        margin: const EdgeInsets.only(bottom: 14),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(color: AppColors.haramRed.withOpacity(0.08),
+          border: Border.all(color: AppColors.haramRed.withOpacity(0.3)),
+          borderRadius: BorderRadius.circular(10)),
+        child: Text(_errorMsg!, style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.haramRed))),
+      // CTA
+      SizedBox(width: double.infinity, child: ElevatedButton(
+        onPressed: _loading ? null : () => _purchase(offerings),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.barakahGold,
+          padding: const EdgeInsets.symmetric(vertical: 18),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+          elevation: 4, shadowColor: AppColors.barakahGold.withOpacity(0.4),
+        ),
+        child: _loading
+          ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)),
+              const SizedBox(width: 12),
+              Text(tLang(lang, 'جاري المعالجة...', 'Processing...', 'Traitement...', 'İşleniyor...', 'Memproses...', 'Memproses...'), style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, color: Colors.white)),
+            ])
+          : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              const Text('⭐', style: TextStyle(fontSize: 20)),
+              const SizedBox(width: 8),
+              Text(t('اشترك الآن', 'Subscribe Now'),
+                style: const TextStyle(fontFamily: 'Cairo', fontSize: 18, color: Colors.white, fontWeight: FontWeight.w800)),
+            ]),
+      )),
+      const SizedBox(height: 14),
+      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+        _badge('✅', t('١٠٠٪ حلال', '100% Halal')),
+        const SizedBox(width: 16),
+        _badge('🔒', t('خصوصية', 'Private')),
+        const SizedBox(width: 16),
+        _badge('🚫', t('بلا ربا', 'No Riba')),
+      ]),
+      const SizedBox(height: 8),
+      Text(t('Apple Pay وGoogle Pay متاحان تلقائياً عند الاشتراك', 'Apple Pay & Google Pay available automatically at checkout'),
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, color: AppColors.sunnahGreen, fontWeight: FontWeight.w600)),
+      const SizedBox(height: 4),
+      Text(t('مدفوعات آمنة • يمكن الإلغاء في أي وقت • لا رسوم خفية',
+              'Secure payment • Cancel anytime • No hidden fees'),
+        textAlign: TextAlign.center,
+        style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, color: AppColors.lightMuted)),
+    ]);
+  }
+
+  Widget _plansList(List<RCOffering> offerings, bool isAr, bool isDark, Color bg) {
+    // Use RC offerings if available, otherwise fallback
+    final plans = offerings.isNotEmpty ? offerings : _fallback(isAr, lang);
+    return Column(
+      children: plans.asMap().entries.map((e) {
+        final idx   = e.key;
+        final isSel = _selected == idx;
+        final rcOff = offerings.isNotEmpty ? offerings[idx] : null;
+        final title = rcOff != null ? (isAr ? rcOff.titleAr : rcOff.titleEn) : (e.value as _FP).title;
+        final price = rcOff?.priceString ?? (e.value as _FP).price;
+        final per   = rcOff != null ? (isAr ? rcOff.periodAr : rcOff.periodEn) : (e.value as _FP).per;
+        final pop   = rcOff?.isPopular ?? (e.value as _FP).popular;
+        final save  = rcOff != null ? (isAr ? rcOff.savingsBadgeAr : rcOff.savingsBadgeEn) : (e.value as _FP).save;
+        return GestureDetector(
+          onTap: () => setState(() { _selected = idx; _errorMsg = null; }),
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 220),
+            margin: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              color: isSel ? AppColors.sunnahGreen.withOpacity(0.08) : bg,
+              border: Border.all(color: isSel ? AppColors.sunnahGreen : Colors.grey.withOpacity(0.25), width: isSel ? 2.5 : 0.8),
+              borderRadius: BorderRadius.circular(16),
+              boxShadow: isSel ? [BoxShadow(color: AppColors.sunnahGreen.withOpacity(0.12), blurRadius: 12)] : null,
+            ),
+            child: Row(children: [
+              AnimatedContainer(duration: const Duration(milliseconds: 200), width: 22, height: 22,
+                decoration: BoxDecoration(shape: BoxShape.circle,
+                  color: isSel ? AppColors.sunnahGreen : Colors.transparent,
+                  border: Border.all(color: isSel ? AppColors.sunnahGreen : Colors.grey.shade400)),
+                child: isSel ? const Icon(Icons.check, size: 14, color: Colors.white) : null),
+              const SizedBox(width: 12),
+              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Row(children: [
+                  Text(title, style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 15, color: isSel ? AppColors.sunnahGreen : null)),
+                  if (pop) ...[
+                    const SizedBox(width: 8),
+                    Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(color: AppColors.barakahGold, borderRadius: BorderRadius.circular(20)),
+                      child: Text(tLang(lang, 'الأكثر شعبية', 'Most Popular', 'Le plus populaire', 'En Popüler', 'Paling Popular', 'Paling Populer'),
+                        style: const TextStyle(fontFamily: 'Cairo', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white))),
+                  ],
+                ]),
+                if (save != null && save.isNotEmpty)
+                  Text(save, style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.halalGreen, fontWeight: FontWeight.w600)),
+              ])),
+              Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
+                Text(price, style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, fontSize: 15)),
+                Text(per, style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, color: AppColors.lightMuted)),
+              ]),
+            ]),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  List<_FP> _fallback(bool isAr, String lang) => [
+    _FP(tLang(lang, 'شهري', 'Monthly', 'Mensuel', 'Aylık', 'Bulanan', 'Bulanan'),        tLang(lang, '٢.٩٩ \$', '\$2.99', '\$2.99', '\$2.99', '\$2.99', '\$2.99'),  tLang(lang, '/ شهر', '/ month', '/ mois', '/ ay', '/ bulan', '/ bulan'),   false, null),
+    _FP(tLang(lang, 'سنوي', 'Yearly', 'Annuel', 'Yıllık', 'Tahunan', 'Tahunan'),         tLang(lang, '١٩.٩٩ \$', '\$19.99', '\$19.99', '\$19.99', '\$19.99', '\$19.99'), tLang(lang, '/ سنة', '/ year', '/ an', '/ yıl', '/ tahun', '/ tahun'),    true,  tLang(lang, 'وفّر ٤٤٪', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%')),
+  ];
+
+  Widget _badge(String emoji, String label) => Row(mainAxisSize: MainAxisSize.min, children: [
+    Text(emoji, style: const TextStyle(fontSize: 14)),
+    const SizedBox(width: 4),
+    Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.lightMuted)),
+  ]);
+}
+
+class _FP {
+  final String title, price, per;
+  final bool   popular;
+  final String? save;
+  const _FP(this.title, this.price, this.per, this.popular, this.save);
+}
+
+
+

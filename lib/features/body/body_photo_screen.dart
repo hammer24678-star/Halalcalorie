@@ -227,11 +227,11 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         const SizedBox(height: 10),
         Text(
           isAr
-            ? '• صورتك تُرسل بأمان إلى Claude AI للتحليل فقط\n'
+            ? '• صورتك تُرسل بأمان للتحليل فقط\n'
               '• لا يتم حفظها أو مشاركتها مع أي طرف ثالث\n'
               '• تُحذف الصورة فور انتهاء التحليل\n'
               '• هذه الميزة للاستخدام الشخصي فحسب'
-            : '• Your photo is securely sent to Claude AI for analysis only\n'
+            : '• Your photo is securely sent for analysis only\n'
               '• It is never saved or shared with any third party\n'
               '• Photo is deleted immediately after analysis\n'
               '• This feature is for personal use only',
