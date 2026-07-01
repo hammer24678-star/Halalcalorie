@@ -160,12 +160,12 @@ gradle_path = 'android/app/build.gradle'
 if os.path.exists(gradle_path):
     g = open(gradle_path).read()
     g = re.sub(r'applicationId\s+["\'"][^\"\'"]+["\'"]',
-               'applicationId "com.halalcalorie.app"', g)
+               'applicationId "com.ihsanstudio.halalcalorie"', g)
     if 'applicationId' not in g:
         g = g.replace('defaultConfig {',
-                      'defaultConfig {\n        applicationId "com.halalcalorie.app"')
+                      'defaultConfig {\n        applicationId "com.ihsanstudio.halalcalorie"')
     open(gradle_path, 'w').write(g)
-    print(f"applicationId set to com.halalcalorie.app")
+    print(f"applicationId set to com.ihsanstudio.halalcalorie")
 
 
 # ── Signing config ─────────────────────────────────────────────────

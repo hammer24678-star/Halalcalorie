@@ -18,7 +18,7 @@ APP_BUILD_GRADLE = """plugins {
 }
 
 android {
-    namespace "com.halalcalorie.app"
+    namespace "com.ihsanstudio.halalcalorie"
     compileSdk 36
     ndkVersion flutter.ndkVersion
 
@@ -33,7 +33,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.halalcalorie.app"
+        applicationId "com.ihsanstudio.halalcalorie"
         minSdk 24
         targetSdk 36
         versionCode __VERSION_CODE__
@@ -128,7 +128,7 @@ print("Patch complete.")
 # ── Fix MainActivity package mismatch ─────────────────────
 import os
 
-kt_dir = "android/app/src/main/kotlin/com/halalcalorie/app"
+kt_dir = "android/app/src/main/kotlin/com.ihsanstudio.halalcalorie"
 os.makedirs(kt_dir, exist_ok=True)
 
 # Remove wrong package directory flutter create generates
@@ -138,11 +138,11 @@ if os.path.exists(wrong_dir):
     shutil.rmtree(wrong_dir)
 
 with open(kt_dir + "/MainActivity.kt", "w") as f:
-    f.write("package com.halalcalorie.app\n\n")
+    f.write("package com.ihsanstudio.halalcalorie\n\n")
     f.write("import io.flutter.embedding.android.FlutterActivity\n\n")
     f.write("class MainActivity: FlutterActivity()\n")
 
-print("MainActivity.kt written with correct package: com.halalcalorie.app")
+print("MainActivity.kt written with correct package: com.ihsanstudio.halalcalorie")
 
 # ── App launcher icon ──────────────────────────────────────
 icon_sizes = {
