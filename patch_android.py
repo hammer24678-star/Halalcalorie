@@ -78,7 +78,7 @@ PROJECT_BUILD_GRADLE = """buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.5.2'
+        classpath 'com.android.tools.build:gradle:9.1.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.21"
     }
 }
@@ -107,7 +107,7 @@ GRADLE_WRAPPER = """distributionBase=GRADLE_USER_HOME
 distributionPath=wrapper/dists
 zipStoreBase=GRADLE_USER_HOME
 zipStorePath=wrapper/dists
-distributionUrl=https\\://services.gradle.org/distributions/gradle-8.13-all.zip
+distributionUrl=https\\://services.gradle.org/distributions/gradle-9.1.0-all.zip
 """
 
 with open('android/app/build.gradle', 'w') as f:
