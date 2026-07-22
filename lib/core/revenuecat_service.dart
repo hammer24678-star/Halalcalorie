@@ -131,7 +131,7 @@ class RevenueCatService {
       }
       final info = await Purchases.purchasePackage(
           offering.rcPackage as Package);
-      final active = info.entitlements.active
+      final active = info.customerInfo.entitlements.active
           .containsKey(RCConfig.entitlementId);
       return PurchaseResult(success: active);
     } on PurchasesErrorCode catch (e) {
