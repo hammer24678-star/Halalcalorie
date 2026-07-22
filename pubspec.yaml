@@ -1,6 +1,6 @@
 name: halalcalorie
 description: HalalCalorie
-version: 1.0.0+7
+version: 1.0.0+8
 publish_to: none
 
 environment:
@@ -26,7 +26,7 @@ dependencies:
   mobile_scanner: ^5.0.0
   accurate_step_counter: ^2.0.0
   permission_handler: ^11.3.0
-  purchases_flutter: ^8.0.0
+  purchases_flutter: ^10.2.3
   confetti: ^0.7.0
   share_plus: ^9.0.0
   flutter_local_notifications: ^17.2.0
