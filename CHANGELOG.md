@@ -1,6 +1,6 @@
 # HalalCalorie Changelog
 
-## v1.0.0+10 — Release polish
+## v1.1.0+11 — Release polish
 *2026-07-30*
 
 ### 🆕 The Ascent system (replaces the Barakah engine)

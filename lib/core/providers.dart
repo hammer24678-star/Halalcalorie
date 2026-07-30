@@ -1,5 +1,6 @@
 // providers.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart'; import'package:shared_preferences/shared_preferences.dart'; import'package:go_router/go_router.dart'; import'../data/models/models.dart'; import'../data/models/user_profile.dart'; import'router.dart'; import'revenuecat_service.dart'; import'database.dart'; import'health_service.dart'; import'ascent.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 export 'ascent.dart';
 
 final languageProvider = StateNotifierProvider<LanguageNotifier, String>((ref) => LanguageNotifier());
@@ -655,6 +656,17 @@ final titleProvider =
     StateNotifierProvider<TitleNotifier, TitleState>(
         (ref) => TitleNotifier());
 
+
+/// Real version and build number from the package, so the About row can
+/// never drift from what was actually shipped.
+final appVersionProvider = FutureProvider<String>((ref) async {
+  try {
+    final info = await PackageInfo.fromPlatform();
+    return 'v${info.version} (${info.buildNumber})';
+  } catch (_) {
+    return '';
+  }
+});
 
 final routerProvider = Provider<GoRouter>((ref) => AppRouter.router(ref));
 

@@ -1,4 +1,4 @@
-// settings_screen.dart — HalalCalorie v1.0
+// settings_screen.dart — HalalCalorie settings
 import 'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'package:shared_preferences/shared_preferences.dart'; import'../../core/theme.dart'; import'../../core/providers.dart';
 import '../../core/l10n.dart'; import'../../core/notifications.dart';
 
@@ -227,7 +227,9 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             ),
 
             // ── ABOUT ───────────────────────────────────────── section(t('حول التطبيق', 'ABOUT')),
-            tile( emoji:'ℹ️', title: t('إصدار التطبيق', 'App Version'), subtitle:'HalalCalorie v1.0.0',
+            tile( emoji:'ℹ️', title: t('إصدار التطبيق', 'App Version'),
+              subtitle: 'HalalCalorie ${ref.watch(appVersionProvider).maybeWhen(
+                  data: (v) => v, orElse: () => '')}'.trim(),
             ),
             tile( emoji:'🔒', title: t('سياسة الخصوصية', 'Privacy Policy'), subtitle: t('بياناتك خاصة — لا نبيعها أبداً', 'Your data is private — we never sell it'),
               trailing: const Icon(Icons.open_in_new, size: 16),
