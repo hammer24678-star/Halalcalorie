@@ -105,7 +105,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         ],
         bottom: TabBar(
           controller: _tab,
-          indicatorColor: AppColors.barakahGold,
+          indicatorColor: AppColors.accentGold,
           indicatorWeight: 3,
           labelStyle: const TextStyle(
               fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 12),
@@ -262,7 +262,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         scoreBar(l.water,      wScore, 25, AppColors.waterBlue),
         scoreBar(l.sleepLabel, slScore, 25, AppColors.sleepPurple),
         scoreBar(l.stepsLabel, stScore, 25, AppColors.halalGreen),
-        scoreBar(l.moodLabel,  mScore, 25, AppColors.barakahGold),
+        scoreBar(l.moodLabel,  mScore, 25, AppColors.accentGold),
       ]),
     );
   }
@@ -383,7 +383,8 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       Padding(
         padding: const EdgeInsets.only(top: 5),
         child: Text(
-            tLang(lang, 'الهدف: ${sleep.goal.toInt()} ساعات', 'Goal: ${sleep.goal.toInt()} hours', 'Goal: ${sleep.goal.toInt()} hours', 'Goal: ${sleep.goal.toInt()} hours', 'Goal: ${sleep.goal.toInt()} hours', 'Goal: ${sleep.goal.toInt()} hours'),
+            '${tLang(lang, 'الهدف', 'Goal')}: '
+            '${sleep.goal.toInt()} ${tLang(lang, 'ساعات', 'hours')}',
             textAlign: TextAlign.center,
             style: TextStyle(fontFamily: 'Cairo', fontSize: 10, color: muted)),
       ),
@@ -530,11 +531,11 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: health.mood == m[1]
-                  ? AppColors.sunnahGreen.withOpacity(0.12)
+                  ? AppColors.brandGreen.withOpacity(0.12)
                   : Colors.transparent,
               border: Border.all(
                   color: health.mood == m[1]
-                      ? AppColors.sunnahGreen
+                      ? AppColors.brandGreen
                       : Colors.transparent,
                   width: 2),
               borderRadius: BorderRadius.circular(12),
@@ -556,7 +557,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
               textAlign: TextAlign.center,
               style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.sunnahGreen)),
+                  color: AppColors.brandGreen)),
         ),
     ]));
   }
@@ -715,7 +716,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
 
     return ListView(padding: const EdgeInsets.all(14), children: [
-      Text(tLang(lang, 'مقالات صحية إسلامية', 'Islamic Health Articles', 'Articles de santé islamique', 'İslami Sağlık Makaleleri', 'Artikel Kesihatan Islam', 'Artikel Kesehatan Islami'),
+      Text(tLang(lang, 'مقالات صحية', 'Health Articles', 'Articles santé', 'Sağlık Makaleleri', 'Artikel Kesihatan', 'Artikel Kesehatan'),
           style: const TextStyle(fontFamily: 'Cairo', fontSize: 15,
               fontWeight: FontWeight.w700)),
       const SizedBox(height: 4),
@@ -800,7 +801,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         width: 4, height: 20,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [AppColors.sunnahGreen, AppColors.halalGreen],
+            colors: [AppColors.brandGreen, AppColors.halalGreen],
             begin: Alignment.topCenter, end: Alignment.bottomCenter,
           ),
           borderRadius: BorderRadius.circular(2),

@@ -174,8 +174,8 @@ Each element must have this exact structure:
   "confidence": <0.0-1.0>,
   "portionSize": "<estimated size>",
   "ingredients": ["<ingredient 1>", "<ingredient 2>"],
-  "sunnahNote": "<Sunnah/Islamic connection in $langName, or empty>",
-  "sunnahNoteEn": "<Sunnah connection in English, or empty>"
+  "tipNote": "<one short practical eating tip in $langName, or empty>",
+  "tipNoteEn": "<the same tip in English, or empty>"
 }
 
 Rules:
@@ -183,7 +183,7 @@ Rules:
 - Estimate calories for the visible portion of EACH item
 - halalStatus: halal=permissible, doubtful=uncertain additives/processing, haram=pork/alcohol/blood, unknown=cannot determine
 - Be conservative — use doubtful when uncertain
-- sunnahNote: mention Sunnah foods (dates, honey, olive oil, black seed, zamzam, vinegar, figs, pomegranate)
+- tipNote: one practical, factual tip about the food (portion, balance, preparation). No health, healing or treatment claims.
 - If only one food is visible, return an array with one element
 - Never return an empty array — always at least one item
 ''';
@@ -216,8 +216,8 @@ Rules:
           halalStatus:        _parseHalalStatus(m['halalStatus'] as String? ?? 'unknown'),
           halalExplanation:   m['halalNote']    as String? ?? '',
           halalExplanationEn: m['halalNoteEn']  as String? ?? '',
-          sunnahNote:         m['sunnahNote']   as String? ?? '',
-          sunnahNoteEn:       m['sunnahNoteEn'] as String? ?? '',
+          tipNote:            m['tipNote']   as String? ?? '',
+          tipNoteEn:          m['tipNoteEn'] as String? ?? '',
           confidence:   _safeDouble(m['confidence'], 0.75),
           portionSize:  m['portionSize'] as String? ?? '',
           ingredients:  (m['ingredients'] as List<dynamic>?)?.cast<String>() ?? const [],
@@ -235,8 +235,8 @@ Rules:
     halalStatus: HalalStatus.unknown,
     halalExplanation: lang == 'ar' ? 'التحليل غير متاح' : 'Analysis unavailable',
     halalExplanationEn: 'Analysis unavailable',
-    sunnahNote: '',
-    sunnahNoteEn: '',
+    tipNote: '',
+    tipNoteEn: '',
   );
 
   // ════════════════════════════════════════════════
@@ -268,8 +268,8 @@ Each element must have this exact structure:
   "confidence": <0.0-1.0>,
   "portionSize": "<estimated size>",
   "ingredients": [],
-  "sunnahNote": "<Sunnah/Islamic note in $langName, or empty>",
-  "sunnahNoteEn": "<Sunnah note in English, or empty>"
+  "tipNote": "<one short practical eating tip in $langName, or empty>",
+  "tipNoteEn": "<the same tip in English, or empty>"
 }
 Rules:
 - Split combined descriptions into individual items (e.g. '2 eggs + rice' → 2 entries)
@@ -313,8 +313,8 @@ Rules:
           halalStatus:        _parseHalalStatus(m['halalStatus'] as String? ?? 'unknown'),
           halalExplanation:   m['halalNote']    as String? ?? '',
           halalExplanationEn: m['halalNoteEn']  as String? ?? '',
-          sunnahNote:         m['sunnahNote']   as String? ?? '',
-          sunnahNoteEn:       m['sunnahNoteEn'] as String? ?? '',
+          tipNote:            m['tipNote']   as String? ?? '',
+          tipNoteEn:          m['tipNoteEn'] as String? ?? '',
           confidence:   _safeDouble(m['confidence'], 0.80),
           portionSize:  m['portionSize'] as String? ?? '',
           ingredients:  (m['ingredients'] as List<dynamic>?)?.cast<String>() ?? const [],
@@ -411,7 +411,7 @@ IMPORTANT:
   }) async {
     final system = '''You are a halal dietitian. Respond in ${_langName(language)}.
 Provide meal suggestions that are 100% halal, practical, and aligned with Islamic dietary guidelines.
-Mention Sunnah foods (dates, honey, olive oil, black seed) when relevant.
+Favour whole, minimally processed foods. State nutrition facts only — no health, healing or treatment claims.
 Keep response concise and structured.''';
 
     final userMsg = '''
@@ -544,6 +544,141 @@ Request: $prompt
       }
     }
     return null;
+  }
+
+  // ════════════════════════════════════════════════
+  //  FOOD SEARCH — many results, not one
+  // ════════════════════════════════════════════════
+  /// Searches every available source and merges the hits, best first:
+  ///
+  ///  1. the built-in portion list (instant, works offline)
+  ///  2. the offline per-100g table
+  ///  3. Open Food Facts (real branded products)
+  ///  4. the model, as a last resort for anything still unmatched
+  ///
+  /// Each entry carries a `basis` of `'portion'` or `'100g'` so callers
+  /// know how to scale it, and a `source` for the result badge.
+  static Future<List<Map<String, dynamic>>> searchFoods(
+    String query, {
+    String language = 'ar',
+    bool isPremium = false,
+    int limit = 24,
+  }) async {
+    final q = query.trim();
+    if (q.isEmpty) return const [];
+    final needle = q.toLowerCase();
+
+    final results = <Map<String, dynamic>>[];
+    final seen = <String>{};
+
+    bool add(Map<String, dynamic> item) {
+      final key = '${item['name_en']}|${item['kcal']}'.toLowerCase();
+      if (!seen.add(key)) return false;
+      results.add(item);
+      return true;
+    }
+
+    // ── 1. Built-in portion list ──
+    final portionHits = <Map<String, dynamic>>[];
+    for (final food in kQuickFoods) {
+      final ar = food.name.toLowerCase();
+      final en = food.nameEn.toLowerCase();
+      if (!ar.contains(needle) && !en.contains(needle)) continue;
+      // Exact-ish matches float to the top of this group.
+      final rank = (en.startsWith(needle) || ar.startsWith(needle)) ? 0 : 1;
+      portionHits.add({
+        'name_ar': food.name,
+        'name_en': food.nameEn,
+        'kcal': food.kcal,
+        'protein_g': food.proteinG,
+        'carbs_g': food.carbsG,
+        'fat_g': food.fatG,
+        'serving_size': language == 'ar' ? food.name : food.nameEn,
+        'basis': 'portion',
+        'halal': true,
+        'source': 'builtin',
+        '_rank': rank,
+      });
+    }
+    portionHits.sort((a, b) => (a['_rank'] as int).compareTo(b['_rank'] as int));
+    for (final hit in portionHits.take(12)) {
+      hit.remove('_rank');
+      add(hit);
+    }
+
+    // ── 2. Offline per-100g table ──
+    final local = _localLookup(q);
+    if (local != null) {
+      add({
+        ...local,
+        'serving_size': '100g',
+        'basis': '100g',
+        'source': 'offline',
+      });
+    }
+
+    // ── 3. Open Food Facts ──
+    try {
+      final products = await OpenFoodFactsService.searchManyByName(q, limit: 16);
+      for (final p in products) {
+        add({...p, 'basis': '100g'});
+      }
+    } catch (_) {
+      // Offline or the service is down — the local hits still stand.
+    }
+
+    // ── 4. Model fallback, only when nothing else matched ──
+    if (results.isEmpty && _apiKey.isNotEmpty) {
+      try {
+        results.addAll(await _searchFoodsWithModel(q, language: language));
+      } catch (_) {
+        // Leave the list empty; the UI offers manual entry.
+      }
+    }
+
+    return results.take(limit).toList();
+  }
+
+  /// Asks the model for a short list of candidate foods as a JSON array.
+  static Future<List<Map<String, dynamic>>> _searchFoodsWithModel(
+    String query, {
+    required String language,
+  }) async {
+    final langName = _langName(language);
+    final system =
+        'You are a nutrition database. For the given food query return ONLY a '
+        'JSON array of up to 5 plausible matches, most likely first. Each '
+        'element: {"name_ar":"...","name_en":"...","kcal":0,"protein_g":0.0,'
+        '"carbs_g":0.0,"fat_g":0.0}. Values are per 100 g. name_ar must be in '
+        'Arabic and name_en in $langName. Return ONLY the JSON array.';
+
+    final raw = await _callText(
+        systemPrompt: system, userPrompt: query, maxTokens: 700);
+    final match = RegExp(r'\[[\s\S]*\]').firstMatch(raw);
+    if (match == null) return const [];
+
+    final decoded = jsonDecode(match.group(0)!);
+    if (decoded is! List) return const [];
+
+    final out = <Map<String, dynamic>>[];
+    for (final item in decoded) {
+      if (item is! Map) continue;
+      final nameEn = (item['name_en'] ?? item['name_ar'] ?? '').toString();
+      if (nameEn.isEmpty) continue;
+      out.add({
+        'name_ar': (item['name_ar'] ?? nameEn).toString(),
+        'name_en': nameEn,
+        'kcal': _safeInt(item['kcal']),
+        'protein_g': _safeDouble(item['protein_g']),
+        'carbs_g': _safeDouble(item['carbs_g']),
+        'fat_g': _safeDouble(item['fat_g']),
+        'serving_size': '100g',
+        'basis': '100g',
+        'halal': true,
+        'source': 'ai',
+      });
+    }
+    return out;
   }
 
   static Future<Map<String, dynamic>> lookupFood(String foodName, {String language = 'ar', bool isPremium = false}) async {

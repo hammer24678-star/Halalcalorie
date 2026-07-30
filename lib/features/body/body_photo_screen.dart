@@ -129,7 +129,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
             const SizedBox(height: 28),
             SizedBox(width: double.infinity, child: ElevatedButton(
               onPressed: () => Navigator.of(context).pop(),
-              style: ElevatedButton.styleFrom(backgroundColor: AppColors.barakahGold, padding: const EdgeInsets.symmetric(vertical: 14)),
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.accentGold, padding: const EdgeInsets.symmetric(vertical: 14)),
               child: Text(t('🔓 ترقية للبريميوم', '🔓 Upgrade to Premium'),
                   style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, color: Colors.white, fontWeight: FontWeight.w700)),
             )),
@@ -143,7 +143,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
       child: Scaffold(
         appBar: AppBar(
           title: Text(t('⭐ تحليل الجسم بـ AI', '⭐ AI Body Analysis')),
-          backgroundColor: AppColors.barakahGold,
+          backgroundColor: AppColors.accentGold,
         ),
         body: ListView(
           padding: const EdgeInsets.all(16),
@@ -161,7 +161,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
 
               // ── Pick buttons ──────────────────────────
               Row(children: [
-                Expanded(child: _pickBtn('📷', t('الكاميرا', 'Camera'), AppColors.barakahGold, () => _pick(ImageSource.camera))),
+                Expanded(child: _pickBtn('📷', t('الكاميرا', 'Camera'), AppColors.accentGold, () => _pick(ImageSource.camera))),
                 const SizedBox(width: 10),
                 Expanded(child: _pickBtn('🖼️', t('المعرض', 'Gallery'), AppColors.waterBlue, () => _pick(ImageSource.gallery))),
               ]),
@@ -175,7 +175,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
                   label: Text(t('تحليل الجسم 🔍', 'Analyze Body 🔍'),
                       style: const TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.barakahGold,
+                    backgroundColor: AppColors.accentGold,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
@@ -253,7 +253,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         const SizedBox(height: 18),
         SizedBox(width: double.infinity, child: ElevatedButton(
           onPressed: () => setState(() => _privacyConsented = true),
-          style: ElevatedButton.styleFrom(backgroundColor: AppColors.sunnahGreen, padding: const EdgeInsets.symmetric(vertical: 13)),
+          style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandGreen, padding: const EdgeInsets.symmetric(vertical: 13)),
           child: Text(tLang(lang, '✓ أوافق وأكمل', '✓ I Agree & Continue', '✓ J\'accepte & continue', '✓ Kabul ediyorum & devam', '✓ Saya Setuju & Teruskan', '✓ Saya Setuju & Lanjutkan'),
               style: const TextStyle(fontFamily: 'Cairo', fontSize: 14, color: Colors.white, fontWeight: FontWeight.w700)),
         )),
@@ -267,7 +267,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [AppColors.barakahGold, Color(0xFFB8860B)],
+          colors: [AppColors.accentGold, Color(0xFFB8860B)],
           begin: Alignment.topRight, end: Alignment.bottomLeft,
         ),
         borderRadius: BorderRadius.circular(18),
@@ -322,7 +322,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
               AnimatedBuilder(animation: _pulse, builder: (_, __) =>
                 Opacity(opacity: _pulse.value, child: const Text('🤖', style: TextStyle(fontSize: 42)))),
               const SizedBox(height: 8),
-              const CircularProgressIndicator(color: AppColors.barakahGold, strokeWidth: 3),
+              const CircularProgressIndicator(color: AppColors.accentGold, strokeWidth: 3),
             ]))),
         ]),
       ),
@@ -361,7 +361,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         AnimatedBuilder(animation: _pulse, builder: (_, __) =>
           Opacity(opacity: _pulse.value, child: const Text('🧬', style: TextStyle(fontSize: 42)))),
         const SizedBox(height: 10),
-        Text(tLang(lang, 'يحلل Claude AI جسمك…', 'Claude AI is analyzing your body…', 'Claude AI is analyzing your body…', 'Claude AI is analyzing your body…', 'Claude AI is analyzing your body…', 'Claude AI is analyzing your body…'),
+        Text(tLang(lang, 'يجري تحليل صورتك…', 'Analyzing your photo…'),
             style: const TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
         Text(
@@ -373,7 +373,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         const SizedBox(height: 14),
         const LinearProgressIndicator(
           backgroundColor: Colors.transparent,
-          valueColor: AlwaysStoppedAnimation(AppColors.barakahGold),
+          valueColor: AlwaysStoppedAnimation(AppColors.accentGold),
         ),
       ]),
     );
@@ -461,9 +461,9 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
               child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Container(
                   width: 22, height: 22,
-                  decoration: BoxDecoration(color: AppColors.barakahGold.withOpacity(0.15), shape: BoxShape.circle),
+                  decoration: BoxDecoration(color: AppColors.accentGold.withOpacity(0.15), shape: BoxShape.circle),
                   child: Center(child: Text('${e.key + 1}',
-                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, fontWeight: FontWeight.w900, color: AppColors.barakahGold))),
+                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, fontWeight: FontWeight.w900, color: AppColors.accentGold))),
                 ),
                 const SizedBox(width: 8),
                 Expanded(child: Text(e.value,
@@ -478,17 +478,17 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: AppColors.sunnahGreen.withOpacity(0.08),
+                color: AppColors.brandGreen.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Column(children: [
                 Text(tLang(lang, '📊 مقارنة مع حسابات ملفك', '📊 Comparison with Profile Calculations', '📊 Comparaison avec calculs du profil', '📊 Profil Hesaplamalarıyla Karşılaştırma', '📊 Perbandingan dengan Pengiraan Profil', '📊 Perbandingan dengan Perhitungan Profil'),
-                    style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 12, color: AppColors.sunnahGreen)),
+                    style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 12, color: AppColors.brandGreen)),
                 const SizedBox(height: 8),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                  _compareRow(tLang(lang, 'صورة', 'Photo', 'Photo', 'Fotoğraf', 'Foto', 'Foto'), '${r.bodyFatPercent.toStringAsFixed(1)}%', AppColors.barakahGold),
+                  _compareRow(tLang(lang, 'صورة', 'Photo', 'Photo', 'Fotoğraf', 'Foto', 'Foto'), '${r.bodyFatPercent.toStringAsFixed(1)}%', AppColors.accentGold),
                   const Text('vs', style: TextStyle(fontFamily: 'Cairo', color: AppColors.lightMuted, fontSize: 12)),
-                  _compareRow(tLang(lang, 'حساب', 'Calc.', 'Calc.', 'Hesapla.', 'Kira.', 'Hitung.'), '${profile.bodyFatPercent.toStringAsFixed(1)}%', AppColors.sunnahGreen),
+                  _compareRow(tLang(lang, 'حساب', 'Calc.', 'Calc.', 'Hesapla.', 'Kira.', 'Hitung.'), '${profile.bodyFatPercent.toStringAsFixed(1)}%', AppColors.brandGreen),
                 ]),
               ]),
             ),
@@ -510,7 +510,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
             icon: const Icon(Icons.refresh, size: 16),
             label: Text(tLang(lang, 'تحليل صورة جديدة', 'Analyze New Photo', 'Analyser une nouvelle photo', 'Yeni Fotoğraf Analiz Et', 'Analisis Foto Baru', 'Analisis Foto Baru'),
                 style: const TextStyle(fontFamily: 'Cairo')),
-            style: OutlinedButton.styleFrom(foregroundColor: AppColors.barakahGold, side: const BorderSide(color: AppColors.barakahGold)),
+            style: OutlinedButton.styleFrom(foregroundColor: AppColors.accentGold, side: const BorderSide(color: AppColors.accentGold)),
           )),
         ]),
       ),

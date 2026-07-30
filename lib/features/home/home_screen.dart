@@ -9,10 +9,10 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../core/l10n.dart';
+import '../ramadan/ramadan_ui.dart';
 import '../../core/prayer_provider.dart';
 import '../../data/models/models.dart';
 import '../../data/models/user_profile.dart';
-import '../barakah/barakah_screen.dart' show kBadges;
 
 
 // Cycle to next language in the supported list
@@ -101,8 +101,8 @@ return '$hh:${m.toString().padLeft(2,'0')}';
 Map<String, String> get _hadith {
 final i = _now.difference(DateTime(_now.year)).inDays;
 return {
-'ar': kDailyHadiths[i % kDailyHadiths.length]['ar']!,
-'en': kDailyHadiths[i % kDailyHadiths.length]['en']!,
+'ar': kDailyNotes[i % kDailyNotes.length]['ar']!,
+'en': kDailyNotes[i % kDailyNotes.length]['en']!,
 };
 }
 
@@ -293,20 +293,24 @@ Builder(builder: (_) {
 }),
 const SizedBox(height: 12),
 
-// ── RAMADAN BANNER ──
+// ── RAMADAN HERO ──
 if (isRamadan) ...[
-  _anim(1, _RamadanBanner(
-    isAr: isAr, isDark: isDark,
-    card: card, border: border, muted: muted,
-    now: _now, moonAnim: _mosqueScale,
+  _anim(1, RamadanHero(
+    now: _now,
+    shimmer: _mosqueScale,
+    onLogWater: () {
+      HapticFeedback.lightImpact();
+      ref.read(waterProvider.notifier).add();
+    },
+    onOpenNutrition: () => context.go('/nutrition'),
   )),
   const SizedBox(height: 12),
 ],
 
-// ── Sunnah fast day banner (Mon/Thu) ────────────
+// ── Optional fasting-day banner (Mon/Thu) ───────
 if (_now.weekday == DateTime.monday ||
     _now.weekday == DateTime.thursday) ...[
-  _anim(0, _SunnahFastBanner(
+  _anim(0, _FastingDayBanner(
       isAr: isAr, isDark: isDark, lang: lang,
       card: card, border: border)),
   const SizedBox(height: 12),
@@ -349,11 +353,11 @@ onWorkout: () => context.go('/fitness'),
 )),
 const SizedBox(height: 12),
 
-// ── BARAKAH PULSE CARD ──────────────────────
-_anim(3, _BarakahPulseCard(
-  isDark: isDark, isAr: isAr,
-  card: card, border: border, muted: muted,
-  onTap: () => context.go('/barakah'),
+// ── ASCENT CARD ─────────────────────────────
+_anim(3, _AscentCard(
+  isDark: isDark,
+  card: card, border: border, muted: muted, text: text,
+  onTap: () => context.go('/ascent'),
 )),
 const SizedBox(height: 12),
 
@@ -481,7 +485,7 @@ begin: Alignment.topLeft, end: Alignment.bottomRight,
 ),
 borderRadius: BorderRadius.circular(12),
 boxShadow: [BoxShadow(
-color: AppColors.sunnahGreen.withOpacity(0.4),
+color: AppColors.brandGreen.withOpacity(0.4),
 blurRadius: 12, spreadRadius: 0,
 )],
 ),
@@ -506,10 +510,10 @@ fontWeight: FontWeight.w900, color: AppColors.halalGreen,
 Container(
 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 7),
 decoration: BoxDecoration(
-color: AppColors.sunnahGreen.withOpacity(0.1),
+color: AppColors.brandGreen.withOpacity(0.1),
 borderRadius: BorderRadius.circular(24),
 border: Border.all(
-color: AppColors.sunnahGreen.withOpacity(0.3), width: 0.5),
+color: AppColors.brandGreen.withOpacity(0.3), width: 0.5),
 ),
 child: Text(countdown, style: const TextStyle(
 fontFamily: 'Cairo', fontSize: 14,
@@ -609,7 +613,7 @@ onTap: onAdd,
 child: Container(
 padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
 decoration: BoxDecoration(
-color: AppColors.sunnahGreen,
+color: AppColors.brandGreen,
 borderRadius: BorderRadius.circular(20),
 ),
 child: Row(mainAxisSize: MainAxisSize.min, children: [
@@ -675,7 +679,7 @@ _MacroBar(t('C','C'), carbsTotal,
 (profile?.calorieGoalKcal ?? 2000) / 4, AppColors.waterBlue),
 const SizedBox(height: 5),
 _MacroBar(t('F','F'), fatTotal,
-(profile?.calorieGoalKcal ?? 2000) / 9 * 0.3, AppColors.barakahGold),
+(profile?.calorieGoalKcal ?? 2000) / 9 * 0.3, AppColors.accentGold),
  ],
 )),
 ]),
@@ -687,16 +691,16 @@ if (pct >= 0.90)
       padding: const EdgeInsets.symmetric(
           horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: (isRamadan ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.07),
+        color: (isRamadan ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.07),
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-            color: (isRamadan ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.2)),
+            color: (isRamadan ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.2)),
       ),
       child: Text(
-        t('الثلث للطعام • الثلث للشراب • الثلث للنَّفَس — النبي ﷺ',
-          '1/3 food · 1/3 water · 1/3 air — Prophet ﷺ'),
+        t('اترك في معدتك مساحة — ثلث طعام وثلث شراب وثلث فراغ',
+          'Leave room in the stomach: a third food, a third drink, a third air'),
         style: const TextStyle(fontFamily: 'Cairo', fontSize: 10,
-          color: AppColors.sunnahGreen,
+          color: AppColors.brandGreen,
           fontWeight: FontWeight.w600, height: 1.4),
         textAlign: TextAlign.center,
       ),
@@ -710,11 +714,11 @@ if (pct >= 0.90)
 // ════════════════════════════════════════════════════════════
 // SUNNAH FAST BANNER
 // ════════════════════════════════════════════════════════════
-class _SunnahFastBanner extends ConsumerWidget {
+class _FastingDayBanner extends ConsumerWidget {
   final bool isAr, isDark;
   final String lang;
   final Color card, border;
-  const _SunnahFastBanner({
+  const _FastingDayBanner({
     required this.isAr, required this.isDark,
     required this.lang,
     required this.card, required this.border,
@@ -729,10 +733,10 @@ class _SunnahFastBanner extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(
           horizontal: 14, vertical: 11),
       decoration: BoxDecoration(
-        color: AppColors.barakahGold.withOpacity(0.08),
+        color: AppColors.accentGold.withOpacity(0.08),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-            color: AppColors.barakahGold.withOpacity(0.35), width: 1),
+            color: AppColors.accentGold.withOpacity(0.35), width: 1),
       ),
       child: Row(children: [
         const Text('🌙', style: TextStyle(fontSize: 22)),
@@ -742,465 +746,21 @@ class _SunnahFastBanner extends ConsumerWidget {
           children: [
           Text(
             t('يوم صيام سنة — $dayName 🌿',
-              'Sunnah Fast Day — $dayName 🌿'),
+              'Fasting day — $dayName 🌿'),
             style: const TextStyle(
               fontFamily: 'Cairo', fontSize: 13,
               fontWeight: FontWeight.w700,
-              color: AppColors.barakahGold),
+              color: AppColors.accentGold),
           ),
           Text(
-            t('«كان يصوم الاثنين والخميس» — النبي ﷺ',
-              '"He fasted on Mon & Thu" — Prophet ﷺ'),
+            t('الاثنين والخميس أشهر يومَي صيام تطوّعي',
+              'Monday and Thursday are the usual voluntary fasting days'),
             style: const TextStyle(
               fontFamily: 'Cairo', fontSize: 11,
-              color: AppColors.barakahGold, height: 1.4),
+              color: AppColors.accentGold, height: 1.4),
           ),
         ])),
         const Text('✨', style: TextStyle(fontSize: 16)),
-      ]),
-    );
-  }
-}
-
-
-// ══════════════════════════════════════════════════
-// RAMADAN BANNER
-// ══════════════════════════════════════════════════
-class _RamadanBanner extends StatelessWidget {
-  final bool isAr, isDark;
-  final Color card, border, muted;
-  final DateTime now;
-  final Animation<double> moonAnim;
-  const _RamadanBanner({
-    required this.isAr, required this.isDark,
-    required this.card, required this.border, required this.muted,
-    required this.now, required this.moonAnim,
-  });
-
-  // --- Configurable Ramadan start date ---
-  static final _ramadanStart = DateTime(2025, 3, 1);
-  static const _iftarH = 18, _iftarM = 5;
-  static const _suhoorH = 5, _suhoorM = 12;
-
-  int get _dayOfRamadan {
-    final d = now.difference(_ramadanStart).inDays + 1;
-    return d.clamp(1, 30);
-  }
-
-  String _cd(int th, int tm) {
-    final nowMins = now.hour * 60 + now.minute;
-    var diff = th * 60 + tm - nowMins;
-    if (diff <= 0) diff += 24 * 60;
-    final h = diff ~/ 60; final m = diff % 60;
-    if (isAr) {
-      return h == 0 ? '${m}د' : '${h}س ${m}د';
-    } else {
-      return h == 0 ? '${m}m' : '${h}h ${m}m';
-    }
-  }
-
-  static const _ayahs = [
-    {'ar': '«شهْرُ رمضانَ الّذِي أُنزِلَ فِيهِ الْقُرْآنُ»',
-     'en': '"The month of Ramadan in which the Quran was revealed" — 2:185'},
-    {'ar': '«فَإِنِّي قَرِيبٌ أُجِيبُ دَعْوَةَ الدَّاعِ إِذَا دَعَانِ»',
-     'en': '"I am near — I respond to the caller when he calls" — 2:186'},
-    {'ar': '«الصِّيامُ جُنَّةٌ» — البخاري',
-     'en': '"Fasting is a shield" — Al-Bukhari'},
-    {'ar': '«مَنْ صَامَ رمَضَانَ إيمَانًا وَاحتسَابًا غُفِرَ لَهُ مَا تَقَدَّمَ مِنْ ذَنْبِهِ»',
-     'en': '"Whoever fasts Ramadan with faith shall be forgiven" — Al-Bukhari'},
-    {'ar': '«تَسَحَّرُوا فَإِنَّ فِي السَّحُورِ بَرَكَةً» — البخاري',
-     'en': '"Have suhoor — there is blessing in it" — Al-Bukhari'},
-    {'ar': '«إِذَا جَاءَ رَمَضَانُ فُتِّحَتْ أَبْوَابُ الجَنَّةِ» — البخاري',
-     'en': '"When Ramadan comes, the gates of Jannah open" — Al-Bukhari'},
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    String t(String ar, String en) => isAr ? ar : en;
-    final nowMins    = now.hour * 60 + now.minute;
-    final iftarMins  = _iftarH * 60 + _iftarM;
-    final isFasting  = nowMins >= _suhoorH * 60 + _suhoorM && nowMins < iftarMins;
-    final minsToIftar = ((iftarMins - nowMins) + 1440) % 1440;
-    final iftarSoon  = minsToIftar >= 1 && minsToIftar <= 15;
-    final ayah       = _ayahs[now.weekday % _ayahs.length];
-    final day        = _dayOfRamadan;
-    final sw         = MediaQuery.of(context).size.width;
-
-    // Design tokens
-    const gold      = Color(0xFFF0C040);
-    const goldDeep  = Color(0xFFC9963E);
-    const goldGlow  = Color(0xFFFFE082);
-    const indigo    = Color(0xFF5C6BC0);
-    const indigoDeep = Color(0xFF303F9F);
-    final accent    = iftarSoon ? Colors.deepOrange : isFasting ? indigo : gold;
-
-    // Tiny star field
-    const stars = [
-      [0.07, 9.0, 3.5], [0.19, 3.0, 2.5], [0.33, 12.0, 3.0],
-      [0.51, 2.5, 2.8], [0.65, 8.0, 2.0], [0.79, 5.0, 4.0],
-      [0.91, 14.0, 2.5],[0.26, 22.0, 2.0],[0.57, 24.0, 3.0],
-      [0.83, 20.0, 2.0],[0.95,  7.0, 1.8],[0.42, 17.0, 2.5],
-    ];
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(22),
-      child: Container(
-        decoration: BoxDecoration(
-          // Deep space gradient
-          gradient: LinearGradient(
-            colors: isFasting
-              ? [const Color(0xFF04071A), const Color(0xFF090E2E),
-                 const Color(0xFF060A24), const Color(0xFF030616)]
-              : [const Color(0xFF100600), const Color(0xFF1A0A00),
-                 const Color(0xFF0E0500), const Color(0xFF080302)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            stops: const [0.0, 0.35, 0.65, 1.0],
-          ),
-          borderRadius: BorderRadius.circular(22),
-          border: Border.all(
-            color: accent.withOpacity(iftarSoon ? 0.90 : 0.50),
-            width: iftarSoon ? 2.5 : 1.5,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: accent.withOpacity(iftarSoon ? 0.45 : 0.22),
-              blurRadius: iftarSoon ? 40 : 26,
-              spreadRadius: iftarSoon ? 3 : 0,
-              offset: const Offset(0, 6),
-            ),
-            BoxShadow(
-              color: Colors.black.withOpacity(0.50),
-              blurRadius: 18,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Stack(children: [
-
-          // Ambient glow — top-right
-          Positioned(right: -45, top: -45, child: Container(
-            width: 170, height: 170,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(colors: [
-                (isFasting ? indigo : gold).withOpacity(0.16),
-                Colors.transparent,
-              ]),
-            ),
-          )),
-
-          // Ambient glow — bottom-left
-          Positioned(left: -35, bottom: -35, child: Container(
-            width: 120, height: 120,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: RadialGradient(colors: [
-                goldDeep.withOpacity(0.10),
-                Colors.transparent,
-              ]),
-            ),
-          )),
-
-          // Star particles
-          ...stars.map((s) => Positioned(
-            left: sw * (s[0] as double) - 16,
-            top: s[1] as double,
-            child: Text('+', style: TextStyle(
-              fontSize: s[2] as double,
-              fontWeight: FontWeight.w900,
-              color: goldGlow.withOpacity(0.28),
-            )),
-          )),
-
-          // Iftar-soon outer glow ring
-          if (iftarSoon) Positioned.fill(child: IgnorePointer(
-            child: Container(decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(22),
-              border: Border.all(
-                color: Colors.deepOrange.withOpacity(0.30), width: 4),
-            )),
-          )),
-
-          // Main content
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 16, 18, 14),
-            child: Column(children: [
-
-              // ── Row 1: orb · title · day badge ─────────────────
-              Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-
-                // Animated moon / star orb
-                ScaleTransition(
-                  scale: Tween<double>(begin: 0.88, end: 1.12).animate(moonAnim),
-                  child: Container(
-                    width: 64, height: 64,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      gradient: LinearGradient(
-                        colors: isFasting
-                          ? [indigoDeep, const Color(0xFF5C6BC0)]
-                          : [goldDeep,   const Color(0xFFFFD740)],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: (isFasting ? indigo : gold).withOpacity(0.70),
-                          blurRadius: 24, spreadRadius: 4,
-                        ),
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.40),
-                          blurRadius: 8, offset: const Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Center(child: Text(
-                      isFasting ? '★' : '🌙',
-                      style: TextStyle(
-                        fontSize: isFasting ? 30 : 28,
-                        color: Colors.white,
-                        shadows: [Shadow(
-                          color: Colors.black.withOpacity(0.45),
-                          blurRadius: 6,
-                        )],
-                      ),
-                    )),
-                  ),
-                ),
-
-                const SizedBox(width: 14),
-
-                // Title + status row
-                Expanded(child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(t('رمضان كريم', 'Ramadan Kareem'),
-                    style: TextStyle(
-                      fontFamily: 'Cairo', fontSize: 21,
-                      fontWeight: FontWeight.w900,
-                      color: isFasting ? const Color(0xFF8C9EFF) : gold,
-                      letterSpacing: 0.5,
-                      shadows: [Shadow(
-                        color: (isFasting ? indigo : gold).withOpacity(0.55),
-                        blurRadius: 14,
-                      )],
-                    )),
-                  const SizedBox(height: 5),
-                  Row(children: [
-                    // Pulsing status dot
-                    Container(
-                      width: 7, height: 7,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: iftarSoon ? Colors.deepOrange
-                          : isFasting ? const Color(0xFF69F0AE)
-                          : Colors.orange,
-                        boxShadow: [BoxShadow(
-                          color: (iftarSoon ? Colors.deepOrange
-                            : isFasting ? const Color(0xFF69F0AE)
-                            : Colors.orange).withOpacity(0.90),
-                          blurRadius: 10,
-                        )],
-                      ),
-                    ),
-                    const SizedBox(width: 7),
-                    Flexible(child: Text(
-                      iftarSoon
-                        ? t('قريباً — الإفطار خلال دقائق 🥤',
-                            'Iftar in minutes — get ready 🥤')
-                        : isFasting
-                          ? t('أنت صائم — ثبت واحتسب 🤍',
-                              'Fasting — stay strong 🤍')
-                          : t('وقت الإفطار — تقبّل الله 🌿',
-                              'Iftar time — may Allah accept 🌿'),
-                      style: TextStyle(
-                        fontFamily: 'Cairo', fontSize: 10.5,
-                        color: iftarSoon
-                          ? Colors.deepOrange
-                          : Colors.white.withOpacity(0.60),
-                      ),
-                    )),
-                  ]),
-                ])),
-
-                // Day badge
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      colors: [gold.withOpacity(0.20), gold.withOpacity(0.06)],
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                    ),
-                    borderRadius: BorderRadius.circular(14),
-                    border: Border.all(color: gold.withOpacity(0.55), width: 1.2),
-                    boxShadow: [BoxShadow(
-                      color: gold.withOpacity(0.22), blurRadius: 14,
-                    )],
-                  ),
-                  child: Column(mainAxisSize: MainAxisSize.min, children: [
-                    Text(t('يوم', 'Day'),
-                      style: const TextStyle(fontFamily: 'Cairo',
-                        fontSize: 8, color: Colors.white38)),
-                    const SizedBox(height: 2),
-                    const Text('✨', style: TextStyle(fontSize: 11)),
-                    const SizedBox(height: 2),
-                    Text('$day', style: const TextStyle(fontFamily: 'Cairo',
-                      fontSize: 19, fontWeight: FontWeight.w900,
-                      color: gold)),
-                    Text(t('من 30', 'of 30'),
-                      style: const TextStyle(fontFamily: 'Cairo',
-                        fontSize: 7, color: Colors.white38)),
-                  ]),
-                ),
-              ]),
-
-              const SizedBox(height: 14),
-
-              // ── Progress bar ────────────────────────────────────
-              Column(children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: LinearProgressIndicator(
-                    value: day / 30,
-                    minHeight: 7,
-                    backgroundColor: Colors.white.withOpacity(0.06),
-                    valueColor: AlwaysStoppedAnimation(
-                      isFasting ? const Color(0xFF5C6BC0) : gold),
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('1', style: TextStyle(fontFamily: 'Cairo',
-                      fontSize: 8.5, color: Colors.white.withOpacity(0.25))),
-                    Row(mainAxisSize: MainAxisSize.min, children: [
-                      Text('★ ', style: TextStyle(
-                        fontSize: 8, color: gold.withOpacity(0.75))),
-                      Text(t('اليوم $day', 'Day $day'),
-                        style: TextStyle(fontFamily: 'Cairo', fontSize: 8.5,
-                          fontWeight: FontWeight.w800,
-                          color: gold.withOpacity(0.90))),
-                    ]),
-                    Text('30', style: TextStyle(fontFamily: 'Cairo',
-                      fontSize: 8.5, color: Colors.white.withOpacity(0.25))),
-                  ],
-                ),
-              ]),
-
-              const SizedBox(height: 14),
-
-              // ── Countdown chips ─────────────────────────────────
-              Row(children: [
-                Expanded(child: _RamadanCountdownChip(
-                  emoji: '🌅',
-                  label: t('الإفطار بعد', 'Iftar in'),
-                  countdown: _cd(_iftarH, _iftarM),
-                  accentColor: iftarSoon ? Colors.deepOrange : gold,
-                  isPrimary: isFasting,
-                  pulse: iftarSoon,
-                )),
-                const SizedBox(width: 10),
-                Expanded(child: _RamadanCountdownChip(
-                  emoji: '🌃',
-                  label: t('السحور بعد', 'Suhoor in'),
-                  countdown: _cd(_suhoorH, _suhoorM),
-                  accentColor: const Color(0xFF8C9EFF),
-                  isPrimary: !isFasting,
-                  pulse: false,
-                )),
-              ]),
-
-              const SizedBox(height: 12),
-
-              // ── Ayah / hadith strip ─────────────────────────────
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [gold.withOpacity(0.08), gold.withOpacity(0.03)],
-                    begin: Alignment.topLeft, end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: gold.withOpacity(0.20), width: 1),
-                ),
-                child: Row(children: [
-                  Text('✨', style: TextStyle(
-                    fontSize: 11, color: gold.withOpacity(0.80))),
-                  const SizedBox(width: 10),
-                  Expanded(child: Text(isAr ? ayah['ar']! : ayah['en']!,
-                    style: TextStyle(fontFamily: 'Cairo', fontSize: 10.5,
-                      color: Colors.white.withOpacity(0.62), height: 1.55,
-                      fontStyle: FontStyle.italic),
-                    textAlign: TextAlign.center)),
-                  const SizedBox(width: 10),
-                  Text('✨', style: TextStyle(
-                    fontSize: 11, color: gold.withOpacity(0.80))),
-                ]),
-              ),
-            ]),
-          ),
-        ]),
-      ),
-    );
-  }
-}
-
-// ── Redesigned countdown chip ─────────────────────────────────────────
-class _RamadanCountdownChip extends StatelessWidget {
-  final String emoji, label, countdown;
-  final Color accentColor;
-  final bool isPrimary, pulse;
-  const _RamadanCountdownChip({
-    required this.emoji, required this.label,
-    required this.countdown, required this.accentColor,
-    required this.isPrimary, required this.pulse,
-  });
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 13),
-      decoration: BoxDecoration(
-        gradient: isPrimary
-          ? LinearGradient(
-              colors: [
-                accentColor.withOpacity(0.24),
-                accentColor.withOpacity(0.08),
-              ],
-              begin: Alignment.topLeft, end: Alignment.bottomRight)
-          : null,
-        color: isPrimary ? null : Colors.white.withOpacity(0.05),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: isPrimary
-            ? accentColor.withOpacity(0.70)
-            : Colors.white.withOpacity(0.10),
-          width: isPrimary ? 1.5 : 1.0,
-        ),
-        boxShadow: isPrimary ? [BoxShadow(
-          color: accentColor.withOpacity(pulse ? 0.45 : 0.18),
-          blurRadius: pulse ? 22 : 10,
-        )] : null,
-      ),
-      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-        Text(emoji, style: const TextStyle(fontSize: 24)),
-        const SizedBox(height: 5),
-        Text(label, style: TextStyle(fontFamily: 'Cairo', fontSize: 9.5,
-          color: isPrimary
-            ? accentColor.withOpacity(0.90)
-            : Colors.white.withOpacity(0.50))),
-        const SizedBox(height: 4),
-        Text(countdown, style: TextStyle(
-          fontFamily: 'Cairo', fontSize: 20,
-          fontWeight: FontWeight.w900,
-          letterSpacing: 0.5,
-          color: isPrimary ? accentColor : Colors.white.withOpacity(0.65),
-          shadows: isPrimary ? [Shadow(
-            color: accentColor.withOpacity(0.55),
-            blurRadius: 12,
-          )] : null,
-        )),
       ]),
     );
   }
@@ -1502,7 +1062,7 @@ void _showStreakDialog(BuildContext context, int streak, bool isAr, String lang,
         TextButton(onPressed: () => Navigator.pop(context),
           child: Text(tLang(lang, 'حسناً 👍', 'Got it 👍', 'Compris 👍', 'Anlaşıldı 👍', 'Faham 👍', 'Mengerti 👍'),
             style: const TextStyle(fontFamily: 'Cairo',
-              color: AppColors.sunnahGreen, fontWeight: FontWeight.w700))),
+              color: AppColors.brandGreen, fontWeight: FontWeight.w700))),
       ],
     )),
   ));
@@ -1538,7 +1098,7 @@ width: 3, height: 56,
 margin: const EdgeInsets.only(top: 2),
 decoration: BoxDecoration(
 gradient: const LinearGradient(
-colors: [AppColors.sunnahGreen, AppColors.barakahGold],
+colors: [AppColors.brandGreen, AppColors.accentGold],
 begin: Alignment.topCenter, end: Alignment.bottomCenter,
 ),
 borderRadius: BorderRadius.circular(3),
@@ -1548,10 +1108,10 @@ const SizedBox(width: 12),
 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
 children: [
 Row(children: [
-Text(isAr ? '📖 حديث اليوم' : "📖 Today's Hadith",
+Text(isAr ? '📖 كلمة اليوم' : '📖 Note of the day',
 style: const TextStyle(fontFamily: 'Cairo',
 fontSize: 10, fontWeight: FontWeight.w700,
-color: AppColors.sunnahGreen)),
+color: AppColors.brandGreen)),
 const Spacer(),
 // Breathing dot
 AnimatedBuilder(
@@ -1561,10 +1121,10 @@ final v = (dotAnim.value + 1) / 2;
 return Container(
 width: 6, height: 6,
 decoration: BoxDecoration(
-color: AppColors.sunnahGreen.withOpacity(0.4 + 0.6 * v),
+color: AppColors.brandGreen.withOpacity(0.4 + 0.6 * v),
 shape: BoxShape.circle,
 boxShadow: [BoxShadow(
-color: AppColors.sunnahGreen.withOpacity(0.3 * v),
+color: AppColors.brandGreen.withOpacity(0.3 * v),
 blurRadius: 6,
 )],
 ),
@@ -1590,26 +1150,22 @@ color: text,
 }
 
 // ════════════════════════════════════════════════════════════
-// BARAKAH PULSE CARD
-
-class _BarakahPulseCard extends ConsumerWidget {
-  final bool isDark, isAr;
-  final Color card, border, muted;
+// ASCENT CARD — level, rank and today's quest progress
+// ════════════════════════════════════════════════════════════
+class _AscentCard extends ConsumerWidget {
+  final bool isDark;
+  final Color card, border, muted, text;
   final VoidCallback onTap;
-  const _BarakahPulseCard({required this.isDark, required this.isAr,
+  const _AscentCard({required this.isDark,
     required this.card, required this.border, required this.muted,
-    required this.onTap});
+    required this.text, required this.onTap});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final barakah = ref.watch(barakahProvider);
-    final badges  = ref.watch(badgeProvider);
-    final lang    = ref.watch(languageProvider);
-    final l       = L.fromLang(lang);
-    final score   = barakah.score;
-    final pct     = (score / 1000).clamp(0.0, 1.0);
-    final col     = barakah.tierColor();
-    final earned  = badges.earned.length;
+    final ascent = ref.watch(ascentProvider);
+    final lang   = ref.watch(languageProvider);
+    final l      = L.fromLang(lang);
+    final col    = ascent.color;
 
     return GestureDetector(
       onTap: onTap,
@@ -1625,33 +1181,52 @@ class _BarakahPulseCard extends ConsumerWidget {
         ),
         child: Column(children: [
           Row(children: [
-            const Text('✨', style: TextStyle(fontSize: 20)),
-            const SizedBox(width: 8),
-            Expanded(child: Text(l.barakahHomeCard,
+            // Rank chip
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                border: Border.all(color: col.withOpacity(0.55), width: 1.1),
+                borderRadius: BorderRadius.circular(6)),
+              child: Text(ascent.rank.letter,
+                style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                    fontWeight: FontWeight.w900, color: col)),
+            ),
+            const SizedBox(width: 9),
+            Expanded(child: Text(l.ascentHomeCard,
               style: TextStyle(fontFamily: 'Cairo',
-                  fontWeight: FontWeight.w800, fontSize: 14, color: col))),
-            Text('$score / 1000',
+                  fontWeight: FontWeight.w800, fontSize: 14, color: text))),
+            Text('${l.levelShort} ${ascent.level}',
               style: TextStyle(fontFamily: 'Cairo',
-                  fontSize: 12, fontWeight: FontWeight.w700, color: col)),
+                  fontSize: 12, fontWeight: FontWeight.w800, color: col)),
             const SizedBox(width: 6),
             Icon(Icons.arrow_forward_ios, size: 12, color: muted),
           ]),
+          const SizedBox(height: 12),
+          // Quest pips — one per daily quest
+          Row(children: kQuests.map((q) {
+            final done = ascent.isDone(q.id);
+            return Expanded(child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 2),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 350),
+                height: 6,
+                decoration: BoxDecoration(
+                  color: done
+                      ? q.color
+                      : q.color.withOpacity(
+                          ascent.points(q.id) > 0 ? 0.35 : 0.12),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+            ));
+          }).toList()),
           const SizedBox(height: 10),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(6),
-            child: LinearProgressIndicator(
-              value: pct, minHeight: 8,
-              backgroundColor: isDark
-                  ? const Color(0xFF21262D) : const Color(0xFFEEEEEE),
-              valueColor: AlwaysStoppedAnimation(col),
-            ),
-          ),
-          const SizedBox(height: 8),
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Text(isAr ? barakah.tierAr() : barakah.tierEn(),
+            Text('${ascent.questsDone}/${kQuests.length} ${l.questsLabel}'
+                 '  ·  ${ascent.score}/1000',
               style: TextStyle(fontFamily: 'Cairo',
-                  fontSize: 11, color: col, fontWeight: FontWeight.w600)),
-            Text('🏅 $earned / ${kBadges.length}',
+                  fontSize: 11, color: col, fontWeight: FontWeight.w700)),
+            Text(ascent.chain > 0 ? '🔥 ${ascent.chain}' : '+${ascent.todayXp} XP',
               style: TextStyle(fontFamily: 'Cairo',
                   fontSize: 11, color: muted)),
           ]),

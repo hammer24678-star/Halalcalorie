@@ -48,7 +48,7 @@ void main() {
       if (!(_p.getBool('notifs_scheduled') ?? false)) {
         await NotificationService.scheduleMealReminder();
         await NotificationService.scheduleWaterReminder();
-        await NotificationService.scheduleBarakahNudge();
+        await NotificationService.scheduleAscentNudge();
         await _p.setBool('notifs_scheduled', true);
       }
     } catch (e) { debugPrint('Notif schedule: $e'); }

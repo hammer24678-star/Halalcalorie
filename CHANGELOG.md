@@ -1,4 +1,88 @@
-# SunnahStride Changelog
+# HalalCalorie Changelog
+
+## v1.0.0+10 — Release polish
+*2026-07-30*
+
+### 🆕 The Ascent system (replaces the Barakah engine)
+- Rebuilt as a game-style progression layer: eight **daily quests** feed a
+  0-1000 daily score, the score converts to **XP**, XP raises a **level**
+  (1-99), and levels map onto **ranks** E → D → C → B → A → S → SS
+- **Chain multiplier** up to 2× for consecutive qualifying days, so
+  consistency is worth more than one heavy day
+- Level-up sequence with a system-panel dialog and confetti
+- **Weekly review** now shows every day of the week — the old Friday
+  report was hidden six days out of seven
+- 24 unlockable **titles** replace the old badge shelf; earned badges
+  carry over from the previous key
+- New screen at `/ascent` with a starfield, bracketed system panels and a
+  dual-arc level ring; `/barakah` redirects so old links still work
+- Quests now update live as meals, water, sleep, steps and workouts are
+  logged, instead of only on screen open
+
+### 🌙 Ramadan mode rebuilt
+- Iftar and suhoor now come from **real prayer times** for the user's city;
+  the old build hardcoded 18:05 and 05:12
+- Day counter comes from a **tabular Hijri calendar** — the old build had a
+  fixed 2025 start date and had already frozen at "day 30"
+- Countdown dial shows progress through the current fasting or evening
+  window, with phase-aware colours and copy
+- Moon is drawn at the month's actual phase
+- Practical per-phase guidance replaces the scripture strip
+
+### 🌍 Localization — all seven languages now resolve
+- Urdu no longer falls through to Arabic; it has its own strings and keeps
+  RTL layout
+- New shared dictionary (`core/translations.dart`, 537 entries × 5
+  languages) that `tLang()` consults whenever a call site omits a
+  language, so screens passing only Arabic and English still localize
+- Positional slots that merely echoed English now fall through to the
+  dictionary instead of showing English
+- Interpolated labels restructured so their static half localizes
+
+### 🔎 Search returns results, plural
+- `AIService.searchFoods()` merges the built-in portion list, the offline
+  per-100g table, Open Food Facts and a model fallback, de-duplicated
+- Results list with thumbnails, macros, per-source badges and a direct
+  route to manual entry; the old flow surfaced exactly one guess
+- Portion-based entries get a servings picker; per-100g entries keep the
+  unit picker, so the two are no longer conflated
+
+### 🍽️ Food glyphs and thumbnails
+- New `core/food_emoji.dart`: a few hundred foods keyed in Arabic,
+  English, French, Turkish, Malay/Indonesian and Urdu, matched
+  longest-keyword-first, replacing a 30-entry if-chain
+- `FoodThumb` falls back to an Open Food Facts photo when a food has no
+  glyph and the device is online, and to a neutral plate when it does not
+
+### 🛡️ Store-policy hardening
+- Removed unsubstantiated health claims throughout: "cure for every
+  disease", "in it is healing", "water — cure for everything",
+  antibacterial and gut-renewal claims, and the remedy-style recipe
+- All ten health articles rewritten as general wellbeing information with
+  reference ranges and explicit "see a professional" framing
+- Naming softened across the app: no more Barakah, Al-Mujahid, Sunnah
+  Warrior, Islamic HIIT, Islamic Fitness, Dhikr Power Walk or
+  Bismillah/hadith cards; quests use Stillness, Restraint and Wholesome
+- Daily hadith rotation replaced with 30 practical daily notes
+- Deleted the orphaned donation flow — it did not compile, was
+  unreachable, and an off-Billing payment path is a policy hazard
+- Store listings and README rewritten: consistent app name, accurate
+  feature list, no health claims, review notes and a compliance checklist
+- Corrected copy that credited Claude for analysis the app runs on Groq
+
+### 🐛 Fixes
+- Database upgrades are now additive from v6 — meals, weights and daily
+  summaries survive an app update instead of being dropped
+- Progress history migrates from `barakah_log` into `ascent_log`
+- Chain multiplier reaches exactly 2× at 30 days (was 1.999)
+- Removed emoji keys short enough to match inside unrelated words
+
+### 🧪 Tests
+- 35 tests covering the translation fallback chain, every `L` getter in
+  all seven languages, dictionary completeness, the XP/level/rank curve
+  and the Hijri conversion
+
+---
 
 ## v0.5.0 — Premium & Store Release Prep
 *Released: 2026-03-05*

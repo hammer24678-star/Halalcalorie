@@ -31,14 +31,14 @@ class _AppShellState extends ConsumerState<AppShell>
     _T('/home',      '⌂',  'Home',      'الرئيسية'),
     _T('/nutrition', '◈',  'Nutrition', 'تغذية'),
     _T('/fitness',   '◉',  'Fitness',   'لياقة'),
-    _T('/barakah',   '✶',  'Barakah',   'بركة'),
+    _T('/ascent',    '▲',  'Ascent',    'صعود'),
     _T('/health',    '♡',  'Health',    'صحة'),
     _T('/profile',   '◯',  'Profile',   'ملفي'),
   ];
 
   int _idx(String loc) {
     if (loc.startsWith('/body') || loc.startsWith('/health')) return 4;
-    if (loc.startsWith('/barakah')) return 3;
+    if (loc.startsWith('/ascent')) return 3;
     if (loc.startsWith('/scanner')) return 1;
     for (int i = 0; i < _tabs.length; i++) {
       if (loc.startsWith(_tabs[i].path)) return i;
@@ -52,7 +52,7 @@ class _AppShellState extends ConsumerState<AppShell>
     final idx    = _idx(loc);
     final isDark = ref.watch(themeProvider);
     final lang   = ref.watch(languageProvider);
-    final isAr      = lang == 'ar' || lang == 'ur';
+    final isAr      = isRtlLang(lang);
     final isRamadan = ref.watch(ramadanModeProvider);
 
     return Scaffold(
@@ -70,7 +70,7 @@ class _AppShellState extends ConsumerState<AppShell>
         isDark: isDark, isAr: isAr, isRamadan: isRamadan,
         onTap: (path) {
           HapticFeedback.lightImpact();
-          if (path == '/barakah' &&
+          if (path == '/ascent' &&
               !ref.read(premiumProvider)) {
             context.push('/paywall');
             return;
@@ -125,10 +125,10 @@ class _PremiumNavState extends ConsumerState<_PremiumNav>
     final bg         = widget.isDark ? const Color(0xFF161B22) : Colors.white;
     final border     = widget.isDark ? const Color(0xFF21262D) : const Color(0xFFD0D7DE);
     // Ramadan mode: swap all greens to gold
-    final activeColor = widget.isRamadan ? AppColors.barakahGold : AppColors.halalGreen;
+    final activeColor = widget.isRamadan ? AppColors.accentGold : AppColors.halalGreen;
     final activeBg    = widget.isRamadan
-        ? AppColors.barakahGold.withOpacity(0.15)
-        : AppColors.sunnahGreen.withOpacity(0.15);
+        ? AppColors.accentGold.withOpacity(0.15)
+        : AppColors.brandGreen.withOpacity(0.15);
 
     return Container(
       decoration: BoxDecoration(
@@ -167,7 +167,7 @@ class _PremiumNavState extends ConsumerState<_PremiumNav>
                                 borderRadius: BorderRadius.circular(24),
                                 boxShadow: active && widget.isRamadan
                                     ? [BoxShadow(
-                                        color: AppColors.barakahGold.withOpacity(0.55),
+                                        color: AppColors.accentGold.withOpacity(0.55),
                                         blurRadius: 16,
                                         spreadRadius: 2,
                                       )]
@@ -200,6 +200,7 @@ class _PremiumNavState extends ConsumerState<_PremiumNav>
                                   case '/nutrition': return Text(_l.navNutrition);
                                   case '/fitness':   return Text(_l.navFitness);
                                   case '/health':    return Text(_l.navHealth);
+                                  case '/ascent':    return Text(_l.ascentNavLabel);
                                   case '/profile':   return Text(_l.navProfile);
                                   default: return Text(widget.isAr ? tab.ar : tab.en);
                                 }

@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../core/l10n.dart';
+import '../../core/food_emoji.dart';
 import '../../data/models/models.dart';
 
 import '../../core/ai_service.dart';
@@ -18,71 +19,71 @@ enum MealType { breakfast, lunch, dinner, snack }
 
 
 
-// ── Sunnah foods database ────────────────────────────────────
-const _kSunnahFoodsData = <String, (String, String, String)>{
-  'تمر':         ('🌴', 'من تصبّح بسبع تمرات — النبي ﷺ', 'Eat 7 dates every morning — Prophet ﷺ'),
-  'date':         ('🌴', 'من تصبّح بسبع تمرات — النبي ﷺ', 'Eat 7 dates every morning — Prophet ﷺ'),
-  'عسل':          ('🍯', 'فيه شفاء للناس — القرآن الكريم (نص ديني)', 'In it is healing for people — Quran (religious text)'),
-  'honey':        ('🍯', 'فيه شفاء للناس — القرآن الكريم (نص ديني)', 'In it is healing for people — Quran (religious text)'),
-  'زيتون':        ('🫒', 'كلوا الزيت وادهنوا به — النبي ﷺ', 'Eat olive oil — Prophet ﷺ'),
-  'olive':        ('🫒', 'كلوا الزيت وادهنوا به — النبي ﷺ', 'Eat olive oil — Prophet ﷺ'),
-  'حبة سوداء':  ('🌱', 'شفاء من كل داء إلا السام — النبي ﷺ (نص ديني)', 'Cure for every disease — Prophet ﷺ (religious text)'),
-  'black seed':   ('🌱', 'شفاء من كل داء إلا السام — النبي ﷺ (نص ديني)', 'Cure for every disease — Prophet ﷺ (religious text)'),
-  'حليب':         ('🥛', 'فإن اللبن يملأ البطن — النبي ﷺ', 'Milk fills the stomach — Prophet ﷺ'),
-  'milk':         ('🥛', 'فإن اللبن يملأ البطن — النبي ﷺ', 'Milk fills the stomach — Prophet ﷺ'),
-  'تين':          ('🍑', 'فاكهة الجنة — النبي ﷺ', 'Fruit of paradise — Prophet ﷺ'),
-  'fig':          ('🍑', 'فاكهة الجنة — النبي ﷺ', 'Fruit of paradise — Prophet ﷺ'),
-  'رمان':         ('🍉', 'ما من رمانة إلا وفيها حبة من الجنة — النبي ﷺ', 'Every pomegranate has a seed from paradise — Prophet ﷺ'),
-  'pomegranate':  ('🍉', 'ما من رمانة إلا وفيها حبة من الجنة — النبي ﷺ', 'Every pomegranate has a seed from paradise — Prophet ﷺ'),
-  'شعير':         ('🌾', 'عليكم بالشعير — النبي ﷺ', 'Use barley — Prophet ﷺ'),
-  'barley':       ('🌾', 'عليكم بالشعير — النبي ﷺ', 'Use barley — Prophet ﷺ'),
+// ── Wholesome whole foods ────────────────────────────────────
+// Minimally processed staples worth logging. Notes are plain nutrition
+// facts — no health, healing or treatment claims.
+const _kWholesomeFoods = <String, (String, String, String)>{
+  'تمر':        ('🌴', 'سكريات طبيعية وألياف وبوتاسيوم',
+                       'Natural sugars, fibre and potassium'),
+  'date':       ('🌴', 'سكريات طبيعية وألياف وبوتاسيوم',
+                       'Natural sugars, fibre and potassium'),
+  'عسل':        ('🍯', 'محلٍّ طبيعي — احسبه ضمن سكريات يومك',
+                       'A natural sweetener — count it in your daily sugars'),
+  'honey':      ('🍯', 'محلٍّ طبيعي — احسبه ضمن سكريات يومك',
+                       'A natural sweetener — count it in your daily sugars'),
+  'زيتون':      ('🫒', 'دهون أحادية غير مشبعة وفيتامين هـ',
+                       'Monounsaturated fats and vitamin E'),
+  'olive':      ('🫒', 'دهون أحادية غير مشبعة وفيتامين هـ',
+                       'Monounsaturated fats and vitamin E'),
+  'حليب':       ('🥛', 'بروتين وكالسيوم في صورة سهلة',
+                       'An easy source of protein and calcium'),
+  'milk':       ('🥛', 'بروتين وكالسيوم في صورة سهلة',
+                       'An easy source of protein and calcium'),
+  'زبادي':      ('🥣', 'بروتين ومزارع حيّة في النوع الطبيعي',
+                       'Protein, plus live cultures in the plain kind'),
+  'yogurt':     ('🥣', 'بروتين ومزارع حيّة في النوع الطبيعي',
+                       'Protein, plus live cultures in the plain kind'),
+  'تين':        ('🫐', 'ألياف وبوتاسيوم — مركّز بعد التجفيف',
+                       'Fibre and potassium — concentrated when dried'),
+  'fig':        ('🫐', 'ألياف وبوتاسيوم — مركّز بعد التجفيف',
+                       'Fibre and potassium — concentrated when dried'),
+  'رمان':       ('🍎', 'فيتامين ج وبوليفينولات',
+                       'Vitamin C and polyphenols'),
+  'pomegranate':('🍎', 'فيتامين ج وبوليفينولات',
+                       'Vitamin C and polyphenols'),
+  'شعير':       ('🌾', 'حبة كاملة غنية بألياف بيتا جلوكان',
+                       'A whole grain rich in beta-glucan fibre'),
+  'barley':     ('🌾', 'حبة كاملة غنية بألياف بيتا جلوكان',
+                       'A whole grain rich in beta-glucan fibre'),
+  'شوفان':      ('🥣', 'كارب بطيء الهضم وألياف قابلة للذوبان',
+                       'Slow-digesting carbs and soluble fibre'),
+  'oat':        ('🥣', 'كارب بطيء الهضم وألياف قابلة للذوبان',
+                       'Slow-digesting carbs and soluble fibre'),
+  'عدس':        ('🫘', 'بروتين نباتي وألياف وحديد',
+                       'Plant protein, fibre and iron'),
+  'lentil':     ('🫘', 'بروتين نباتي وألياف وحديد',
+                       'Plant protein, fibre and iron'),
+  'سمك':        ('🐟', 'بروتين ودهون أوميجا ٣',
+                       'Protein and omega-3 fats'),
+  'fish':       ('🐟', 'بروتين ودهون أوميجا ٣',
+                       'Protein and omega-3 fats'),
+  'مكسرات':     ('🌰', 'دهون جيدة وبروتين — كثيفة السعرات',
+                       'Good fats and protein — calorie dense'),
+  'nut':        ('🌰', 'دهون جيدة وبروتين — كثيفة السعرات',
+                       'Good fats and protein — calorie dense'),
+  'بيض':        ('🥚', 'بروتين كامل وكولين',
+                       'Complete protein and choline'),
+  'egg':        ('🥚', 'بروتين كامل وكولين',
+                       'Complete protein and choline'),
 };
 
-(String, String, String)? _checkSunnahFood(String name) {
+/// Returns the glyph and note for a recognised whole food, else null.
+(String, String, String)? _checkWholesomeFood(String name) {
   final n = name.toLowerCase();
-  for (final e in _kSunnahFoodsData.entries) {
+  for (final e in _kWholesomeFoods.entries) {
     if (n.contains(e.key)) return e.value;
   }
   return null;
-}
-
-// ── Food emoji helper ────────────────────────────────────────
-String foodEmoji(String name) {
-  final n = name.toLowerCase();
-  if (n.contains('date') || n.contains('تمر')) return '🌴';
-  if (n.contains('honey') || n.contains('عسل')) return '🍯';
-  if (n.contains('olive') || n.contains('زيتون')) return '🫒';
-  if (n.contains('chicken') || n.contains('دجاج')) return '🍗';
-  if (n.contains('meat') || n.contains('beef') || n.contains('لحم')) return '🥩';
-  if (n.contains('fish') || n.contains('سمك') || n.contains('tuna') || n.contains('تونة')) return '🐟';
-  if (n.contains('egg') || n.contains('بيض')) return '🥚';
-  if (n.contains('milk') || n.contains('حليب')) return '🥛';
-  if (n.contains('cheese') || n.contains('جبن')) return '🧀';
-  if (n.contains('yogurt') || n.contains('لبن') || n.contains('زبادي')) return '🫙';
-  if (n.contains('bread') || n.contains('خبز')) return '🍞';
-  if (n.contains('rice') || n.contains('أرز')) return '🍚';
-  if (n.contains('pasta') || n.contains('معكرون')) return '🍝';
-  if (n.contains('salad') || n.contains('سلطة')) return '🥗';
-  if (n.contains('soup') || n.contains('شوربة')) return '🍲';
-  if (n.contains('apple') || n.contains('تفاح')) return '🍎';
-  if (n.contains('banana') || n.contains('موز')) return '🍌';
-  if (n.contains('orange') || n.contains('برتقال')) return '🍊';
-  if (n.contains('grape') || n.contains('عنب')) return '🍇';
-  if (n.contains('water') || n.contains('ماء')) return '💧';
-  if (n.contains('juice') || n.contains('عصير')) return '🧃';
-  if (n.contains('coffee') || n.contains('قهوة')) return '☕';
-  if (n.contains('tea') || n.contains('شاي')) return '🍵';
-  if (n.contains('oat') || n.contains('شوفان')) return '🥣';
-  if (n.contains('nut') || n.contains('مكسرات') || n.contains('almond') || n.contains('لوز')) return '🥜';
-  if (n.contains('chocolate') || n.contains('شوكولاتة')) return '🍫';
-  if (n.contains('cake') || n.contains('كيك')) return '🎂';
-  if (n.contains('pizza')) return '🍕';
-  if (n.contains('burger') || n.contains('برغر')) return '🍔';
-  if (n.contains('sandwich') || n.contains('ساندويتش')) return '🥪';
-  if (n.contains('vegetable') || n.contains('خضار') || n.contains('carrot') || n.contains('جزر')) return '🥦';
-  if (n.contains('potato') || n.contains('بطاطا')) return '🥔';
-  if (n.contains('tomato') || n.contains('طماطم')) return '🍅';
-  return '🍽️';
 }
 
 class NutritionScreen extends ConsumerStatefulWidget {
@@ -168,23 +169,34 @@ class _NutritionState extends ConsumerState<NutritionScreen>
           }
           final messenger = ScaffoldMessenger.of(ctx);
           if (ctx.mounted) Navigator.pop(ctx);
-          final sunnah = _checkSunnahFood(name);
+          final wholesome = _checkWholesomeFood(name);
+          // Logging a recognised whole food advances that daily quest.
+          if (wholesome != null) {
+            ref.read(ascentProvider.notifier).creditWholesome();
+            ref.read(achievementProvider.notifier).incrementWholeFood();
+          }
           messenger.showSnackBar(SnackBar(
-              content: sunnah != null
+              content: wholesome != null
                 ? Column(mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                     Row(children: [
-                      Text(sunnah.$1,
+                      Text(wholesome.$1,
                         style: const TextStyle(fontSize: 20)),
                       const SizedBox(width: 8),
-                      Text(tLang(lang, '🌿 طعام سنة نبوية!', '🌿 Sunnah Food!', '🌿 Aliment Sunnah !', '🌿 Sünnet Gıdası!', '🌿 Makanan Sunnah!', '🌿 Makanan Sunnah!'),
+                      Text(tLang(lang, '🌿 طعام كامل — أُضيف!',
+                          '🌿 Whole food — logged!',
+                          '🌿 Aliment complet — ajouté !',
+                          '🌿 Tam gıda — eklendi!',
+                          '🌿 Makanan penuh — dilog!',
+                          '🌿 Makanan utuh — dicatat!',
+                          '🌿 مکمل غذا — درج ہو گئی!'),
                         style: const TextStyle(fontFamily: 'Cairo',
                             fontWeight: FontWeight.w800, fontSize: 14,
                             color: Colors.white)),
                     ]),
                     const SizedBox(height: 3),
-                    Text(isAr ? sunnah.$2 : sunnah.$3,
+                    Text(isAr ? wholesome.$2 : wholesome.$3,
                       style: const TextStyle(fontFamily: 'Cairo',
                           fontSize: 11, color: Colors.white70, height: 1.3)),
                   ])
@@ -194,13 +206,13 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         style: const TextStyle(fontFamily: 'Cairo',
                             fontWeight: FontWeight.w700)),
                   ]),
-              backgroundColor: sunnah != null
+              backgroundColor: wholesome != null
                 ? const Color(0xFF8B6914)
-                : (ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen),
+                : (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen),
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12)),
-              duration: Duration(seconds: sunnah != null ? 4 : 2),
+              duration: Duration(seconds: wholesome != null ? 4 : 2),
             ));
         },
       ),
@@ -225,25 +237,38 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     final tags = <Map<String,dynamic>>[];
     if (e.proteinG >= 20) tags.add({'l':tLang(lang, 'بروتين عالٍ', 'High Protein', 'Riche en protéines', 'Yüksek Protein', 'Protein Tinggi', 'Protein Tinggi'),'c':AppColors.halalGreen,'e':'💪'});
     if (e.carbsG   <= 10) tags.add({'l':tLang(lang, 'كارب منخفض', 'Low Carb', 'Faible en glucides', 'Düşük Karbonhidrat', 'Rendah Karbohidrat', 'Rendah Karbohidrat'),    'c':AppColors.waterBlue,'e':'🥗'});
-    if (e.fatG     <=  5) tags.add({'l':tLang(lang, 'دهون منخفضة', 'Low Fat', 'Faible en gras', 'Düşük Yağ', 'Rendah Lemak', 'Rendah Lemak'),    'c':AppColors.barakahGold,'e':'✨'});
-    if (e.kcal     <= 150) tags.add({'l':tLang(lang, 'خفيف', 'Light', 'Léger', 'Hafif', 'Ringan', 'Ringan'),            'c':AppColors.sunnahGreen,'e':'🌿'});
+    if (e.fatG     <=  5) tags.add({'l':tLang(lang, 'دهون منخفضة', 'Low Fat', 'Faible en gras', 'Düşük Yağ', 'Rendah Lemak', 'Rendah Lemak'),    'c':AppColors.accentGold,'e':'✨'});
+    if (e.kcal     <= 150) tags.add({'l':tLang(lang, 'خفيف', 'Light', 'Léger', 'Hafif', 'Ringan', 'Ringan'),            'c':AppColors.brandGreen,'e':'🌿'});
     if (e.kcal     >= 500) tags.add({'l':tLang(lang, 'سعرات عالية', 'High Cal', 'Cal. élevées', 'Yüksek Kal.', 'Kal Tinggi', 'Kal Tinggi'),  'c':AppColors.haramRed,'e':'🔥'});
 
-    String islamicNote() {
+    // A short, factual note about the logged food.
+    String foodNote() {
       final n = e.name.toLowerCase();
-      if (n.contains('date')||n.contains('تمر'))
-        return tLang(lang, '«أفطروا على تمر» — النبي ﷺ أوصى بالتمر', '"Break fast with dates" — Prophet ﷺ', '"Break fast with dates" — Prophet ﷺ', '"Break fast with dates" — Prophet ﷺ', '"Break fast with dates" — Prophet ﷺ', '"Break fast with dates" — Prophet ﷺ');
-      if (n.contains('honey')||n.contains('عسل'))
-        return tLang(lang, '«فيه شفاء للناس» — القرآن الكريم 16:69', '"In it is healing for people" — Quran 16:69', '"In it is healing for people" — Quran 16:69', '"In it is healing for people" — Quran 16:69', '"In it is healing for people" — Quran 16:69', '"In it is healing for people" — Quran 16:69');
-      if (n.contains('olive')||n.contains('زيتون'))
-        return tLang(lang, '«كلوا الزيت وادهنوا به» — الزيتون مبارك', '"Eat olive oil" — blessed in the Sunnah', '"Eat olive oil" — blessed in the Sunnah', '"Eat olive oil" — blessed in the Sunnah', '"Eat olive oil" — blessed in the Sunnah', '"Eat olive oil" — blessed in the Sunnah');
-      if (n.contains('milk')||n.contains('حليب'))
-        return tLang(lang, 'الحليب غذاء متكامل — ذكره النبي ﷺ', 'Milk is a complete food — praised in Sunnah', 'Milk is a complete food — praised in Sunnah', 'Milk is a complete food — praised in Sunnah', 'Milk is a complete food — praised in Sunnah', 'Milk is a complete food — praised in Sunnah');
-      if (n.contains('fish')||n.contains('سمك'))
-        return tLang(lang, 'السمك حلال — من أطيب المأكولات الإسلامية', 'Fish is halal — highly recommended in Islam', 'Fish is halal — highly recommended in Islam', 'Fish is halal — highly recommended in Islam', 'Fish is halal — highly recommended in Islam', 'Fish is halal — highly recommended in Islam');
-      if (n.contains('meat')||n.contains('chicken')||n.contains('لحم')||n.contains('دجاج'))
-        return tLang(lang, 'تأكد من المصدر الحلال — الذبح الشرعي شرط', 'Verify halal source — Islamic slaughter required', 'Verify halal source — Islamic slaughter required', 'Verify halal source — Islamic slaughter required', 'Verify halal source — Islamic slaughter required', 'Verify halal source — Islamic slaughter required');
-      return tLang(lang, '«كلوا من طيبات ما رزقناكم» — البقرة 172', '"Eat of the good things We provided" — 2:172', '"Eat of the good things We provided" — 2:172', '"Eat of the good things We provided" — 2:172', '"Eat of the good things We provided" — 2:172', '"Eat of the good things We provided" — 2:172');
+      if (n.contains('date') || n.contains('تمر'))
+        return tLang(lang, 'التمر سكريات طبيعية سريعة الامتصاص مع ألياف وبوتاسيوم',
+            'Dates give fast-absorbing natural sugars plus fibre and potassium');
+      if (n.contains('honey') || n.contains('عسل'))
+        return tLang(lang, 'العسل محلٍّ طبيعي — احسبه ضمن سكريات يومك',
+            'Honey is a natural sweetener — count it in your daily sugars');
+      if (n.contains('olive') || n.contains('زيتون'))
+        return tLang(lang, 'زيت الزيتون دهون أحادية غير مشبعة — كثيف السعرات',
+            'Olive oil is mostly monounsaturated fat — and calorie dense');
+      if (n.contains('milk') || n.contains('حليب'))
+        return tLang(lang, 'الحليب مصدر سهل للبروتين والكالسيوم',
+            'Milk is an easy source of protein and calcium');
+      if (n.contains('fish') || n.contains('سمك'))
+        return tLang(lang, 'السمك بروتين خفيف ودهون أوميجا ٣',
+            'Fish brings lean protein and omega-3 fats');
+      if (n.contains('meat') || n.contains('chicken') ||
+          n.contains('لحم') || n.contains('دجاج'))
+        return tLang(lang, 'راجع مصدر اللحم وشهادته إذا كان الحلال يهمك',
+            'Check the source and certification if halal matters to you');
+      if (n.contains('rice') || n.contains('bread') ||
+          n.contains('أرز') || n.contains('خبز'))
+        return tLang(lang, 'الحبوب الكاملة تُشبع أطول من المقشورة',
+            'Whole grains keep you full longer than refined ones');
+      return tLang(lang, 'وازن طبقك: بروتين، خضار، وكارب بطيء',
+          'Balance the plate: protein, vegetables and a slow carb');
     }
 
     showModalBottomSheet(
@@ -277,8 +302,8 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   width: 68, height: 68,
                   decoration: BoxDecoration(
                     gradient: LinearGradient(colors: [
-                      (ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.18),
-                      (ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.04)]),
+                      (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.18),
+                      (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.04)]),
                     borderRadius: BorderRadius.circular(20)),
                   child: Center(child: Text(foodEmoji(e.name),
                       style: const TextStyle(fontSize: 36)))),
@@ -313,11 +338,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(colors: [
-                    AppColors.sunnahGreen.withOpacity(0.08),
-                    AppColors.sunnahGreen.withOpacity(0.02)]),
+                    AppColors.brandGreen.withOpacity(0.08),
+                    AppColors.brandGreen.withOpacity(0.02)]),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                      color: AppColors.sunnahGreen.withOpacity(0.15))),
+                      color: AppColors.brandGreen.withOpacity(0.15))),
                 child: Row(children: [
                   SizedBox(width: 88, height: 88,
                     child: Stack(alignment: Alignment.center, children: [
@@ -326,14 +351,14 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         backgroundColor: Colors.grey.withOpacity(0.15),
                         valueColor: AlwaysStoppedAnimation(
                             ref.read(ramadanModeProvider)
-                                ? AppColors.barakahGold
-                                : AppColors.sunnahGreen),
+                                ? AppColors.accentGold
+                                : AppColors.brandGreen),
                         strokeCap: StrokeCap.round)),
                       Column(mainAxisSize: MainAxisSize.min, children: [
                         Text('${e.kcal}', style: const TextStyle(
                             fontFamily: 'Cairo', fontSize: 20,
                             fontWeight: FontWeight.w900,
-                            color: AppColors.sunnahGreen)),
+                            color: AppColors.brandGreen)),
                         Text(tLang(lang, 'سعرة', 'kcal', 'kcal', 'kcal', 'kcal', 'kkal'), style: TextStyle(
                             fontFamily: 'Cairo', fontSize: 9,
                             color: muted)),
@@ -346,7 +371,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                     Text('${(pctKcal*100).toInt()}%',
                         style: const TextStyle(fontFamily: 'Cairo',
                             fontSize: 32, fontWeight: FontWeight.w900,
-                            color: AppColors.sunnahGreen)),
+                            color: AppColors.brandGreen)),
                     Text(tLang(lang, 'من هدفك اليومي', 'of your daily goal', 'de votre objectif quotidien', 'günlük hedefinizin', 'daripada matlamat harian anda', 'dari target harian Anda'),
                         style: TextStyle(fontFamily: 'Cairo',
                             fontSize: 11, color: muted)),
@@ -375,7 +400,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   tLang(lang, '⚡ طاقة سريعة', '⚡ Quick energy', '⚡ Énergie rapide', '⚡ Hızlı enerji', '⚡ Tenaga pantas', '⚡ Energi cepat'), isDark),
               const SizedBox(height: 8),
               _detailBar(tLang(lang, 'دهون', 'Fat', 'Lipides', 'Yağ', 'Lemak', 'Lemak'), e.fatG,
-                  fGoal, pctF, AppColors.barakahGold,
+                  fGoal, pctF, AppColors.accentGold,
                   tLang(lang, '🧠 صحة الدماغ', '🧠 Brain health', '🧠 Santé cérébrale', '🧠 Beyin sağlığı', '🧠 Kesihatan otak', '🧠 Kesehatan otak'), isDark),
               const SizedBox(height: 16),
 
@@ -388,11 +413,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppColors.barakahGold.withOpacity(
+                  color: AppColors.accentGold.withOpacity(
                       isDark?0.07:0.05),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                      color: AppColors.barakahGold.withOpacity(0.2))),
+                      color: AppColors.accentGold.withOpacity(0.2))),
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Wrap(spacing: 8, runSpacing: 12, children: [
@@ -411,20 +436,20 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   ])),
               const SizedBox(height: 16),
 
-              // Islamic note
+              // Food note
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: (ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.06),
+                  color: (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.06),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                      color: (ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.2))),
+                      color: (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.2))),
                 child: Row(children: [
                   const Text('📖', style: TextStyle(fontSize: 22)),
                   const SizedBox(width: 10),
-                  Expanded(child: Text(islamicNote(),
+                  Expanded(child: Text(foodNote(),
                       style: const TextStyle(fontFamily: 'Cairo',
-                          fontSize: 12, color: AppColors.sunnahGreen,
+                          fontSize: 12, color: AppColors.brandGreen,
                           height: 1.6, fontStyle: FontStyle.italic))),
                 ]),
               ),
@@ -466,7 +491,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           color: Colors.white,
                           fontWeight: FontWeight.w700)),
                   style: ElevatedButton.styleFrom(
-                      backgroundColor: (ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen),
+                      backgroundColor: (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14))),
@@ -541,7 +566,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
         const SizedBox(height: 2),
         Text(val, style: const TextStyle(fontFamily: 'Cairo',
             fontSize: 12, fontWeight: FontWeight.w800,
-            color: AppColors.barakahGold)),
+            color: AppColors.accentGold)),
         Text(label, style: TextStyle(
             fontFamily: 'Cairo', fontSize: 9, color: muted)),
       ]));
@@ -570,7 +595,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
         Text(emoji, style: const TextStyle(fontSize: 18)),
         Text(val, style: const TextStyle(fontFamily: 'Cairo',
             fontSize: 12, fontWeight: FontWeight.w800,
-            color: AppColors.barakahGold)),
+            color: AppColors.accentGold)),
         Text(label, style: const TextStyle(fontFamily: 'Cairo',
             fontSize: 9, color: AppColors.lightMuted)),
       ]);
@@ -599,9 +624,9 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     final pct   = goal > 0 ? (eaten / goal).clamp(0.0, 1.0) : 0.0;
     final calCol = eaten > goal ? AppColors.haramRed
         : eaten > goal * 0.85 ? AppColors.doubtOrange
-        : isRamadan ? AppColors.barakahGold : AppColors.sunnahGreen;
+        : isRamadan ? AppColors.accentGold : AppColors.brandGreen;
     // Ramadan accent — gold when Ramadan, green otherwise
-    final accent = isRamadan ? AppColors.barakahGold : AppColors.sunnahGreen;
+    final accent = isRamadan ? AppColors.accentGold : AppColors.brandGreen;
     final accentDark = isRamadan ? const Color(0xFFB88E2A) : const Color(0xFF1A6B3C);
 
     return Directionality(
@@ -624,7 +649,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
               gradient: LinearGradient(
                 colors: isRamadan
                     ? [AppColors.ramadanNight, AppColors.ramadanCard]
-                    : [const Color(0xFF1A6B3C), AppColors.sunnahGreen],
+                    : [const Color(0xFF1A6B3C), AppColors.brandGreen],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -646,7 +671,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
           ],
           bottom: TabBar(
             controller: _tab,
-            indicatorColor: isRamadan ? AppColors.barakahGold : Colors.white,
+            indicatorColor: isRamadan ? AppColors.accentGold : Colors.white,
             indicatorWeight: 3,
             indicatorSize: TabBarIndicatorSize.label,
             labelStyle: const TextStyle(fontFamily: 'Cairo',
@@ -709,36 +734,36 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           child: Text('🎯 $goal ${tl(" سعرة", "kcal")}',
                             style: const TextStyle(fontFamily: 'Cairo',
                                 fontSize: 12, fontWeight: FontWeight.w700,
-                                color: AppColors.sunnahGreen)),
+                                color: AppColors.brandGreen)),
                         ),
                       ],
                     ),
                   )),
                   const SizedBox(height: 8),
 
-                  // ── Bismillah reminder (shown when no meals yet) ──
+                  // ── Gentle nudge shown before the first meal ──
                   if (cals.entries.isEmpty)
                     _anim(0, Container(
                       margin: const EdgeInsets.only(bottom: 12),
                       padding: const EdgeInsets.symmetric(
                           horizontal: 14, vertical: 12),
                       decoration: BoxDecoration(
-                        color: AppColors.sunnahGreen.withOpacity(0.07),
+                        color: AppColors.brandGreen.withOpacity(0.07),
                         borderRadius: BorderRadius.circular(16),
                         border: Border.all(
-                            color: AppColors.sunnahGreen.withOpacity(0.3)),
+                            color: AppColors.brandGreen.withOpacity(0.3)),
                       ),
                       child: Row(children: [
                         const Text('🌿',
                             style: TextStyle(fontSize: 22)),
                         const SizedBox(width: 10),
                         Expanded(child: Text(
-                          tl('بسم الله قبل الأكل، وكل بيمينك 🍽️',
-                             'Say Bismillah before eating, eat with your right hand 🍽️'),
+                          tl('ابدأ يومك بوجبة فيها بروتين 🍽️',
+                             'Start the day with some protein 🍽️'),
                           style: const TextStyle(
                               fontFamily: 'Cairo', fontSize: 12,
                               fontWeight: FontWeight.w600,
-                              color: AppColors.sunnahGreen, height: 1.4),
+                              color: AppColors.brandGreen, height: 1.4),
                         )),
                       ]),
                     )),
@@ -768,7 +793,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                               isAr ? plan.nameAr() : plan.nameEn(),
                               style: const TextStyle(fontFamily: 'Cairo',
                                   fontSize: 12, fontWeight: FontWeight.w700,
-                                  color: AppColors.sunnahGreen)),
+                                  color: AppColors.brandGreen)),
                             Text(plan.emoji(),
                                 style: const TextStyle(fontSize: 16)),
                           ],
@@ -784,7 +809,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           _summaryBox(
                               tl('المأكول', 'Eaten'),
                               '$eaten',
-                              AppColors.sunnahGreen, isDark),
+                              AppColors.brandGreen, isDark),
                           // Calorie ring
                           SizedBox(width: 120, height: 120,
                             child: Stack(alignment: Alignment.center,
@@ -796,7 +821,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                   backgroundColor:
                                       Colors.grey.shade200,
                                   valueColor:
-                                      AlwaysStoppedAnimation((ref.read(ramadanModeProvider) ? AppColors.barakahGold : AppColors.sunnahGreen)),
+                                      AlwaysStoppedAnimation((ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen)),
                                   strokeCap: StrokeCap.round,
                                 ),
                               ),
@@ -848,9 +873,9 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                 margin: const EdgeInsets.only(right: 6, bottom: 10),
                                 padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                 decoration: BoxDecoration(
-                                  color: sel ? AppColors.sunnahGreen : Colors.transparent,
+                                  color: sel ? AppColors.brandGreen : Colors.transparent,
                                   border: Border.all(
-                                    color: sel ? AppColors.sunnahGreen : AppColors.lightMuted.withOpacity(0.4),
+                                    color: sel ? AppColors.brandGreen : AppColors.lightMuted.withOpacity(0.4),
                                   ),
                                   borderRadius: BorderRadius.circular(20),
                                 ),
@@ -886,7 +911,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         tl('دهون', 'Fat'),
                         cals.fatTotal,
                         (goal * plan.fatPct / 100) / 9,
-                        AppColors.barakahGold,
+                        AppColors.accentGold,
                       ),
                       const SizedBox(height: 14),
                       Row(children: [
@@ -1023,7 +1048,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                       borderRadius: BorderRadius.circular(20),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.sunnahGreen.withOpacity(0.08),
+                          color: AppColors.brandGreen.withOpacity(0.08),
                           blurRadius: 16, offset: const Offset(0, 4)),
                       ],
                     ),
@@ -1046,7 +1071,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         child: ref.watch(weeklyKcalProvider).when(
                           loading: () => const Center(
                               child: CircularProgressIndicator(
-                                  color: AppColors.sunnahGreen)),
+                                  color: AppColors.brandGreen)),
                           error: (_, __) => Center(
                               child: Text(
                                   tl('تعذر تحميل البيانات',
@@ -1076,8 +1101,8 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                 BarChartRodData(
                                   toY: kcal,
                                   color: isToday
-                                      ? AppColors.sunnahGreen
-                                      : AppColors.sunnahGreen
+                                      ? AppColors.brandGreen
+                                      : AppColors.brandGreen
                                           .withOpacity(0.4),
                                   width: 14,
                                   borderRadius:
@@ -1134,7 +1159,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   const SizedBox(width: 10),
                   Column(crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                    Text(tl('وصفات سنية', 'Sunnah Recipes'),
+                    Text(tl('وصفات بسيطة', 'Simple Recipes'),
                         style: TextStyle(fontFamily: 'Cairo',
                             fontSize: 18, fontWeight: FontWeight.w800,
                             color: textC)),
@@ -1164,8 +1189,8 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             colors: [
-                              AppColors.sunnahGreen.withOpacity(0.15),
-                              AppColors.sunnahGreen.withOpacity(0.05)
+                              AppColors.brandGreen.withOpacity(0.15),
+                              AppColors.brandGreen.withOpacity(0.05)
                             ],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
@@ -1206,8 +1231,8 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                   style: const TextStyle(
                                       fontFamily: 'Cairo')),
                               backgroundColor: ref.read(ramadanModeProvider)
-                                  ? AppColors.barakahGold
-                                  : AppColors.sunnahGreen,
+                                  ? AppColors.accentGold
+                                  : AppColors.brandGreen,
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
                                   borderRadius:
@@ -1220,10 +1245,10 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         child: Container(
                           width: 38, height: 38,
                           decoration: BoxDecoration(
-                            color: AppColors.sunnahGreen,
+                            color: AppColors.brandGreen,
                             borderRadius: BorderRadius.circular(19),
                             boxShadow: [BoxShadow(
-                                color: AppColors.sunnahGreen
+                                color: AppColors.brandGreen
                                     .withOpacity(0.3),
                                 blurRadius: 8,
                                 offset: const Offset(0, 3))],
@@ -1333,11 +1358,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: [
-              AppColors.barakahGold.withOpacity(0.13),
-              AppColors.barakahGold.withOpacity(0.04)]),
+              AppColors.accentGold.withOpacity(0.13),
+              AppColors.accentGold.withOpacity(0.04)]),
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-                color: AppColors.barakahGold.withOpacity(0.45))),
+                color: AppColors.accentGold.withOpacity(0.45))),
           child: Row(children: [
             const Text('📊', style: TextStyle(fontSize: 26)),
             const SizedBox(width: 12),
@@ -1347,14 +1372,14 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                 Text(t('تقرير الأسبوع 🔒', 'Weekly Report 🔒'),
                   style: const TextStyle(fontFamily: 'Cairo',
                     fontWeight: FontWeight.w700, fontSize: 13,
-                    color: AppColors.barakahGold)),
+                    color: AppColors.accentGold)),
                 Text(t('متوسط سعرات • التزام • أفضل يوم — بريميوم',
                   'Avg calories • Adherence • Best day — Premium'),
                   style: TextStyle(fontFamily: 'Cairo',
                     fontSize: 11, color: muted)),
               ])),
             const Icon(Icons.arrow_forward_ios,
-              size: 13, color: AppColors.barakahGold),
+              size: 13, color: AppColors.accentGold),
           ]),
         ),
       );
@@ -1393,7 +1418,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
         color: bg,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-            color: AppColors.sunnahGreen.withOpacity(0.25)),
+            color: AppColors.brandGreen.withOpacity(0.25)),
         boxShadow: [BoxShadow(
             color: Colors.black.withOpacity(0.04),
             blurRadius: 10)]),
@@ -1403,16 +1428,16 @@ class _NutritionState extends ConsumerState<NutritionScreen>
           Text(t('تقرير الأسبوع ⭐', 'Weekly Report ⭐'),
             style: const TextStyle(fontFamily: 'Cairo',
               fontWeight: FontWeight.w800, fontSize: 14,
-              color: AppColors.sunnahGreen)),
+              color: AppColors.brandGreen)),
           const SizedBox(height: 14),
           Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
             _weekStat('🔥', '$avgKcal',
               t('متوسط', 'Avg'), AppColors.haramRed, isDark),
             _weekStat('🎯', '$adherePct%',
-              t('التزام', 'Adhere'), AppColors.sunnahGreen, isDark),
+              t('التزام', 'Adhere'), AppColors.brandGreen, isDark),
             _weekStat('📅', bestKey,
-              t('أفضل', 'Best'), AppColors.barakahGold, isDark),
+              t('أفضل', 'Best'), AppColors.accentGold, isDark),
             _weekStat('✅', '$goodDays/${vals.isEmpty ? 7 : vals.length}',
               t('ملتزم', 'OnTarget'), AppColors.waterBlue, isDark),
           ]),
@@ -1511,7 +1536,7 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                   Text('$_totalKcal kcal',
                       style: const TextStyle(fontFamily: 'Cairo',
                           fontSize: 11,
-                          color: AppColors.sunnahGreen,
+                          color: AppColors.brandGreen,
                           fontWeight: FontWeight.w600)),
               ])),
               // Add button
@@ -1587,8 +1612,8 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            AppColors.sunnahGreen.withOpacity(0.15),
-                            AppColors.sunnahGreen.withOpacity(0.05),
+                            AppColors.brandGreen.withOpacity(0.15),
+                            AppColors.brandGreen.withOpacity(0.05),
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -1628,7 +1653,7 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                               fontFamily: 'Cairo',
                               fontSize: 18,
                               fontWeight: FontWeight.w900,
-                              color: AppColors.sunnahGreen)),
+                              color: AppColors.brandGreen)),
                       Text('kcal', style: TextStyle(
                           fontFamily: 'Cairo',
                           fontSize: 9,
@@ -1683,7 +1708,8 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
   final _fatCtrl     = TextEditingController();
   bool _searching    = false;
   bool _adding       = false;
-  Map<String, dynamic>? _aiFood;
+  bool _searched     = false;
+  List<Map<String, dynamic>> _results = const [];
   String _filter     = '';
 
   @override
@@ -1704,14 +1730,44 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
   Future<void> _search() async {
     final q = _searchCtrl.text.trim();
     if (q.isEmpty) return;
-    setState(() { _searching = true; _aiFood = null; });
+    setState(() { _searching = true; _results = const []; });
     try {
       final lang = ref.read(languageProvider);
-      final r = await AIService.lookupFood(q,
+      final found = await AIService.searchFoods(q,
           language: lang, isPremium: widget.isPremium);
-      if (mounted) setState(() { _searching = false; _aiFood = r; });
+      if (mounted) {
+        setState(() {
+          _searching = false;
+          _searched  = true;
+          _results   = found;
+        });
+      }
     } catch (_) {
-      if (mounted) setState(() { _searching = false; });
+      if (mounted) {
+        setState(() { _searching = false; _searched = true; });
+      }
+    }
+  }
+
+  /// Adds a search result, scaling by grams or by portion count depending
+  /// on what the source actually measured.
+  void _openResult(Map<String, dynamic> r) {
+    final isAr = widget.isAr;
+    final name = (isAr
+            ? (r['name_ar'] ?? r['name_en'] ?? '')
+            : (r['name_en'] ?? r['name_ar'] ?? ''))
+        .toString();
+    final kcal    = (r['kcal'] as num? ?? 0).toDouble();
+    final protein = (r['protein_g'] as num? ?? 0).toDouble();
+    final carbs   = (r['carbs_g'] as num? ?? 0).toDouble();
+    final fat     = (r['fat_g'] as num? ?? 0).toDouble();
+
+    if (r['basis'] == 'portion') {
+      _showPortionPicker(name: name, kcal: kcal,
+          protein: protein, carbs: carbs, fat: fat);
+    } else {
+      _showUnitPicker(name: name, kcal100: kcal,
+          protein100: protein, carbs100: carbs, fat100: fat);
     }
   }
 
@@ -1755,24 +1811,24 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
               color: Colors.grey.shade300,
               borderRadius: BorderRadius.circular(2)),
         ),
-        // Bismillah reminder — unique HalalCalorie touch
+        // A one-line eating reminder above the search
         Container(
           margin: const EdgeInsets.fromLTRB(16, 4, 16, 0),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
           decoration: BoxDecoration(
-            color: AppColors.sunnahGreen.withOpacity(0.07),
+            color: AppColors.brandGreen.withOpacity(0.07),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
-                color: AppColors.sunnahGreen.withOpacity(0.2)),
+                color: AppColors.brandGreen.withOpacity(0.2)),
           ),
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             const Text('🤲', style: TextStyle(fontSize: 13)),
             const SizedBox(width: 8),
             Text(
-              tl('قُل بسم الله قبل الأكل', 'Say Bismillah before eating'),
+              L.fromLang(lang).mindfulEatingTip,
               style: const TextStyle(
                 fontFamily: 'Cairo', fontSize: 11,
-                color: AppColors.sunnahGreen,
+                color: AppColors.brandGreen,
                 fontWeight: FontWeight.w700),
             ),
           ]),
@@ -1785,11 +1841,11 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: AppColors.sunnahGreen.withOpacity(0.1),
+                color: AppColors.brandGreen.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: const Icon(Icons.search_rounded,
-                  color: AppColors.sunnahGreen, size: 20),
+                  color: AppColors.brandGreen, size: 20),
             ),
             const SizedBox(width: 10),
             Text(tl('أضف طعام', 'Add Food'),
@@ -1809,13 +1865,13 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            color: AppColors.sunnahGreen.withOpacity(0.08),
+            color: AppColors.brandGreen.withOpacity(0.08),
             borderRadius: BorderRadius.circular(16),
           ),
           child: TabBar(
             controller: _tab,
             indicator: BoxDecoration(
-              color: AppColors.sunnahGreen,
+              color: AppColors.brandGreen,
               borderRadius: BorderRadius.circular(12),
             ),
             indicatorSize: TabBarIndicatorSize.tab,
@@ -1824,7 +1880,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             unselectedLabelStyle: const TextStyle(
                 fontFamily: 'Cairo', fontSize: 12),
             labelColor: Colors.white,
-            unselectedLabelColor: AppColors.sunnahGreen,
+            unselectedLabelColor: AppColors.brandGreen,
             dividerColor: Colors.transparent,
             padding: const EdgeInsets.all(4),
             tabs: [
@@ -1860,16 +1916,16 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                       hintStyle: TextStyle(fontFamily: 'Cairo',
                           fontSize: 13, color: muted),
                       prefixIcon: const Icon(Icons.search_rounded,
-                          color: AppColors.sunnahGreen),
+                          color: AppColors.brandGreen),
                       filled: true,
-                      fillColor: AppColors.sunnahGreen.withOpacity(0.05),
+                      fillColor: AppColors.brandGreen.withOpacity(0.05),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: BorderSide.none),
                       focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(16),
                           borderSide: const BorderSide(
-                              color: AppColors.sunnahGreen,
+                              color: AppColors.brandGreen,
                               width: 2)),
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 14, horizontal: 16),
@@ -1884,10 +1940,10 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                       decoration: BoxDecoration(
                         color: _searching
                             ? Colors.grey
-                            : AppColors.sunnahGreen,
+                            : AppColors.brandGreen,
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [BoxShadow(
-                            color: AppColors.sunnahGreen.withOpacity(0.3),
+                            color: AppColors.brandGreen.withOpacity(0.3),
                             blurRadius: 8, offset: const Offset(0, 3))],
                       ),
                       child: _searching
@@ -1901,7 +1957,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                 ]),
                 const SizedBox(height: 14),
                 // Popular food chips
-                if (_aiFood == null && !_searching) ...[
+                if (_results.isEmpty && !_searching) ...[
                   Align(
                     alignment: isAr
                         ? Alignment.centerRight : Alignment.centerLeft,
@@ -1930,23 +1986,38 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 12, vertical: 7),
                         decoration: BoxDecoration(
-                          color: AppColors.sunnahGreen.withOpacity(0.08),
+                          color: AppColors.brandGreen.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                              color: AppColors.sunnahGreen
+                              color: AppColors.brandGreen
                                   .withOpacity(0.2)),
                         ),
                         child: Text(s, style: const TextStyle(
                             fontFamily: 'Cairo', fontSize: 12,
-                            color: AppColors.sunnahGreen,
+                            color: AppColors.brandGreen,
                             fontWeight: FontWeight.w600)),
                       ),
                     )).toList(),
                   ),
                 ],
                 // AI Result
-                if (_aiFood != null)
-                  _buildAIResult(_aiFood!, isAr, muted),
+                if (_searching)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 26),
+                    child: Column(children: [
+                      const CircularProgressIndicator(
+                          color: AppColors.brandGreen, strokeWidth: 2.5),
+                      const SizedBox(height: 12),
+                      Text(tl('نبحث في كل المصادر...',
+                              'Searching every source...'),
+                          style: TextStyle(fontFamily: 'Cairo',
+                              fontSize: 11.5, color: muted)),
+                    ]),
+                  ),
+                if (!_searching && _results.isNotEmpty)
+                  _buildResultList(isAr, muted),
+                if (!_searching && _searched && _results.isEmpty)
+                  _buildNoResults(muted),
               ]),
             ),
 
@@ -1962,16 +2033,16 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                   decoration: InputDecoration(
                     hintText: tl('بحث سريع...', 'Quick search...'),
                     prefixIcon: const Icon(Icons.filter_list_rounded,
-                        size: 18, color: AppColors.sunnahGreen),
+                        size: 18, color: AppColors.brandGreen),
                     filled: true,
-                    fillColor: AppColors.sunnahGreen.withOpacity(0.05),
+                    fillColor: AppColors.brandGreen.withOpacity(0.05),
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: BorderSide.none),
                     focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                         borderSide: const BorderSide(
-                            color: AppColors.sunnahGreen)),
+                            color: AppColors.brandGreen)),
                     isDense: true,
                     contentPadding: const EdgeInsets.symmetric(
                         vertical: 10, horizontal: 12),
@@ -1991,7 +2062,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                   leading: Container(
                     width: 42, height: 42,
                     decoration: BoxDecoration(
-                      color: AppColors.sunnahGreen.withOpacity(0.08),
+                      color: AppColors.brandGreen.withOpacity(0.08),
                       borderRadius: BorderRadius.circular(11),
                     ),
                     child: Center(child: Text(
@@ -2016,7 +2087,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                           style: const TextStyle(fontFamily: 'Cairo',
                               fontSize: 15,
                               fontWeight: FontWeight.w900,
-                              color: AppColors.sunnahGreen)),
+                              color: AppColors.brandGreen)),
                       const Text('kcal',
                           style: TextStyle(fontFamily: 'Cairo',
                               fontSize: 8,
@@ -2028,7 +2099,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                       child: Container(
                         width: 34, height: 34,
                         decoration: BoxDecoration(
-                          color: AppColors.sunnahGreen,
+                          color: AppColors.brandGreen,
                           borderRadius: BorderRadius.circular(17),
                         ),
                         child: const Icon(Icons.add_rounded,
@@ -2077,7 +2148,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                   Expanded(child: _miniField(
                       _fatCtrl,
                       tl('دهون', 'Fat'),
-                      AppColors.barakahGold)),
+                      AppColors.accentGold)),
                 ]),
                 const SizedBox(height: 8),
                 Text(tl('* الحقول الاختيارية بالجرام',
@@ -2126,11 +2197,11 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                             fontSize: 15, color: Colors.white,
                             fontWeight: FontWeight.w800)),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.sunnahGreen,
+                      backgroundColor: AppColors.brandGreen,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       elevation: 2,
                       shadowColor:
-                          AppColors.sunnahGreen.withOpacity(0.4),
+                          AppColors.brandGreen.withOpacity(0.4),
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16)),
                     ),
@@ -2270,7 +2341,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                   Container(
                     width: 52, height: 52,
                     decoration: BoxDecoration(
-                      color: AppColors.sunnahGreen.withOpacity(0.1),
+                      color: AppColors.brandGreen.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(14)),
                     child: Center(child: Text(foodEmoji(name),
                         style: const TextStyle(fontSize: 26)))),
@@ -2293,7 +2364,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                 // ── Unit selector ─────────────────────────────────
                 Container(
                   decoration: BoxDecoration(
-                    color: AppColors.sunnahGreen.withOpacity(0.07),
+                    color: AppColors.brandGreen.withOpacity(0.07),
                     borderRadius: BorderRadius.circular(14)),
                   padding: const EdgeInsets.all(4),
                   child: Row(children: List.generate(
@@ -2311,7 +2382,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                           padding: const EdgeInsets.symmetric(vertical: 8),
                           decoration: BoxDecoration(
                             color: unitIdx == i
-                                ? AppColors.sunnahGreen
+                                ? AppColors.brandGreen
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(10)),
                           child: Center(child: Text(unitLabels[i],
@@ -2319,7 +2390,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                               fontSize: 11, fontWeight: FontWeight.w700,
                               color: unitIdx == i
                                   ? Colors.white
-                                  : AppColors.sunnahGreen))),
+                                  : AppColors.brandGreen))),
                         ),
                       )),
                   )),
@@ -2354,16 +2425,16 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: const BorderSide(
-                            color: AppColors.sunnahGreen, width: 1.5)),
+                            color: AppColors.brandGreen, width: 1.5)),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide(
-                            color: AppColors.sunnahGreen.withOpacity(0.4),
+                            color: AppColors.brandGreen.withOpacity(0.4),
                             width: 1.5)),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: const BorderSide(
-                            color: AppColors.sunnahGreen, width: 2)),
+                            color: AppColors.brandGreen, width: 2)),
                       contentPadding: const EdgeInsets.symmetric(
                           vertical: 14, horizontal: 8),
                     ),
@@ -2403,17 +2474,17 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: active
-                              ? AppColors.sunnahGreen
-                              : AppColors.sunnahGreen.withOpacity(0.08),
+                              ? AppColors.brandGreen
+                              : AppColors.brandGreen.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(20),
                           border: Border.all(
-                              color: AppColors.sunnahGreen.withOpacity(0.3))),
+                              color: AppColors.brandGreen.withOpacity(0.3))),
                         child: Text(lbl, style: TextStyle(
                           fontFamily: 'Cairo', fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: active
                               ? Colors.white
-                              : AppColors.sunnahGreen)),
+                              : AppColors.brandGreen)),
                       ),
                     );
                   }).toList(),
@@ -2426,15 +2497,15 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     padding: const EdgeInsets.symmetric(
                         horizontal: 14, vertical: 6),
                     decoration: BoxDecoration(
-                      color: AppColors.barakahGold.withOpacity(0.08),
+                      color: AppColors.accentGold.withOpacity(0.08),
                       borderRadius: BorderRadius.circular(10),
                       border: Border.all(
-                          color: AppColors.barakahGold.withOpacity(0.25))),
+                          color: AppColors.accentGold.withOpacity(0.25))),
                     child: Text(
                       '= ${grams.toStringAsFixed(unitIdx == 2 ? 1 : 0)} ${tl("جرام", "g")}',
                       style: const TextStyle(fontFamily: 'Cairo',
                           fontSize: 12, fontWeight: FontWeight.w700,
-                          color: AppColors.barakahGold)),
+                          color: AppColors.accentGold)),
                   ),
                 ],
                 const SizedBox(height: 14),
@@ -2444,11 +2515,11 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                   padding: const EdgeInsets.symmetric(
                       horizontal: 12, vertical: 12),
                   decoration: BoxDecoration(
-                    color: AppColors.sunnahGreen.withOpacity(
+                    color: AppColors.brandGreen.withOpacity(
                         isDark ? 0.06 : 0.04),
                     borderRadius: BorderRadius.circular(18),
                     border: Border.all(
-                        color: AppColors.sunnahGreen.withOpacity(0.15))),
+                        color: AppColors.brandGreen.withOpacity(0.15))),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
@@ -2462,7 +2533,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                         tl('كارب', 'Carbs'),      AppColors.waterBlue),
                     _vDivider(),
                     _gramMacro('${fat.toStringAsFixed(1)}g',
-                        tl('دهون', 'Fat'),        AppColors.barakahGold),
+                        tl('دهون', 'Fat'),        AppColors.accentGold),
                   ]),
                 ),
                 const SizedBox(height: 18),
@@ -2477,7 +2548,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     _doAdd('$name ($unitLabel)', kcal, prot, carb, fat);
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.sunnahGreen,
+                    backgroundColor: AppColors.brandGreen,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     elevation: 2,
                     shape: RoundedRectangleBorder(
@@ -2500,11 +2571,11 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
     child: Container(
       width: 46, height: 46,
       decoration: BoxDecoration(
-        color: AppColors.sunnahGreen.withOpacity(0.1),
+        color: AppColors.brandGreen.withOpacity(0.1),
         borderRadius: BorderRadius.circular(23),
         border: Border.all(
-            color: AppColors.sunnahGreen.withOpacity(0.3))),
-      child: Icon(icon, color: AppColors.sunnahGreen, size: 22)),
+            color: AppColors.brandGreen.withOpacity(0.3))),
+      child: Icon(icon, color: AppColors.brandGreen, size: 22)),
   );
 
   Widget _gramMacro(String val, String label, Color color) =>
@@ -2521,130 +2592,324 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
     color: Colors.grey.withOpacity(0.2));
 
 
-  Widget _buildAIResult(Map<String, dynamic> r,
-      bool isAr, Color muted) {
-    final name = isAr
-        ? (r['name_ar'] ?? r['name_en'] ?? '')
-        : (r['name_en'] ?? r['name_ar'] ?? '');
-    final kcal    = (r['kcal'] ?? 0) as num;
-    final protein = (r['protein_g'] ?? 0.0) as num;
-    final carbs   = (r['carbs_g'] ?? 0.0) as num;
-    final fat     = (r['fat_g'] ?? 0.0) as num;
-    final halal   = r['halal'] ?? true;
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.sunnahGreen.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-            color: AppColors.sunnahGreen.withOpacity(0.2),
-            width: 1.5),
+  // ── SEARCH RESULTS ───────────────────────────────────────
+  Widget _buildResultList(bool isAr, Color muted) {
+    String tl(String ar, String en) => tLang(lang, ar, en);
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Padding(
+        padding: const EdgeInsets.only(bottom: 8),
+        child: Row(children: [
+          Text(tl('النتائج', 'Results'),
+              style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
+                  fontWeight: FontWeight.w700, color: muted)),
+          const Spacer(),
+          Text('${_results.length}',
+              style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
+                  fontWeight: FontWeight.w800, color: muted)),
+        ]),
       ),
-      child: Column(children: [
-        // Food header
-        Row(children: [
-          Container(
-            width: 56, height: 56,
-            clipBehavior: Clip.antiAlias,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  AppColors.sunnahGreen.withOpacity(0.2),
-                  AppColors.sunnahGreen.withOpacity(0.05),
+      ..._results.map((r) => _resultTile(r, isAr, muted)),
+      const SizedBox(height: 10),
+      // Nothing quite right? go straight to manual entry.
+      TextButton.icon(
+        onPressed: () {
+          _nameCtrl.text = _searchCtrl.text.trim();
+          _tab.animateTo(2);
+        },
+        icon: const Icon(Icons.edit_rounded,
+            size: 16, color: AppColors.brandGreen),
+        label: Text(tl('لم تجد طعامك؟ أدخله يدوياً',
+                'Not listed? Enter it manually'),
+            style: const TextStyle(fontFamily: 'Cairo', fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+                color: AppColors.brandGreen)),
+      ),
+    ]);
+  }
+
+  Widget _resultTile(Map<String, dynamic> r, bool isAr, Color muted) {
+    final name = (isAr
+            ? (r['name_ar'] ?? r['name_en'] ?? '')
+            : (r['name_en'] ?? r['name_ar'] ?? ''))
+        .toString();
+    final kcal    = (r['kcal'] as num? ?? 0);
+    final protein = (r['protein_g'] as num? ?? 0);
+    final carbs   = (r['carbs_g'] as num? ?? 0);
+    final fat     = (r['fat_g'] as num? ?? 0);
+    final basis   = r['basis'] == 'portion'
+        ? (r['serving_size']?.toString() ?? '')
+        : '100g';
+    final source  = r['source']?.toString() ?? '';
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: GestureDetector(
+        onTap: () => _openResult(r),
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          decoration: BoxDecoration(
+            color: AppColors.brandGreen.withOpacity(0.04),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+                color: AppColors.brandGreen.withOpacity(0.16)),
+          ),
+          child: Row(children: [
+            FoodThumb(
+              name: name,
+              imageUrl: r['image_url'] as String?,
+              size: 46, radius: 12,
+              background: AppColors.brandGreen.withOpacity(0.10),
+            ),
+            const SizedBox(width: 11),
+            Expanded(child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+              Text(name,
+                  style: const TextStyle(fontFamily: 'Cairo',
+                      fontSize: 13, fontWeight: FontWeight.w700),
+                  maxLines: 1, overflow: TextOverflow.ellipsis),
+              const SizedBox(height: 2),
+              Row(children: [
+                Flexible(child: Text(
+                    '💪 ${protein.toStringAsFixed(1)}g  '
+                    '🍚 ${carbs.toStringAsFixed(1)}g  '
+                    '🥑 ${fat.toStringAsFixed(1)}g',
+                    style: TextStyle(fontFamily: 'Cairo',
+                        fontSize: 9.5, color: muted),
+                    maxLines: 1, overflow: TextOverflow.ellipsis)),
+              ]),
+              const SizedBox(height: 2),
+              Row(children: [
+                Text(basis,
+                    style: TextStyle(fontFamily: 'Cairo',
+                        fontSize: 9, color: muted),
+                    maxLines: 1, overflow: TextOverflow.ellipsis),
+                if (source.isNotEmpty) ...[
+                  const SizedBox(width: 6),
+                  _sourceBadge(source),
                 ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-              borderRadius: BorderRadius.circular(16),
+              ]),
+            ])),
+            const SizedBox(width: 8),
+            Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+              Text('${kcal.round()}',
+                  style: const TextStyle(fontFamily: 'Cairo',
+                      fontSize: 15, fontWeight: FontWeight.w900,
+                      color: AppColors.brandGreen)),
+              const Text('kcal',
+                  style: TextStyle(fontFamily: 'Cairo',
+                      fontSize: 8, color: AppColors.lightMuted)),
+            ]),
+            const SizedBox(width: 8),
+            Container(
+              width: 32, height: 32,
+              decoration: const BoxDecoration(
+                color: AppColors.brandGreen, shape: BoxShape.circle),
+              child: const Icon(Icons.add_rounded,
+                  color: Colors.white, size: 19),
             ),
-            child: (r['image_url'] as String?)?.isNotEmpty == true
-                ? Image.network(
-                    r['image_url'] as String,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Center(child: Text(
-                        foodEmoji(name.toString()),
-                        style: const TextStyle(fontSize: 28))),
-                  )
-                : Center(child: Text(
-                    foodEmoji(name.toString()),
-                    style: const TextStyle(fontSize: 28))),
-          ),
-          const SizedBox(width: 12),
-          Expanded(child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-            Text(name.toString(),
-                style: const TextStyle(fontFamily: 'Cairo',
-                    fontSize: 16, fontWeight: FontWeight.w800)),
-            const SizedBox(height: 2),
-            Text(r['serving_size']?.toString() ?? '100g',
-                style: TextStyle(fontFamily: 'Cairo',
-                    fontSize: 11, color: muted)),
-          ])),
-          Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: halal == true
-                  ? AppColors.halalGreen.withOpacity(0.1)
-                  : AppColors.doubtOrange.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: halal == true
-                    ? AppColors.halalGreen
-                    : AppColors.doubtOrange,
-              ),
-            ),
-            child: Text(
-                halal == true
-                    ? (tLang(lang, '✓ حلال', '✓ Halal', '✓ Halal', '✓ Helal', '✓ Halal', '✓ Halal'))
-                    : (tLang(lang, '⚠️ راجع', '⚠️ Check', '⚠️ Vérifier', '⚠️ Kontrol Et', '⚠️ Semak', '⚠️ Periksa')),
-                style: TextStyle(fontFamily: 'Cairo',
-                    fontSize: 10,
-                    color: halal == true
-                        ? AppColors.halalGreen
-                        : AppColors.doubtOrange,
-                    fontWeight: FontWeight.w700)),
-          ),
-        ]),
+          ]),
+        ),
+      ),
+    );
+  }
+
+  /// Tiny label showing where a result came from.
+  Widget _sourceBadge(String source) {
+    final (label, color) = switch (source) {
+      'openfoodfacts' => ('OFF',  AppColors.waterBlue),
+      'builtin'       => ('★',    AppColors.brandGreen),
+      'offline'       => ('⌂',    AppColors.brandGreen),
+      'ai'            => ('AI',   AppColors.sleepPurple),
+      _               => ('',     AppColors.lightMuted),
+    };
+    if (label.isEmpty) return const SizedBox.shrink();
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.12),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(label,
+          style: TextStyle(fontFamily: 'Cairo', fontSize: 8,
+              fontWeight: FontWeight.w800, color: color)),
+    );
+  }
+
+  Widget _buildNoResults(Color muted) {
+    String tl(String ar, String en) => tLang(lang, ar, en);
+    return Padding(
+      padding: const EdgeInsets.only(top: 26),
+      child: Column(children: [
+        const Text('🔍', style: TextStyle(fontSize: 34)),
+        const SizedBox(height: 10),
+        Text(tl('لا نتائج لهذا البحث', 'No matches for that search'),
+            style: TextStyle(fontFamily: 'Cairo', fontSize: 13,
+                fontWeight: FontWeight.w700, color: muted)),
+        const SizedBox(height: 6),
+        Text(tl('جرّب اسماً أبسط، أو أدخل القيم يدوياً',
+                'Try a simpler name, or enter the values manually'),
+            textAlign: TextAlign.center,
+            style: TextStyle(fontFamily: 'Cairo',
+                fontSize: 11, color: muted)),
         const SizedBox(height: 14),
-        // 4 macro boxes
-        Row(children: [
-          _aiMacroBox('🔥', '${kcal.round()}',
-              tLang(lang, 'سعرة', 'kcal', 'kcal', 'kcal', 'kcal', 'kkal'), AppColors.haramRed),
-          const SizedBox(width: 6),
-          _aiMacroBox('💪', '${protein.toStringAsFixed(1)}g',
-              tLang(lang, 'بروتين', 'Protein', 'Protéines', 'Protein', 'Protein', 'Protein'), AppColors.halalGreen),
-          const SizedBox(width: 6),
-          _aiMacroBox('🍚', '${carbs.toStringAsFixed(1)}g',
-              tLang(lang, 'كارب', 'Carbs', 'Glucides', 'Karbonhidrat', 'Karbohidrat', 'Karbohidrat'), AppColors.waterBlue),
-          const SizedBox(width: 6),
-          _aiMacroBox('🥑', '${fat.toStringAsFixed(1)}g',
-              tLang(lang, 'دهون', 'Fat', 'Lipides', 'Yağ', 'Lemak', 'Lemak'), AppColors.barakahGold),
-        ]),
-        const SizedBox(height: 14),
-        SizedBox(width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () => _showUnitPicker(name: name.toString(), kcal100: kcal.toDouble(), protein100: protein.toDouble(), carbs100: carbs.toDouble(), fat100: fat.toDouble()),
-            icon: const Icon(Icons.add_rounded,
-                color: Colors.white, size: 20),
-            label: Text(
-                tLang(lang, 'اضف هذا الطعام', 'Add This Food', 'Ajouter cet aliment', 'Bu Yiyeceği Ekle', 'Tambah Makanan Ini', 'Tambah Makanan Ini'),
-                style: const TextStyle(fontFamily: 'Cairo',
-                    color: Colors.white,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 14)),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.sunnahGreen,
-              padding: const EdgeInsets.symmetric(vertical: 12),
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-            ),
+        OutlinedButton.icon(
+          onPressed: () {
+            _nameCtrl.text = _searchCtrl.text.trim();
+            _tab.animateTo(2);
+          },
+          icon: const Icon(Icons.edit_rounded, size: 16),
+          label: Text(tl('إدخال يدوي', 'Manual entry'),
+              style: const TextStyle(fontFamily: 'Cairo', fontSize: 12,
+                  fontWeight: FontWeight.w700)),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.brandGreen,
+            side: BorderSide(
+                color: AppColors.brandGreen.withOpacity(0.4)),
           ),
         ),
       ]),
+    );
+  }
+
+  /// Quantity picker for entries measured per listed portion rather than
+  /// per 100 g — multiplies whole servings instead of grams.
+  void _showPortionPicker({
+    required String name,
+    required double kcal,
+    required double protein,
+    required double carbs,
+    required double fat,
+  }) {
+    final isAr   = widget.isAr;
+    final isDark = widget.isDark;
+    var count    = 1.0;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => StatefulBuilder(builder: (ctx, setS) {
+        final bg    = isDark ? AppColors.darkCard  : Colors.white;
+        final muted = isDark ? AppColors.darkMuted : const Color(0xFF9E9E9E);
+        final textC = isDark ? AppColors.darkText  : AppColors.lightText;
+        String tl(String ar, String en) => tLang(lang, ar, en);
+
+        return Padding(
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(ctx).viewInsets.bottom),
+          child: Container(
+            decoration: BoxDecoration(
+                color: bg,
+                borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(28))),
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 36),
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Center(child: Container(
+                width: 40, height: 4,
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2)))),
+              Row(children: [
+                FoodThumb(name: name, size: 52, radius: 14,
+                    background: AppColors.brandGreen.withOpacity(0.1)),
+                const SizedBox(width: 12),
+                Expanded(child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Text(name,
+                      style: TextStyle(fontFamily: 'Cairo', fontSize: 15,
+                          fontWeight: FontWeight.w800, color: textC),
+                      maxLines: 2, overflow: TextOverflow.ellipsis),
+                  Text('${tl("لكل حصة — ", "Per serving — ")}'
+                       '${kcal.round()} ${tl("سعرة", "kcal")}',
+                      style: TextStyle(fontFamily: 'Cairo',
+                          fontSize: 10, color: muted)),
+                ])),
+              ]),
+              const SizedBox(height: 20),
+              Text(tl('عدد الحصص', 'Servings'),
+                  style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                      fontWeight: FontWeight.w700, color: muted)),
+              const SizedBox(height: 10),
+              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                _gramBtn(Icons.remove_rounded,
+                    () => setS(() => count = (count - 0.5).clamp(0.5, 50.0))),
+                const SizedBox(width: 18),
+                SizedBox(width: 96, child: Text(
+                    count % 1 == 0
+                        ? count.toInt().toString()
+                        : count.toStringAsFixed(1),
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(fontFamily: 'Cairo', fontSize: 30,
+                        fontWeight: FontWeight.w900))),
+                const SizedBox(width: 18),
+                _gramBtn(Icons.add_rounded,
+                    () => setS(() => count = (count + 0.5).clamp(0.5, 50.0))),
+              ]),
+              const SizedBox(height: 16),
+              Wrap(spacing: 6, runSpacing: 6,
+                alignment: WrapAlignment.center,
+                children: [1, 2, 3, 4, 5, 6].map((n) {
+                  final active = (count - n).abs() < 0.001;
+                  return GestureDetector(
+                    onTap: () => setS(() => count = n.toDouble()),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 14, vertical: 7),
+                      decoration: BoxDecoration(
+                        color: active
+                            ? AppColors.brandGreen
+                            : AppColors.brandGreen.withOpacity(0.08),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Text('$n',
+                          style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: active
+                                  ? Colors.white
+                                  : AppColors.brandGreen)),
+                    ),
+                  );
+                }).toList()),
+              const SizedBox(height: 18),
+              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+                _gramMacro('${(kcal * count).round()}',
+                    tl('سعرة', 'kcal'), AppColors.haramRed),
+                _vDivider(),
+                _gramMacro('${(protein * count).toStringAsFixed(1)}g',
+                    tl('بروتين', 'Protein'), AppColors.halalGreen),
+                _vDivider(),
+                _gramMacro('${(carbs * count).toStringAsFixed(1)}g',
+                    tl('كارب', 'Carbs'), AppColors.waterBlue),
+                _vDivider(),
+                _gramMacro('${(fat * count).toStringAsFixed(1)}g',
+                    tl('دهون', 'Fat'), AppColors.accentGold),
+              ]),
+              const SizedBox(height: 20),
+              SizedBox(width: double.infinity, child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  _doAdd(name, (kcal * count).round(),
+                      protein * count, carbs * count, fat * count);
+                },
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.brandGreen,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16))),
+                child: Text(tl('أضف للعداد', 'Add to Tracker'),
+                    style: const TextStyle(fontFamily: 'Cairo',
+                        fontSize: 15, color: Colors.white,
+                        fontWeight: FontWeight.w800)),
+              )),
+            ]),
+          ),
+        );
+      }),
     );
   }
 
@@ -2663,10 +2928,10 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
           decoration: BoxDecoration(
             gradient: LinearGradient(colors: [
-              AppColors.barakahGold.withOpacity(0.13),
-              AppColors.barakahGold.withOpacity(0.04)]),
+              AppColors.accentGold.withOpacity(0.13),
+              AppColors.accentGold.withOpacity(0.04)]),
             borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: AppColors.barakahGold.withOpacity(0.45))),
+            border: Border.all(color: AppColors.accentGold.withOpacity(0.45))),
           child: Row(children: [
             const Text('📊', style: TextStyle(fontSize: 26)),
             const SizedBox(width: 12),
@@ -2675,13 +2940,13 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
               Text(t('تقرير الأسبوع 🔒', 'Weekly Report 🔒'),
                 style: const TextStyle(fontFamily: 'Cairo',
                   fontWeight: FontWeight.w700, fontSize: 13,
-                  color: AppColors.barakahGold)),
+                  color: AppColors.accentGold)),
               Text(t('متوسط السعرات • الالتزام • أفضل يوم — بريميوم',
                 'Avg calories • Adherence • Best day — Premium'),
                 style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: muted)),
             ])),
             const Icon(Icons.arrow_forward_ios, size: 13,
-              color: AppColors.barakahGold),
+              color: AppColors.accentGold),
           ]),
         ),
       );
@@ -2716,7 +2981,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: bg, borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.sunnahGreen.withOpacity(0.25)),
+        border: Border.all(color: AppColors.brandGreen.withOpacity(0.25)),
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 10)]),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -2726,7 +2991,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             Text(t('تقرير الأسبوع ⭐', 'Weekly Report ⭐'),
               style: const TextStyle(fontFamily: 'Cairo',
                 fontWeight: FontWeight.w800, fontSize: 14,
-                color: AppColors.sunnahGreen)),
+                color: AppColors.brandGreen)),
           ]),
           GestureDetector(
             onTap: () {
@@ -2747,24 +3012,24 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(t('نُسخت!', 'Copied!'),
                     style: const TextStyle(fontFamily: 'Cairo')),
-                  backgroundColor: AppColors.sunnahGreen,
+                  backgroundColor: AppColors.brandGreen,
                   duration: const Duration(seconds: 2)));
               }
             },
             child: Container(
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: AppColors.sunnahGreen.withOpacity(0.1),
+                color: AppColors.brandGreen.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(8)),
               child: const Icon(Icons.share_rounded,
-                color: AppColors.sunnahGreen, size: 16)),
+                color: AppColors.brandGreen, size: 16)),
           ),
         ]),
         const SizedBox(height: 14),
         Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
           _weekStat('🔥', '$avgKcal', t('متوسط', 'Avg kcal'), AppColors.haramRed, isDark),
-          _weekStat('🎯', '$adherePct%', t('الالتزام', 'Adherence'), AppColors.sunnahGreen, isDark),
-          _weekStat('📅', bestKey, t('أفضل يوم', 'Best day'), AppColors.barakahGold, isDark),
+          _weekStat('🎯', '$adherePct%', t('الالتزام', 'Adherence'), AppColors.brandGreen, isDark),
+          _weekStat('📅', bestKey, t('أفضل يوم', 'Best day'), AppColors.accentGold, isDark),
           _weekStat('✅', '$goodDays/${vals.isEmpty?7:vals.length}',
             t('ملتزمة', 'On-target'), AppColors.waterBlue, isDark),
         ]),
@@ -2780,9 +3045,9 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
               children: byDay.entries.map((e) {
                 final pct = (e.value / (goal > 0 ? goal : 2000)).clamp(0.0, 1.5);
                 final col = (e.value - goal).abs() < goal * 0.15
-                  ? AppColors.sunnahGreen
+                  ? AppColors.brandGreen
                   : e.value > goal * 1.15
-                  ? AppColors.haramRed : AppColors.barakahGold;
+                  ? AppColors.haramRed : AppColors.accentGold;
                 return Expanded(child: Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -2856,7 +3121,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
           labelText: label,
           labelStyle: const TextStyle(fontFamily: 'Cairo'),
           prefixIcon: Icon(icon,
-              color: iconColor ?? AppColors.sunnahGreen, size: 20),
+              color: iconColor ?? AppColors.brandGreen, size: 20),
           suffixText: suffix,
           filled: true,
           fillColor: isDark
@@ -2873,7 +3138,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
           focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(
-                  color: AppColors.sunnahGreen, width: 2)),
+                  color: AppColors.brandGreen, width: 2)),
         ),
       );
 
@@ -2969,8 +3234,8 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
             width: 100, height: 100,
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppColors.sunnahGreen.withOpacity(0.2),
-                         AppColors.sunnahGreen.withOpacity(0.05)],
+                colors: [AppColors.brandGreen.withOpacity(0.2),
+                         AppColors.brandGreen.withOpacity(0.05)],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -3000,21 +3265,21 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
             tl('✓ وجبات حلال 100%',
                '✓ 100% Halal meals'),
             tl('✓ مستوحاة من السنة النبوية',
-               '✓ Inspired by the Sunnah'),
+               '✓ Whole, simple ingredients'),
           ]).map((s) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 3),
             child: Text(s, style: const TextStyle(
                 fontFamily: 'Cairo', fontSize: 12,
-                color: AppColors.sunnahGreen)),
+                color: AppColors.brandGreen)),
           )),
           const SizedBox(height: 24),
           SizedBox(width: double.infinity, child: ElevatedButton(
             onPressed: () => context.push('/paywall'),
             style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.barakahGold,
+                backgroundColor: AppColors.accentGold,
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 elevation: 3,
-                shadowColor: AppColors.barakahGold.withOpacity(0.4),
+                shadowColor: AppColors.accentGold.withOpacity(0.4),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16))),
             child: Text(tl('🔓 افتح بريميوم', '🔓 Unlock Premium'),
@@ -3058,7 +3323,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                       tLang(lang, 'هدفك: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal'),
                       style: const TextStyle(fontFamily: 'Cairo',
                           fontSize: 11,
-                          color: AppColors.sunnahGreen)),
+                          color: AppColors.brandGreen)),
               ])),
             ]),
             const SizedBox(height: 14),
@@ -3074,21 +3339,21 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                 hintStyle: TextStyle(fontFamily: 'Cairo',
                     fontSize: 12, color: widget.muted),
                 filled: true,
-                fillColor: AppColors.sunnahGreen.withOpacity(0.04),
+                fillColor: AppColors.brandGreen.withOpacity(0.04),
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none),
                 focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: const BorderSide(
-                        color: AppColors.sunnahGreen, width: 2)),
+                        color: AppColors.brandGreen, width: 2)),
               ),
             ),
             const SizedBox(height: 12),
             SizedBox(width: double.infinity, child: ElevatedButton(
               onPressed: _loading ? null : _generate,
               style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.sunnahGreen,
+                  backgroundColor: AppColors.brandGreen,
                   padding: const EdgeInsets.symmetric(vertical: 13),
                   elevation: 2,
                   shape: RoundedRectangleBorder(
@@ -3145,7 +3410,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
               color: widget.cardBg,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                  color: AppColors.sunnahGreen.withOpacity(0.2)),
+                  color: AppColors.brandGreen.withOpacity(0.2)),
             ),
             child: _result == 'error'
                 ? Center(child: Column(children: [
@@ -3164,7 +3429,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                     Container(
                       padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
-                        color: AppColors.sunnahGreen
+                        color: AppColors.brandGreen
                             .withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -3176,30 +3441,30 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                         style: const TextStyle(fontFamily: 'Cairo',
                             fontWeight: FontWeight.w800,
                             fontSize: 15,
-                            color: AppColors.sunnahGreen)),
+                            color: AppColors.brandGreen)),
                   ]),
                   GestureDetector(
                     onTap: () async {
                       final txt = '${tl("خطة HalalCalorie", "HalalCalorie Plan")}\n\n'
                         '$_result\n\n'
-                        '${tl("الجسم أمانة ﷺ", "Your body is an amanah ﷺ")}';
+                        '${tl("خطوة صغيرة كل يوم", "One small step a day")}';
                       try { await Share.share(txt); }
                       catch (_) {
                         await Clipboard.setData(ClipboardData(text: txt));
                         if (mounted) ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(tl('نُسخت الخطة!','Plan copied!'),
                             style: const TextStyle(fontFamily:'Cairo')),
-                            backgroundColor: AppColors.sunnahGreen,
+                            backgroundColor: AppColors.brandGreen,
                             duration: const Duration(seconds: 2)));
                       }
                     },
                     child: Container(
                       padding: const EdgeInsets.all(7),
                       decoration: BoxDecoration(
-                        color: AppColors.sunnahGreen.withOpacity(0.1),
+                        color: AppColors.brandGreen.withOpacity(0.1),
                         borderRadius: BorderRadius.circular(9)),
                       child: const Icon(Icons.share_rounded,
-                        color: AppColors.sunnahGreen, size: 18)),
+                        color: AppColors.brandGreen, size: 18)),
                   ),
                   const SizedBox(height: 14),
                   const Divider(height: 1),

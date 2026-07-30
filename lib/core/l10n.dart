@@ -1,17 +1,39 @@
 // l10n.dart -- HalalCalorie multilingual support
 // ar=Arabic  en=English  fr=French  tr=Turkish  ur=Urdu  ms=Malay  id=Indonesian
+//
+// Every string in the app funnels through [tLang]. Callers may pass explicit
+// translations, but when one is missing (or is just the English string echoed
+// into a positional slot, which older call sites do) the shared dictionary in
+// translations.dart fills the gap. That keeps all seven languages live without
+// needing every call site to spell out seven variants.
+
+import 'translations.dart';
+
+const kSupportedLangs = ['ar', 'en', 'fr', 'tr', 'ur', 'ms', 'id'];
+
+/// True for languages that lay out right-to-left.
+bool isRtlLang(String lang) => lang == 'ar' || lang == 'ur';
+
+/// Resolves one language slot: explicit value → dictionary → English.
+String _pick(String code, String provided, String en) {
+  if (provided.isNotEmpty && provided != en) return provided;
+  final hit = kAutoTranslations[en]?[code];
+  if (hit != null && hit.isNotEmpty) return hit;
+  return en;
+}
 
 // ── Global helper used by all screens ────────────────────────────────────────
 // Usage: final l = L.fromLang(lang); then l.someGetter or l.t(ar, en)
 String tLang(String lang, String ar, String en,
-    [String fr = '', String tr = '', String ms = '', String id = '']) {
+    [String fr = '', String tr = '', String ms = '', String id = '',
+     String ur = '']) {
   switch (lang) {
-    case 'ar':
-    case 'ur': return ar;
-    case 'fr': return fr.isEmpty ? en : fr;
-    case 'tr': return tr.isEmpty ? en : tr;
-    case 'ms': return ms.isEmpty ? en : ms;
-    case 'id': return id.isEmpty ? en : id;
+    case 'ar': return ar;
+    case 'fr': return _pick('fr', fr, en);
+    case 'tr': return _pick('tr', tr, en);
+    case 'ms': return _pick('ms', ms, en);
+    case 'id': return _pick('id', id, en);
+    case 'ur': return _pick('ur', ur, en);
     default:   return en;
   }
 }
@@ -21,13 +43,15 @@ class L {
   const L._(this.lang);
   static L fromLang(String lang) => L._(lang);
 
-  bool get isAr  => lang == 'ar' || lang == 'ur';
-  bool get isRtl => lang == 'ar' || lang == 'ur';
+  /// True only for Arabic — Urdu is its own language with its own strings.
+  bool get isAr  => lang == 'ar';
+  bool get isRtl => isRtlLang(lang);
 
   String t(String ar, String en) => tLang(lang, ar, en);
 
-  String t6(String ar, String en, String fr, String tr, String ms, String id) =>
-      tLang(lang, ar, en, fr, tr, ms, id);
+  String t6(String ar, String en, String fr, String tr, String ms, String id,
+          [String ur = '']) =>
+      tLang(lang, ar, en, fr, tr, ms, id, ur);
 
   // ── App ─────────────────────────────────────────────────────────────────────
   String get appName    => 'HalalCalorie';
@@ -115,13 +139,14 @@ class L {
       'Riche en protéines', 'Yüksek Protein', 'Protein Tinggi', 'Protein Tinggi');
   String get highCarb   => t6('كارب عالي', 'High Carb',
       'Riche en glucides', 'Yüksek Karbonhidrat', 'Karbohidrat Tinggi', 'Karbohidrat Tinggi');
-  String get bismillahTip => t6(
-      'قل بسم الله قبل الأكل، وكُل بيمينك',
-      'Say Bismillah before eating, eat with your right hand',
-      'Dites Bismillah avant de manger, mangez de la main droite',
-      'Yemeden önce Bismillah deyin, sağ elinizle yiyin',
-      'Sebut Bismillah sebelum makan, makan dengan tangan kanan',
-      'Ucapkan Bismillah sebelum makan, makan dengan tangan kanan');
+  String get mindfulEatingTip => t6(
+      'كُل ببطء وانتبه لأول شعور بالشبع',
+      'Eat slowly and stop at the first sign of fullness',
+      'Mangez lentement et arrêtez dès la première sensation de satiété',
+      'Yavaş ye ve ilk doyma işaretinde dur',
+      'Makan perlahan dan berhenti pada tanda pertama rasa kenyang',
+      'Makan perlahan dan berhenti pada tanda pertama rasa kenyang',
+      'آہستہ کھائیں اور پیٹ بھرنے کے پہلے احساس پر رک جائیں');
 
   // ── Greetings ─────────────────────────────────────────────────────────────
   String get goodMorning   => t6('صباح الخير ☀️', 'Good Morning ☀️',
@@ -136,9 +161,8 @@ class L {
       'Entraînement', 'Antrenman', 'Latihan', 'Latihan');
   String get steps          => t6('خطوات', 'Steps',
       'Pas', 'Adımlar', 'Langkah', 'Langkah');
-  String get islamicFitness => t6('اللياقة الإسلامية 🏃', 'Islamic Fitness 🏃',
-      'Fitness Islamique 🏃', 'İslami Fitness 🏃',
-      'Fitness Islam 🏃', 'Kebugaran Islam 🏃');
+  String get fitnessTitle   => t6('اللياقة', 'Fitness',
+      'Forme', 'Fitness', 'Kecergasan', 'Kebugaran', 'فٹنس');
   String get ramadanModeLabel => t6(
       '🌙 وضع رمضان — التمارين الخفيفة أولاً',
       'Ramadan mode — light workouts first',
@@ -229,43 +253,79 @@ class L {
       '⚠️ Pas de connexion', '⚠️ İnternet yok',
       '⚠️ Tiada internet', '⚠️ Tidak ada internet');
 
-  // ── Barakah Engine ────────────────────────────────────────────────────────────────────
-  String get barakahTitle    => t6('نقاط بركتك', 'Barakah Score',
-      'Score Barakah', 'Bereket Puani', 'Mata Barakah', 'Skor Barakah');
-  String get barakahSubtitle => t6('بركتك اليومية', 'Your daily blessing score',
-      'Votre score bénédiction', 'Günlük bereket puanı', 'Skor berkat harian', 'Skor berkah harian');
-  String get pillarsTitle    => t6('أعمدة البركة', 'Barakah Pillars',
-      'Piliers Barakah', 'Bereket Sütunları', 'Tiang Barakah', 'Pilar Barakah');
-  String get pillarNutrition => t6('تغذية', 'Nutrition',
-      'Nutrition', 'Beslenme', 'Pemakanan', 'Nutrisi');
-  String get pillarHydration => t6('ترطيب', 'Hydration',
-      'Hydratation', 'Hidrasyon', 'Hidrasi', 'Hidrasi');
-  String get pillarSleep     => t6('نوم', 'Sleep',
-      'Sommeil', 'Uyku', 'Tidur', 'Tidur');
-  String get pillarMovement  => t6('حركة', 'Movement',
-      'Mouvement', 'Hareket', 'Pergerakan', 'Gerakan');
-  String get pillarFasting   => t6('صيام', 'Fasting',
-      'Jeûne', 'Oruç', 'Puasa', 'Puasa');
-  String get pillarSunnahFood=> t6('أكل سنة', 'Sunnah Food',
-      'Nourriture Sunnah', 'Sünnet Yemek', 'Makanan Sunnah', 'Makanan Sunnah');
-  String get pillarWorkout   => t6('تمرين', 'Workout',
-      'Entraînement', 'Antrenman', 'Latihan', 'Latihan');
-  String get pillarDhikr     => t6('ذكر', 'Dhikr',
-      'Dhikr', 'Zikir', 'Zikir', 'Zikir');
-  String get dhikrDone       => t6('ذكرتك اليوم ✓', 'Dhikr done today ✓',
-      'Dhikr fait aujourd’hui ✓', 'Bugün zikir yapıldı ✓',
-      'Zikir hari ini selesai ✓', 'Zikir hari ini selesai ✓');
-  String get dhikrTap        => t6('اضغط لتأكيد ذكرك', 'Tap to confirm dhikr',
-      'Appuyer pour confirmer', 'Zikir onaylamak için dokunun',
-      'Ketuk untuk sahkan zikir', 'Ketuk untuk konfirmasi zikir');
-  String get badgesTitle     => t6('شاراتك', 'Your Badges',
-      'Vos Badges', 'Rozetleriniz', 'Lencana Anda', 'Lencana Anda');
-  String get weeklyReport    => t6('تقرير الجمعة', 'Friday Report',
-      'Rapport Vendredi', 'Cuma Raporu', 'Laporan Jumaat', 'Laporan Jumat');
-  String get barakahNavLabel => t6('بركة', 'Barakah',
-      'Barakah', 'Bereket', 'Barakah', 'Barakah');
-  String get barakahHomeCard => t6('نقاط بركتك', 'Barakah Score',
-      'Score Barakah', 'Bereket Puanı', 'Mata Barakah', 'Skor Barakah');
+  // ── Ascent System ─────────────────────────────────────────────────────────
+  String get ascentTitle    => t6('الصعود', 'Ascent',
+      'Ascension', 'Yükseliş', 'Pendakian', 'Pendakian', 'عروج');
+  String get ascentNavLabel => t6('صعود', 'Ascent',
+      'Ascension', 'Yükseliş', 'Daki', 'Daki', 'عروج');
+  String get todayLabel     => t6('اليوم', 'Today',
+      'Aujourd’hui', 'Bugün', 'Hari ini', 'Hari ini', 'آج');
+  String get systemLabel    => t6('النظام', 'SYSTEM',
+      'SYSTÈME', 'SİSTEM', 'SISTEM', 'SISTEM', 'سسٹم');
+  String get levelShort     => t6('المستوى', 'LEVEL',
+      'NIVEAU', 'SEVİYE', 'TAHAP', 'LEVEL', 'لیول');
+  String get rankLabel      => t6('الرتبة', 'Rank',
+      'Rang', 'Rütbe', 'Pangkat', 'Peringkat', 'درجہ');
+  String get maxLevel       => t6('أقصى مستوى', 'Max level',
+      'Niveau max', 'En üst seviye', 'Tahap maksimum', 'Level maksimum',
+      'اعلیٰ ترین لیول');
+  String get dailyScore     => t6('نقاط اليوم', 'Today’s score',
+      'Score du jour', 'Bugünün puanı', 'Skor hari ini', 'Skor hari ini',
+      'آج کا اسکور');
+  String get dailyQuests    => t6('مهام اليوم', 'Daily quests',
+      'Quêtes du jour', 'Günlük görevler', 'Misi harian', 'Misi harian',
+      'روزانہ مشن');
+  String get dailyQuestsHint => t6(
+      'أكمل ما تستطيع — كل مهمة ترفع نقاطك وخبرتك',
+      'Clear what you can — each quest adds score and XP',
+      'Faites ce que vous pouvez — chaque quête ajoute score et XP',
+      'Elinden geleni yap — her görev puan ve XP kazandırır',
+      'Selesaikan apa yang mampu — setiap misi menambah skor dan XP',
+      'Selesaikan yang kamu bisa — tiap misi menambah skor dan XP',
+      'جو ہو سکے مکمل کریں — ہر مشن اسکور اور XP بڑھاتا ہے');
+  String get questsLabel    => t6('مهام', 'quests',
+      'quêtes', 'görev', 'misi', 'misi', 'مشن');
+  String get titlesLabel    => t6('الألقاب', 'Titles',
+      'Titres', 'Unvanlar', 'Gelaran', 'Gelar', 'القاب');
+  String get weeklyReview   => t6('مراجعة الأسبوع', 'Weekly review',
+      'Bilan hebdomadaire', 'Haftalık özet', 'Ulasan mingguan',
+      'Ulasan mingguan', 'ہفتہ وار جائزہ');
+  String get averageLabel   => t6('المتوسط', 'Average',
+      'Moyenne', 'Ortalama', 'Purata', 'Rata-rata', 'اوسط');
+  String get bestLabel      => t6('الأفضل', 'Best',
+      'Meilleur', 'En iyi', 'Terbaik', 'Terbaik', 'بہترین');
+  String get levelUp        => t6('ارتقاء المستوى', 'LEVEL UP',
+      'NIVEAU SUPÉRIEUR', 'SEVİYE ATLADIN', 'NAIK TAHAP', 'NAIK LEVEL',
+      'لیول اپ');
+  String get levelUpNote    => t6(
+      'خطوة صغيرة تكررت حتى صارت عادة. واصل غداً.',
+      'A small step, repeated until it became a habit. Keep going tomorrow.',
+      'Un petit pas, répété jusqu’à devenir une habitude. Continuez demain.',
+      'Küçük bir adım, alışkanlığa dönüşene kadar tekrarlandı. Yarın da devam.',
+      'Langkah kecil, diulang sampai jadi kebiasaan. Teruskan esok.',
+      'Langkah kecil, diulang sampai jadi kebiasaan. Lanjutkan besok.',
+      'ایک چھوٹا قدم، جو عادت بن گیا۔ کل بھی جاری رکھیں۔');
+  String get continueLabel  => t6('متابعة', 'Continue',
+      'Continuer', 'Devam', 'Teruskan', 'Lanjutkan', 'جاری رکھیں');
+  String get ascentLockedTitle => t6('نظام الصعود — بريميوم',
+      'The Ascent System — Premium',
+      'Le système d’Ascension — Premium', 'Yükseliş Sistemi — Premium',
+      'Sistem Pendakian — Premium', 'Sistem Pendakian — Premium',
+      'عروج سسٹم — پریمیم');
+  String get ascentLockedBody => t6(
+      'ثماني مهام يومية ترفع مستواك ورتبتك، مع مراجعة أسبوعية وألقاب تُفتح مع الوقت.',
+      'Eight daily quests that raise your level and rank, plus a weekly review and titles you unlock over time.',
+      'Huit quêtes quotidiennes qui font monter votre niveau et votre rang, avec un bilan hebdomadaire et des titres à débloquer.',
+      'Seviyenizi ve rütbenizi yükselten sekiz günlük görev, haftalık özet ve zamanla açılan unvanlar.',
+      'Lapan misi harian yang menaikkan tahap dan pangkat anda, dengan ulasan mingguan dan gelaran yang dibuka.',
+      'Delapan misi harian yang menaikkan level dan peringkat, plus ulasan mingguan dan gelar yang terbuka.',
+      'آٹھ روزانہ مشن جو آپ کا لیول اور درجہ بڑھاتے ہیں، ہفتہ وار جائزہ اور القاب کے ساتھ۔');
+  String get upgradeCta     => t6('ترقية للبريميوم', 'Upgrade to Premium',
+      'Passer à Premium', 'Premium’a geç', 'Naik taraf ke Premium',
+      'Upgrade ke Premium', 'پریمیم میں اپ گریڈ کریں');
+  String get ascentHomeCard => t6('صعودك اليوم', 'Your ascent today',
+      'Votre ascension du jour', 'Bugünkü yükselişin',
+      'Pendakian anda hari ini', 'Pendakianmu hari ini', 'آج کا عروج');
 
   // ── Scanner ───────────────────────────────────────────────────────────────
   String get cameraError => t6(
@@ -276,7 +336,7 @@ class L {
       'Tidak dapat buka kamera. Semak kebenaran kamera dalam tetapan.',
       'Tidak dapat membuka kamera. Periksa izin kamera di pengaturan.');
 
-  // Returns Sun→Sat single-letter initials for the Barakah weekly chart.
+  // Returns Sun→Sat single-letter initials for the weekly review chart.
   // Encoded as a comma-separated string then split — avoids a List getter.
   List<String> get weekDaysShort => t6(
       'أ,إ,ث,ر,خ,ج,س',
@@ -298,15 +358,86 @@ class L {
       'Suhoor', 'Sahur', 'Sahur', 'Sahur');
   String get iftar    => t6('إفطار', 'Iftar',
       'Iftar', 'İftar', 'Iftar', 'Iftar');
+  String get dayLabel  => t6('يوم', 'Day',
+      'Jour', 'Gün', 'Hari', 'Hari', 'دن');
+  String get inDaysLabel => t6('بعد', 'In',
+      'Dans', 'Kalan', 'Dalam', 'Dalam', 'میں');
+  String get daysShort => t6('يوم', 'days',
+      'jours', 'gün', 'hari', 'hari', 'دن');
+  String get ramadanTimesEstimated => t6(
+      'أوقات تقديرية — اضبط مدينتك للحصول على أوقات دقيقة',
+      'Estimated times — set your city for exact times',
+      'Heures estimées — indiquez votre ville pour des heures exactes',
+      'Tahmini saatler — kesin saatler için şehrinizi seçin',
+      'Waktu anggaran — tetapkan bandar anda untuk waktu tepat',
+      'Perkiraan waktu — atur kotamu untuk waktu akurat',
+      'اندازاً اوقات — درست اوقات کے لیے اپنا شہر منتخب کریں');
+  String get ramadanFasting => t6('صائم الآن', 'Fasting now',
+      'Jeûne en cours', 'Şu anda oruçlu', 'Sedang berpuasa',
+      'Sedang berpuasa', 'ابھی روزہ');
+  String get ramadanIftarSoon => t6('الإفطار قريب — استعد',
+      'Iftar is close — get ready',
+      'Iftar approche — préparez-vous', 'İftar yakın — hazırlan',
+      'Iftar dekat — bersiaplah', 'Iftar dekat — bersiaplah',
+      'افطار قریب ہے — تیار ہو جائیں');
+  String get ramadanSuhoorSoon => t6('السحور ينتهي قريباً',
+      'Suhoor window closing soon',
+      'La fenêtre du suhoor se ferme bientôt', 'Sahur vakti bitiyor',
+      'Waktu sahur hampir tamat', 'Waktu sahur segera berakhir',
+      'سحری کا وقت ختم ہونے والا ہے');
+  String get ramadanEvening => t6('وقت الفطور — خذ وقتك',
+      'Evening window — take your time',
+      'Soirée — prenez votre temps', 'Akşam vakti — acele etme',
+      'Waktu malam — ambil masa anda', 'Waktu malam — santai saja',
+      'شام کا وقت — آرام سے');
+  String get ramadanTipFasting => t6(
+      'وزّع سعراتك بين الإفطار والسحور، ولا تعوّض كل شيء في وجبة واحدة',
+      'Spread your calories across iftar and suhoor rather than one large meal',
+      'Répartissez vos calories entre l’iftar et le suhoor plutôt qu’un seul gros repas',
+      'Kalorilerini tek büyük öğün yerine iftar ve sahura yay',
+      'Bahagikan kalori antara iftar dan sahur, bukan satu hidangan besar',
+      'Bagi kalorimu antara buka dan sahur, bukan satu porsi besar',
+      'اپنی کیلوریز افطار اور سحری میں تقسیم کریں، ایک ہی وقت میں نہیں');
+  String get ramadanTipIftarSoon => t6(
+      'ابدأ بشيء خفيف وماء، ثم انتظر قليلاً قبل الوجبة الأساسية',
+      'Start light with water, then pause before the main meal',
+      'Commencez léger avec de l’eau, puis attendez avant le plat principal',
+      'Suyla hafif başla, ana yemekten önce biraz bekle',
+      'Mulakan ringan dengan air, kemudian jeda sebelum hidangan utama',
+      'Mulai ringan dengan air, lalu jeda sebelum makan utama',
+      'پانی سے ہلکی شروعات کریں، پھر اصل کھانے سے پہلے وقفہ دیں');
+  String get ramadanTipSuhoor => t6(
+      'اختر بروتيناً وكارب بطيء الامتصاص — يبقيك أطول بلا جوع',
+      'Choose protein and slow carbs — they keep you full for longer',
+      'Choisissez protéines et glucides lents — la satiété dure plus longtemps',
+      'Protein ve yavaş karbonhidrat seç — daha uzun tok tutar',
+      'Pilih protein dan karbohidrat perlahan — kekal kenyang lebih lama',
+      'Pilih protein dan karbo lambat — bikin kenyang lebih lama',
+      'پروٹین اور سست کاربوہائیڈریٹ چنیں — زیادہ دیر پیٹ بھرا رہے گا');
+  String get ramadanTipEvening => t6(
+      'اشرب أكوابك تدريجياً حتى السحور بدل شربها مرة واحدة',
+      'Space your water out until suhoor instead of drinking it all at once',
+      'Étalez votre eau jusqu’au suhoor au lieu de tout boire d’un coup',
+      'Suyunu sahura kadar yay, hepsini birden içme',
+      'Agihkan air anda hingga sahur, jangan minum sekali gus',
+      'Sebar minum airmu sampai sahur, jangan sekaligus',
+      'سحری تک پانی وقفے وقفے سے پییں، ایک ساتھ نہیں');
+  String get planIftar => t6('خطّط إفطارك', 'Plan iftar',
+      'Planifier l’iftar', 'İftarı planla', 'Rancang iftar',
+      'Rencanakan buka', 'افطار کی منصوبہ بندی');
+  String get logWater => t6('سجّل كوب ماء', 'Log water',
+      'Noter l’eau', 'Su kaydet', 'Log air', 'Catat air', 'پانی درج کریں');
+  String get openNutrition => t6('التغذية', 'Nutrition',
+      'Nutrition', 'Beslenme', 'Pemakanan', 'Nutrisi', 'غذائیت');
 
   // ── Home screen ────────────────────────────────────────────────────────────
   String get todayCalories => t6('سعرات اليوم', "Today's Calories",
       'Calories du jour', "Bugünün Kalorileri", 'Kalori Hari Ini', 'Kalori Hari Ini');
   String get nextPrayer    => t6('الصلاة القادمة', 'Next Prayer',
       'Prochaine prière', 'Sonraki Namaz', 'Solat Seterusnya', 'Sholat Berikutnya');
-  String get todayHadith   => t6('📖 حديث اليوم', "📖 Today's Hadith",
-      '📖 Hadith du jour', '📖 Günün Hadisi',
-      '📖 Hadis Hari Ini', '📖 Hadis Hari Ini');
+  String get dailyNote     => t6('📖 كلمة اليوم', '📖 Note of the day',
+      '📖 Note du jour', '📖 Günün notu',
+      '📖 Nota hari ini', '📖 Catatan hari ini', '📖 آج کی بات');
   String get sleep         => t6('نوم', 'Sleep',
       'Sommeil', 'Uyku', 'Tidur', 'Tidur');
   String get streak        => t6('تتابع', 'Streak',

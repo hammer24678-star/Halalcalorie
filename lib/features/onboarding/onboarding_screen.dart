@@ -223,7 +223,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
           _GenderCard(
             emoji: '🧔', labelAr: 'رجل', labelEn: 'Man',
             selected: _gender == 'brothers',
-            color: AppColors.sunnahGreen,
+            color: AppColors.brandGreen,
             isDark: isDark,
             onTap: () => setState(() => _gender = 'brothers'),
           ),
@@ -231,7 +231,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
           _GenderCard(
             emoji: '🧕', labelAr: 'بنت', labelEn: 'Female',
             selected: _gender == 'sisters',
-            color: AppColors.barakahGold,
+            color: AppColors.accentGold,
             isDark: isDark,
             onTap: () => setState(() => _gender = 'sisters'),
           ),
@@ -300,7 +300,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
           unit: 'سنة',
           unitEn: 'years',
           isAr: isAr,
-          color: AppColors.barakahGold,
+          color: AppColors.accentGold,
           isDark: isDark,
           onChanged: (v) => setState(() => _age = v.round()),
         ),
@@ -364,8 +364,8 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
 
     // 7 supported languages
     const langs = [
-      ('ar', '🇸🇦', 'العربية',   'Arabic',     AppColors.sunnahGreen),
-      ('en', '🇬🇧', 'English',   'الإنجليزية', AppColors.barakahGold),
+      ('ar', '🇸🇦', 'العربية',   'Arabic',     AppColors.brandGreen),
+      ('en', '🇬🇧', 'English',   'الإنجليزية', AppColors.accentGold),
       ('fr', '🇫🇷', 'Français',  'الفرنسية',   Color(0xFF4A90D9)),
       ('tr', '🇹🇷', 'Türkçe',    'التركية',    Color(0xFFE53935)),
       ('ur', '🇵🇰', 'اردو',      'الأردية',    Color(0xFF00897B)),
@@ -476,18 +476,18 @@ const _welcomeSteps = [
     'Your #1 app to track calories\nthe 100% Halal way',
     ['حلال ✓', 'عربي أولاً', 'خصوصية تامة'],
     ['Halal ✓', 'Privacy first', 'No ads'],
-    AppColors.sunnahGreen),
+    AppColors.brandGreen),
   _WelcomeStep('🤖', 'ذكاء اصطناعي', 'AI-Powered',
     'صوّر طعامك أو امسح الباركود\nواحصل على السعرات فوراً',
     'Photo your food or scan a barcode\nget calories instantly',
     ['Claude AI', '١٠٠٠+ طعام', 'تعرف الطعام'],
     ['Claude AI', '1000+ foods', 'Smart detect'],
-    AppColors.barakahGold),
-  _WelcomeStep('🕌', 'إسلامي ١٠٠٪', '100% Islamic',
+    AppColors.accentGold),
+  _WelcomeStep('🌙', 'مصمّم لعاداتك', 'Built around your routine',
     'أوقات الصلاة • وضع رمضان\nأحاديث يومية • وصفات سنة',
-    'Prayer times • Ramadan mode\nDaily hadith • Sunnah recipes',
-    ['أوقات الصلاة', 'وضع رمضان', 'سنة نبوية'],
-    ['Prayer times', 'Ramadan mode', 'Sunnah foods'],
+    'Prayer times • Ramadan mode\nDaily notes • simple recipes',
+    ['أوقات الصلاة', 'وضع رمضان', 'أطعمة كاملة'],
+    ['Prayer times', 'Ramadan mode', 'Whole foods'],
     AppColors.waterBlue),
 ];
 
@@ -1003,7 +1003,7 @@ class _SummaryPage extends ConsumerWidget {
             _SummaryTile('📏', t('الطول', 'Height'), heightStr,
               AppColors.waterBlue, card, border, isDark),
             _SummaryTile('🎂', t('العمر', 'Age'), ageStr,
-              AppColors.barakahGold, card, border, isDark),
+              AppColors.accentGold, card, border, isDark),
             _SummaryTile('📊', 'BMI', bmi.toStringAsFixed(1),
               bmiColor, card, border, isDark),
           ],
@@ -1021,7 +1021,7 @@ class _SummaryPage extends ConsumerWidget {
             ),
             borderRadius: BorderRadius.circular(18),
             boxShadow: [BoxShadow(
-              color: AppColors.sunnahGreen.withOpacity(0.3),
+              color: AppColors.brandGreen.withOpacity(0.3),
               blurRadius: 16, offset: const Offset(0, 6),
             )],
           ),
@@ -1208,7 +1208,7 @@ class _BottomBar extends ConsumerWidget {
                   begin: Alignment.topLeft, end: Alignment.bottomRight),
             borderRadius: BorderRadius.circular(16),
             boxShadow: [BoxShadow(
-              color: (isLast ? AppColors.barakahGold : AppColors.sunnahGreen).withOpacity(0.35),
+              color: (isLast ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.35),
               blurRadius: 16, offset: const Offset(0, 6))],
           ),
           child: ElevatedButton(

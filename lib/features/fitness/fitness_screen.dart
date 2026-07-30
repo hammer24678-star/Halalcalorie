@@ -55,7 +55,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
     final isPremium = ref.watch(premiumProvider);
     final isRamadan = ref.watch(ramadanModeProvider);
     final workoutMin = ref.watch(workoutMinutesProvider); final isSis     = gender =='sisters';
-    final barCol    = isSis ? AppColors.barakahGold : AppColors.sunnahGreen;
+    final barCol    = isSis ? AppColors.accentGold : AppColors.brandGreen;
     final barGrad   = isSis ? AppColors.gradientGold : AppColors.gradientGreen;
     final bg        = isDark ? AppColors.darkBg   : AppColors.lightBg;
     final card      = isDark ? AppColors.darkCard : Colors.white;
@@ -81,13 +81,13 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                     ? [AppColors.ramadanNight, AppColors.ramadanCard]
                     : isSis
                         ? [const Color(0xFFB8860B), const Color(0xFFDAA520)]
-                        : [const Color(0xFF1A6B3C), AppColors.sunnahGreen],
+                        : [const Color(0xFF1A6B3C), AppColors.brandGreen],
                 begin: Alignment.topLeft, end: Alignment.bottomRight,
               ),
             ),
           ),
           backgroundColor: Colors.transparent,
-          title: Text(l.islamicFitness,
+          title: Text(l.fitnessTitle,
               style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800, fontSize: 18)),
           actions: [
             if (workoutMin > 0)
@@ -113,15 +113,15 @@ class _FitnessState extends ConsumerState<FitnessScreen>
           // Mode banner
           if (isRamadan || isSis)
             Container(
-              color: (isRamadan && !isSis ? AppColors.ramadanGold : isSis ? AppColors.barakahGold : AppColors.darkGreen).withOpacity(0.10),
+              color: (isRamadan && !isSis ? AppColors.ramadanGold : isSis ? AppColors.accentGold : AppColors.darkGreen).withOpacity(0.10),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               child: Row(children: [ Text(isSis ?'🧕' : '🌙', style: const TextStyle(fontSize: 16)),
                 const SizedBox(width: 8),
                 Expanded(child: Text(
-                  isSis && isRamadan ? t('وضع النساء + رمضان — محتشم وخفيف', 'Sisters + Ramadan — modest & light')
-                      : isRamadan ? l.ramadanModeLabel : t('وضع النساء — محتشم دائماً', 'Sisters mode — always modest'), style: TextStyle(fontFamily:'Cairo', fontSize: 11,
+                  isSis && isRamadan ? t('وضع النساء + رمضان — تمارين محتشمة وخفيفة', 'Women + Ramadan — modest and light sessions')
+                      : isRamadan ? l.ramadanModeLabel : t('وضع النساء — تمارين محتشمة', 'Women mode — modest sessions'), style: TextStyle(fontFamily:'Cairo', fontSize: 11,
                       fontWeight: FontWeight.w700,
-                      color: isRamadan && !isSis ? AppColors.ramadanGold : isSis ? AppColors.barakahGold : AppColors.sunnahGreen),
+                      color: isRamadan && !isSis ? AppColors.ramadanGold : isSis ? AppColors.accentGold : AppColors.brandGreen),
                 )),
               ]),
             ),
@@ -150,19 +150,19 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                         ? [AppColors.ramadanNight, AppColors.ramadanCardAlt]
                         : isSis
                             ? [const Color(0xFFB8860B), const Color(0xFFDAA520)]
-                            : [const Color(0xFF1A6B3C), AppColors.sunnahGreen],
+                            : [const Color(0xFF1A6B3C), AppColors.brandGreen],
                     begin: Alignment.topLeft, end: Alignment.bottomRight,
                   ),
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [BoxShadow(
-                    color: AppColors.sunnahGreen.withOpacity(0.35),
+                    color: AppColors.brandGreen.withOpacity(0.35),
                     blurRadius: 18, offset: const Offset(0, 6))],
                 ),
                 child: Row(children: [
                   Text(rec.emoji, style: const TextStyle(fontSize: 28)),
                   const SizedBox(width: 12),
                   Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(isAr ?'⚡ موصى به الآن' : '⚡ Recommended Now', style: TextStyle(fontFamily:'Cairo', fontSize: 10,
-                            color: isRamadan ? AppColors.barakahGold : Colors.white70)),
+                            color: isRamadan ? AppColors.accentGold : Colors.white70)),
                     Text(isAr ? rec.titleAr : rec.titleEn, style: const TextStyle(fontFamily:'Cairo', fontSize: 13,
                             fontWeight: FontWeight.w800, color: Colors.white)), Text('${rec.durationMin} ${isAr ? "دقيقة" : "min"}  •  ${isAr ? rec.level : rec.levelEn}', style: const TextStyle(fontFamily:'Cairo', fontSize: 10, color: Colors.white70)),
                   ])),
@@ -187,7 +187,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                 ));
               }
               return ListView(padding: const EdgeInsets.all(14), children: [
-                // Hadith quote at top
+                // Coaching line at top
                 Container(
                   margin: const EdgeInsets.only(bottom: 14),
                   padding: const EdgeInsets.all(14),
@@ -197,7 +197,8 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                     border: Border.all(color: barCol.withOpacity(0.2)),
                   ),
                   child: Text(
-                    isAr ?'«المؤمن القوي خير وأحب إلى الله من المؤمن الضعيف» — مسلم' :'"The strong believer is better & more beloved to Allah" — Muslim',
+                    t('القوة تُبنى بالتكرار، لا بيوم واحد شديد',
+                      'Strength is built by repetition, not by one hard day'),
                     textAlign: TextAlign.center, style: TextStyle(fontFamily:'Cairo', fontSize: 12,
                         color: barCol, height: 1.6, fontStyle: FontStyle.italic),
                   ),
@@ -246,7 +247,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                               Text(w.emoji, style: const TextStyle(fontSize: 32)),
                               const Spacer(),
                               if (locked)
-                                const Icon(Icons.lock, size: 16, color: AppColors.barakahGold),
+                                const Icon(Icons.lock, size: 16, color: AppColors.accentGold),
                             ]),
                             const SizedBox(height: 8),
                             Text(isAr ? w.titleAr : w.titleEn, style: TextStyle(fontFamily:'Cairo',
@@ -272,7 +273,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                             child: Container(
                               padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                               decoration: BoxDecoration(
-                                color: AppColors.barakahGold.withOpacity(0.15),
+                                color: AppColors.accentGold.withOpacity(0.15),
                                 borderRadius: BorderRadius.circular(6),
                               ), child: Text('⏱', style: TextStyle(fontSize: 9, color: muted)),
                             ),
@@ -291,10 +292,10 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         gradient: const LinearGradient(
-                            colors: [Color(0xFF1A6B3C), AppColors.sunnahGreen]),
+                            colors: [Color(0xFF1A6B3C), AppColors.brandGreen]),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [BoxShadow(
-                          color: AppColors.sunnahGreen.withOpacity(0.30),
+                          color: AppColors.brandGreen.withOpacity(0.30),
                           blurRadius: 14, offset: const Offset(0, 5))],
                       ),
                       child: Row(children: [
@@ -304,7 +305,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                         ])),
                         ElevatedButton( onPressed: () => context.push('/paywall'),
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.barakahGold,
+                              backgroundColor: AppColors.accentGold,
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8)), child: Text(t('ترقية', 'Upgrade'), style: const TextStyle(fontFamily:'Cairo',
                                   fontSize: 12, color: Colors.white, fontWeight: FontWeight.w700)),
                         ),
@@ -459,7 +460,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
           ),
           title: Text(isAr ? w.titleAr : w.titleEn, style: const TextStyle(fontFamily:'Cairo', fontSize: 14,
                   fontWeight: FontWeight.w700)),
-          backgroundColor: isRamadan ? AppColors.ramadanCard : AppColors.sunnahGreen,
+          backgroundColor: isRamadan ? AppColors.ramadanCard : AppColors.brandGreen,
         ),
         body: SingleChildScrollView(padding: const EdgeInsets.all(20), child: Column(children: [
 
@@ -468,13 +469,13 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
             margin: const EdgeInsets.only(bottom: 20),
             child: Column(children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [ Text(t('التقدم الكلي', 'Overall Progress'), style: TextStyle(fontFamily:'Cairo', fontSize: 11, color: muted)), Text('${(_overallProgress * 100).toInt()}%', style: TextStyle(fontFamily:'Cairo', fontSize: 11,
-                        fontWeight: FontWeight.w700, color: AppColors.sunnahGreen)),
+                        fontWeight: FontWeight.w700, color: AppColors.brandGreen)),
               ]),
               const SizedBox(height: 6),
               ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(
                 value: _overallProgress, minHeight: 7,
-                backgroundColor: AppColors.sunnahGreen.withOpacity(0.15),
-                valueColor: const AlwaysStoppedAnimation(AppColors.sunnahGreen),
+                backgroundColor: AppColors.brandGreen.withOpacity(0.15),
+                valueColor: const AlwaysStoppedAnimation(AppColors.brandGreen),
               )),
             ]),
           ),
@@ -515,7 +516,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
               strokeWidth: 10,
               backgroundColor: Colors.grey.withOpacity(0.2),
               valueColor: AlwaysStoppedAnimation(
-                  _done ? AppColors.barakahGold : AppColors.sunnahGreen),
+                  _done ? AppColors.accentGold : AppColors.brandGreen),
               strokeCap: StrokeCap.round,
             )),
             if (_hasSteps && step != null && !_done)
@@ -527,7 +528,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
                       : 0,
                   strokeWidth: 4,
                   backgroundColor: Colors.transparent,
-                  valueColor: const AlwaysStoppedAnimation(AppColors.barakahGold),
+                  valueColor: const AlwaysStoppedAnimation(AppColors.accentGold),
                   strokeCap: StrokeCap.round,
                 ),
               )),
@@ -562,7 +563,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
                     color: i < _stepIndex
                         ? AppColors.halalGreen
                         : i == _stepIndex
-                            ? AppColors.sunnahGreen
+                            ? AppColors.brandGreen
                             : Colors.grey.withOpacity(0.3),
                     borderRadius: BorderRadius.circular(4),
                   ),
@@ -573,18 +574,18 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
 
           const SizedBox(height: 24),
 
-          // ── Hadith card ───────────────────────────────────
-          if (w.hadith != null)
+          // ── Coaching note ─────────────────────────────────
+          if (w.note != null)
             Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: AppColors.barakahGold.withOpacity(isDark ? 0.1 : 0.08),
+                color: AppColors.accentGold.withOpacity(isDark ? 0.1 : 0.08),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.barakahGold.withOpacity(0.3)),
+                border: Border.all(color: AppColors.accentGold.withOpacity(0.3)),
               ),
-              child: Text( '📖 ${isAr ? w.hadith! : (w.hadithEn ?? w.hadith!)}',
+              child: Text( '💡 ${isAr ? w.note! : (w.noteEn ?? w.note!)}',
                 textAlign: TextAlign.center, style: TextStyle(fontFamily:'Cairo', fontSize: 12,
-                    color: AppColors.barakahGold, fontStyle: FontStyle.italic, height: 1.6),
+                    color: AppColors.accentGold, fontStyle: FontStyle.italic, height: 1.6),
               ),
             ),
 
@@ -595,13 +596,13 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
             Container(
               width: double.infinity, padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.sunnahGreen.withOpacity(0.08),
+                color: AppColors.brandGreen.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.sunnahGreen.withOpacity(0.3)),
+                border: Border.all(color: AppColors.brandGreen.withOpacity(0.3)),
               ),
               child: Column(children: [ const Text('🌟', style: TextStyle(fontSize: 52)),
-                const SizedBox(height: 12), Text(t('بارك الله فيك!', 'May Allah bless you!'), style: const TextStyle(fontFamily:'Cairo', fontSize: 22,
-                        fontWeight: FontWeight.w900, color: AppColors.sunnahGreen)),
+                const SizedBox(height: 12), Text(t('أحسنت!', 'Well done!'), style: const TextStyle(fontFamily:'Cairo', fontSize: 22,
+                        fontWeight: FontWeight.w900, color: AppColors.brandGreen)),
                 const SizedBox(height: 6), Text(t('أتممت ${w.durationMin} دقيقة من ${isAr ? w.titleAr : w.titleEn}', 'Completed ${w.durationMin} min of ${isAr ? w.titleAr : w.titleEn}'),
                     textAlign: TextAlign.center, style: TextStyle(fontFamily:'Cairo', fontSize: 13, color: muted, height: 1.5)),
                 const SizedBox(height: 20),

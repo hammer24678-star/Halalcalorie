@@ -49,7 +49,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
 
     Widget section(String label) => Padding(
       padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),
-      child: Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.sunnahGreen, letterSpacing: 1.4)),
+      child: Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.brandGreen, letterSpacing: 1.4)),
     );
 
     Widget tile({
@@ -78,7 +78,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
       emoji: emoji, title: title, subtitle: subtitle,
       trailing: Switch(
         value: value, onChanged: onChanged,
-        activeColor: ramadan ? AppColors.barakahGold : AppColors.sunnahGreen,
+        activeColor: ramadan ? AppColors.accentGold : AppColors.brandGreen,
       ),
       onTap: () => onChanged(!value),
     );
@@ -134,7 +134,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                 isAr ? ref.watch(macroPlanProvider).nameAr()
                      : ref.watch(macroPlanProvider).nameEn(),
                 style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
-                    color: AppColors.sunnahGreen)),
+                    color: AppColors.brandGreen)),
               trailing: const Icon(Icons.expand_more, size: 20),
               onTap: () => _showMacroPicker(context),
             ),
@@ -149,12 +149,12 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                 margin: const EdgeInsets.only(bottom: 8),
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.barakahGold.withOpacity(0.1),
+                  color: AppColors.accentGold.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColors.barakahGold.withOpacity(0.4)),
+                  border: Border.all(color: AppColors.accentGold.withOpacity(0.4)),
                 ),
                 child: Text( t('وضع رمضان فعّال — تمارين خفيفة أولاً • وصفات مناسبة للصائم • لافتة رمضان في الرئيسية', 'Ramadan mode active — light workouts first • fasting-friendly recipes • Ramadan banner on home'), style: const TextStyle(fontFamily:'Cairo', fontSize: 11,
-                      color: AppColors.barakahGold, height: 1.5),
+                      color: AppColors.accentGold, height: 1.5),
                   textAlign: TextAlign.center,
                 ),
               ),
@@ -204,7 +204,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                 trailing: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: AppColors.barakahGold,
+                    color: AppColors.accentGold,
                     borderRadius: BorderRadius.circular(20),
                   ), child: Text(t('ترقية', 'Upgrade'), style: const TextStyle(fontFamily:'Cairo',
                           fontSize: 12, color: Colors.white, fontWeight: FontWeight.w700)),
@@ -212,7 +212,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
               )
             else
               tile( emoji:'⭐', title: t('عضو بريميوم', 'Premium Member'), subtitle: t('شكراً لدعمك! — كل الميزات مفتوحة', 'Thank you! — All features unlocked'),
-                titleColor: AppColors.barakahGold,
+                titleColor: AppColors.accentGold,
                 trailing: const Icon(Icons.check_circle, color: AppColors.halalGreen),
               ),
 
@@ -237,9 +237,9 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             ),
 
             const SizedBox(height: 32),
-            Center(child: Column(children: [ const Text('🕌', style: TextStyle(fontSize: 28)),
+            Center(child: Column(children: [ const Text('🌙', style: TextStyle(fontSize: 28)),
               const SizedBox(height: 8),
-              Text( t('بسم الله الرحمن الرحيم\nصُنع بحب للمسلمين ❤️', 'Bismillah Al-Rahman Al-Raheem\nMade with love for Muslims ❤️'),
+              Text( t('صُنع بعناية — بياناتك تبقى على جهازك ❤️', 'Made with care — your data stays on your device ❤️'),
                 textAlign: TextAlign.center, style: TextStyle(fontFamily:'Cairo', fontSize: 12,
                     color: muted, height: 1.8),
               ),
@@ -329,7 +329,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                 SizedBox(width: double.infinity, child: ElevatedButton(
                   onPressed: () => Navigator.pop(ctx),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.sunnahGreen,
+                    backgroundColor: AppColors.brandGreen,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12))),
                   child: Text(tLang(lang, 'حفظ', 'Save', 'Enregistrer', 'Kaydet', 'Simpan', 'Simpan'),
@@ -375,14 +375,14 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                 title: Text(isAr ? p.nameAr() : p.nameEn(),
                   style: TextStyle(fontFamily: 'Cairo',
                     fontWeight: sel ? FontWeight.w800 : FontWeight.w500,
-                    color: sel ? AppColors.sunnahGreen : text)),
+                    color: sel ? AppColors.brandGreen : text)),
                 subtitle: Text(
                   'P:${p.proteinPct}%  C:${p.carbsPct}%  F:${p.fatPct}%',
                   style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
                       color: AppColors.lightMuted)),
                 trailing: sel
                   ? const Icon(Icons.check_circle,
-                      color: AppColors.sunnahGreen, size: 22)
+                      color: AppColors.brandGreen, size: 22)
                   : null,
                 onTap: () {
                   ref.read(macroPlanProvider.notifier).set(p);
@@ -437,13 +437,13 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                 leading: Text(flag, style: const TextStyle(fontSize: 24)),
                 title: Text(name, style: TextStyle(fontFamily: 'Cairo',
                   fontWeight: sel ? FontWeight.w800 : FontWeight.w500,
-                  color: sel ? AppColors.sunnahGreen : text)),
+                  color: sel ? AppColors.brandGreen : text)),
                 subtitle: Text(sub, style: TextStyle(
                   fontFamily: 'Cairo', fontSize: 11,
                   color: AppColors.lightMuted)),
                 trailing: sel
                   ? const Icon(Icons.check_circle,
-                      color: AppColors.sunnahGreen, size: 22)
+                      color: AppColors.brandGreen, size: 22)
                   : null,
                 onTap: () {
                   ref.read(languageProvider.notifier).set(code);
@@ -520,7 +520,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             await ref.read(healthProvider.notifier).setSteps(0);
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar( content: Text(tLang(lang, '✅ تم مسح سجل اليوم', '✅ Today log cleared', '✅ Journal effacé', '✅ Bugün temizlendi', '✅ Log hari ini dipadam', '✅ Log hari ini dihapus'), style: const TextStyle(fontFamily:'Cairo')),
-                backgroundColor: AppColors.sunnahGreen,
+                backgroundColor: AppColors.brandGreen,
               ));
             }
           }, child: Text(tLang(lang, 'مسح', 'Clear', 'Effacer', 'Temizle', 'Padam', 'Hapus'), style: const TextStyle(fontFamily:'Cairo', color: Colors.white)),
@@ -568,7 +568,7 @@ class _NotifToggleState extends State<_NotifToggle> {
       subtitle: Text(widget.sub, style: TextStyle(fontFamily: 'Cairo',
           fontSize: 11, color: muted)),
       trailing: Switch(value: _value, onChanged: _toggle,
-          activeColor: AppColors.sunnahGreen),
+          activeColor: AppColors.brandGreen),
       onTap: () => _toggle(!_value),
     );
   }

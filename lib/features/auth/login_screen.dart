@@ -25,9 +25,9 @@ class LoginScreen extends ConsumerWidget {
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [
-                AppColors.sunnahGreen.withOpacity(0.12),
+                AppColors.brandGreen.withOpacity(0.12),
                 AppColors.darkBg,
-                AppColors.barakahGold.withOpacity(0.06),
+                AppColors.accentGold.withOpacity(0.06),
               ],
             ),
           ),
@@ -48,7 +48,7 @@ class LoginScreen extends ConsumerWidget {
                     shape: BoxShape.circle,
                     gradient: AppColors.gradientGreen,
                     boxShadow: [BoxShadow(
-                      color: AppColors.sunnahGreen.withOpacity(0.35),
+                      color: AppColors.brandGreen.withOpacity(0.35),
                       blurRadius: 24, offset: const Offset(0, 8),
                     )],
                   ),
@@ -105,7 +105,7 @@ class LoginScreen extends ConsumerWidget {
                             width: 22, height: 22,
                             child: CircularProgressIndicator(
                               strokeWidth: 2.5,
-                              color: AppColors.sunnahGreen,
+                              color: AppColors.brandGreen,
                             ))
                         : Row(
                             mainAxisAlignment: MainAxisAlignment.center,

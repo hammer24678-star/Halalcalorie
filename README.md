@@ -1,8 +1,10 @@
-# سنة سترايد — SunnahStride v0.3 🕌
+# هلال كالوري — HalalCalorie 🌙
 
-**حلال في كل لقمة • سنة في كل خطوة**
+**حلال في كل لقمة • خطوة كل يوم**
 
-تطبيق Flutter متكامل للتغذية الحلال واللياقة الإسلامية والصحة الشاملة.
+تطبيق Flutter لتتبّع السعرات والعادات اليومية، مع فحص مكوّنات المنتجات
+وسبع لغات مدعومة (العربية، الإنجليزية، الفرنسية، التركية، الأردية،
+الملايوية، الإندونيسية).
 
 ---
 
@@ -37,10 +39,15 @@ flutter build ios --release
 lib/
 ├── main.dart                          # نقطة البداية
 ├── core/
-│   ├── theme.dart                     # ألوان Light/Dark
+│   ├── theme.dart                     # ألوان Light/Dark + وضع رمضان
 │   ├── router.dart                    # التنقل (go_router)
 │   ├── shell.dart                     # Bottom nav shell
-│   └── providers.dart                 # كل providers (Riverpod)
+│   ├── providers.dart                 # كل providers (Riverpod)
+│   ├── l10n.dart                      # الترجمة — سبع لغات
+│   ├── translations.dart              # قاموس الترجمة المشترك
+│   ├── ascent.dart                    # نظام الصعود (مستويات ورتب)
+│   ├── hijri.dart                     # التقويم الهجري
+│   └── food_emoji.dart                # رموز الأطعمة + صور احتياطية
 ├── data/
 │   └── models/models.dart             # كل النماذج والبيانات
 └── features/
@@ -50,8 +57,19 @@ lib/
     ├── nutrition/                     # التغذية + السعرات
     ├── fitness/                       # اللياقة + التمارين
     ├── health/                        # الصحة + المقالات
+    ├── ascent/                        # نظام الصعود
+    ├── ramadan/                       # واجهة وضع رمضان
     ├── profile/                       # الملف الشخصي
     └── paywall/                       # الاشتراك
+```
+
+---
+
+## 🧪 الاختبارات
+
+```bash
+flutter test        # اختبارات الترجمة ونظام الصعود والتقويم الهجري
+flutter analyze     # التحليل الساكن
 ```
 
 ---
@@ -144,4 +162,4 @@ lib/
 
 **بارك الله فيكم 🤲**
 
-© 2026 SunnahStride — جميع الحقوق محفوظة
+© 2026 HalalCalorie — جميع الحقوق محفوظة

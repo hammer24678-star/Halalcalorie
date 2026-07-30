@@ -68,7 +68,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
                 child: Text(isAr ? 'لاحقاً' : 'Later')),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.sunnahGreen,
+                  backgroundColor: AppColors.brandGreen,
                   foregroundColor: Colors.white),
                 onPressed: () {
                   Navigator.pop(context);
@@ -155,7 +155,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       content: Text(
         tLang(lang, '✓ ${r.foodName} أُضيفت', '✓ ${r.foodNameEn} added', '✓ ${r.foodNameEn} added', '✓ ${r.foodNameEn} added', '✓ ${r.foodNameEn} added', '✓ ${r.foodNameEn} added'),
         style: const TextStyle(fontFamily: 'Cairo')),
-      backgroundColor: AppColors.sunnahGreen,
+      backgroundColor: AppColors.brandGreen,
       duration: const Duration(seconds: 2),
     ));
   }
@@ -176,9 +176,10 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
     final total = _results.fold(0, (s, r) => s + r.kcal);
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
-        tLang(lang, '✓ أُضيفت كل الأطعمة ($total سعرة)', '✓ All foods added ($total kcal)', '✓ All foods added ($total kcal)', '✓ All foods added ($total kcal)', '✓ All foods added ($total kcal)', '✓ All foods added ($total kcal)'),
+        '${tLang(lang, '✓ أُضيفت كل الأطعمة', '✓ All foods added')} '
+        '($total ${tLang(lang, 'سعرة', 'kcal')})',
         style: const TextStyle(fontFamily: 'Cairo')),
-      backgroundColor: AppColors.sunnahGreen,
+      backgroundColor: AppColors.brandGreen,
       duration: const Duration(seconds: 3),
     ));
   }
@@ -195,7 +196,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         appBar: AppBar( title: Text(t('📸 تحليل الطعام بـ AI', '📸 AI Food Analyzer')),
-          backgroundColor: AppColors.sunnahGreen,
+          backgroundColor: AppColors.brandGreen,
           actions: [
             IconButton(
               icon: const Icon(Icons.flash_on_rounded, color: Colors.white),
@@ -219,7 +220,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
             Row(children: [
               Expanded(child: _pickBtn(
                 icon: Icons.camera_alt, label: t('📷 الكاميرا', '📷 Camera'),
-                color: AppColors.sunnahGreen,
+                color: AppColors.brandGreen,
                 onTap: () => _pick(ImageSource.camera),
               )),
               const SizedBox(width: 10),
@@ -237,7 +238,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
               SizedBox(width: double.infinity, child: ElevatedButton.icon(
                 onPressed: _analyze, icon: const Text('🤖', style: TextStyle(fontSize: 18)), label: Text(t('تحليل الآن 🔍', 'Analyze Now 🔍'), style: const TextStyle(fontFamily:'Cairo', fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.barakahGold,
+                  backgroundColor: AppColors.accentGold,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
@@ -271,10 +272,11 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
                     onPressed: _addAllToTracker,
                     icon: const Icon(Icons.playlist_add, color: Colors.white),
                     label: Text(
-                      tLang(lang, 'إضافة كل الأطعمة للعداد (${_results.fold(0,(s,r)=>s+r.kcal)} سعرة)', 'Add All Foods to Tracker (${_results.fold(0,(s,r)=>s+r.kcal)} kcal)', 'Add All Foods to Tracker (${_results.fold(0,(s,r)=>s+r.kcal)} kcal)', 'Add All Foods to Tracker (${_results.fold(0,(s,r)=>s+r.kcal)} kcal)', 'Add All Foods to Tracker (${_results.fold(0,(s,r)=>s+r.kcal)} kcal)', 'Add All Foods to Tracker (${_results.fold(0,(s,r)=>s+r.kcal)} kcal)'),
+                      '${tLang(lang, 'إضافة كل الأطعمة للعداد', 'Add All Foods to Tracker')} '
+                      '(${_results.fold(0,(s,r)=>s+r.kcal)} ${tLang(lang, 'سعرة', 'kcal')})',
                       style: const TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.w700, color: Colors.white)),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.sunnahGreen,
+                      backgroundColor: AppColors.brandGreen,
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
                   )),
@@ -298,11 +300,11 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
-          colors: [AppColors.sunnahGreen, AppColors.darkGreen],
+          colors: [AppColors.brandGreen, AppColors.darkGreen],
           begin: Alignment.topRight, end: Alignment.bottomLeft,
         ),
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [BoxShadow(color: AppColors.sunnahGreen.withOpacity(0.3), blurRadius: 16, offset: const Offset(0, 6))],
+        boxShadow: [BoxShadow(color: AppColors.brandGreen.withOpacity(0.3), blurRadius: 16, offset: const Offset(0, 6))],
       ),
       child: Column(children: [ const Text('📸', style: TextStyle(fontSize: 52)),
         const SizedBox(height: 10),
@@ -337,7 +339,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
             Container(
               color: Colors.black45,
               child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
-                const CircularProgressIndicator(color: AppColors.barakahGold, strokeWidth: 3),
+                const CircularProgressIndicator(color: AppColors.accentGold, strokeWidth: 3),
                 const SizedBox(height: 10), const Text('🤖', style: TextStyle(fontSize: 28)),
               ])),
             ),
@@ -385,14 +387,14 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         ),
         const SizedBox(height: 4),
         Text(
-          tLang(lang, 'Claude AI يتعرف على الطعام\nويحسب القيم الغذائية والحكم الشرعي', 'Claude AI is identifying the food\nand calculating nutritional values & halal status', 'Claude AI is identifying the food\nand calculating nutritional values & halal status', 'Claude AI is identifying the food\nand calculating nutritional values & halal status', 'Claude AI is identifying the food\nand calculating nutritional values & halal status', 'Claude AI is identifying the food\nand calculating nutritional values & halal status'),
+          tLang(lang, 'يجري التعرّف على الطعام\nوحساب القيم الغذائية وحالة الحلال', 'Identifying the food\nand working out nutrition and halal status'),
           textAlign: TextAlign.center, style: TextStyle(fontFamily:'Cairo', fontSize: 12,
             color: isDark ? AppColors.darkMuted : AppColors.lightMuted, height: 1.6),
         ),
         const SizedBox(height: 14),
         const LinearProgressIndicator(
           backgroundColor: Colors.transparent,
-          valueColor: AlwaysStoppedAnimation(AppColors.sunnahGreen),
+          valueColor: AlwaysStoppedAnimation(AppColors.brandGreen),
         ),
       ]),
     );
@@ -417,7 +419,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         ]),
         const SizedBox(height: 8),
         Text(
-          tLang(lang, 'أضف ANTHROPIC_API_KEY في GitHub Secrets ثم أعد البناء:\nSettings → Secrets → Actions', 'Add ANTHROPIC_API_KEY to GitHub repo secrets and rebuild.\nSettings → Secrets and variables → Actions', 'Add ANTHROPIC_API_KEY to GitHub repo secrets and rebuild.\nSettings → Secrets and variables → Actions', 'Add ANTHROPIC_API_KEY to GitHub repo secrets and rebuild.\nSettings → Secrets and variables → Actions', 'Add ANTHROPIC_API_KEY to GitHub repo secrets and rebuild.\nSettings → Secrets and variables → Actions', 'Add ANTHROPIC_API_KEY to GitHub repo secrets and rebuild.\nSettings → Secrets and variables → Actions'),
+          tLang(lang, 'خدمة التحليل غير مهيّأة في هذه النسخة.', 'Photo analysis is not configured in this build.'),
           style: const TextStyle(fontFamily: 'Cairo', fontSize: 12,
               color: Colors.white70, height: 1.5)),
         const SizedBox(height: 12),
@@ -456,20 +458,21 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppColors.barakahGold.withOpacity(0.1),
+        color: AppColors.accentGold.withOpacity(0.1),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.barakahGold.withOpacity(0.4))),
+        border: Border.all(color: AppColors.accentGold.withOpacity(0.4))),
       child: Column(children: [
         Text(
-          tLang(lang, '📊 المجموع: $totalKcal سعرة', '📊 Total: $totalKcal kcal', '📊 Total: $totalKcal kcal', '📊 Total: $totalKcal kcal', '📊 Total: $totalKcal kcal', '📊 Total: $totalKcal kcal'),
+          '${tLang(lang, '📊 المجموع', '📊 Total')}: '
+          '$totalKcal ${tLang(lang, 'سعرة', 'kcal')}',
           style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800,
-              fontSize: 16, color: AppColors.barakahGold)),
+              fontSize: 16, color: AppColors.accentGold)),
         const SizedBox(height: 8),
         Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-          _macroChip('💪 P', '${totalProt.toInt()}g', AppColors.sunnahGreen),
+          _macroChip('💪 P', '${totalProt.toInt()}g', AppColors.brandGreen),
           _macroChip('🍚 C', '${totalCarbs.toInt()}g', AppColors.waterBlue),
           _macroChip('🥑 F', '${totalFat.toInt()}g', AppColors.doubtOrange),
-          _macroChip('🍽️', '${items.length} ${isAr ? "صنف" : "items"}', AppColors.barakahGold),
+          _macroChip('🍽️', '${items.length} ${isAr ? "صنف" : "items"}', AppColors.accentGold),
         ]),
       ]),
     );
@@ -525,25 +528,25 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         child: Row(children: [ _macroChip(tLang(lang, 'بروتين', 'Protein', 'Protéines', 'Protein', 'Protein', 'Protein'), '${r.proteinG}g', AppColors.halalGreen),
           const SizedBox(width: 8), _macroChip(tLang(lang, 'كربوهيدرات', 'Carbs', 'Glucides', 'Karbonhidrat', 'Karbohidrat', 'Karbohidrat'), '${r.carbsG}g', AppColors.waterBlue),
-          const SizedBox(width: 8), _macroChip(tLang(lang, 'دهون', 'Fat', 'Lipides', 'Yağ', 'Lemak', 'Lemak'), '${r.fatG}g', AppColors.barakahGold),
+          const SizedBox(width: 8), _macroChip(tLang(lang, 'دهون', 'Fat', 'Lipides', 'Yağ', 'Lemak', 'Lemak'), '${r.fatG}g', AppColors.accentGold),
         ]),
       ),
 
-      // ── Sunnah note ───────────────────────────────────
-      if ((r.sunnahNote ?? '').isNotEmpty)
+      // ── Practical tip ─────────────────────────────────
+      if ((r.tipNote ?? '').isNotEmpty)
         Container(
           color: bg,
           padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
           child: Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: AppColors.barakahGold.withOpacity(0.1),
+              color: AppColors.accentGold.withOpacity(0.1),
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: AppColors.barakahGold.withOpacity(0.3)),
+              border: Border.all(color: AppColors.accentGold.withOpacity(0.3)),
             ),
             child: Row(children: [ const Text('📖', style: TextStyle(fontSize: 16)),
               const SizedBox(width: 8),
-              Expanded(child: Text((isAr ? r.sunnahNote : r.sunnahNoteEn) ?? '', style: const TextStyle(fontFamily:'Cairo', fontSize: 11, height: 1.5, color: AppColors.lightMuted))),
+              Expanded(child: Text((isAr ? r.tipNote : r.tipNoteEn) ?? '', style: const TextStyle(fontFamily:'Cairo', fontSize: 11, height: 1.5, color: AppColors.lightMuted))),
             ]),
           ),
         ),
@@ -556,7 +559,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(tLang(lang, '🥗 المكونات الرئيسية:', '🥗 Main ingredients:', '🥗 Ingrédients principaux :', '🥗 Ana malzemeler:', '🥗 Bahan-bahan utama:', '🥗 Bahan-bahan utama:'), style: const TextStyle(fontFamily:'Cairo', fontSize: 12, fontWeight: FontWeight.w700)),
             const SizedBox(height: 6),
             Wrap(spacing: 6, runSpacing: 4, children: r.ingredients.map((ing) => Chip( label: Text(ing, style: const TextStyle(fontFamily:'Cairo', fontSize: 10, color: Colors.white)),
-              backgroundColor: AppColors.sunnahGreen,
+              backgroundColor: AppColors.brandGreen,
               padding: EdgeInsets.zero,
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
             )).toList()),
@@ -571,7 +574,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
           Expanded(child: ElevatedButton(
             onPressed: () => _addToTracker(r),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.sunnahGreen,
+              backgroundColor: AppColors.brandGreen,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
             ), child: Text(tLang(lang, '+ أضف للعداد', '+ Add to Tracker', '+ Ajouter au suivi', '+ Takibe Ekle', '+ Tambah ke Penjejak', '+ Tambah ke Pelacak'), style: const TextStyle(fontFamily:'Cairo', color: Colors.white, fontWeight: FontWeight.w700)),
@@ -581,9 +584,9 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
             onPressed: () => setState(() { _image = null; _results = []; _state = AnalysisState.idle; }),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-              side: const BorderSide(color: AppColors.sunnahGreen),
+              side: const BorderSide(color: AppColors.brandGreen),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ), child: Text(tLang(lang, '↺ جديد', '↺ New', '↺ Nouveau', '↺ Yeni', '↺ Baru', '↺ Baru'), style: const TextStyle(fontFamily: 'Cairo', color: AppColors.sunnahGreen)),
+            ), child: Text(tLang(lang, '↺ جديد', '↺ New', '↺ Nouveau', '↺ Yeni', '↺ Baru', '↺ Baru'), style: const TextStyle(fontFamily: 'Cairo', color: AppColors.brandGreen)),
           ),
         ]),
       ),
@@ -718,8 +721,8 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
       halalStatus: HalalStatus.halal,
       halalExplanation: '',
       halalExplanationEn: '',
-      sunnahNote: '',
-      sunnahNoteEn: '',
+      tipNote: '',
+      tipNoteEn: '',
     );
     widget.onAdd(r);
     Navigator.of(context).pop();
@@ -758,7 +761,7 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(children: [
-                const Icon(Icons.flash_on_rounded, color: AppColors.barakahGold, size: 22),
+                const Icon(Icons.flash_on_rounded, color: AppColors.accentGold, size: 22),
                 const SizedBox(width: 8),
                 Text('Quick Entry',
                   style: TextStyle(fontFamily: 'Cairo', fontSize: 18,
@@ -788,7 +791,7 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
                 ElevatedButton(
                   onPressed: _loading ? null : _analyze,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.barakahGold,
+                    backgroundColor: AppColors.accentGold,
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                     minimumSize: Size.zero,
@@ -813,7 +816,7 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
                 child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text('AI Results',
                     style: TextStyle(fontFamily: 'Cairo', fontSize: 13,
-                        fontWeight: FontWeight.w700, color: AppColors.barakahGold)),
+                        fontWeight: FontWeight.w700, color: AppColors.accentGold)),
                   const SizedBox(height: 8),
                   ..._aiResults.map((r) => Container(
                     margin: const EdgeInsets.only(bottom: 8),
@@ -821,7 +824,7 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
                     decoration: BoxDecoration(
                       color: surf,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: AppColors.barakahGold.withOpacity(0.3)),
+                      border: Border.all(color: AppColors.accentGold.withOpacity(0.3)),
                     ),
                     child: Row(children: [
                       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -834,7 +837,7 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
                       ElevatedButton(
                         onPressed: () => widget.onAdd(r),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.sunnahGreen,
+                          backgroundColor: AppColors.brandGreen,
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                           minimumSize: Size.zero,
@@ -883,7 +886,7 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
                         ],
                       )),
                       const SizedBox(width: 4),
-                      Icon(Icons.add_circle_outline, size: 18, color: AppColors.sunnahGreen),
+                      Icon(Icons.add_circle_outline, size: 18, color: AppColors.brandGreen),
                     ]),
                   ),
                 );

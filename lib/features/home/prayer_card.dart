@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
 import '../../core/prayer_provider.dart';
+import '../../core/providers.dart';
+import '../../core/l10n.dart';
 import '../../core/prayer_service.dart';
 
 class PrayerTimesCard extends ConsumerStatefulWidget {
@@ -54,7 +56,7 @@ class _PrayerTimesCardState extends ConsumerState<PrayerTimesCard> {
           decoration: BoxDecoration(
             color: bg,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.sunnahGreen.withOpacity(0.2)),
+            border: Border.all(color: AppColors.brandGreen.withOpacity(0.2)),
             boxShadow: [BoxShadow(
               color: Colors.black.withOpacity(0.08),
               blurRadius: 12, offset: const Offset(0, 4),
@@ -76,9 +78,8 @@ class _PrayerTimesCardState extends ConsumerState<PrayerTimesCard> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      widget.isAr
-                          ? 'الصلاة القادمة: ${next.nameAr}'
-                          : 'Next Prayer: ${next.nameEn}',
+                      '${L.fromLang(ref.watch(languageProvider)).nextPrayer}: '
+                      '${widget.isAr ? next.nameAr : next.nameEn}',
                       style: const TextStyle(
                         fontFamily: 'Cairo',
                         fontSize: 12, fontWeight: FontWeight.w800,
@@ -147,7 +148,7 @@ class _PrayerTimesCardState extends ConsumerState<PrayerTimesCard> {
     child: const Center(child: SizedBox(
       width: 20, height: 20,
       child: CircularProgressIndicator(
-        strokeWidth: 2, color: AppColors.sunnahGreen),
+        strokeWidth: 2, color: AppColors.brandGreen),
     )),
   );
 }
@@ -164,7 +165,7 @@ class _PrayerItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = isNext ? AppColors.sunnahGreen
+    final color = isNext ? AppColors.brandGreen
                 : isPast ? AppColors.darkMuted
                 : (isDark ? Colors.white70 : Colors.black87);
 
@@ -183,14 +184,14 @@ class _PrayerItem extends StatelessWidget {
         style: TextStyle(
           fontFamily: 'Cairo',
           fontSize: 10, fontWeight: FontWeight.w800,
-          color: isNext ? AppColors.sunnahGreen : color,
+          color: isNext ? AppColors.brandGreen : color,
         ),
       ),
       if (isNext) Container(
         margin: const EdgeInsets.only(top: 2),
         width: 4, height: 4,
         decoration: const BoxDecoration(
-          color: AppColors.sunnahGreen, shape: BoxShape.circle),
+          color: AppColors.brandGreen, shape: BoxShape.circle),
       ),
     ]);
   }

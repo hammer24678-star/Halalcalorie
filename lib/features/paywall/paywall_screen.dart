@@ -79,7 +79,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
             numberOfParticles: 30,
             gravity: 0.3,
             colors: const [
-              AppColors.sunnahGreen, AppColors.barakahGold,
+              AppColors.brandGreen, AppColors.accentGold,
               AppColors.halalGreen, Colors.white,
               Color(0xFF4CAF50), Color(0xFFFFD700),
             ],
@@ -99,11 +99,11 @@ class _PaywallState extends ConsumerState<PaywallScreen>
               Text(isAr ? 'تهانيّ! أصبحت عضواً بريميوم 🌟' : 'Congratulations! You are Premium 🌟',
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontFamily: 'Cairo', fontSize: 18,
-                  fontWeight: FontWeight.w900, color: AppColors.barakahGold)),
+                  fontWeight: FontWeight.w900, color: AppColors.accentGold)),
               const SizedBox(height: 8),
               Text(isAr
-                ? 'تم فتح جميع الميزات المميزة! بارك الله فيك 🌙'
-                : 'All premium features unlocked! May Allah bless you 🌙',
+                ? 'تم فتح جميع الميزات المميزة — شكراً لدعمك 🌙'
+                : 'All premium features unlocked — thanks for your support 🌙',
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
                   color: Colors.white70, height: 1.5)),
@@ -114,7 +114,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
                   if (context.mounted) Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.barakahGold,
+                  backgroundColor: AppColors.accentGold,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                 ),
@@ -159,7 +159,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
         ),
         body: offerings.when(
           loading: () => Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const CircularProgressIndicator(color: AppColors.sunnahGreen, strokeWidth: 3),
+            const CircularProgressIndicator(color: AppColors.brandGreen, strokeWidth: 3),
             const SizedBox(height: 12),
             Text(t('جاري تحميل العروض...', 'Loading offers...'), style: const TextStyle(fontFamily: 'Cairo', color: AppColors.lightMuted)),
           ])),
@@ -176,9 +176,9 @@ class _PaywallState extends ConsumerState<PaywallScreen>
       Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: [AppColors.sunnahGreen, AppColors.darkGreen]),
+          gradient: const LinearGradient(colors: [AppColors.brandGreen, AppColors.darkGreen]),
           borderRadius: BorderRadius.circular(22),
-          boxShadow: [BoxShadow(color: AppColors.sunnahGreen.withOpacity(0.3), blurRadius: 20, offset: const Offset(0,8))],
+          boxShadow: [BoxShadow(color: AppColors.brandGreen.withOpacity(0.3), blurRadius: 20, offset: const Offset(0,8))],
         ),
         child: Column(children: [
           const Text('🌟', style: TextStyle(fontSize: 72)),
@@ -186,7 +186,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
           Text(t('HalalCalorie بريميوم', 'HalalCalorie Premium'),
             style: const TextStyle(fontFamily: 'Cairo', fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white)),
           const SizedBox(height: 6),
-          Text(t('حلال في كل لقمة • سنة في كل خطوة', 'Halal in every bite • Sunnah in every step'),
+          Text(t('حلال في كل لقمة • خطوة كل يوم', 'Halal in every bite • a step every day'),
             textAlign: TextAlign.center,
             style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: Colors.white70)),
         ]),
@@ -212,11 +212,11 @@ class _PaywallState extends ConsumerState<PaywallScreen>
         ['🏃', '180 workouts + Ramadan + Postnatal plans'],
         ['🌿', 'AI meal planner personalized to your body'],
         ['🧬', 'Full body composition analysis'],
-        ['✨', 'Barakah advanced insights + weekly reports'],
+        ['✨', 'Ascent progression, quests + weekly review'],
       ]).map((f) => Padding(padding: const EdgeInsets.only(bottom: 10),
         child: Row(children: [
           Container(width: 36, height: 36,
-            decoration: BoxDecoration(color: AppColors.sunnahGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
+            decoration: BoxDecoration(color: AppColors.brandGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
             child: Center(child: Text(f[0], style: const TextStyle(fontSize: 18)))),
           const SizedBox(width: 12),
           Expanded(child: Text(f[1], style: TextStyle(fontFamily: 'Cairo', fontSize: 13,
@@ -242,10 +242,10 @@ class _PaywallState extends ConsumerState<PaywallScreen>
       SizedBox(width: double.infinity, child: ElevatedButton(
         onPressed: _loading ? null : () => _purchase(offerings),
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.barakahGold,
+          backgroundColor: AppColors.accentGold,
           padding: const EdgeInsets.symmetric(vertical: 18),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          elevation: 4, shadowColor: AppColors.barakahGold.withOpacity(0.4),
+          elevation: 4, shadowColor: AppColors.accentGold.withOpacity(0.4),
         ),
         child: _loading
           ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -271,7 +271,7 @@ class _PaywallState extends ConsumerState<PaywallScreen>
       const SizedBox(height: 8),
       Text(t('Apple Pay وGoogle Pay متاحان تلقائياً عند الاشتراك', 'Apple Pay & Google Pay available automatically at checkout'),
         textAlign: TextAlign.center,
-        style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, color: AppColors.sunnahGreen, fontWeight: FontWeight.w600)),
+        style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, color: AppColors.brandGreen, fontWeight: FontWeight.w600)),
       const SizedBox(height: 4),
       Text(t('مدفوعات آمنة • يمكن الإلغاء في أي وقت • لا رسوم خفية',
               'Secure payment • Cancel anytime • No hidden fees'),
@@ -300,25 +300,25 @@ class _PaywallState extends ConsumerState<PaywallScreen>
             margin: const EdgeInsets.only(bottom: 10),
             padding: const EdgeInsets.all(15),
             decoration: BoxDecoration(
-              color: isSel ? AppColors.sunnahGreen.withOpacity(0.08) : bg,
-              border: Border.all(color: isSel ? AppColors.sunnahGreen : Colors.grey.withOpacity(0.25), width: isSel ? 2.5 : 0.8),
+              color: isSel ? AppColors.brandGreen.withOpacity(0.08) : bg,
+              border: Border.all(color: isSel ? AppColors.brandGreen : Colors.grey.withOpacity(0.25), width: isSel ? 2.5 : 0.8),
               borderRadius: BorderRadius.circular(16),
-              boxShadow: isSel ? [BoxShadow(color: AppColors.sunnahGreen.withOpacity(0.12), blurRadius: 12)] : null,
+              boxShadow: isSel ? [BoxShadow(color: AppColors.brandGreen.withOpacity(0.12), blurRadius: 12)] : null,
             ),
             child: Row(children: [
               AnimatedContainer(duration: const Duration(milliseconds: 200), width: 22, height: 22,
                 decoration: BoxDecoration(shape: BoxShape.circle,
-                  color: isSel ? AppColors.sunnahGreen : Colors.transparent,
-                  border: Border.all(color: isSel ? AppColors.sunnahGreen : Colors.grey.shade400)),
+                  color: isSel ? AppColors.brandGreen : Colors.transparent,
+                  border: Border.all(color: isSel ? AppColors.brandGreen : Colors.grey.shade400)),
                 child: isSel ? const Icon(Icons.check, size: 14, color: Colors.white) : null),
               const SizedBox(width: 12),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                 Row(children: [
-                  Text(title, style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 15, color: isSel ? AppColors.sunnahGreen : null)),
+                  Text(title, style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 15, color: isSel ? AppColors.brandGreen : null)),
                   if (pop) ...[
                     const SizedBox(width: 8),
                     Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(color: AppColors.barakahGold, borderRadius: BorderRadius.circular(20)),
+                      decoration: BoxDecoration(color: AppColors.accentGold, borderRadius: BorderRadius.circular(20)),
                       child: Text(tLang(lang, 'الأكثر شعبية', 'Most Popular', 'Le plus populaire', 'En Popüler', 'Paling Popular', 'Paling Populer'),
                         style: const TextStyle(fontFamily: 'Cairo', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white))),
                   ],

@@ -95,7 +95,7 @@ class ProfileScreen extends ConsumerWidget {
           child: Column(children: [
             Container(width: 96, height: 96,
               decoration: BoxDecoration(shape: BoxShape.circle,
-                color: isSis ? AppColors.barakahGold.withOpacity(0.15) : AppColors.sunnahGreen.withOpacity(0.12)),
+                color: isSis ? AppColors.accentGold.withOpacity(0.15) : AppColors.brandGreen.withOpacity(0.12)),
               child: Center(child: Text(isSis ? '🧕' : '🧔', style: const TextStyle(fontSize: 44)))),
             const SizedBox(height: 11),
             Text(isSis ? l.womanLabel : l.manLabel,
@@ -108,7 +108,7 @@ class ProfileScreen extends ConsumerWidget {
               Text('${profile.age} ${l.yrsLabel} • ${profile.heightCm.toInt()} cm • ${profile.weightKg.toStringAsFixed(1)} kg',
                   style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted)),
               Text(isAr ? profile.primaryGoal.nameAr() : profile.primaryGoal.nameEn(),
-                  style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.sunnahGreen, fontWeight: FontWeight.w700)),
+                  style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.brandGreen, fontWeight: FontWeight.w700)),
             ],
             if (isPremium) ...[
               const SizedBox(height: 10),
@@ -117,8 +117,8 @@ class ProfileScreen extends ConsumerWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
                   decoration: BoxDecoration(
-                    color: AppColors.barakahGold.withOpacity(0.15),
-                    border: Border.all(color: AppColors.barakahGold),
+                    color: AppColors.accentGold.withOpacity(0.15),
+                    border: Border.all(color: AppColors.accentGold),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
@@ -135,7 +135,7 @@ class ProfileScreen extends ConsumerWidget {
                            : planName == 'monthly' ? 'Monthly Premium'
                            : 'Premium'),
                       style: const TextStyle(fontFamily: 'Cairo', fontSize: 12,
-                          fontWeight: FontWeight.w700, color: AppColors.barakahGold),
+                          fontWeight: FontWeight.w700, color: AppColors.accentGold),
                     ),
                   ]),
                 ),
@@ -167,7 +167,7 @@ class ProfileScreen extends ConsumerWidget {
             Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
               _lifeStat('🔥', '$streak', t('أيام تتابع', 'Streak'), AppColors.haramRed),
               _lifeStat('🏃', workoutMin > 0 ? '${workoutMin}m' : '—',
-                  t('اليوم', 'Today'), AppColors.sunnahGreen),
+                  t('اليوم', 'Today'), AppColors.brandGreen),
               _lifeStat('💧', '${water.cups}/${water.goal}',
                   t('ماء اليوم', 'Today Water'), AppColors.waterBlue),
               _lifeStat('😴', '${sleep.hours.toInt()}h',
@@ -190,7 +190,7 @@ class ProfileScreen extends ConsumerWidget {
                   Text(t('💪 مقاييس جسمك', '💪 Body Metrics'),
                       style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 13)),
                   Text(t('مشاهدة الكل ←', '→ View All'),
-                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.sunnahGreen)),
+                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.brandGreen)),
                 ]),
                 const SizedBox(height: 10),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
@@ -218,8 +218,8 @@ class ProfileScreen extends ConsumerWidget {
             child: Container(
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: AppColors.sunnahGreen.withOpacity(0.06),
-                border: Border.all(color: AppColors.sunnahGreen.withOpacity(0.2)),
+                color: AppColors.brandGreen.withOpacity(0.06),
+                border: Border.all(color: AppColors.brandGreen.withOpacity(0.2)),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(children: [
@@ -227,12 +227,12 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(width: 11),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(t('ترقية إلى بريميوم', 'Upgrade to Premium'),
-                      style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.sunnahGreen)),
+                      style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.brandGreen)),
                   Text(t('ماسحات غير محدودة + ١٨٠ تمرين + مخطط AI + مقاييس دقيقة',
                          'Unlimited scans + 180 workouts + AI planner + precise body metrics'),
                       style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.lightMuted)),
                 ])),
-                const Icon(Icons.arrow_back_ios, size: 14, color: AppColors.sunnahGreen),
+                const Icon(Icons.arrow_back_ios, size: 14, color: AppColors.brandGreen),
               ]),
             ),
           ),
@@ -270,7 +270,7 @@ class ProfileScreen extends ConsumerWidget {
             _settingTile('ℹ️', t('حول التطبيق','About App'), 'v1.0', () => showAboutDialog(
               context: context, applicationName: 'HalalCalorie / HalalCalorie',
               applicationVersion: '0.6.0',
-              children: [const Text('© 2026 HalalCalorie — Halal • Sunnah • Privacy',
+              children: [const Text('© 2026 HalalCalorie — Halal • Private • Ad-free',
                   style: TextStyle(fontFamily: 'Cairo'))])),
             ListTile(
               leading: const Text('🚪', style: TextStyle(fontSize: 20)),
@@ -288,20 +288,20 @@ class ProfileScreen extends ConsumerWidget {
   // ── ACHIEVEMENT BADGES ─────────────────────────────────────
   Widget _achievementsCard(bool isPremium, bool isAr, bool isDark, WidgetRef ref, BuildContext context) {
     final ach  = ref.watch(achievementProvider);
-    final fast = ref.watch(sunnahFastProvider);
+    final fast = ref.watch(fastingProvider);
     final bg   = isDark ? AppColors.darkCard : Colors.white;
     final muted= isDark ? AppColors.darkMuted : AppColors.lightMuted;
     String t(String ar, String en) => isAr ? ar : en;
 
     final badges = <(String, String, bool)>[
-      ('🌱', t('البداية','First Step'),          ach.totalDaysLogged >= 1),
-      ('📅', t('أسبوع كامل','Week Warrior'),      ach.totalDaysLogged >= 7),
-      ('🌙', t('صائم السنة','Sunnah Faster'),     fast.lifetimeCount >= 1),
-      ('🏆', t('محارب السنة','Sunnah Warrior'),   fast.lifetimeCount >= 7),
-      ('🍯', t('طعام نبوي','Sunnah Chef'),        ach.sunnahFoodsLogged >= 3),
-      ('✨', t('الإخلاص','Mukhlis'),               ach.totalDaysLogged >= 30),
-      ('💎', t('المجاهد','Al-Mujahid'),            ach.totalDaysLogged >= 100),
-      ('🕌', t('النية','Niyyah Master'),
+      ('🌱', t('البداية','Awakened'),            ach.totalDaysLogged >= 1),
+      ('🔗', t('أسبوع كامل','Chain of Seven'),    ach.totalDaysLogged >= 7),
+      ('🌘', t('أول إمساك','First Restraint'),    fast.lifetimeCount >= 1),
+      ('⛰️', t('الثابت','Unmoved'),               fast.lifetimeCount >= 7),
+      ('🌿', t('الطيّب','Wholesome'),             ach.wholeFoodsLogged >= 3),
+      ('✨', t('المتقن','Refined'),               ach.totalDaysLogged >= 30),
+      ('💎', t('المئة','Centurion'),              ach.totalDaysLogged >= 100),
+      ('📘', t('العزم','Resolve'),
         ach.totalDaysLogged >= 28 && fast.lifetimeCount >= 4),
     ];
     final earned = badges.where((b) => b.$3).length;
@@ -324,11 +324,11 @@ class ProfileScreen extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
             decoration: BoxDecoration(
-              color: AppColors.barakahGold.withOpacity(0.15),
+              color: AppColors.accentGold.withOpacity(0.15),
               borderRadius: BorderRadius.circular(20)),
             child: Text('$earned/${badges.length}',
               style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
-                fontWeight: FontWeight.w700, color: AppColors.barakahGold)),
+                fontWeight: FontWeight.w700, color: AppColors.accentGold)),
           ),
         ]),
         const SizedBox(height: 14),
@@ -341,7 +341,7 @@ class ProfileScreen extends ConsumerWidget {
             child: Center(child: Text(
               t('⭐ ترقّ لفتح كل الإنجازات','⭐ Upgrade to unlock all badges'),
               style: const TextStyle(fontFamily: 'Cairo',
-                fontSize: 11, color: AppColors.barakahGold))),
+                fontSize: 11, color: AppColors.accentGold))),
           ),
         ],
       ]),
@@ -356,12 +356,12 @@ class ProfileScreen extends ConsumerWidget {
         width: 74, padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
         decoration: BoxDecoration(
           color: earned
-            ? AppColors.barakahGold.withOpacity(0.1)
+            ? AppColors.accentGold.withOpacity(0.1)
             : const Color(0xFF1A1F26),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: earned
-              ? AppColors.barakahGold.withOpacity(0.45)
+              ? AppColors.accentGold.withOpacity(0.45)
               : Colors.transparent)),
         child: Column(children: [
           Text(emoji, style: const TextStyle(fontSize: 22)),
@@ -369,11 +369,11 @@ class ProfileScreen extends ConsumerWidget {
           Text(label,
             style: TextStyle(fontFamily: 'Cairo', fontSize: 8,
               fontWeight: FontWeight.w600,
-              color: earned ? AppColors.barakahGold : muted),
+              color: earned ? AppColors.accentGold : muted),
             textAlign: TextAlign.center, maxLines: 2,
             overflow: TextOverflow.ellipsis),
           if (earned) const Icon(Icons.check_circle_rounded,
-            color: AppColors.barakahGold, size: 11),
+            color: AppColors.accentGold, size: 11),
         ]),
       ),
     );
@@ -436,9 +436,9 @@ class ProfileScreen extends ConsumerWidget {
       const SizedBox(height: 12),
       ...cities.map((c) => ListTile(
         title: Text(c, style: TextStyle(fontFamily: 'Cairo',
-          color: ref.read(cityProvider) == c ? AppColors.sunnahGreen : null,
+          color: ref.read(cityProvider) == c ? AppColors.brandGreen : null,
           fontWeight: ref.read(cityProvider) == c ? FontWeight.w700 : FontWeight.w400)),
-        trailing: ref.read(cityProvider) == c ? const Icon(Icons.check, color: AppColors.sunnahGreen) : null,
+        trailing: ref.read(cityProvider) == c ? const Icon(Icons.check, color: AppColors.brandGreen) : null,
         onTap: () { ref.read(cityProvider.notifier).set(c); if (context.mounted) Navigator.pop(context); },
       )),
     ]));
@@ -495,7 +495,7 @@ class ProfileScreen extends ConsumerWidget {
                   ? (tLang(lang, '✅ تم استعادة الاشتراك', '✅ Subscription restored', '✅ Abonnement restauré', '✅ Abonelik geri yüklendi', '✅ Langganan dipulihkan', '✅ Langganan dipulihkan'))
                   : (tLang(lang, 'لم يتم العثور على مشتريات', 'No purchases found', 'Aucun achat trouvé', 'Satın alma bulunamadı', 'Tiada pembelian dijumpai', 'Tidak ada pembelian ditemukan')),
                 style: const TextStyle(fontFamily: 'Cairo')),
-                backgroundColor: result.success ? AppColors.sunnahGreen : AppColors.haramRed,
+                backgroundColor: result.success ? AppColors.brandGreen : AppColors.haramRed,
               ));
             },
           ),

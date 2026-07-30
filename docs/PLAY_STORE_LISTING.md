@@ -17,10 +17,10 @@ ARABIC LISTING (PRIMARY)
 
 ── Long description (4000 chars max) ──────────────────────
 
-🌿 هلال كالوري — التطبيق الأول لتتبع السعرات الحلالية
+🌿 هلال كالوري — تتبّع سعراتك وعاداتك، وتحقّق من المكوّنات
 
-هل تريد الاعتناء بصحتك وفق القيم الإسلامية؟
-هلال كالوري هو رفيقك اليومي لتتبع الطعام، اللياقة البدنية، والصحة العامة — بطريقة حلال ومتكاملة.
+هلال كالوري تطبيق لتسجيل الطعام ومتابعة العادات اليومية، مع فحص
+مكوّنات المنتجات. سبع لغات، وسجلّك يبقى على جهازك.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -36,25 +36,30 @@ ARABIC LISTING (PRIMARY)
 
 🍽️ قاعدة طعام شاملة
 • أكثر من ١٠٠٠ طعام عربي وعالمي
-• أطعمة مصرية، خليجية، شامية، باكستانية، إندونيسية
+• أطباق مصرية، خليجية، شامية، باكستانية، إندونيسية
 • مطاعم شهيرة: ماكدونالدز، كنتاكي، ستاربكس، صب واي
-• أطعمة السنة النبوية: تمر، عسل، زيت زيتون، حليب إبل
+• بحث يعرض قائمة نتائج كاملة، لا نتيجة واحدة
 
-💪 لياقة بالسنة النبوية
-• تمارين مستوحاة من هدي النبي ﷺ
-• تتبع الخطوات الحقيقية عبر Google Fit
-• قياس معدل ضربات القلب والنوم تلقائياً
-• حساب BMI، BMR، TDEE بدقة
+💪 لياقة وتمارين
+• مكتبة تمارين للمنزل: مشي، قوة، إطالة، تنفّس
+• تتبع الخطوات عبر Google Fit
+• متابعة النوم والنشاط
+• حساب BMI و BMR و TDEE
 
-🌙 وضع رمضان المميز
-• تتبع السحور والإفطار بشكل مخصص
-• أهداف غذائية رمضانية خاصة
-• تذكيرات الإمساك والإفطار
+▲ نظام الصعود
+• ثماني مهام يومية ترفع مستواك ورتبتك
+• مضاعف السلسلة يكافئ الاستمرارية
+• مراجعة أسبوعية وألقاب تُفتح مع الوقت
 
-🔒 خصوصيتك أمانة
-• بياناتك تبقى على جهازك أولاً
-• لا إعلانات — لا بيع للبيانات — أبداً
-• وفق المبادئ الإسلامية في الأمانة والصدق
+🌙 وضع رمضان
+• عدّاد للإفطار والسحور من أوقات الصلاة الحقيقية لمدينتك
+• قرص يوضح موضعك من النافذة الحالية
+• عدّاد أيام دقيق حسب التقويم الهجري
+• تمارين أخفّ وإرشادات غذائية للصائم
+
+🔒 خصوصيتك أولاً
+• بياناتك تبقى على جهازك
+• لا إعلانات — ولا بيع للبيانات — أبداً
 
 📊 تحليلات صحية متقدمة
 • رسوم بيانية أسبوعية للسعرات
@@ -71,6 +76,11 @@ ARABIC LISTING (PRIMARY)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+ملاحظة: يقدّم التطبيق معلومات عامة عن العافية فقط، وليس بديلاً عن
+المشورة أو التشخيص أو العلاج الطبي المتخصص. استشر مختصًا مؤهلاً قبل
+اتخاذ قرارات صحية. ولا يصدر التطبيق فتاوى؛ معلومات الحلال معروضة
+لتساعدك على القرار بنفسك، مع عرض المكوّنات التي بُنيت عليها.
+
 للتواصل: support@halalcalorie.com
 سياسة الخصوصية: halalcalorie.app/privacy
 
@@ -82,15 +92,14 @@ ENGLISH LISTING
 HalalCalorie – Halal Food Tracker
 
 ── Short description (80 chars max) ───────────────────────
-AI-powered halal calorie tracker with barcode scanner & Google Fit
+Halal calorie & habit tracker with barcode ingredient checking
 
 ── Long description (4000 chars max) ──────────────────────
 
-🌿 HalalCalorie — The First Complete Halal Health Tracker
+🌿 HalalCalorie — track your calories and habits, and check ingredients
 
-Take care of your health in alignment with your Islamic values.
-HalalCalorie is your daily companion for halal food tracking,
-fitness, and wellness — all in Arabic and English.
+HalalCalorie is a food-logging and habit tracker with halal ingredient
+checking built in. Seven languages, and your log stays on your device.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -106,26 +115,31 @@ fitness, and wellness — all in Arabic and English.
   (pork, alcohol, gelatin, carmine, and more)
 
 🍽️ 1000+ Food Database
-• Egyptian, Gulf, Levantine, Pakistani, Indonesian cuisines
+• Egyptian, Gulf, Levantine, Pakistani, Malay, Indonesian dishes
 • Famous restaurants: McDonald's, KFC, Starbucks, Subway
-• Sunnah foods: dates, honey, olive oil, camel milk
-• Full nutrition data: calories, protein, carbs, fat
+• Search returns a full list of matches, not a single guess
+• Grams, pieces, cups, tablespoons or millilitres
 
-💪 Sunnah-Inspired Fitness
-• Workouts inspired by the Prophet's ﷺ lifestyle
-• Real step counting via Google Fit / Health Connect
-• Live heart rate monitoring
-• Accurate BMI, BMR, TDEE calculations
+💪 Fitness & Workouts
+• Home workout library: walking, strength, mobility, breathing
+• Step counting via Google Fit / Health Connect
+• Sleep and activity tracking
+• BMI, BMR and TDEE estimates
+
+▲ The Ascent System
+• Eight daily quests raise your level and rank
+• A chain multiplier rewards consistency over intensity
+• Weekly review and unlockable titles
 
 🌙 Ramadan Mode
-• Dedicated Suhoor & Iftar tracking
-• Custom Ramadan nutritional goals
-• Fasting streak counter
+• Iftar and suhoor countdowns from real prayer times for your city
+• A dial showing how far through the current window you are
+• A calendar-accurate day counter
+• Lighter workouts and fasting-friendly guidance
 
 🔒 Privacy First
 • Data stays on your device — always
 • Zero ads. Zero data selling. Ever.
-• Built on Islamic principles of trust & honesty
 
 📊 Advanced Health Analytics
 • Weekly calorie trend charts
@@ -142,6 +156,13 @@ fitness, and wellness — all in Arabic and English.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+Note: HalalCalorie provides general wellbeing information only. It is
+not a substitute for professional medical advice, diagnosis or
+treatment. Consult a qualified healthcare professional before making
+health decisions. It does not issue religious rulings; halal
+information is provided to help you decide for yourself, and every
+result shows the ingredient list it was based on.
+
 Contact: support@halalcalorie.com
 Privacy Policy: halalcalorie.app/privacy
 
@@ -154,8 +175,8 @@ Arabic keywords:
 
 English keywords:
 halal calories, halal food tracker, halal barcode scanner,
-muslim fitness, ramadan diet, islamic nutrition, arab food,
-calorie counter arabic, halal diet app, muslim health
+calorie counter, macro tracker, ramadan, prayer times,
+calorie counter arabic, nutrition tracker, food scanner
 
 ═══════════════════════════════════════════════════════════
 SCREENSHOTS PLAN (8 screens — Arabic first)

@@ -116,7 +116,7 @@ extension FitnessGoalExt on FitnessGoal {
 enum DietPreference {
   halalOnly,
   vegetarianHalal,
-  sunnahDiet,
+  wholeFoods,
   lowCarb,
 }
 
@@ -125,7 +125,7 @@ extension DietPrefExt on DietPreference {
     switch (this) {
       case DietPreference.halalOnly:        return 'حلال فقط (افتراضي)';
       case DietPreference.vegetarianHalal:  return 'نباتي + حلال';
-      case DietPreference.sunnahDiet:       return 'سنة نبوية';
+      case DietPreference.wholeFoods:       return 'أطعمة كاملة';
       case DietPreference.lowCarb:          return 'قليل الكربوهيدرات';
     }
   }
@@ -134,7 +134,7 @@ extension DietPrefExt on DietPreference {
     switch (this) {
       case DietPreference.halalOnly:        return 'Halal Only (default)';
       case DietPreference.vegetarianHalal:  return 'Vegetarian + Halal';
-      case DietPreference.sunnahDiet:       return 'Sunnah Diet';
+      case DietPreference.wholeFoods:       return 'Whole Foods';
       case DietPreference.lowCarb:          return 'Low Carb';
     }
   }
@@ -406,7 +406,7 @@ class UserProfile {
 
   String greetingEn() {
     if (primaryGoal == FitnessGoal.ramadanPrep) {
-      return 'Ramadan Mubarak! Ready for barakah? 🌙';
+      return 'Ramadan Mubarak! Ready for a strong month? 🌙';
     }
     if (primaryGoal == FitnessGoal.loseWeight) {
       final remaining = (weightKg - idealWeightKg).abs();

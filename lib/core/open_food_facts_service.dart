@@ -105,6 +105,72 @@ class OpenFoodFactsService {
     }
   }
 
+  // ── Name search, all usable matches ─────────────────────────
+  // The single-result [searchByName] above kept only the first hit, which
+  // is why search felt like a lookup rather than a search. This returns
+  // every product that carries calorie data, de-duplicated by name.
+  static Future<List<Map<String, dynamic>>> searchManyByName(
+    String query, {
+    int limit = 20,
+  }) async {
+    if (query.trim().isEmpty) return const [];
+    try {
+      final uri = Uri.parse(
+        'https://world.openfoodfacts.org/cgi/search.pl'
+        '?search_terms=${Uri.encodeComponent(query.trim())}'
+        '&json=1&page_size=${(limit * 2).clamp(10, 50)}&page=1'
+        '&fields=product_name,product_name_ar,brands,nutriments,'
+        'image_front_small_url,image_url,serving_size',
+      );
+      final resp = await http
+          .get(uri, headers: {'User-Agent': _ua})
+          .timeout(const Duration(seconds: 10));
+      if (resp.statusCode != 200) return const [];
+
+      final body = jsonDecode(resp.body) as Map<String, dynamic>;
+      final products = body['products'] as List<dynamic>? ?? const [];
+
+      final out = <Map<String, dynamic>>[];
+      final seen = <String>{};
+      for (final raw in products) {
+        if (out.length >= limit) break;
+        if (raw is! Map<String, dynamic>) continue;
+        final nut = (raw['nutriments'] ?? {}) as Map<String, dynamic>;
+
+        final kcal = (_num(nut, 'energy-kcal_100g') ?? 0).toDouble();
+        if (kcal <= 0) continue;
+
+        final nameEn = _str(raw['product_name']);
+        if (nameEn.isEmpty) continue;
+        final brand = _str(raw['brands']);
+        final label = brand.isNotEmpty ? '$nameEn ($brand)' : nameEn;
+
+        // Skip near-duplicate listings of the same product.
+        final dedupeKey = label.toLowerCase();
+        if (!seen.add(dedupeKey)) continue;
+
+        final nameAr = _str(raw['product_name_ar']).ifEmpty(() => nameEn);
+        out.add({
+          'name_ar': nameAr,
+          'name_en': label,
+          'brand': brand,
+          'kcal': kcal.round(),
+          'protein_g': (_num(nut, 'proteins_100g') ?? 0.0).toDouble(),
+          'carbs_g': (_num(nut, 'carbohydrates_100g') ?? 0.0).toDouble(),
+          'fat_g': (_num(nut, 'fat_100g') ?? 0.0).toDouble(),
+          'serving_size': '100g',
+          'halal': true,
+          'source': 'openfoodfacts',
+          'image_url': _str(raw['image_front_small_url'])
+              .ifEmpty(() => _str(raw['image_url'])),
+        });
+      }
+      return out;
+    } catch (_) {
+      return const [];
+    }
+  }
+
   // ── Helpers ─────────────────────────────────────────────────
   static String _str(dynamic v) =>
       (v is String ? v : '').trim();

@@ -15,17 +15,47 @@ class AppDatabase {
     final dbPath = await getDatabasesPath();
     return openDatabase(
       p.join(dbPath, 'halalcalorie.db'),
-      version: 6,
+      version: 7,
       onCreate: _create,
-      onUpgrade: (db, oldV, newV) async {
-        await db.execute('DROP TABLE IF EXISTS meal_entries');
-        await db.execute('DROP TABLE IF EXISTS weight_log');
-        await db.execute('DROP TABLE IF EXISTS daily_summary');
-        await db.execute('DROP TABLE IF EXISTS workout_log');
-        await db.execute('DROP TABLE IF EXISTS barakah_log');
-        await _create(db, newV);
-      },
+      onUpgrade: _upgrade,
     );
+  }
+
+  // Migrations are additive from v6 on — a user's meals, weights and
+  // summaries survive an app update instead of being wiped.
+  static Future<void> _upgrade(Database db, int oldV, int newV) async {
+    if (oldV < 6) {
+      // Pre-v6 schemas predate the shipped release; rebuild from scratch.
+      await db.execute('DROP TABLE IF EXISTS meal_entries');
+      await db.execute('DROP TABLE IF EXISTS weight_log');
+      await db.execute('DROP TABLE IF EXISTS daily_summary');
+      await db.execute('DROP TABLE IF EXISTS workout_log');
+      await db.execute('DROP TABLE IF EXISTS barakah_log');
+      await _create(db, newV);
+      return;
+    }
+    await _create(db, newV);
+    if (oldV < 7) await _migrateLegacyProgress(db);
+  }
+
+  // v7 renamed the progress table and added an xp column. Carry the old
+  // daily rows across so long-time users keep their history.
+  static Future<void> _migrateLegacyProgress(Database db) async {
+    try {
+      final legacy = await db.rawQuery(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='barakah_log'");
+      if (legacy.isEmpty) return;
+      await db.execute(
+        'INSERT OR IGNORE INTO ascent_log '
+        '(date_key, nourish, hydrate, rest, move, train, stillness, '
+        'restraint, wholesome, score, xp) '
+        'SELECT date_key, nutrition, hydration, sleep, movement, workout, '
+        'dhikr, fasting, sunnah_food, score, 0 FROM barakah_log',
+      );
+      await db.execute('DROP TABLE barakah_log');
+    } catch (e) {
+      debugPrint('progress migration: $e');
+    }
   }
 
   static Future<void> _create(Database db, int version) async {
@@ -63,19 +93,20 @@ class AppDatabase {
       'date_key TEXT NOT NULL,'
       'created TEXT NOT NULL)'
     );
-    // ── Barakah Engine ──────────────────────────────────
+    // ── Ascent System — one row per day ─────────────────
     await db.execute(
-      'CREATE TABLE IF NOT EXISTS barakah_log ('
+      'CREATE TABLE IF NOT EXISTS ascent_log ('
       'date_key TEXT PRIMARY KEY,'
-      'nutrition  INTEGER DEFAULT 0,'
-      'hydration  INTEGER DEFAULT 0,'
-      'sleep      INTEGER DEFAULT 0,'
-      'movement   INTEGER DEFAULT 0,'
-      'fasting    INTEGER DEFAULT 0,'
-      'sunnah_food INTEGER DEFAULT 0,'
-      'workout    INTEGER DEFAULT 0,'
-      'dhikr      INTEGER DEFAULT 0,'
-      'score      INTEGER DEFAULT 0)'
+      'nourish   INTEGER DEFAULT 0,'
+      'hydrate   INTEGER DEFAULT 0,'
+      'rest      INTEGER DEFAULT 0,'
+      'move      INTEGER DEFAULT 0,'
+      'train     INTEGER DEFAULT 0,'
+      'stillness INTEGER DEFAULT 0,'
+      'restraint INTEGER DEFAULT 0,'
+      'wholesome INTEGER DEFAULT 0,'
+      'score     INTEGER DEFAULT 0,'
+      'xp        INTEGER DEFAULT 0)'
     );
   }
 
@@ -174,46 +205,58 @@ class AppDatabase {
     return rows.map((r) => r['date_key'] as String).toSet();
   }
 
-  // ── Barakah helpers ─────────────────────────────────────────
-  static Future<Map<String,dynamic>?> getTodayBarakah() async {
+  // ── Ascent helpers ──────────────────────────────────────────
+  static Future<Map<String,dynamic>?> getTodayAscent() async {
     final d = await db;
-    final rows = await d.query('barakah_log', where:'date_key=?', whereArgs:[_today()]);
+    final rows = await d.query('ascent_log',
+        where:'date_key=?', whereArgs:[_today()]);
     return rows.isNotEmpty ? rows.first : null;
   }
 
-  static Future<void> upsertBarakah({
-    int? nutrition, int? hydration, int? sleep,
-    int? movement, int? fasting, int? sunnahFood,
-    int? workout, int? dhikr, int? score,
-  }) async {
+  /// Writes only the columns passed in — everything else is left alone.
+  static Future<void> upsertAscent(Map<String, int> values) async {
+    if (values.isEmpty) return;
     final d = await db;
     final key = _today();
-    final existing = await getTodayBarakah();
-    final data = <String, dynamic>{
-      if (nutrition  != null) 'nutrition':   nutrition,
-      if (hydration  != null) 'hydration':   hydration,
-      if (sleep      != null) 'sleep':       sleep,
-      if (movement   != null) 'movement':    movement,
-      if (fasting    != null) 'fasting':     fasting,
-      if (sunnahFood != null) 'sunnah_food': sunnahFood,
-      if (workout    != null) 'workout':     workout,
-      if (dhikr      != null) 'dhikr':       dhikr,
-      if (score      != null) 'score':       score,
-    };
-    if (data.isEmpty) return;
+    final existing = await getTodayAscent();
     if (existing == null) {
-      await d.insert('barakah_log', {'date_key': key, ...data});
+      await d.insert('ascent_log', {'date_key': key, ...values});
     } else {
-      await d.update('barakah_log', data, where:'date_key=?', whereArgs:[key]);
+      await d.update('ascent_log', values,
+          where:'date_key=?', whereArgs:[key]);
     }
   }
 
-  static Future<List<Map<String,dynamic>>> getWeeklyBarakah() async {
+  static Future<List<Map<String,dynamic>>> getWeeklyAscent() async {
     final d = await db;
     return d.rawQuery(
-      "SELECT date_key, score FROM barakah_log "
+      "SELECT date_key, score, xp FROM ascent_log "
       "WHERE date_key >= date('now','-6 days') "
       "ORDER BY date_key ASC");
+  }
+
+  /// Lifetime XP is the sum of every day's awarded XP, so recomputing a
+  /// day's value can never double-count it.
+  static Future<int> getLifetimeXp() async {
+    final d = await db;
+    final rows = await d.rawQuery('SELECT SUM(xp) as total FROM ascent_log');
+    return (rows.first['total'] as int?) ?? 0;
+  }
+
+  /// Days that cleared the chain threshold, newest first.
+  static Future<List<String>> getQualifyingDays({int minScore = 400}) async {
+    final d = await db;
+    final rows = await d.rawQuery(
+        'SELECT date_key FROM ascent_log WHERE score >= ? '
+        'ORDER BY date_key DESC LIMIT 400', [minScore]);
+    return rows.map((r) => r['date_key'] as String).toList();
+  }
+
+  static Future<int> getLoggedDayCount() async {
+    final d = await db;
+    final rows = await d.rawQuery(
+        'SELECT COUNT(*) as c FROM ascent_log WHERE score > 0');
+    return (rows.first['c'] as int?) ?? 0;
   }
 }
 

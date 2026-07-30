@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'../features/onboarding/onboarding_screen.dart'; import'../features/home/home_screen.dart'; import'../features/scanner/scanner_screen.dart'; import'../features/scanner/food_photo_screen.dart'; import'../features/nutrition/nutrition_screen.dart'; import'../features/fitness/fitness_screen.dart'; import'../features/health/health_screen.dart'; import'../features/body/body_screen.dart'; import'../features/body/body_photo_screen.dart'; import'../features/profile/profile_screen.dart'; import'../features/settings/settings_screen.dart'; import'../features/paywall/paywall_screen.dart';
-import'../features/barakah/barakah_screen.dart'; import'providers.dart'; import'shell.dart';
+import'../features/ascent/ascent_screen.dart'; import'providers.dart'; import'shell.dart';
 
 class AppRouter {
   static GoRouter router(Ref ref) {
@@ -14,7 +14,9 @@ class AppRouter {
         ShellRoute(
           builder: (context, state, child) => AppShell(child: child),
           routes: [ GoRoute(path:'/home',      builder: (_, __) => const HomeScreen()), GoRoute(path:'/scanner',   builder: (_, __) => const ScannerScreen()), GoRoute(path:'/nutrition', builder: (_, __) => const NutritionScreen()), GoRoute(path:'/fitness',   builder: (_, __) => const FitnessScreen()),
-              GoRoute(path:'/barakah',  builder: (_, __) => const BarakahScreen()), GoRoute(path:'/health',    builder: (_, __) => const HealthScreen()), GoRoute(path:'/body',      builder: (_, __) => const BodyScreen()), GoRoute(path:'/profile',   builder: (_, __) => const ProfileScreen()),
+              GoRoute(path:'/ascent',   builder: (_, __) => const AscentScreen()),
+              // Legacy deep link from earlier builds.
+              GoRoute(path:'/barakah',  redirect: (_, __) => '/ascent'), GoRoute(path:'/health',    builder: (_, __) => const HealthScreen()), GoRoute(path:'/body',      builder: (_, __) => const BodyScreen()), GoRoute(path:'/profile',   builder: (_, __) => const ProfileScreen()),
           ],
         ),
         GoRoute( path:'/workout/:id', builder: (ctx, state) => WorkoutPlayerScreen(workoutId: state.pathParameters['id']!),

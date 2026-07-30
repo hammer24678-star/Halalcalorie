@@ -155,13 +155,13 @@ class _ScannerState extends ConsumerState<ScannerScreen>
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [AppColors.sunnahGreen, AppColors.darkGreen],
+                colors: [AppColors.brandGreen, AppColors.darkGreen],
                 begin: Alignment.topRight,
                 end: Alignment.bottomLeft,
               ),
               borderRadius: BorderRadius.circular(18),
               boxShadow: [BoxShadow(
-                color: AppColors.sunnahGreen.withOpacity(0.35),
+                color: AppColors.brandGreen.withOpacity(0.35),
                 blurRadius: 16, offset: const Offset(0, 6),
               )],
             ),
@@ -181,7 +181,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                     decoration: BoxDecoration(
-                      color: AppColors.barakahGold,
+                      color: AppColors.accentGold,
                       borderRadius: BorderRadius.circular(20),
                     ), child: Text(t('جديد!', 'NEW!'), style: const TextStyle(fontFamily:'Cairo', fontSize: 9,
                             fontWeight: FontWeight.w900, color: Colors.white)),
@@ -215,7 +215,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
             boxShadow: [BoxShadow(
-              color: AppColors.sunnahGreen.withOpacity(0.2),
+              color: AppColors.brandGreen.withOpacity(0.2),
               blurRadius: 16, offset: const Offset(0, 4),
             )],
           ),
@@ -269,7 +269,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
           ElevatedButton(
             onPressed: () { if (_barcodeCtrl.text.isNotEmpty) _scan(_barcodeCtrl.text); },
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.sunnahGreen,
+              backgroundColor: AppColors.brandGreen,
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
             ),
             child: const Icon(Icons.search, color: Colors.white),
@@ -287,8 +287,8 @@ class _ScannerState extends ConsumerState<ScannerScreen>
             _scan(p.barcode);
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.sunnahGreen.withOpacity(0.1),
-            foregroundColor: AppColors.sunnahGreen,
+            backgroundColor: AppColors.brandGreen.withOpacity(0.1),
+            foregroundColor: AppColors.brandGreen,
             elevation: 0,
           ), child: Text(t('📷 مسح عشوائي', '📷 Random Scan'), style: const TextStyle(fontFamily:'Cairo', fontSize: 12)),
         ),
@@ -334,17 +334,17 @@ class _ScannerState extends ConsumerState<ScannerScreen>
             decoration: BoxDecoration(
               color: bg,
               borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppColors.sunnahGreen.withOpacity(0.3)),
+              border: Border.all(color: AppColors.brandGreen.withOpacity(0.3)),
             ),
             child: Column(children: [
               const CircularProgressIndicator(
-                color: AppColors.sunnahGreen, strokeWidth: 2.5),
+                color: AppColors.brandGreen, strokeWidth: 2.5),
               const SizedBox(height: 10),
               Text(
                 tLang(lang, '📡 جارٍ البحث في Open Food Facts…', '📡 Searching Open Food Facts…', '📡 Searching Open Food Facts…', '📡 Searching Open Food Facts…', '📡 Searching Open Food Facts…', '📡 Searching Open Food Facts…'),
                 style: const TextStyle(
                   fontFamily: 'Cairo', fontSize: 13,
-                  color: AppColors.sunnahGreen,
+                  color: AppColors.brandGreen,
                   fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
               ),
@@ -402,7 +402,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               if (r.carbsG != null)
                 _macroCol('🍚', '${r.carbsG!.toStringAsFixed(1)}g', t('كربوهيد', 'Carbs'), AppColors.waterBlue),
               if (r.fatG != null)
-                _macroCol('🫒', '${r.fatG!.toStringAsFixed(1)}g', t('دهون', 'Fat'), AppColors.barakahGold),
+                _macroCol('🫒', '${r.fatG!.toStringAsFixed(1)}g', t('دهون', 'Fat'), AppColors.accentGold),
             ]),
             const SizedBox(height: 4),
             Text(t('لكل ١٠٠ج', 'per 100g'),
@@ -417,8 +417,8 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               label: Text(t('مسح آخر', 'Scan Again'),
                 style: const TextStyle(fontFamily: 'Cairo')),
               style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.sunnahGreen,
-                side: const BorderSide(color: AppColors.sunnahGreen),
+                foregroundColor: AppColors.brandGreen,
+                side: const BorderSide(color: AppColors.brandGreen),
               ),
             )),
             const SizedBox(width: 10),
@@ -430,14 +430,14 @@ class _ScannerState extends ConsumerState<ScannerScreen>
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(tLang(lang, '✅ أُضيف للعداد', '✅ Added to tracker', '✅ Ajouté au suivi', '✅ Takibe eklendi', '✅ Ditambah ke penjejak', '✅ Ditambahkan ke pelacak'),
                         style: const TextStyle(fontFamily: 'Cairo')),
-                    backgroundColor: AppColors.sunnahGreen,
+                    backgroundColor: AppColors.brandGreen,
                     duration: const Duration(seconds: 2),
                   ));
                 },
                 icon: const Icon(Icons.add_rounded, color: Colors.white, size: 16),
                 label: Text(t('أضف للعداد', 'Add to Log'),
                     style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontSize: 12)),
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.sunnahGreen),
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandGreen),
               ))
             else
               Expanded(child: ElevatedButton.icon(
@@ -445,7 +445,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
                 icon: const Text('📸', style: TextStyle(fontSize: 14)),
                 label: Text(t('تحليل AI', 'AI Analysis'),
                     style: const TextStyle(fontFamily: 'Cairo', color: Colors.white)),
-                style: ElevatedButton.styleFrom(backgroundColor: AppColors.sunnahGreen),
+                style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandGreen),
               )),
           ]),
         ]),

@@ -17,7 +17,7 @@ class NotificationService {
   static const int kDinner    = 12;
   static const int kWorkout   = 30;
   static const int kGeneral   = 99;
-  static const int kBarakah   = 40; // Barakah Engine daily nudge
+  static const int kAscent   = 40; // Ascent daily-quest nudge
 
   // ── Android channel ────────────────────────────────────────
   static const _channel = AndroidNotificationChannel(
@@ -134,7 +134,7 @@ class NotificationService {
         id: kWater + h,
         hour: h, minute: 0,
         title: '💧 Water Reminder',
-        body:  'Stay hydrated — your body is an amanah ﷺ',
+        body:  'Stay hydrated — a glass now keeps you sharp',
       );
     }
   }
@@ -176,21 +176,23 @@ class NotificationService {
     await _daily(
       id: kWorkout, hour: 17, minute: 30,
       title: '💪 Workout Time',
-      body:  'Move your body — the Prophet ﷺ walked daily',
+      body:  'Move your body — even a short walk counts',
     );
   }
 
-  // ── Barakah Engine nudge (Asr time ~15:45) ─────────────────
-  /// Fires at 15:45 if the user has not updated their Barakah
-  /// score yet today (score == 0 in DB). Cancels itself if score > 0.
-  static Future<void> scheduleBarakahNudge({bool isAr = true}) async {
+  // ── Ascent nudge (mid-afternoon) ───────────────────────────
+  /// Mid-afternoon reminder that the day's quests are still open, in
+  /// time to actually finish a few of them.
+  static Future<void> scheduleAscentNudge({bool isAr = true}) async {
     final prefs = await SharedPreferences.getInstance();
-    final on    = prefs.getBool('notif_barakah') ?? true;
-    if (!on) { await _plugin.cancel(kBarakah); return; }
+    // Honours the old preference key so existing opt-outs are respected.
+    final on = prefs.getBool('notif_ascent')
+        ?? prefs.getBool('notif_barakah') ?? true;
+    if (!on) { await _plugin.cancel(kAscent); return; }
     await _daily(
-      id: kBarakah, hour: 15, minute: 45,
-      title: '✨ Your Barakah score is waiting',
-      body:  'Log your dhikr, water & steps — keep your Barakah alive',
+      id: kAscent, hour: 15, minute: 45,
+      title: '▲ Your daily quests are still open',
+      body:  'Water, steps and a quiet moment — small wins add up',
     );
   }
 

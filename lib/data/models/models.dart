@@ -70,7 +70,7 @@ class FoodPhotoResult {
   final double   proteinG, carbsG, fatG;
   final HalalStatus halalStatus;
   final String   halalExplanation, halalExplanationEn;
-  final String?  sunnahNote, sunnahNoteEn;
+  final String?  tipNote, tipNoteEn;
   final double   confidence;
   final String   portionSize;
   final List<String> ingredients;
@@ -80,7 +80,7 @@ class FoodPhotoResult {
     required this.proteinG, required this.carbsG, required this.fatG,
     required this.halalStatus,
     required this.halalExplanation, required this.halalExplanationEn,
-    this.sunnahNote, this.sunnahNoteEn,
+    this.tipNote, this.tipNoteEn,
     this.confidence = 0.0,
     this.portionSize = '',
     this.ingredients = const [],
@@ -144,7 +144,7 @@ class Workout {
   final String descAr, descEn;
   final int    durationMin;
   final String level, levelEn, levelColor, gender, category;
-  final String? hadith, hadithEn;
+  final String? note, noteEn;
   final List<WorkoutStep> steps;
   final bool isPremium;
   const Workout({
@@ -155,7 +155,7 @@ class Workout {
     required this.level, required this.levelEn,
     this.levelColor = '#00A86B', this.gender = 'both',
     this.category = 'general',
-    this.hadith, this.hadithEn,
+    this.note, this.noteEn,
     this.steps = const [],
     this.isPremium = false,
   });
@@ -165,12 +165,12 @@ class Workout {
 const kWorkouts = [
   Workout(
     id: 'w1', emoji: '🚶', gender: 'both', category: 'walking', isPremium: false,
-    titleAr: 'مشي الرسول ﷺ قبل المغرب', titleEn: 'Prophet\'s Evening Walk',
-    descAr: 'تمرين خفيف مستوحى من هدي النبي ﷺ',
-    descEn: 'Light walk inspired by the Prophet\'s ﷺ guidance',
+    titleAr: 'مشي ما قبل الغروب', titleEn: 'Sunset Walk',
+    descAr: 'مشي خفيف في آخر النهار يهدّئ ويحرق',
+    descEn: 'An easy end-of-day walk that calms and still burns',
     durationMin: 20, level: 'مبتدئ', levelEn: 'Beginner',
-    hadith: 'كان النبي ﷺ يمشي بخطى متوسطة — البخاري',
-    hadithEn: 'The Prophet ﷺ walked at a moderate pace — Al-Bukhari',
+    note: 'خطوة متوسطة ثابتة أفضل من بداية سريعة تنتهي مبكراً',
+    noteEn: 'A steady moderate pace beats a fast start you cannot finish',
     steps: [
       WorkoutStep(nameAr: 'إحماء خفيف', nameEn: 'Warm-up', durationSec: 120, instructionAr: 'ابدأ بالمشي ببطء مع التنفس العميق', instructionEn: 'Start walking slowly with deep breathing'),
       WorkoutStep(nameAr: 'مشي معتدل', nameEn: 'Moderate walk', durationSec: 600, instructionAr: 'امش بخطى منتظمة متوسطة السرعة', instructionEn: 'Walk at a steady moderate pace'),
@@ -180,15 +180,15 @@ const kWorkouts = [
   ),
   Workout(
     id: 'w6', emoji: '🌅', gender: 'both', category: 'walking', isPremium: false,
-    titleAr: 'مشي الفجر السني', titleEn: 'Fajr Morning Walk',
+    titleAr: 'مشي أول النهار', titleEn: 'Early Morning Walk',
     descAr: 'استقبل الصبح بخطوات مباركة',
     descEn: 'Start your blessed morning with movement',
     durationMin: 15, level: 'مبتدئ', levelEn: 'Beginner',
-    hadith: 'بارك اللهم لأمتي في بكورها — الترمذي',
-    hadithEn: 'O Allah bless my nation in its early mornings — Al-Tirmidhi',
+    note: 'ضوء الصباح يضبط ساعتك البيولوجية ويحسّن نومك ليلاً',
+    noteEn: 'Morning light sets your body clock and improves that night’s sleep',
     steps: [
       WorkoutStep(nameAr: 'إطالة خفيفة', nameEn: 'Light stretch', durationSec: 120, instructionAr: 'مُد ذراعيك للأمام والخلف', instructionEn: 'Stretch arms forward and back'),
-      WorkoutStep(nameAr: 'مشي الفجر', nameEn: 'Fajr walk', durationSec: 600, instructionAr: 'امش في الهواء الطلق مع ذكر الله', instructionEn: 'Walk in fresh air while remembering Allah'),
+      WorkoutStep(nameAr: 'مشي الصباح', nameEn: 'Morning walk', durationSec: 600, instructionAr: 'امش في الهواء الطلق بخطى منتظمة', instructionEn: 'Walk outdoors at a steady pace'),
       WorkoutStep(nameAr: 'تنفس عميق', nameEn: 'Deep breathing', durationSec: 180, instructionAr: 'شهيق ٤ ثواني، زفير ٤ ثواني — ٥ مرات', instructionEn: 'Inhale 4s, exhale 4s — repeat 5 times'),
     ],
   ),
@@ -206,12 +206,12 @@ const kWorkouts = [
   ),
   Workout(
     id: 'w2', emoji: '💪', gender: 'brothers', category: 'strength', isPremium: false,
-    titleAr: 'تمارين قوة أساسية للإخوة', titleEn: 'Basic Strength — Brothers',
+    titleAr: 'تمارين قوة أساسية', titleEn: 'Basic Strength',
     descAr: 'بناء القوة الأساسية بلا أجهزة',
     descEn: 'Build core strength with no equipment',
     durationMin: 15, level: 'مبتدئ', levelEn: 'Beginner',
-    hadith: 'المؤمن القوي خير وأحب إلى الله من المؤمن الضعيف — مسلم',
-    hadithEn: 'The strong believer is more beloved to Allah — Muslim',
+    note: 'الحمل التدريجي هو المفتاح: أضف تكرارًا واحدًا كل أسبوع',
+    noteEn: 'Progressive overload is the point — add one rep each week',
     steps: [
       WorkoutStep(nameAr: 'إحماء', nameEn: 'Warm-up', durationSec: 120),
       WorkoutStep(nameAr: 'ضغط', nameEn: 'Push-ups', reps: 10, instructionAr: 'ضغط كامل مع إبقاء الظهر مستقيماً', instructionEn: 'Full push-up with straight back'),
@@ -238,7 +238,7 @@ const kWorkouts = [
   ),
   Workout(
     id: 'w11', emoji: '🔥', gender: 'brothers', category: 'strength', isPremium: true,
-    titleAr: 'تمرين HIIT الإسلامي', titleEn: 'Islamic HIIT',
+    titleAr: 'تمرين متقطع عالي الكثافة', titleEn: 'HIIT Intervals',
     descAr: 'تدريب متقطع عالي الكثافة',
     descEn: 'High-intensity interval training',
     durationMin: 20, level: 'متقدم', levelEn: 'Advanced', levelColor: '#C62828',
@@ -256,12 +256,12 @@ const kWorkouts = [
   ),
   Workout(
     id: 'w3', emoji: '🧘', gender: 'sisters', category: 'gentle', isPremium: false,
-    titleAr: 'تمارين لطيفة للأخوات', titleEn: 'Gentle Exercises — Sisters',
+    titleAr: 'تمارين لطيفة للنساء', titleEn: 'Gentle Session — Women',
     descAr: 'تمارين محتشمة لطيفة',
     descEn: 'Modest gentle exercises',
     durationMin: 12, level: 'مبتدئ', levelEn: 'Beginner',
-    hadith: 'إن لجسدك عليك حقاً — البخاري',
-    hadithEn: 'Your body has a right over you — Al-Bukhari',
+    note: 'الراحة جزء من التدريب وليست انقطاعًا عنه',
+    noteEn: 'Recovery is part of training, not a break from it',
     steps: [
       WorkoutStep(nameAr: 'إحماء', nameEn: 'Warm-up', durationSec: 120),
       WorkoutStep(nameAr: 'قرفصاء', nameEn: 'Squats', reps: 12),
@@ -284,7 +284,7 @@ const kWorkouts = [
   ),
   Workout(
     id: 'w9', emoji: '🤸', gender: 'sisters', category: 'gentle', isPremium: false,
-    titleAr: 'إطالة وتمدد للأخوات', titleEn: 'Flexibility — Sisters',
+    titleAr: 'إطالة ومرونة للنساء', titleEn: 'Flexibility — Women',
     descAr: 'مرونة كاملة للجسم',
     descEn: 'Full body flexibility',
     durationMin: 15, level: 'مبتدئ', levelEn: 'Beginner',
@@ -302,8 +302,8 @@ const kWorkouts = [
     descAr: 'مصمم خصيصاً للصائم — خفيف وفعّال',
     descEn: 'Specially designed for fasting — light & effective',
     durationMin: 10, level: 'رمضان', levelEn: 'Ramadan', levelColor: '#D4A017',
-    hadith: 'الصيام والقرآن يشفعان للعبد — أحمد',
-    hadithEn: 'Fasting and Quran intercede for the servant — Ahmad',
+    note: 'في الصيام: اجعل المجهود خفيفًا وقريبًا من وقت الإفطار',
+    noteEn: 'While fasting, keep the effort light and close to iftar',
     steps: [
       WorkoutStep(nameAr: 'تنفس رمضاني', nameEn: 'Ramadan breathing', durationSec: 120),
       WorkoutStep(nameAr: 'إطالة الجسم', nameEn: 'Full body stretch', durationSec: 180),
@@ -331,13 +331,13 @@ const kWorkouts = [
     descAr: 'يُخفف التوتر ويُصفي الذهن',
     descEn: 'Reduces stress and clears mind',
     durationMin: 8, level: 'مبتدئ', levelEn: 'Beginner',
-    hadith: 'ألا بذكر الله تطمئن القلوب — الرعد: ٢٨',
-    hadithEn: 'Verily in the remembrance of Allah do hearts find rest — Quran 13:28',
+    note: 'التنفس البطيء يخفض معدل النبض ويهدئ الجهاز العصبي',
+    noteEn: 'Slow breathing lowers your pulse and settles the nervous system',
     steps: [
       WorkoutStep(nameAr: 'تنفس صندوقي', nameEn: 'Box breathing', durationSec: 120, instructionAr: 'شهيق ٤، ثبات ٤، زفير ٤، ثبات ٤', instructionEn: 'Inhale 4, hold 4, exhale 4, hold 4'),
       WorkoutStep(nameAr: 'تنفس البطن', nameEn: 'Belly breathing', durationSec: 120),
       WorkoutStep(nameAr: 'استرخاء العضلات', nameEn: 'Muscle relaxation', durationSec: 180),
-      WorkoutStep(nameAr: 'ذكر وتأمل', nameEn: 'Dhikr & reflection', durationSec: 60, instructionAr: 'سبحان الله، الحمد لله، الله أكبر', instructionEn: 'SubhanAllah, Alhamdulillah, Allahu Akbar'),
+      WorkoutStep(nameAr: 'صفاء وتأمل', nameEn: 'Stillness', durationSec: 60, instructionAr: 'اجلس ساكنًا وتنفّس ببطء دون شاشة', instructionEn: 'Sit still and breathe slowly, no screen'),
     ],
   ),
   Workout(
@@ -355,7 +355,7 @@ const kWorkouts = [
   ),
   Workout(
     id: 'w21', emoji: '🕌', gender: 'both', category: 'general', isPremium: false,
-    titleAr: 'تمارين بين الصلوات', titleEn: 'Between Prayers Exercises',
+    titleAr: 'تمارين استراحة قصيرة', titleEn: 'Short Break Moves',
     descAr: 'استغلال الأوقات بين الصلوات',
     descEn: 'Use the time between prayers to move',
     durationMin: 5, level: 'مبتدئ', levelEn: 'Beginner',
@@ -363,7 +363,7 @@ const kWorkouts = [
       WorkoutStep(nameAr: 'إطالة خفيفة', nameEn: 'Quick stretch', durationSec: 60),
       WorkoutStep(nameAr: 'قرفصاء', nameEn: 'Squats', reps: 10),
       WorkoutStep(nameAr: 'ضغط سريع', nameEn: 'Quick push-ups', reps: 8),
-      WorkoutStep(nameAr: 'تنفس ذكر', nameEn: 'Dhikr breathing', durationSec: 60),
+      WorkoutStep(nameAr: 'تنفّس هادئ', nameEn: 'Calm breathing', durationSec: 60),
     ],
   ),
   Workout(
@@ -412,7 +412,7 @@ const kWorkouts = [
   ),
   Workout(
     id: 'w19', emoji: '🌟', gender: 'sisters', category: 'strength', isPremium: true,
-    titleAr: 'تناسق الأخوات المتقدم', titleEn: 'Sisters Advanced Toning',
+    titleAr: 'شد وتناسق متقدم للنساء', titleEn: 'Advanced Toning — Women',
     descAr: 'رشاقة وتناسق من الرأس للقدم — محتشم كامل',
     descEn: 'Full body toning head to toe — fully modest',
     durationMin: 30, level: 'متوسط', levelEn: 'Intermediate', levelColor: '#7C4DFF',
@@ -458,7 +458,7 @@ const kWorkouts = [
   ),
   Workout(
     id: 'w13', emoji: '🧘‍♀️', gender: 'sisters', category: 'strength', isPremium: true,
-    titleAr: 'تقوية المنطقة الوسطى للأخوات', titleEn: 'Core Strength — Sisters',
+    titleAr: 'تقوية الوسط للنساء', titleEn: 'Core Strength — Women',
     descAr: 'تمارين البطن والخصر بطريقة محتشمة',
     descEn: 'Core exercises modest and safe',
     durationMin: 18, level: 'متوسط', levelEn: 'Intermediate', levelColor: '#D4A017',
@@ -505,8 +505,8 @@ const kWorkouts = [
     descAr: 'تدريب متقطع عالي الكثافة — حرق أقصى في أقل وقت',
     descEn: 'High-intensity intervals — maximum burn, minimum time',
     durationMin: 20, level: 'متقدم', levelEn: 'Advanced', levelColor: '#F85149',
-    hadith: 'المؤمن القوي خير وأحب إلى الله من المؤمن الضعيف — مسلم',
-    hadithEn: 'The strong believer is better and more beloved to Allah — Muslim',
+    note: 'الحمل التدريجي هو المفتاح: أضف تكرارًا واحدًا كل أسبوع',
+    noteEn: 'High intensity, short duration — quality over quantity',
     steps: [
       WorkoutStep(nameAr: 'إحماء ديناميكي', nameEn: 'Dynamic warm-up', durationSec: 90,
           instructionAr: 'دوران المفاصل ومد كامل للجسم', instructionEn: 'Joint rotations and full-body stretches'),
@@ -533,15 +533,15 @@ const kWorkouts = [
     ],
   ),
 
-  // w25 — Sisters Core Glow ─────────────────────────────────────
+  // w25 — Cardio & Core (Women) ─────────────────────────────────
   Workout(
     id: 'w25', emoji: '🌿', gender: 'sisters', category: 'gentle', isPremium: false,
-    titleAr: 'تمرين القلب والجوهر', titleEn: 'Sisters Core Glow',
+    titleAr: 'كارديو ووسط للنساء', titleEn: 'Cardio & Core — Women',
     descAr: 'تقوية عميقة للبطن والظهر باستحياء',
     descEn: 'Deep core and back strength — modest and effective',
     durationMin: 15, level: 'متوسط', levelEn: 'Moderate', levelColor: '#3FB950',
-    hadith: 'إن لجسدك عليك حقاً — البخاري',
-    hadithEn: 'Your body has a right over you — Al-Bukhari',
+    note: 'الراحة جزء من التدريب وليست انقطاعًا عنه',
+    noteEn: 'Recovery is part of training, not a break from it',
     steps: [
       WorkoutStep(nameAr: 'إحماء لطيف', nameEn: 'Gentle warm-up', durationSec: 90,
           instructionAr: 'تنفس عميق مع دوران الكتفين', instructionEn: 'Deep breathing with shoulder rolls'),
@@ -560,24 +560,24 @@ const kWorkouts = [
     ],
   ),
 
-  // w26 — Dhikr Power Walk ───────────────────────────────────────
+  // w26 — Mindful Power Walk ─────────────────────────────────────
   Workout(
     id: 'w26', emoji: '🤲', gender: 'both', category: 'walking', isPremium: false,
-    titleAr: 'مشي الذكر', titleEn: 'Dhikr Power Walk',
+    titleAr: 'مشي هادئ بتركيز', titleEn: 'Mindful Power Walk',
     descAr: 'مشي قوي مع ذكر الله في كل خطوة',
-    descEn: 'Powerful walk in rhythm with the remembrance of Allah',
+    descEn: 'A brisk walk paced by your own steady rhythm',
     durationMin: 30, level: 'مبتدئ', levelEn: 'Beginner', levelColor: '#00A86B',
-    hadith: 'بارك الله لأمتي في بكورها — الترمذي',
-    hadithEn: 'Allah blesses my nation in its early mornings — Al-Tirmidhi',
+    note: 'المشي في أول النهار أسهل عادة يمكن الالتزام بها',
+    noteEn: 'An early walk is the easiest habit to keep',
     steps: [
       WorkoutStep(nameAr: 'نيّة وانطلاق', nameEn: 'Set your intention', durationSec: 60,
           instructionAr: 'قل بسم الله وابدأ بخطوات بطيئة', instructionEn: 'Say Bismillah and start slowly'),
-      WorkoutStep(nameAr: 'مشي مع سبحان الله', nameEn: 'Walk with SubhanAllah', durationSec: 420,
-          instructionAr: 'كل خطوتين: سبحان الله', instructionEn: 'Every two steps: SubhanAllah'),
+      WorkoutStep(nameAr: 'إيقاع ثابت', nameEn: 'Steady rhythm', durationSec: 420,
+          instructionAr: 'اضبط نفسًا واحدًا كل خطوتين', instructionEn: 'One breath every two steps'),
       WorkoutStep(nameAr: 'مشي قوي مع الحمد لله', nameEn: 'Brisk walk — Alhamdulillah', durationSec: 600,
           instructionAr: 'خطوات أسرع: الحمد لله في كل زفير', instructionEn: 'Faster pace — Alhamdulillah on each exhale'),
-      WorkoutStep(nameAr: 'مشي مع الله أكبر', nameEn: 'Power walk — AllahuAkbar', durationSec: 420,
-          instructionAr: 'أسرع خطواتك مع كل الله أكبر', instructionEn: 'Quickest pace — AllahuAkbar with each stride'),
+      WorkoutStep(nameAr: 'إيقاع سريع', nameEn: 'Fast rhythm', durationSec: 420,
+          instructionAr: 'أسرع خطواتك مع تنفّس منتظم', instructionEn: 'Quickest pace with even breathing'),
       WorkoutStep(nameAr: 'عودة وشكر', nameEn: 'Cool down and gratitude', durationSec: 300,
           instructionAr: 'أبطئ تدريجياً واستغفر وادعُ', instructionEn: 'Slow down, make istighfar and dua'),
     ],
@@ -586,12 +586,12 @@ const kWorkouts = [
   // w27 — Tarawih Recovery ───────────────────────────────────────
   Workout(
     id: 'w27', emoji: '🌒', gender: 'both', category: 'ramadan', isPremium: false,
-    titleAr: 'إطالة التراويح', titleEn: 'Tarawih Recovery Stretch',
+    titleAr: 'إطالة المساء', titleEn: 'Evening Recovery Stretch',
     descAr: 'أرح جسمك بعد صلاة التراويح',
     descEn: 'Gentle recovery stretch after Tarawih prayers',
     durationMin: 10, level: 'رمضان', levelEn: 'Ramadan', levelColor: '#D4A017',
-    hadith: 'الصيام جنة — البخاري',
-    hadithEn: 'Fasting is a shield — Al-Bukhari',
+    note: 'إطالة خفيفة في المساء تقلل الشدّ وتحسّن النوم',
+    noteEn: 'Light evening stretching eases tension and helps you sleep',
     steps: [
       WorkoutStep(nameAr: 'دوران الكتفين', nameEn: 'Shoulder rolls', durationSec: 60,
           instructionAr: 'أمام وخلف ببطء — أرح العمود الفقري', instructionEn: 'Forward and back slowly, relax the spine'),
@@ -615,19 +615,19 @@ const kWorkouts = [
     descAr: 'تمرين ثقيل كامل — رباعي، ضغط، شد، كتف',
     descEn: 'Full heavy compound lifts — squat, bench, row, press',
     durationMin: 35, level: 'متقدم', levelEn: 'Advanced', levelColor: '#F85149',
-    hadith: 'المؤمن القوي خير وأحب إلى الله من المؤمن الضعيف — مسلم',
-    hadithEn: 'The strong believer is better and more beloved to Allah — Muslim',
+    note: 'الحمل التدريجي هو المفتاح: أضف تكرارًا واحدًا كل أسبوع',
+    noteEn: 'High intensity, short duration — quality over quantity',
   ),
 
-  // w29 — Sisters Yoga Flow ─────────────────────────────────────
+  // w29 — Calm Yoga Flow (Women) ────────────────────────────────
   Workout(
     id: 'w29', emoji: '🧘‍♀️', gender: 'sisters', category: 'gentle', isPremium: true,
-    titleAr: 'يوغا السكينة', titleEn: 'Sisters Yoga Flow',
+    titleAr: 'يوغا هادئة للنساء', titleEn: 'Calm Yoga Flow — Women',
     descAr: 'تدفق لطيف للمرونة والسكينة الداخلية',
     descEn: 'Gentle flow for flexibility and inner calm',
     durationMin: 20, level: 'لطيف', levelEn: 'Gentle', levelColor: '#BC8CFF',
-    hadith: 'إن الله يحب الرفق في الأمر كله — البخاري',
-    hadithEn: 'Allah loves gentleness in all matters — Al-Bukhari',
+    note: 'تحرّك في المدى الذي لا يؤلم — المرونة تأتي بالتكرار',
+    noteEn: 'Move only through a pain-free range — flexibility comes with repetition',
     steps: [
       WorkoutStep(nameAr: 'وضعية الجبل', nameEn: 'Mountain pose breathing', durationSec: 90,
           instructionAr: 'قفي مستقيمة وركزي على التنفس', instructionEn: 'Stand tall and focus on breathing'),
@@ -651,8 +651,8 @@ const kWorkouts = [
     descAr: 'تحدٍّ ممتع مع الأسرة — مناسب للجميع',
     descEn: 'Fun challenge for the whole family — every age welcome',
     durationMin: 15, level: 'مبتدئ', levelEn: 'Beginner', levelColor: '#00A86B',
-    hadith: 'خيركم خيركم لأهله — الترمذي',
-    hadithEn: 'The best of you is best to his family — Al-Tirmidhi',
+    note: 'التمرين مع العائلة يرفع الالتزام أكثر من التمرين وحدك',
+    noteEn: 'Training with family keeps you consistent far longer than going it alone',
     steps: [
       WorkoutStep(nameAr: 'إحماء جماعي', nameEn: 'Group warm-up', durationSec: 90,
           instructionAr: 'الجميع يقفز ويتحرك معاً!', instructionEn: 'Everyone jump and move together!'),
@@ -676,8 +676,8 @@ const kWorkouts = [
     descAr: 'أربع ثوانٍ في أربعة اتجاهات — استرخاء عميق',
     descEn: 'Four counts in four directions — profound calm',
     durationMin: 10, level: 'لطيف', levelEn: 'Gentle', levelColor: '#BC8CFF',
-    hadith: 'ألا بذكر الله تطمئن القلوب — الرعد: ٢٨',
-    hadithEn: 'In remembrance of Allah do hearts find rest — 13:28',
+    note: 'التنفس البطيء يخفض معدل النبض ويهدئ الجهاز العصبي',
+    noteEn: 'Four seconds in, four hold, four out — repeat four times',
     steps: [
       WorkoutStep(nameAr: 'تهيئة', nameEn: 'Preparation', durationSec: 60,
           instructionAr: 'اجلس مستقيماً وأغمض عينيك', instructionEn: 'Sit upright and gently close your eyes'),
@@ -702,30 +702,30 @@ const kWorkouts = [
     descAr: 'تأرجح وقرفصاء وضغط بالكتل — تدريب متكامل',
     descEn: 'Swings, squats and presses — complete kettlebell workout',
     durationMin: 25, level: 'متوسط', levelEn: 'Moderate', levelColor: '#D1812A',
-    hadith: 'إن الله يحب إذا عمل أحدكم عملاً أن يتقنه — البيهقي',
-    hadithEn: 'Allah loves when you do work with excellence — Al-Bayhaqi',
+    note: 'أتقن الحركة قبل أن تزيد الوزن',
+    noteEn: 'Own the movement before you add the weight',
   ),
 
-  // w33 — Sisters Pilates Core ──────────────────────────────────
+  // w33 — Pilates Core (Women) ──────────────────────────────────
   Workout(
     id: 'w33', emoji: '🌺', gender: 'sisters', category: 'gentle', isPremium: true,
-    titleAr: 'بيلاتس المرأة المؤمنة', titleEn: 'Sisters Pilates Core',
+    titleAr: 'بيلاتس للنساء', titleEn: 'Pilates Core — Women',
     descAr: 'تقوية العمود الفقري والمركز — رشاقة وعافية',
     descEn: 'Spine and core stability — elegant strength for her',
     durationMin: 20, level: 'متوسط', levelEn: 'Moderate', levelColor: '#BC8CFF',
-    hadith: 'إن لجسدك عليك حقاً — البخاري',
-    hadithEn: 'Your body has a right over you — Al-Bukhari',
+    note: 'الراحة جزء من التدريب وليست انقطاعًا عنه',
+    noteEn: 'Recovery is part of training, not a break from it',
   ),
 
   // w34 — Fajr Full Body ────────────────────────────────────────
   Workout(
     id: 'w34', emoji: '🌅', gender: 'both', category: 'strength', isPremium: false,
-    titleAr: 'تمرين الفجر الكامل', titleEn: 'Fajr Full Body',
+    titleAr: 'تمرين الصباح الكامل', titleEn: 'Full Body Sunrise',
     descAr: 'ابدأ يومك بنشاط بعد صلاة الفجر',
     descEn: 'Energise your morning right after Fajr prayer',
     durationMin: 15, level: 'مبتدئ', levelEn: 'Beginner', levelColor: '#58A6FF',
-    hadith: 'بارك الله لأمتي في بكورها — الترمذي',
-    hadithEn: 'Allah blesses my nation in its early mornings — Al-Tirmidhi',
+    note: 'المشي في أول النهار أسهل عادة يمكن الالتزام بها',
+    noteEn: 'An early walk is the easiest habit to keep',
     steps: [
       WorkoutStep(nameAr: 'تنشيط الصباح', nameEn: 'Morning activation', durationSec: 90,
           instructionAr: 'دوران المفاصل من القدم للرأس', instructionEn: 'Joint circles from feet to head'),
@@ -738,54 +738,86 @@ const kWorkouts = [
       WorkoutStep(nameAr: 'لوح', nameEn: 'Plank hold', durationSec: 30,
           instructionAr: 'شدّ بطنك وتنفس بهدوء', instructionEn: 'Brace core and breathe calmly'),
       WorkoutStep(nameAr: 'تهدئة وشكر', nameEn: 'Cool down and gratitude', durationSec: 90,
-          instructionAr: 'مدّد ببطء واشكر الله على هذا اليوم', instructionEn: 'Stretch slowly and thank Allah for this day'),
+          instructionAr: 'مدّد ببطء وأنهِ يومك بهدوء', instructionEn: 'Stretch slowly and close the day calmly'),
     ],
   ),
 
-  // w35 — Sunnah Active Cardio ──────────────────────────────────
+  // w35 — Skills Cardio ─────────────────────────────────────────
   Workout(
     id: 'w35', emoji: '🏊', gender: 'both', category: 'cardio', isPremium: true,
-    titleAr: 'الكارديو السني', titleEn: 'Sunnah Active Cardio',
+    titleAr: 'كارديو المهارات', titleEn: 'Skills Cardio',
     descAr: 'كارديو مستمر: سباحة أو ركض أو دراجة — ٢٥ دقيقة نشاط',
     descEn: 'Sustained cardio: swim, run or bike — 25 min steady effort',
     durationMin: 25, level: 'متوسط', levelEn: 'Moderate', levelColor: '#58A6FF',
-    hadith: 'علّموا أبناءكم السباحة والرمي وركوب الخيل — الطبراني',
-    hadithEn: 'Teach your children swimming, archery and horse-riding — Al-Tabarani',
+    note: 'المهارات الحركية كالسباحة والرمي تبني لياقة تدوم',
+    noteEn: 'Skill sports like swimming and archery build fitness that lasts',
   ),
 ];
 
-// ── Daily Hadiths — 30 rotating ─────────────────
-const kDailyHadiths = [
-  {'ar': 'إن الله طيب لا يقبل إلا طيباً — مسلم',         'en': 'Allah is pure and accepts only what is pure — Muslim'},
-  {'ar': 'المؤمن القوي خير من المؤمن الضعيف — مسلم',      'en': 'The strong believer is better than the weak — Muslim'},
-  {'ar': 'إن لجسدك عليك حقاً — البخاري',                  'en': 'Your body has a right over you — Al-Bukhari'},
-  {'ar': 'الطهور شطر الإيمان — مسلم',                      'en': 'Cleanliness is half of faith — Muslim'},
-  {'ar': 'بارك الله لأمتي في بكورها — الترمذي',            'en': 'Allah blesses my nation in its early mornings — Al-Tirmidhi'},
-  {'ar': 'لا ضرر ولا ضرار — ابن ماجه',                    'en': 'Do not cause harm or reciprocate harm — Ibn Majah'},
-  {'ar': 'أحب الأعمال إلى الله أدومها وإن قل — متفق عليه', 'en': 'The most beloved deeds are the most consistent — Agreed upon'},
-  {'ar': 'إذا أكل أحدكم فليأكل بيمينه — مسلم',            'en': 'When you eat, eat with your right hand — Muslim'},
-  {'ar': 'كلوا واشربوا ولا تسرفوا — الأعراف: ٣١',          'en': 'Eat and drink but do not waste — Quran 7:31'},
-  {'ar': 'نعمتان مغبون فيهما: الصحة والفراغ — البخاري',    'en': 'Two blessings often neglected: health and free time — Bukhari'},
-  {'ar': 'ما ملأ ابن آدم وعاءً شراً من بطنه — الترمذي',    'en': 'No vessel filled is worse than the belly — Al-Tirmidhi'},
-  {'ar': 'الصيام جنة — البخاري',                           'en': 'Fasting is a shield — Al-Bukhari'},
-  {'ar': 'تسحروا فإن في السحور بركة — البخاري',            'en': 'Eat suhoor, there is blessing in it — Al-Bukhari'},
-  {'ar': 'أفضل الصدقة أن تصدق وأنت صحيح — البخاري',       'en': 'Best charity is when you are healthy — Al-Bukhari'},
-  {'ar': 'من أصبح منكم آمناً في سربه — الترمذي',           'en': 'He who wakes secure in his household — Al-Tirmidhi'},
-  {'ar': 'ألا بذكر الله تطمئن القلوب — الرعد: ٢٨',         'en': 'In remembrance of Allah do hearts find rest — 13:28'},
-  {'ar': 'يسروا ولا تعسروا وبشروا ولا تنفروا — متفق عليه',  'en': 'Make things easy, not difficult — Agreed upon'},
-  {'ar': 'خير الناس أنفعهم للناس — الطبراني',              'en': 'The best people are those most beneficial — Al-Tabarani'},
-  {'ar': 'البر حسن الخلق — مسلم',                          'en': 'Righteousness is good character — Muslim'},
-  {'ar': 'لا تحقرن من المعروف شيئاً — مسلم',               'en': 'Do not belittle any act of kindness — Muslim'},
-  {'ar': 'السواك مطهرة للفم مرضاة للرب — النسائي',          'en': 'Siwak purifies the mouth and pleases the Lord — Al-Nasa\'i'},
-  {'ar': 'من لا يشكر الناس لا يشكر الله — الترمذي',        'en': 'Whoever does not thank people does not thank Allah — Tirmidhi'},
-  {'ar': 'إن الله يحب إذا عمل أحدكم عملاً أن يتقنه — البيهقي', 'en': 'Allah loves when you do work with excellence — Al-Bayhaqi'},
-  {'ar': 'عليك بالصدق فإن الصدق يهدي إلى البر — البخاري',  'en': 'Be truthful, for truth leads to righteousness — Bukhari'},
-  {'ar': 'التواضع لا يزيد العبد إلا رفعة — الطبراني',       'en': 'Humility only raises a person\'s rank — Al-Tabarani'},
-  {'ar': 'من كان يؤمن بالله واليوم الآخر فليقل خيراً أو ليصمت — متفق عليه', 'en': 'Speak good or remain silent — Agreed upon'},
-  {'ar': 'الدعاء هو العبادة — الترمذي',                    'en': 'Du\'a is the essence of worship — Al-Tirmidhi'},
-  {'ar': 'ما يزال البلاء بالمؤمن حتى يلقى الله وما عليه خطيئة — الترمذي', 'en': 'Trials continue for the believer until he meets Allah sinless — Tirmidhi'},
-  {'ar': 'اللهم اجعلنا ممن إذا أُعطي شكر وإذا ابتُلي صبر — أحمد', 'en': 'O Allah make us those who are thankful when given — Ahmad'},
-  {'ar': 'إن مع العسر يسراً — الشرح: ٦',                   'en': 'With every hardship comes ease — Quran 94:6'},
+// ── Daily notes — 30 rotating, one per day ──────
+// Short practical prompts about food, movement, sleep and consistency.
+// General wellbeing information, not medical advice.
+const kDailyNotes = [
+  {'ar': 'الأصغر الذي تكرّره يغلب الأكبر الذي تتركه.',
+   'en': 'The small thing you repeat beats the big thing you abandon.'},
+  {'ar': 'الراحة ليست توقفًا عن التقدّم — هي جزء منه.',
+   'en': 'Rest is not a pause in progress. It is part of it.'},
+  {'ar': 'ابدأ يومك بكوب ماء قبل القهوة.',
+   'en': 'Start the day with a glass of water before coffee.'},
+  {'ar': 'ضوء الصباح في عينيك يضبط نومك ليلاً.',
+   'en': 'Morning light in your eyes sets tonight’s sleep.'},
+  {'ar': 'البروتين في كل وجبة يقلّل الجوع بين الوجبات.',
+   'en': 'Protein at every meal blunts the hunger between them.'},
+  {'ar': 'امش عشر دقائق بعد الأكل — أسهل تحسين ممكن.',
+   'en': 'Walk ten minutes after eating — the easiest upgrade there is.'},
+  {'ar': 'كُل ببطء: الشبع يحتاج نحو عشرين دقيقة ليصل.',
+   'en': 'Eat slowly — fullness takes about twenty minutes to arrive.'},
+  {'ar': 'لا تحكم على أسبوعك بيوم واحد.',
+   'en': 'Do not judge a week by one day.'},
+  {'ar': 'النوم أرخص مكمّل موجود.',
+   'en': 'Sleep is the cheapest supplement available.'},
+  {'ar': 'اشترِ الخضار المجمّد إن كان الطازج يفسد قبل استعماله.',
+   'en': 'Buy frozen vegetables if fresh ones spoil before you use them.'},
+  {'ar': 'التوقف عند الشبع أهدأ من الحرمان.',
+   'en': 'Stopping when full is calmer than going without.'},
+  {'ar': 'خطوة واحدة زائدة كل يوم تتراكم بسرعة.',
+   'en': 'One extra step a day adds up faster than you think.'},
+  {'ar': 'الماء أولاً عند الشعور بالجوع المتكرر.',
+   'en': 'Reach for water first when hunger keeps returning.'},
+  {'ar': 'جهّز وجبة الغد الليلة — القرار الأسهل هو الأفضل.',
+   'en': 'Prep tomorrow’s meal tonight — the easy choice wins.'},
+  {'ar': 'حرّك جسمك في المدى الذي لا يؤلم فقط.',
+   'en': 'Move only through the range that does not hurt.'},
+  {'ar': 'التنفس البطيء ثلاث دقائق يهدّئ النبض.',
+   'en': 'Three minutes of slow breathing settles your pulse.'},
+  {'ar': 'الألياف تشبع أكثر من السعرات نفسها من السكر.',
+   'en': 'Fibre fills you more than the same calories of sugar.'},
+  {'ar': 'قِس تقدّمك بالأسابيع لا بالأيام.',
+   'en': 'Measure progress in weeks, not days.'},
+  {'ar': 'قلّل الشاشة قبل النوم بنصف ساعة.',
+   'en': 'Put screens down half an hour before bed.'},
+  {'ar': 'الطبخ في البيت يعطيك تحكّمًا في الملح والزيت.',
+   'en': 'Cooking at home puts you in charge of the salt and oil.'},
+  {'ar': 'المشي مع أحد يجعل الالتزام أسهل.',
+   'en': 'Walking with someone makes it easier to keep going.'},
+  {'ar': 'وجبة واحدة لا تفسد يومك، وأخرى لا تصلحه.',
+   'en': 'One meal will not ruin your day, and one will not fix it.'},
+  {'ar': 'الوزن يتغيّر يوميًا بسبب الماء — لا تقلق.',
+   'en': 'Daily weight swings are mostly water. Do not panic.'},
+  {'ar': 'أضف تكرارًا واحدًا هذا الأسبوع، لا خمسة.',
+   'en': 'Add one rep this week, not five.'},
+  {'ar': 'اجعل الخيار الصحي هو الأقرب إلى يدك.',
+   'en': 'Keep the better option the closest one to hand.'},
+  {'ar': 'الجلوس الطويل يُقطع بدقيقة وقوف كل ساعة.',
+   'en': 'Break long sitting with one minute of standing each hour.'},
+  {'ar': 'الامتنان في نهاية اليوم يحسّن مزاج الغد.',
+   'en': 'A moment of gratitude at night improves tomorrow’s mood.'},
+  {'ar': 'خطّتك يجب أن تصلح لأسوأ أسبوع لديك.',
+   'en': 'Your plan should survive your worst week.'},
+  {'ar': 'لا تقارن بدايتك بمنتصف طريق غيرك.',
+   'en': 'Do not compare your start to someone else’s middle.'},
+  {'ar': 'العودة بعد الانقطاع هي المهارة الحقيقية.',
+   'en': 'Coming back after a gap is the real skill.'},
 ];
 
 // ── Recipe ─────────────────────────────────────
@@ -793,44 +825,44 @@ class Recipe {
   final int id, timeMins, costEGP, kcal;
   final int proteinG, carbsG, fatG;
   final String nameAr;
-  final List<String> sunnahIngredients, ingredients, steps;
+  final List<String> keyIngredients, ingredients, steps;
   const Recipe({
     required this.id, required this.nameAr, required this.timeMins,
     required this.costEGP, required this.kcal,
     required this.proteinG, required this.carbsG, required this.fatG,
-    required this.sunnahIngredients, required this.ingredients, required this.steps,
+    required this.keyIngredients, required this.ingredients, required this.steps,
   });
 }
 
 const kRecipes = [
-  Recipe(id: 1, nameAr: 'شوربة العدس السنية', timeMins: 25, costEGP: 18, kcal: 175,
+  Recipe(id: 1, nameAr: 'شوربة العدس', timeMins: 25, costEGP: 18, kcal: 175,
     proteinG: 11, carbsG: 28, fatG: 3,
-    sunnahIngredients: ['زيت زيتون', 'كمون'],
+    keyIngredients: ['زيت زيتون', 'كمون'],
     ingredients: ['عدس أحمر ١ كوب', 'بصلة كبيرة', 'ثوم ٣ فصوص', 'كمون', 'زيت زيتون'],
     steps: ['أضف العدس والبصل والثوم مع ١ لتر ماء.', 'اغلِ ثم خفف النار ٢٠ دقيقة.', 'اخلط وأضف الكمون وزيت الزيتون.']),
   Recipe(id: 2, nameAr: 'سلطة التمر والجوز', timeMins: 10, costEGP: 35, kcal: 210,
     proteinG: 4, carbsG: 32, fatG: 9,
-    sunnahIngredients: ['تمر', 'عسل'],
+    keyIngredients: ['تمر', 'عسل'],
     ingredients: ['تمر مجفف ٦ حبات', 'جوز مفروم ٢٥ج', 'خس', 'عسل', 'ليمون'],
     steps: ['قطّع التمر والجوز.', 'اخلط مع الخس.', 'أضف عصير الليمون والعسل.']),
   Recipe(id: 3, nameAr: 'بيض مقلي بزيت الزيتون', timeMins: 8, costEGP: 12, kcal: 165,
     proteinG: 12, carbsG: 1, fatG: 12,
-    sunnahIngredients: ['زيت زيتون'],
+    keyIngredients: ['زيت زيتون'],
     ingredients: ['بيضتان', 'زيت زيتون بكر', 'ملح وكمون'],
     steps: ['سخن زيت الزيتون.', 'أضف البيض واطهُه.', 'رشّ الكمون والملح.']),
   Recipe(id: 4, nameAr: 'عصيدة الشوفان بالتمر والعسل', timeMins: 10, costEGP: 22, kcal: 280,
     proteinG: 8, carbsG: 52, fatG: 5,
-    sunnahIngredients: ['تمر', 'عسل'],
+    keyIngredients: ['تمر', 'عسل'],
     ingredients: ['شوفان ١ كوب', 'حليب ٢٠٠مل', 'تمر ٣ حبات', 'عسل', 'قرفة'],
     steps: ['اطبخ الشوفان مع الحليب.', 'أضف التمر والقرفة.', 'قدّم وأضف العسل.']),
-  Recipe(id: 5, nameAr: 'شراب الحبة السوداء والعسل', timeMins: 3, costEGP: 8, kcal: 90,
-    proteinG: 1, carbsG: 14, fatG: 2,
-    sunnahIngredients: ['حبة سوداء', 'عسل'],
-    ingredients: ['حبة سوداء مطحونة', 'عسل طبيعي', 'ماء فاتر'],
-    steps: ['سخن الماء لدرجة فاترة.', 'أضف الحبة السوداء والعسل.', 'اشربه صباحاً على الريق.']),
+  Recipe(id: 5, nameAr: 'زبادي بالمكسرات والقرفة', timeMins: 5, costEGP: 20, kcal: 190,
+    proteinG: 12, carbsG: 18, fatG: 8,
+    keyIngredients: ['زبادي', 'مكسرات'],
+    ingredients: ['زبادي طبيعي ٢٠٠ج', 'مكسرات مفرومة ٢٠ج', 'قرفة', 'عسل ملعقة صغيرة'],
+    steps: ['ضع الزبادي في وعاء.', 'أضف المكسرات والقرفة.', 'حلِّه بملعقة عسل صغيرة.']),
   Recipe(id: 6, nameAr: 'دجاج مشوي بالثوم والليمون', timeMins: 35, costEGP: 85, kcal: 285,
     proteinG: 38, carbsG: 4, fatG: 12,
-    sunnahIngredients: ['زيت زيتون'],
+    keyIngredients: ['زيت زيتون'],
     ingredients: ['صدر دجاج حلال', 'ثوم', 'ليمون', 'زيت زيتون', 'كمون'],
     steps: ['تبّل الدجاج بالمكونات.', 'اترك ٣٠ دقيقة.', 'اشوِه ٦-٧ دقائق كل جانب.']),
 ];
@@ -846,39 +878,38 @@ class HealthArticle {
 }
 
 const kHealthArticles = [
-  HealthArticle(id:'h1', icon:'💧', colorValue:0xFF2196F3, title:'الماء — شفاء كل شيء',
-    summary:'احتياج الجسم اليومي وفوائد الإماهة',
-    body:'يتكون جسمك من 60% ماء. كل خلية تحتاج الماء للعمل.\n\nالاحتياج اليومي:\n• رجال: 3.7 لتر\n• نساء: 2.7 لتر\n\nعلامات الجفاف:\n• لون البول داكن\n• صداع وتعب\n\nمن السنة: اشربوا في ثلاث جرعات وسمّوا الله.'),
-  HealthArticle(id:'h2', icon:'😴', colorValue:0xFF7C4DFF, title:'النوم — رحمة ربانية',
-    summary:'كيف يُشفي النوم الجسم والعقل',
-    body:'النوم ليس سلبياً — الجسم يعمل بنشاط:\n\n• إصلاح الخلايا\n• تعزيز الذاكرة\n• تنظيف الدماغ\n• تقوية المناعة\n\nالاحتياج: 7-9 ساعات.\n\nمن السنة: النوم المبكر والاستيقاظ للفجر يوافق الساعة البيولوجية تماماً.'),
-  HealthArticle(id:'h3', icon:'❤️', colorValue:0xFFE53935, title:'صحة القلب — حياة أطول',
-    summary:'أرقام يجب أن تعرفها عن قلبك',
-    body:'الأرقام الصحية:\n• ضغط الدم: أقل من 120/80\n• نبض الراحة: 60-100\n• الكوليسترول: أقل من 200 ملجم/دل\n\nالوقاية:\n• المشي يخفض الضغط 5-8 نقاط\n• الصيام يحسن حساسية الأنسولين'),
-  HealthArticle(id:'h4', icon:'🧠', colorValue:0xFF00ACC1, title:'صحة الدماغ والذاكرة',
-    summary:'غذاء وعادات تقوي عقلك',
-    body:'أطعمة تقوي الدماغ من السنة:\n• العسل: مضاد أكسدة\n• زيت الزيتون: يقلل الالتهاب\n• التمر: يرفع الجلوكوز طبيعياً\n\nعادات مثبتة:\n• النوم الكافي\n• التمرين 30 دقيقة يومياً\n• قراءة القرآن الكريم'),
+  HealthArticle(id:'h1', icon:'💧', colorValue:0xFF2196F3, title:'الماء والإماهة',
+    summary:'كم يحتاج جسمك يومياً وكيف تعرف أنك مُرتوٍ',
+    body:'الماء يمثّل نحو ٦٠٪ من وزن الجسم ويشارك في نقل العناصر وتنظيم الحرارة.\n\nالمرجع اليومي التقريبي (من كل المصادر شرابًا وطعامًا):\n• رجال: حوالي ٣.٧ لتر\n• نساء: حوالي ٢.٧ لتر\n\nيزيد الاحتياج مع الحرارة والمجهود.\n\nمؤشرات عملية:\n• بول فاتح اللون عادةً علامة جيدة\n• العطش المتكرر أو الجفاف الشديد يستحق مراجعة طبيب\n\nنصيحة: وزّع شربك على اليوم بدل كميات كبيرة مرة واحدة.'),
+  HealthArticle(id:'h2', icon:'😴', colorValue:0xFF7C4DFF, title:'النوم والتعافي',
+    summary:'لماذا النوم أهم عنصر في أي خطة',
+    body:'أثناء النوم يستكمل الجسم عمليات الترميم وتثبيت الذاكرة.\n\nالمدة المُوصى بها للبالغين: ٧–٩ ساعات.\n\nما يساعد فعليًا:\n• مواعيد نوم واستيقاظ ثابتة، بما فيها نهاية الأسبوع\n• غرفة مظلمة وباردة\n• تقليل الكافيين بعد العصر\n• إبعاد الشاشات نصف ساعة قبل النوم\n\nاستمرار الأرق أو الشخير الشديد يستحق استشارة مختص.'),
+  HealthArticle(id:'h3', icon:'❤️', colorValue:0xFFE53935, title:'أرقام القلب التي تُقاس',
+    summary:'قيم مرجعية شائعة وما تعنيه',
+    body:'قيم مرجعية عامة للبالغين:\n• ضغط الدم: أقل من ١٢٠/٨٠ ملم زئبق\n• نبض الراحة: ٦٠–١٠٠ نبضة/دقيقة\n• الكوليسترول الكلي: أقل من ٢٠٠ ملجم/دل\n\nالنشاط المنتظم والنوم الكافي وتقليل الملح مرتبطون بصحة القلب.\n\nهذه القيم للتوعية فقط — التشخيص والعلاج من اختصاص الطبيب، ولا تُعدّل أي دواء من نفسك.'),
+  HealthArticle(id:'h4', icon:'🧠', colorValue:0xFF00ACC1, title:'التركيز والذاكرة',
+    summary:'عادات يومية مرتبطة بصفاء الذهن',
+    body:'ما تشير إليه الأدلة العامة:\n• النوم الكافي من أقوى العوامل المرتبطة بالتركيز\n• النشاط البدني المنتظم يرتبط بمزاج وانتباه أفضل\n• نمط غذائي متوازن غني بالخضروات والدهون الجيدة والحبوب الكاملة\n\nعمليًا:\n• اعمل في فترات مركّزة مع فواصل قصيرة\n• قلّل التنبيهات أثناء المهام الطويلة\n• اخرج للضوء الطبيعي مرة على الأقل يوميًا'),
   HealthArticle(id:'h5', icon:'🦴', colorValue:0xFFFF7043, title:'العظام والمفاصل',
-    summary:'تقوية الهيكل العظمي',
-    body:'ذروة كثافة العظام في الـ 30!\n\nمصادر الكالسيوم:\n• حليب ومنتجات الألبان\n• السمسم والطحينة\n• الخضروات الورقية\n\nفيتامين D:\nأشعة الشمس 20 دقيقة يومياً.'),
-  HealthArticle(id:'h6', icon:'🫁', colorValue:0xFF4CAF50, title:'الجهاز الهضمي',
-    summary:'صحة الأمعاء = صحة الجسم كله',
-    body:'95% من السيروتونين يُنتج في الأمعاء!\n\nأطعمة تقوي الأمعاء:\n• الألياف: شعير، عدس\n• البروبيوتيك: زبادي طبيعي\n• الزنجبيل والكمون\n\nالصيام المتقطع يُجدد بطانة الأمعاء!'),
-  HealthArticle(id:'h7', icon:'🧘', colorValue:0xFF9C27B0, title:'الصحة النفسية',
-    summary:'كيف تحمي عقلك وروحك',
-    body:'تقنيات علمية مثبتة:\n• التنفس العميق: 4 شهيق، 4 زفير\n• المشي 20 دقيقة يخفض الكورتيزول 21٪\n\nمن الإسلام:\n• الذكر والتسبيح\n• الصلاة: تنفس + حركة + تأمل'),
+    summary:'الكالسيوم وفيتامين د والحمل على العظم',
+    body:'تبلغ كثافة العظام ذروتها في نحو العقد الثالث، ثم يصبح الحفاظ عليها هو الهدف.\n\nمصادر كالسيوم شائعة:\n• الحليب ومنتجاته\n• السمسم والطحينة\n• الخضروات الورقية والسردين بعظمه\n\nفيتامين د:\nالتعرّض المعتدل للشمس ومصادر غذائية؛ يُحدّد النقص بتحليل ومكمّل يصفه الطبيب.\n\nتمارين المقاومة والمشي تحمّلان العظم وترتبطان بالحفاظ على كثافته.'),
+  HealthArticle(id:'h6', icon:'🫁', colorValue:0xFF4CAF50, title:'الهضم والألياف',
+    summary:'كيف تبني نمطاً مريحاً لمعدتك',
+    body:'الألياف مهمة لانتظام الهضم، والمرجع اليومي نحو ٢٥–٣٠ جرامًا.\n\nمصادر جيدة:\n• العدس والفاصولياء والحمص\n• الشوفان والشعير والحبوب الكاملة\n• الفواكه والخضروات بقشرها حيث يمكن\n\nزد الألياف تدريجيًا مع شرب ماء كافٍ لتقليل الانتفاخ.\n\nالأعراض المستمرة أو المؤلمة تستحق تقييمًا طبيًا وليست موضوعًا للتجربة الشخصية.'),
+  HealthArticle(id:'h7', icon:'🧘', colorValue:0xFF9C27B0, title:'الضغط النفسي والاسترخاء',
+    summary:'تقنيات قصيرة يمكن تجربتها اليوم',
+    body:'تمارين بسيطة يستخدمها كثيرون لتهدئة التوتر اللحظي:\n• تنفّس ٤ ثوانٍ شهيق و٤ زفير لمدة ٣ دقائق\n• مشي هادئ ٢٠ دقيقة\n• تدوين ثلاث أسطر عن يومك قبل النوم\n• وقفة صامتة بلا شاشة\n\nالنشاط البدني المنتظم والنوم الكافي مرتبطان بمزاج أفضل.\n\nإذا استمر القلق أو انخفاض المزاج أو أثّر على حياتك اليومية، فالتحدث إلى مختص هو الخطوة الصحيحة.'),
   HealthArticle(id:'h8', icon:'⚖️', colorValue:0xFFFF5722, title:'الوزن ومؤشر كتلة الجسم',
-    summary:'احسب وزنك المثالي',
-    body:'BMI = الوزن ÷ الطول²\n\n• أقل من 18.5 = نقص وزن\n• 18.5-24.9 = وزن مثالي ✓\n• 25-29.9 = زيادة وزن\n• 30+ = سمنة\n\nالصيام المتقطع يقلل الوزن 3-8% خلال 8 أسابيع.'),
-  HealthArticle(id:'h9', icon:'💊', colorValue:0xFF009688, title:'المكملات والفيتامينات',
-    summary:'ما تحتاجه فعلاً',
-    body:'الأهم:\n• فيتامين D3: 2000-4000 وحدة\n• أوميجا 3: 1-2 جرام\n• مغنيسيوم: 300-400 ملجم\n\nمن السنة:\n• الحبة السوداء: فيها شفاء\n• العسل الطبيعي: مضاد جرثومي'),
-  HealthArticle(id:'h10', icon:'🩸', colorValue:0xFFF44336, title:'فحوصات سنوية أساسية',
-    summary:'دليل الفحوصات الدورية',
-    body:'الوقاية خير من العلاج!\n\nكل سنة فوق 18:\n✓ صورة دم كاملة CBC\n✓ سكر صيام\n✓ دهنيات الدم\n✓ فيتامين D و B12\n✓ ضغط الدم'),
+    summary:'ما يقيسه المؤشر وما لا يقيسه',
+    body:'مؤشر كتلة الجسم = الوزن (كجم) ÷ مربع الطول (م).\n\nالفئات المرجعية للبالغين:\n• أقل من ١٨.٥ — نقص وزن\n• ١٨.٥–٢٤.٩ — نطاق مرجعي\n• ٢٥–٢٩.٩ — زيادة وزن\n• ٣٠ أو أكثر — سمنة\n\nالمؤشر تقدير سكاني لا يفرّق بين العضل والدهن، ولا يصلح وحده لتقييم رياضي أو حامل أو طفل.\n\nالتغيير المستدام يقاس بأسابيع، ومحيط الخصر والصور والقياسات أوضح من الميزان وحده.'),
+  HealthArticle(id:'h9', icon:'🥗', colorValue:0xFF009688, title:'قراءة الملصق الغذائي',
+    summary:'كيف تقارن منتجين في ثلاثين ثانية',
+    body:'ابدأ من حجم الحصة: كل الأرقام مبنية عليها، وقد تكون العلبة أكثر من حصة.\n\nقارن لكل ١٠٠ جرام لا لكل حصة — فهي الطريقة الوحيدة العادلة بين منتجين.\n\nثم انظر إلى:\n• السكريات المضافة\n• الدهون المشبعة\n• الصوديوم\n• البروتين والألياف\n\nقائمة المكونات مرتّبة بالوزن تنازليًا: ما في أولها هو أكثر ما في المنتج.\n\nتحقّق من مصدر أي مكوّن مثير للشك بالرجوع إلى بيانات المنتج أو الشركة.'),
+  HealthArticle(id:'h10', icon:'🩸', colorValue:0xFFF44336, title:'المتابعة الدورية',
+    summary:'حوار مع طبيبك لا بديل عنه',
+    body:'المتابعة المنتظمة تساعد على ملاحظة التغيّرات مبكرًا.\n\nما يُطلب عادةً للبالغين الأصحّاء يختلف حسب العمر والتاريخ العائلي وعوامل الخطر، ويحدّده الطبيب. تُطرح عادةً:\n• قياس ضغط الدم\n• صورة دم كاملة\n• سكر الدم\n• دهنيات الدم\n\nهذا التطبيق يسجّل عاداتك اليومية فقط — لا يشخّص ولا يعالج ولا يحل محل الرعاية الطبية. اطلب المشورة الطبية لأي عَرَض جديد أو مستمر.'),
 ];
 
-// ── Quick Food — 50 items with full macros ───────
 class QuickFood {
   final String name, nameEn;
   final int kcal;

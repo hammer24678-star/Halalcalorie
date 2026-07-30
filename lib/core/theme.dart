@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Brand
-  static const sunnahGreen = Color(0xFF238636);
+  static const brandGreen = Color(0xFF238636);
   static const halalGreen  = Color(0xFF3FB950);
   static const darkGreen   = Color(0xFF196127);
-  static const barakahGold = Color(0xFFD29922);
+  static const accentGold = Color(0xFFD29922);
   static const haramRed    = Color(0xFFF85149);
   static const doubtOrange = Color(0xFFD1812A);
   static const waterBlue   = Color(0xFF58A6FF);
@@ -72,8 +72,8 @@ class AppTheme {
     fontFamily: 'Cairo',
     scaffoldBackgroundColor: AppColors.darkBg,
     colorScheme: const ColorScheme.dark(
-      primary: AppColors.sunnahGreen,
-      secondary: AppColors.barakahGold,
+      primary: AppColors.brandGreen,
+      secondary: AppColors.accentGold,
       surface: AppColors.darkCard,
       onPrimary: Colors.white,
       onSurface: AppColors.darkText,
@@ -87,7 +87,7 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.sunnahGreen,
+        backgroundColor: AppColors.brandGreen,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -112,7 +112,7 @@ class AppTheme {
       enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
         borderSide: const BorderSide(color: AppColors.darkBorder, width: 0.5)),
       focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: AppColors.sunnahGreen, width: 1.5)),
+        borderSide: const BorderSide(color: AppColors.brandGreen, width: 1.5)),
       hintStyle: const TextStyle(fontFamily: 'Cairo', color: AppColors.darkMuted),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     ),
@@ -131,8 +131,8 @@ class AppTheme {
     fontFamily: 'Cairo',
     scaffoldBackgroundColor: AppColors.lightBg,
     colorScheme: const ColorScheme.light(
-      primary: AppColors.sunnahGreen,
-      secondary: AppColors.barakahGold,
+      primary: AppColors.brandGreen,
+      secondary: AppColors.accentGold,
       surface: AppColors.lightCard,
       onPrimary: Colors.white,
       onSurface: AppColors.lightText,
@@ -146,7 +146,7 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.sunnahGreen,
+        backgroundColor: AppColors.brandGreen,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         padding: const EdgeInsets.symmetric(vertical: 14),
@@ -170,7 +170,7 @@ class AppTheme {
       enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
         borderSide: const BorderSide(color: AppColors.lightBorder, width: 0.5)),
       focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
-        borderSide: const BorderSide(color: AppColors.sunnahGreen, width: 1.5)),
+        borderSide: const BorderSide(color: AppColors.brandGreen, width: 1.5)),
       hintStyle: const TextStyle(fontFamily: 'Cairo', color: AppColors.lightMuted),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     ),
@@ -289,7 +289,7 @@ class AppTheme {
     fontFamily: 'Cairo',
     scaffoldBackgroundColor: AppColors.ramadanDay,
     colorScheme: const ColorScheme.light(
-      primary:     AppColors.barakahGold,
+      primary:     AppColors.accentGold,
       secondary:   Color(0xFFB85C1A),
       surface:     AppColors.ramadanDayCard,
       onPrimary:   Colors.white,
@@ -311,7 +311,7 @@ class AppTheme {
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.barakahGold,
+        backgroundColor: AppColors.accentGold,
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         padding: EdgeInsets.symmetric(vertical: 14),
@@ -321,8 +321,8 @@ class AppTheme {
     ),
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
-        foregroundColor: AppColors.barakahGold,
-        side: BorderSide(color: AppColors.barakahGold, width: 1.2),
+        foregroundColor: AppColors.accentGold,
+        side: BorderSide(color: AppColors.accentGold, width: 1.2),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
         padding: EdgeInsets.symmetric(vertical: 14),
         textStyle: TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.w600),
@@ -338,14 +338,14 @@ class AppTheme {
     ),
     dividerColor: const Color(0xFFD4A043),
     tabBarTheme: const TabBarThemeData(
-      indicatorColor:       AppColors.barakahGold,
-      labelColor:           AppColors.barakahGold,
+      indicatorColor:       AppColors.accentGold,
+      labelColor:           AppColors.accentGold,
       unselectedLabelColor: Color(0xFFB8940A),
       dividerColor:         Colors.transparent,
     ),
     bottomNavigationBarTheme: const BottomNavigationBarThemeData(
       backgroundColor:     AppColors.ramadanDayCard,
-      selectedItemColor:   AppColors.barakahGold,
+      selectedItemColor:   AppColors.accentGold,
       unselectedItemColor: Color(0xFFB8940A),
       elevation: 0,
     ),
@@ -360,12 +360,12 @@ class AppTheme {
         borderSide: BorderSide(color: Color(0xFFD4A043), width: 0.8)),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(10),
-        borderSide: BorderSide(color: AppColors.barakahGold, width: 1.6)),
+        borderSide: BorderSide(color: AppColors.accentGold, width: 1.6)),
       hintStyle: TextStyle(fontFamily: 'Cairo', color: Color(0xFF9A7000)),
       contentPadding: EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     ),
     listTileTheme: const ListTileThemeData(
-      iconColor: AppColors.barakahGold,
+      iconColor: AppColors.accentGold,
       textColor: AppColors.ramadanDayText,
       tileColor: Colors.transparent,
     ),
