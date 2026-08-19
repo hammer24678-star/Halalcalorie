@@ -327,6 +327,120 @@ class L {
       'Votre ascension du jour', 'Bugünkü yükselişin',
       'Pendakian anda hari ini', 'Pendakianmu hari ini', 'آج کا عروج');
 
+  // ── Ranked lifting ────────────────────────────────────────────────────────
+  String get liftTitle       => t6('القوة المصنّفة', 'Ranked Lifts',
+      'Levées classées', 'Sıralı Kaldırışlar', 'Angkatan Berpangkat',
+      'Angkatan Berperingkat', 'درجہ بند لفٹس');
+  String get liftNavLabel    => t6('قوة', 'Lifts',
+      'Levées', 'Kaldırış', 'Angkatan', 'Angkatan', 'لفٹس');
+  String get overallRankLabel => t6('رتبتك العامة', 'Overall rank',
+      'Rang général', 'Genel rütbe', 'Pangkat keseluruhan',
+      'Peringkat keseluruhan', 'مجموعی درجہ');
+  String get maxRankReached  => t6('بلغت أعلى رتبة', 'Top rank reached',
+      'Rang maximum atteint', 'En üst rütbeye ulaştın',
+      'Pangkat tertinggi dicapai', 'Peringkat tertinggi tercapai',
+      'اعلیٰ ترین درجہ حاصل');
+  String get toNextDivision  => t6('للقسم التالي', 'to the next division',
+      'vers la division suivante', 'sonraki dereceye',
+      'ke bahagian seterusnya', 'ke divisi berikutnya', 'اگلے ڈویژن تک');
+  String get setsToday       => t6('مجموعات اليوم', 'Sets today',
+      'Séries aujourd’hui', 'Bugün set', 'Set hari ini', 'Set hari ini',
+      'آج کے سیٹ');
+  String get volumeToday     => t6('حجم اليوم', 'Volume today',
+      'Volume du jour', 'Bugünkü hacim', 'Jumlah hari ini',
+      'Volume hari ini', 'آج کا حجم');
+  String get liftsRanked     => t6('تمارين مصنّفة', 'Lifts ranked',
+      'Levées classées', 'Sıralanan hareket', 'Angkatan berpangkat',
+      'Angkatan berperingkat', 'درجہ بند لفٹس');
+  String get needBodyweight  => t6(
+      'أضف وزنك أولاً — الرتب تُحسب من وزنك مقارنة بما ترفعه',
+      'Add your bodyweight first — ranks compare what you lift to what you weigh',
+      'Ajoutez votre poids d’abord — les rangs comparent la charge à votre poids',
+      'Önce vücut ağırlığını gir — rütbeler kaldırdığını ağırlığınla karşılaştırır',
+      'Masukkan berat badan dahulu — pangkat membandingkan angkatan dengan berat anda',
+      'Masukkan berat badanmu dulu — peringkat membandingkan angkatan dengan beratmu',
+      'پہلے اپنا وزن درج کریں — درجہ آپ کے وزن کے مقابلے میں طے ہوتا ہے');
+  String get needBodyweightShort => t6('أضف وزنك أولاً', 'Add your bodyweight',
+      'Ajoutez votre poids', 'Vücut ağırlığını gir', 'Masukkan berat badan',
+      'Masukkan berat badan', 'اپنا وزن درج کریں');
+  String get notRankedYet    => t6('لم يُصنّف بعد — سجّل مجموعة',
+      'Not ranked yet — log a set',
+      'Pas encore classé — enregistrez une série',
+      'Henüz sıralanmadı — bir set kaydet',
+      'Belum berpangkat — log satu set',
+      'Belum berperingkat — catat satu set',
+      'ابھی درجہ نہیں — ایک سیٹ درج کریں');
+  String get repsLabel       => t6('تكرار', 'reps',
+      'répét.', 'tekrar', 'ulangan', 'repetisi', 'ریپس');
+  String get weightLabel     => t6('الوزن', 'Weight',
+      'Charge', 'Ağırlık', 'Berat', 'Beban', 'وزن');
+  String get addedWeight     => t6('وزن مضاف', 'Added weight',
+      'Charge ajoutée', 'Eklenen ağırlık', 'Berat tambahan',
+      'Beban tambahan', 'اضافی وزن');
+  String get holdLabel       => t6('المدة', 'Hold',
+      'Durée', 'Süre', 'Tahan', 'Tahan', 'دورانیہ');
+  String get logASet         => t6('سجّل مجموعة', 'Log a set',
+      'Enregistrer une série', 'Set kaydet', 'Log satu set',
+      'Catat satu set', 'سیٹ درج کریں');
+  String get logSetCta       => t6('سجّل المجموعة', 'Log set',
+      'Enregistrer', 'Seti kaydet', 'Log set', 'Catat set', 'سیٹ درج کریں');
+  String get setLogged       => t6('سُجّلت المجموعة', 'Set logged',
+      'Série enregistrée', 'Set kaydedildi', 'Set dilog', 'Set dicatat',
+      'سیٹ درج ہو گیا');
+  String get newPersonalBest => t6('رقم شخصي جديد!', 'New personal best!',
+      'Nouveau record personnel !', 'Yeni kişisel rekor!',
+      'Rekod peribadi baharu!', 'Rekor pribadi baru!', 'نیا ذاتی ریکارڈ!');
+  String get thisSetWouldRank => t6('هذه المجموعة تساوي',
+      'This set would rank',
+      'Cette série vaudrait', 'Bu set şu rütbeye denk',
+      'Set ini setaraf', 'Set ini setara', 'یہ سیٹ برابر ہے');
+  String get bodyweightShort => t6('وزن الجسم', 'bodyweight',
+      'poids du corps', 'vücut ağırlığı', 'berat badan', 'berat badan',
+      'جسمانی وزن');
+  String get bodyweightOnly  => t6('وزن الجسم فقط', 'Bodyweight only',
+      'Poids du corps seul', 'Sadece vücut ağırlığı', 'Berat badan sahaja',
+      'Berat badan saja', 'صرف جسمانی وزن');
+  String get restTimer       => t6('راحة', 'Rest',
+      'Repos', 'Dinlenme', 'Rehat', 'Istirahat', 'آرام');
+  String get standardsTitle  => t6('معايير الرتب', 'Rank standards',
+      'Barèmes des rangs', 'Rütbe standartları', 'Piawaian pangkat',
+      'Standar peringkat', 'درجہ معیارات');
+  String get standardsHint   => t6('ما تحتاجه كل رتبة بوزنك الحالي',
+      'What each tier asks for at your bodyweight',
+      'Ce que chaque palier demande à votre poids',
+      'Her kademenin senin ağırlığında istediği',
+      'Apa yang setiap tahap perlukan pada berat anda',
+      'Yang tiap tingkat butuhkan pada beratmu',
+      'آپ کے وزن پر ہر درجے کا تقاضا');
+  String get historyTitle    => t6('السجل', 'History',
+      'Historique', 'Geçmiş', 'Sejarah', 'Riwayat', 'تاریخ');
+  String get noSetsYet       => t6('لا مجموعات بعد', 'No sets yet',
+      'Aucune série', 'Henüz set yok', 'Tiada set lagi', 'Belum ada set',
+      'ابھی کوئی سیٹ نہیں');
+  String get perSide         => t6('لكل جهة', 'Per side',
+      'Par côté', 'Her tarafta', 'Setiap sisi', 'Tiap sisi', 'فی طرف');
+  String get platesNotExact  => t6('لا يمكن تكوين هذا الوزن بأقراص قياسية',
+      'Standard plates cannot make this exact weight',
+      'Les disques standards ne font pas ce poids exact',
+      'Standart plakalarla bu ağırlık tam yapılamaz',
+      'Plat piawai tidak boleh membentuk berat tepat ini',
+      'Plat standar tidak bisa membentuk berat persis ini',
+      'معیاری پلیٹوں سے یہ وزن ممکن نہیں');
+  String get rankUp          => t6('ترقية رتبة', 'RANK UP',
+      'RANG SUPÉRIEUR', 'RÜTBE ATLADIN', 'NAIK PANGKAT', 'NAIK PERINGKAT',
+      'درجہ بلند');
+  String get yesterdayLabel  => t6('أمس', 'Yesterday',
+      'Hier', 'Dün', 'Semalam', 'Kemarin', 'کل');
+  String get notFound        => t6('غير موجود', 'Not found',
+      'Introuvable', 'Bulunamadı', 'Tidak dijumpai', 'Tidak ditemukan',
+      'نہیں ملا');
+  String get strengthCardTitle => t6('قوتك', 'Your strength',
+      'Votre force', 'Gücün', 'Kekuatan anda', 'Kekuatanmu', 'آپ کی طاقت');
+  String get openLifts       => t6('افتح القوة المصنّفة', 'Open ranked lifts',
+      'Ouvrir les levées classées', 'Sıralı kaldırışları aç',
+      'Buka angkatan berpangkat', 'Buka angkatan berperingkat',
+      'درجہ بند لفٹس کھولیں');
+
   // ── Scanner ───────────────────────────────────────────────────────────────
   String get cameraError => t6(
       'تعذّر فتح الكاميرا. تأكد من إذن الكاميرا في الإعدادات.',

@@ -10,6 +10,7 @@ import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../core/l10n.dart';
 import '../ramadan/ramadan_ui.dart';
+import '../../core/motion.dart';
 import '../../core/prayer_provider.dart';
 import '../../data/models/models.dart';
 import '../../data/models/user_profile.dart';
@@ -1167,7 +1168,7 @@ class _AscentCard extends ConsumerWidget {
     final l      = L.fromLang(lang);
     final col    = ascent.color;
 
-    return GestureDetector(
+    return PressFx(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),

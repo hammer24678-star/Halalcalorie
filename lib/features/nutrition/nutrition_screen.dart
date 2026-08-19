@@ -2563,7 +2563,9 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
           );
         },
       ),
-    );
+      // The controller outlives the builder, so it is disposed with the
+      // sheet rather than leaking one per open.
+    ).whenComplete(amtCtrl.dispose);
   }
 
   Widget _gramBtn(IconData icon, VoidCallback onTap) => GestureDetector(

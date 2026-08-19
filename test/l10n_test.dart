@@ -90,6 +90,16 @@ void main() {
           l.planIftar, l.logWater, l.openNutrition,
           l.todayCalories, l.nextPrayer, l.dailyNote, l.sleep, l.streak,
           l.lifeStats, l.fasting, l.stayStrong,
+          // Ranked lifting
+          l.liftTitle, l.liftNavLabel, l.overallRankLabel, l.maxRankReached,
+          l.toNextDivision, l.setsToday, l.volumeToday, l.liftsRanked,
+          l.needBodyweight, l.needBodyweightShort, l.notRankedYet,
+          l.repsLabel, l.weightLabel, l.addedWeight, l.holdLabel,
+          l.logASet, l.logSetCta, l.setLogged, l.newPersonalBest,
+          l.thisSetWouldRank, l.bodyweightShort, l.bodyweightOnly,
+          l.restTimer, l.standardsTitle, l.standardsHint, l.historyTitle,
+          l.noSetsYet, l.perSide, l.platesNotExact, l.rankUp,
+          l.yesterdayLabel, l.notFound, l.strengthCardTitle, l.openLifts,
         ];
         for (final value in values) {
           expect(value.trim(), isNotEmpty, reason: 'empty string for $lang');

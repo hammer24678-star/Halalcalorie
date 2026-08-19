@@ -15,6 +15,8 @@ import 'package:confetti/confetti.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../core/l10n.dart';
+import '../../core/motion.dart';
+import '../fitness/lift_screen.dart';
 
 class AscentScreen extends ConsumerStatefulWidget {
   const AscentScreen({super.key});
@@ -161,8 +163,10 @@ class _AscentScreenState extends ConsumerState<AscentScreen>
                         onQuestTap: _routeForQuest,
                       )),
                   const SizedBox(height: 14),
+                  _anim(3, _StrengthCard(palette: palette, lang: lang)),
+                  const SizedBox(height: 14),
                   _anim(
-                      3,
+                      4,
                       weekAsync.when(
                         loading: () => const SizedBox.shrink(),
                         error: (_, __) => const SizedBox.shrink(),
@@ -172,7 +176,7 @@ class _AscentScreenState extends ConsumerState<AscentScreen>
                       )),
                   const SizedBox(height: 14),
                   _anim(
-                      4,
+                      5,
                       _TitleShelf(
                           earned: titles.earned,
                           lang: lang,
@@ -1206,4 +1210,83 @@ class _StarFieldPainter extends CustomPainter {
   @override
   bool shouldRepaint(_StarFieldPainter old) =>
       old.phase != phase || old.color != color;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// STRENGTH — the lifting ladder, surfaced alongside the daily quests
+// ════════════════════════════════════════════════════════════════════
+class _StrengthCard extends ConsumerWidget {
+  final _Palette palette;
+  final String lang;
+  const _StrengthCard({required this.palette, required this.lang});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = L.fromLang(lang);
+    final log = ref.watch(liftLogProvider);
+    final rank = log.overall;
+    final toNext = rank.lpToNextDivision;
+
+    return PressFx(
+      onTap: () => context.push('/lift'),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: palette.panel,
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: palette.border, width: 0.9),
+        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Text(l.strengthCardTitle,
+                style: TextStyle(
+                    fontFamily: 'Cairo',
+                    fontSize: 14,
+                    fontWeight: FontWeight.w800,
+                    color: palette.text)),
+            const Spacer(),
+            Icon(Icons.arrow_forward_ios, size: 12, color: palette.muted),
+          ]),
+          const SizedBox(height: 12),
+          Row(children: [
+            RankBadge(rank: rank, size: 58, arabic: l.isAr),
+            const SizedBox(width: 14),
+            Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(rank.label(arabic: l.isAr),
+                        style: TextStyle(
+                            fontFamily: 'Cairo',
+                            fontSize: 16,
+                            fontWeight: FontWeight.w900,
+                            color: rank.color)),
+                    const SizedBox(height: 6),
+                    AnimatedBar(
+                      value: rank.divisionProgress,
+                      color: rank.color,
+                      background: palette.border,
+                      height: 6,
+                    ),
+                    const SizedBox(height: 5),
+                    Text(
+                      log.isEmpty
+                          ? l.openLifts
+                          : (toNext == null
+                              ? l.maxRankReached
+                              : '$toNext LP ${l.toNextDivision}'),
+                      style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontSize: 10.5,
+                          color: palette.muted),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ]),
+            ),
+          ]),
+        ]),
+      ),
+    );
+  }
 }

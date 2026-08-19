@@ -15,7 +15,7 @@ class AppDatabase {
     final dbPath = await getDatabasesPath();
     return openDatabase(
       p.join(dbPath, 'halalcalorie.db'),
-      version: 7,
+      version: 8,
       onCreate: _create,
       onUpgrade: _upgrade,
     );
@@ -108,12 +108,36 @@ class AppDatabase {
       'score     INTEGER DEFAULT 0,'
       'xp        INTEGER DEFAULT 0)'
     );
+    // ── Lift log — one row per performed set ────────────
+    await db.execute(
+      'CREATE TABLE IF NOT EXISTS lift_sets ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+      'exercise_id TEXT NOT NULL,'
+      'weight_kg REAL DEFAULT 0,'
+      'reps INTEGER DEFAULT 0,'
+      'seconds INTEGER DEFAULT 0,'
+      'bodyweight_kg REAL DEFAULT 0,'
+      'lp INTEGER DEFAULT 0,'
+      'date_key TEXT NOT NULL,'
+      'created TEXT NOT NULL)'
+    );
+    await db.execute(
+      'CREATE INDEX IF NOT EXISTS idx_lift_sets_exercise '
+      'ON lift_sets(exercise_id)'
+    );
   }
 
-  static String _today() {
-    final n = DateTime.now();
-    return '${n.year}-${n.month.toString().padLeft(2,"0")}-${n.day.toString().padLeft(2,"0")}';
-  }
+  static String _today() => _dateKey(DateTime.now());
+
+  static String _dateKey(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, "0")}'
+      '-${d.day.toString().padLeft(2, "0")}';
+
+  /// Cutoff for a rolling window, computed in the device's own timezone.
+  /// SQLite's date('now') is UTC, which shifted the window by a day for
+  /// anyone far enough from it, so the bound is calculated here instead.
+  static String _daysAgoKey(int days) =>
+      _dateKey(DateTime.now().subtract(Duration(days: days)));
 
   static Future<List<Map<String,dynamic>>> getTodayMeals() async {
     final d = await db;
@@ -134,7 +158,10 @@ class AppDatabase {
 
   static Future<List<_DailyKcal>> getWeeklyKcal() async {
     final d = await db;
-    final rows = await d.rawQuery("SELECT date_key, SUM(kcal) as total FROM meal_entries WHERE date_key >= date('now','-6 days') GROUP BY date_key ORDER BY date_key ASC");
+    final rows = await d.rawQuery(
+        'SELECT date_key, SUM(kcal) as total FROM meal_entries '
+        'WHERE date_key >= ? GROUP BY date_key ORDER BY date_key ASC',
+        [_daysAgoKey(6)]);
     return rows.map((r) => _DailyKcal(r['date_key'] as String, (r['total'] as int?) ?? 0)).toList();
   }
 
@@ -200,8 +227,8 @@ class AppDatabase {
   static Future<Set<String>> getWeeklyWorkoutDays() async {
     final d = await db;
     final rows = await d.rawQuery(
-        "SELECT DISTINCT date_key FROM workout_log "
-        "WHERE date_key >= date('now','-6 days')");
+        'SELECT DISTINCT date_key FROM workout_log WHERE date_key >= ?',
+        [_daysAgoKey(6)]);
     return rows.map((r) => r['date_key'] as String).toSet();
   }
 
@@ -230,9 +257,9 @@ class AppDatabase {
   static Future<List<Map<String,dynamic>>> getWeeklyAscent() async {
     final d = await db;
     return d.rawQuery(
-      "SELECT date_key, score, xp FROM ascent_log "
-      "WHERE date_key >= date('now','-6 days') "
-      "ORDER BY date_key ASC");
+      'SELECT date_key, score, xp FROM ascent_log '
+      'WHERE date_key >= ? ORDER BY date_key ASC',
+      [_daysAgoKey(6)]);
   }
 
   /// Lifetime XP is the sum of every day's awarded XP, so recomputing a
@@ -250,6 +277,91 @@ class AppDatabase {
         'SELECT date_key FROM ascent_log WHERE score >= ? '
         'ORDER BY date_key DESC LIMIT 400', [minScore]);
     return rows.map((r) => r['date_key'] as String).toList();
+  }
+
+  // ── Lift log helpers ────────────────────────────────────────
+  static Future<int> insertLiftSet({
+    required String exerciseId,
+    required double weightKg,
+    required int reps,
+    required int seconds,
+    required double bodyweightKg,
+    required int lp,
+  }) async {
+    try {
+      final d = await db;
+      return d.insert('lift_sets', {
+        'exercise_id': exerciseId,
+        'weight_kg': weightKg,
+        'reps': reps,
+        'seconds': seconds,
+        'bodyweight_kg': bodyweightKg,
+        'lp': lp,
+        'date_key': _today(),
+        'created': DateTime.now().toIso8601String(),
+      });
+    } catch (e) {
+      debugPrint('insertLiftSet: \$e');
+      return -1;
+    }
+  }
+
+  static Future<void> deleteLiftSet(int id) async {
+    final d = await db;
+    await d.delete('lift_sets', where: 'id=?', whereArgs: [id]);
+  }
+
+  /// Best LP recorded per exercise, which is what the ranks are built on.
+  static Future<Map<String, int>> getLiftBests() async {
+    final d = await db;
+    final rows = await d.rawQuery(
+        'SELECT exercise_id, MAX(lp) AS best FROM lift_sets '
+        'GROUP BY exercise_id');
+    return {
+      for (final r in rows)
+        (r['exercise_id'] as String): (r['best'] as int? ?? 0),
+    };
+  }
+
+  /// The single best set per exercise, for showing what earned the rank.
+  static Future<List<Map<String, dynamic>>> getLiftBestSets() async {
+    final d = await db;
+    return d.rawQuery(
+        'SELECT s.* FROM lift_sets s '
+        'JOIN (SELECT exercise_id, MAX(lp) AS best FROM lift_sets '
+        '      GROUP BY exercise_id) b '
+        '  ON s.exercise_id = b.exercise_id AND s.lp = b.best '
+        'GROUP BY s.exercise_id');
+  }
+
+  static Future<List<Map<String, dynamic>>> getRecentLiftSets(
+      {int limit = 60}) async {
+    final d = await db;
+    return d.query('lift_sets', orderBy: 'id DESC', limit: limit);
+  }
+
+  static Future<List<Map<String, dynamic>>> getLiftHistory(
+      String exerciseId, {int limit = 40}) async {
+    final d = await db;
+    return d.query('lift_sets',
+        where: 'exercise_id=?', whereArgs: [exerciseId],
+        orderBy: 'id DESC', limit: limit);
+  }
+
+  static Future<int> getTodayLiftSetCount() async {
+    final d = await db;
+    final rows = await d.rawQuery(
+        'SELECT COUNT(*) AS c FROM lift_sets WHERE date_key=?', [_today()]);
+    return (rows.first['c'] as int?) ?? 0;
+  }
+
+  /// Total volume (weight x reps) lifted today, in kilos.
+  static Future<double> getTodayLiftVolume() async {
+    final d = await db;
+    final rows = await d.rawQuery(
+        'SELECT SUM(weight_kg * reps) AS v FROM lift_sets WHERE date_key=?',
+        [_today()]);
+    return ((rows.first['v'] as num?) ?? 0).toDouble();
   }
 
   static Future<int> getLoggedDayCount() async {

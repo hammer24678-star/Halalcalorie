@@ -1,7 +1,9 @@
 // fitness_screen.dart — HalalCalorie v1.0
 // 23 workouts, category tabs, Ramadan mode, step-by-step player
 import 'dart:async'; import'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'../../core/theme.dart'; import'../../core/providers.dart';
-import '../../core/l10n.dart'; import'../../data/models/models.dart';
+import '../../core/l10n.dart';
+import '../../core/motion.dart';
+import 'lift_screen.dart'; import'../../data/models/models.dart';
 
 // ══════════════════════════════════════════════════
 //  FitnessScreen
@@ -125,6 +127,77 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                 )),
               ]),
             ),
+
+          // ── Ranked lifting entry ─────────────────────────
+          Reveal(
+            index: 0,
+            child: Consumer(builder: (ctx, r, __) {
+              final rank = r.watch(liftLogProvider).overall;
+              final ranked = r.watch(liftLogProvider).bests.length;
+              return PressFx(
+                onTap: () => ctx.push('/lift'),
+                child: Container(
+                  margin: const EdgeInsets.fromLTRB(14, 12, 14, 0),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: card,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                        color: rank.color.withOpacity(0.35), width: 1.2),
+                    boxShadow: [
+                      BoxShadow(
+                          color: rank.color.withOpacity(0.12),
+                          blurRadius: 16,
+                          offset: const Offset(0, 4)),
+                    ],
+                  ),
+                  child: Row(children: [
+                    RankBadge(rank: rank, size: 52, arabic: l.isAr),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(l.strengthCardTitle,
+                                style: TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 12.5,
+                                    fontWeight: FontWeight.w800,
+                                    color: isDark
+                                        ? AppColors.darkText
+                                        : AppColors.lightText)),
+                            const SizedBox(height: 3),
+                            Text(
+                                ranked == 0
+                                    ? l.notRankedYet
+                                    : '${rank.label(arabic: l.isAr)} · '
+                                        '$ranked/${kLiftExercises.length} '
+                                        '${l.liftsRanked}',
+                                style: TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 10.5,
+                                    color: muted),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis),
+                            const SizedBox(height: 6),
+                            AnimatedBar(
+                              value: rank.divisionProgress,
+                              color: rank.color,
+                              background: isDark
+                                  ? AppColors.darkBorder
+                                  : AppColors.lightBorder,
+                              height: 5,
+                              radius: 3,
+                            ),
+                          ]),
+                    ),
+                    const SizedBox(width: 8),
+                    Icon(Icons.arrow_forward_ios, size: 13, color: muted),
+                  ]),
+                ),
+              );
+            }),
+          ),
 
           // ── Smart Recommendation Banner ──────────────────
           Builder(builder: (bCtx) {
@@ -387,6 +460,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
     if (_done) return;
     setState(() => _running = !_running);
     if (_running) {
+      _timer?.cancel();
       _timer = Timer.periodic(const Duration(seconds: 1), (_) {
         if (!mounted) return;
         setState(() {

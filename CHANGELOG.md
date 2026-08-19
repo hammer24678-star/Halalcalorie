@@ -1,5 +1,70 @@
 # HalalCalorie Changelog
 
+## v1.2.0+12 — Ranked lifting, animation pass
+*2026-08-19*
+
+### 🏋️ Ranked lifting
+- New **strength ladder**: nine tiers, each split into three divisions,
+  each holding 0-100 LP — Copper I-III → Bronze → Silver → Gold →
+  Platinum → Diamond → Master → Elite → Legend
+- Every exercise carries **its own rank**, earned from an estimated
+  one-rep max measured against your own bodyweight, so the ladder is
+  fair across body sizes and between men and women
+- Thirteen exercises across six muscle groups, each with published-style
+  strength standards for both sexes
+- **Log a set** with weight and reps (or reps, or seconds, depending on
+  the lift) and see what it would rank *before* committing to it
+- **Rest timer** starts on its own after each set, with +30s and skip
+- **Personal bests** are detected and celebrated; a promotion plays a
+  rank-up sequence with confetti
+- **Plate calculator** shows what to load per side, and says so plainly
+  when standard plates cannot make the weight
+- **Standards table** per exercise showing what each tier asks for at
+  your current bodyweight
+- Per-exercise history with swipe-to-delete and PR markers
+- Overall rank weights your strongest lifts most heavily, so one good
+  lift counts without a tail of untrained movements dragging it down
+
+### ▲ Ascent engine expanded
+- Strength card on the Ascent screen, linking the two ladders
+- Six new titles tied to the lifting ladder: First Lift, Silver, Gold
+  and Diamond standards, The Big Three, and All-Rounder
+- Logged sets feed the daily training quest, so lifting moves the day's
+  score too
+
+### ✨ Animation
+- New **splash**: the logo drops in and turns a full circle while leaves
+  drift up from the bottom and down from the top, then the name and
+  tagline follow and the ring closes
+- New shared **motion kit** — staggered reveals, press response, counting
+  numbers, easing progress bars, breathing glows, shimmer placeholders
+  and drifting leaves — so motion is consistent instead of re-invented
+  per screen
+- Route transitions: tabs cross-fade, pushed screens rise from the bottom
+
+### 🐛 Fixes
+- **Weekly windows were off by a day** for anyone far from UTC: SQLite's
+  `date('now')` is UTC while the day keys are written in local time. The
+  cutoff is now computed on the device, fixing weekly charts, workout
+  days and the Ascent chain
+- **Prayer times failed for the default city**: a null check on a
+  non-nullable string made the fallback unreachable, so an Arabic city
+  name went to the API with an empty country and returned nothing. City
+  lookup now matches Arabic and English spellings across 50 cities,
+  prefers coordinates, and falls back cleanly
+- **Leaked a text controller** every time the food unit picker opened
+- **Strength scoring reset to zero** when a lift crossed the first
+  standard; the first tier now spans from zero so the score climbs
+  smoothly across the whole ladder
+- Workout player could stack a second timer on re-entry
+
+### 🧪 Tests
+- 63 tests, up from 35: the strength ladder, 1RM estimation, scoring
+  monotonicity, sex and bodyweight scaling, overall-rank weighting and
+  the plate calculator all covered
+
+---
+
 ## v1.1.0+11 — Release polish
 *2026-07-30*
 

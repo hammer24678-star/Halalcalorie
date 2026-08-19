@@ -1,7 +1,8 @@
 // providers.dart
-import 'package:flutter_riverpod/flutter_riverpod.dart'; import'package:shared_preferences/shared_preferences.dart'; import'package:go_router/go_router.dart'; import'../data/models/models.dart'; import'../data/models/user_profile.dart'; import'router.dart'; import'revenuecat_service.dart'; import'database.dart'; import'health_service.dart'; import'ascent.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; import'package:shared_preferences/shared_preferences.dart'; import'package:go_router/go_router.dart'; import'../data/models/models.dart'; import'../data/models/user_profile.dart'; import'router.dart'; import'revenuecat_service.dart'; import'database.dart'; import'health_service.dart'; import'ascent.dart'; import'strength.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 export 'ascent.dart';
+export 'strength.dart';
 
 final languageProvider = StateNotifierProvider<LanguageNotifier, String>((ref) => LanguageNotifier());
 class LanguageNotifier extends StateNotifier<String> { LanguageNotifier() : super('ar') { _load(); }
@@ -451,6 +452,7 @@ class AscentNotifier extends StateNotifier<AscentState> {
     _ref.listen(healthProvider,          (_, __) => _sync());
     _ref.listen(workoutMinutesProvider,  (_, __) => _sync());
     _ref.listen(fastingProvider,         (_, __) => _sync());
+    _ref.listen(liftLogProvider,         (_, __) => _sync());
   }
 
   /// Set by [_sync] whenever a recompute pushes the user past a level
@@ -533,7 +535,8 @@ class AscentNotifier extends StateNotifier<AscentState> {
     );
 
     _ref.read(titleProvider.notifier).evaluate(
-        state, fast, _ref.read(streakProvider));
+        state, fast, _ref.read(streakProvider),
+        lifts: _ref.read(liftLogProvider));
   }
 
   /// Consecutive qualifying days directly before today (today itself is
@@ -619,7 +622,9 @@ class TitleNotifier extends StateNotifier<TitleState> {
         'ascent_titles', next.map((e) => e.toString()).toList());
   }
 
-  void evaluate(AscentState a, FastingState fast, int streak) {
+  void evaluate(AscentState a, FastingState fast, int streak,
+      {LiftLogState? lifts}) {
+    _evaluateStrength(lifts);
     if (a.score >= 500) _unlock(9);
     if (a.score >= 700) _unlock(10);
     if (a.score >= 900) _unlock(11);
@@ -645,6 +650,28 @@ class TitleNotifier extends StateNotifier<TitleState> {
     if (a.level >= 55) _unlock(24);
   }
 
+  /// Titles earned on the lifting ladder rather than the daily quests.
+  void _evaluateStrength(LiftLogState? lifts) {
+    if (lifts == null || lifts.bests.isEmpty) return;
+    _unlock(25);
+
+    final overall = lifts.overall.tier.index;
+    // Tier indices: 2 = Silver, 3 = Gold, 5 = Diamond.
+    if (overall >= 2) _unlock(26);
+    if (overall >= 3) _unlock(27);
+    if (overall >= 5) _unlock(28);
+
+    const bigThree = ['squat', 'bench', 'deadlift'];
+    if (bigThree.every(lifts.bests.containsKey)) _unlock(29);
+
+    final groups = <String>{};
+    for (final id in lifts.bests.keys) {
+      final exercise = liftById(id);
+      if (exercise != null) groups.add(exercise.group);
+    }
+    if (groups.length >= kLiftGroups.length) _unlock(30);
+  }
+
   void unlockTrainingWeek() => _unlock(8);
   void unlockWholesome()    => _unlock(5);
   void unlockTideKeeper()   => _unlock(6);
@@ -656,6 +683,190 @@ final titleProvider =
     StateNotifierProvider<TitleNotifier, TitleState>(
         (ref) => TitleNotifier());
 
+
+// ══════════════════════════════════════════════════════════════════
+// LIFT LOG — logged sets, per-exercise bests, overall strength rank
+// ══════════════════════════════════════════════════════════════════
+
+class LiftSet {
+  final int id;
+  final String exerciseId;
+  final double weightKg;
+  final int reps, seconds;
+  final double bodyweightKg;
+  final int lp;
+  final DateTime time;
+
+  const LiftSet({
+    required this.id,
+    required this.exerciseId,
+    required this.weightKg,
+    required this.reps,
+    required this.seconds,
+    required this.bodyweightKg,
+    required this.lp,
+    required this.time,
+  });
+
+  factory LiftSet.fromRow(Map<String, dynamic> r) => LiftSet(
+        id: r['id'] as int? ?? 0,
+        exerciseId: r['exercise_id'] as String? ?? '',
+        weightKg: (r['weight_kg'] as num?)?.toDouble() ?? 0,
+        reps: r['reps'] as int? ?? 0,
+        seconds: r['seconds'] as int? ?? 0,
+        bodyweightKg: (r['bodyweight_kg'] as num?)?.toDouble() ?? 0,
+        lp: r['lp'] as int? ?? 0,
+        time: DateTime.tryParse(r['created'] as String? ?? '') ?? DateTime.now(),
+      );
+
+  StrengthRank get rank => StrengthRank(lp);
+  double get volumeKg => weightKg * reps;
+}
+
+class LiftLogState {
+  /// Most recent sets, newest first.
+  final List<LiftSet> recent;
+
+  /// Best LP achieved per exercise id.
+  final Map<String, int> bests;
+
+  /// The set behind each best, for showing what earned the rank.
+  final Map<String, LiftSet> bestSets;
+
+  final int todaySets;
+  final double todayVolumeKg;
+  final bool loading;
+
+  const LiftLogState({
+    this.recent = const [],
+    this.bests = const {},
+    this.bestSets = const {},
+    this.todaySets = 0,
+    this.todayVolumeKg = 0,
+    this.loading = true,
+  });
+
+  StrengthRank rankFor(String exerciseId) =>
+      StrengthRank(bests[exerciseId] ?? 0);
+
+  /// Overall rank across every exercise with a recorded best.
+  StrengthRank get overall =>
+      overallRank(bests.values.map(StrengthRank.new));
+
+  /// Exercises that have never been logged.
+  List<LiftExercise> get untouched =>
+      kLiftExercises.where((e) => !bests.containsKey(e.id)).toList();
+
+  bool get isEmpty => bests.isEmpty;
+}
+
+class LiftLogNotifier extends StateNotifier<LiftLogState> {
+  LiftLogNotifier() : super(const LiftLogState()) { refresh(); }
+
+  /// Set to the exercise id whenever a logged set beats its previous
+  /// best, so the screen can celebrate it once.
+  String? pendingPr;
+
+  /// Rank before the last logged set, to detect a promotion.
+  StrengthRank? pendingPromotionFrom;
+  StrengthRank? pendingPromotionTo;
+
+  Future<void> refresh() async {
+    final rows = await AppDatabase.getRecentLiftSets();
+    final bests = await AppDatabase.getLiftBests();
+    final bestRows = await AppDatabase.getLiftBestSets();
+    final todaySets = await AppDatabase.getTodayLiftSetCount();
+    final volume = await AppDatabase.getTodayLiftVolume();
+    state = LiftLogState(
+      recent: rows.map(LiftSet.fromRow).toList(),
+      bests: bests,
+      bestSets: {
+        for (final r in bestRows)
+          (r['exercise_id'] as String): LiftSet.fromRow(r),
+      },
+      todaySets: todaySets,
+      todayVolumeKg: volume,
+      loading: false,
+    );
+  }
+
+  /// Records one set and reports back whether it was a personal best.
+  Future<bool> logSet({
+    required LiftExercise exercise,
+    required bool isMale,
+    required double bodyweightKg,
+    required double weightKg,
+    required int reps,
+    int seconds = 0,
+  }) async {
+    final rank = rankForSet(
+      exercise: exercise,
+      isMale: isMale,
+      bodyweightKg: bodyweightKg,
+      weightKg: weightKg,
+      reps: reps,
+      seconds: seconds,
+    );
+    final previousBest = state.bests[exercise.id] ?? 0;
+    final previousOverall = state.overall;
+
+    final id = await AppDatabase.insertLiftSet(
+      exerciseId: exercise.id,
+      weightKg: weightKg,
+      reps: reps,
+      seconds: seconds,
+      bodyweightKg: bodyweightKg,
+      lp: rank.totalLp,
+    );
+    if (id == -1) return false;
+
+    await refresh();
+
+    final isPr = rank.totalLp > previousBest;
+    if (isPr) pendingPr = exercise.id;
+
+    final newOverall = state.overall;
+    if (newOverall.totalLp > previousOverall.totalLp &&
+        (newOverall.tier.index != previousOverall.tier.index ||
+            newOverall.division != previousOverall.division)) {
+      pendingPromotionFrom = previousOverall;
+      pendingPromotionTo = newOverall;
+    }
+    return isPr;
+  }
+
+  Future<void> removeSet(int id) async {
+    await AppDatabase.deleteLiftSet(id);
+    await refresh();
+  }
+
+  void consumePr() => pendingPr = null;
+
+  void consumePromotion() {
+    pendingPromotionFrom = null;
+    pendingPromotionTo = null;
+  }
+}
+
+final liftLogProvider =
+    StateNotifierProvider<LiftLogNotifier, LiftLogState>(
+        (ref) => LiftLogNotifier());
+
+/// History for one exercise, newest first.
+final liftHistoryProvider =
+    FutureProvider.family<List<LiftSet>, String>((ref, exerciseId) async {
+  ref.watch(liftLogProvider);
+  final rows = await AppDatabase.getLiftHistory(exerciseId);
+  return rows.map(LiftSet.fromRow).toList();
+});
+
+/// Bodyweight used for ranking: the newest weight-log entry if there is
+/// one, otherwise the profile figure.
+final rankingBodyweightProvider = Provider<double>((ref) {
+  final log = ref.watch(weightLogProvider);
+  if (log.isNotEmpty) return log.last.weightKg;
+  return ref.watch(userProfileProvider)?.weightKg ?? 0;
+});
 
 /// Real version and build number from the package, so the About row can
 /// never drift from what was actually shipped.
