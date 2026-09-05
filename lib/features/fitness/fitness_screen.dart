@@ -315,6 +315,20 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                               width: 0.8),
                         ),
                         child: Stack(children: [
+                          // PATCH_NEW_ASSET_PACKS: faint category muscle
+                          // watermark -- same asset already used for this
+                          // category on the workout-player screen.
+                          Positioned(
+                            right: 2, bottom: 2,
+                            child: Opacity(
+                              opacity: isDark ? 0.10 : 0.07,
+                              child: Image.asset(
+                                muscleAssetForCategory(w.category),
+                                width: 60, height: 60, fit: BoxFit.contain,
+                                errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                              ),
+                            ),
+                          ),
                           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                             Row(children: [
                               Text(w.emoji, style: const TextStyle(fontSize: 32)),

@@ -304,6 +304,56 @@ String foodEmoji(String name) => lookupFoodGlyph(name) ?? kFoodGlyphFallback;
 /// photo instead.
 bool isUnknownFood(String name) => lookupFoodGlyph(name) == null;
 
+// ════════════════════════════════════════════════════════════════════════
+// PATCH_NEW_ASSET_PACKS
+// Curated keyword -> illustrated-asset overrides, same lookup shape as
+// kFoodGlyphs above. Only covers foods where assets/emoji/<pack>/ has an
+// actual illustration for that exact thing (fruit/veg clipart, a couple
+// of fast-food + dessert packs) -- everything else keeps using the plain
+// glyph table above. Add to this table as more packs come in; don't
+// replace kFoodGlyphs wholesale, most of its few hundred keywords have
+// no matching illustration and never will.
+// ════════════════════════════════════════════════════════════════════════
+const Map<String, String> kFoodAssetOverrides = {
+  'apple':      'assets/emoji/clipart_foods/689338-clipapple.png',
+  'banana':     'assets/emoji/clipart_foods/992116-clipbanana.png',
+  'orange':     'assets/emoji/clipart_foods/138331-cliporange.png',
+  'strawberry': 'assets/emoji/clipart_foods/339716-clipstrawberry.png',
+  'watermelon': 'assets/emoji/clipart_foods/339716-clipwatermelon.png',
+  'cherry':     'assets/emoji/clipart_foods/689338-clipcherry.png',
+  'tomato':     'assets/emoji/clipart_foods/419781-cliptomato.png',
+  'broccoli':   'assets/emoji/clipart_foods/568900-clipbroccoli.png',
+  'mushroom':   'assets/emoji/clipart_foods/334711-clipmushroom.png',
+  'chicken':    'assets/emoji/clipart_foods/568868-clipchicken.png',
+  'shrimp':     'assets/emoji/clipart_foods/740457-clipshrimp.png',
+  'egg':        'assets/emoji/clipart_foods/744157-clipegg.png',
+  'sushi':      'assets/emoji/clipart_foods/484824-clipsushi.png',
+  'sausage':    'assets/emoji/clipart_foods/811566-clipsausage.png',
+  'pizza':      'assets/emoji/fast_food/2137-pizza.png',
+  'burger':     'assets/emoji/fast_food/6862-burger.png',
+  'fries':      'assets/emoji/fast_food/4100-fries.png',
+  'donut':      'assets/emoji/food_drink/19292-pinkcutedonut.png',
+  'ice cream':  'assets/emoji/food_drink/8541-icecreamx.png',
+  'milkshake':  'assets/emoji/food_drink/53175-milkshakecutex.png',
+  'cupcake':    'assets/emoji/cupcakes/84120-redvelvetcupcake.png',
+  'muffin':     'assets/emoji/food_drink/89974-pinkmuffin.png',
+};
+
+final List<String> _sortedAssetKeys = kFoodAssetOverrides.keys.toList()
+  ..sort((a, b) => b.length.compareTo(a.length));
+
+/// Best-matching illustrated asset for [name], or null when this food
+/// isn't in the curated table -- callers should fall back to
+/// [lookupFoodGlyph].
+String? lookupFoodAsset(String name) {
+  final needle = name.toLowerCase().trim();
+  if (needle.isEmpty) return null;
+  for (final key in _sortedAssetKeys) {
+    if (needle.contains(key)) return kFoodAssetOverrides[key];
+  }
+  return null;
+}
+
 // ════════════════════════════════════════════════════════════════════
 // ONLINE THUMBNAILS
 // ════════════════════════════════════════════════════════════════════
@@ -392,6 +442,7 @@ class FoodThumb extends StatefulWidget {
 
 class _FoodThumbState extends State<FoodThumb> {
   String? _glyph;
+  String? _assetPath; // PATCH_NEW_ASSET_PACKS
   String? _url;
   bool _looking = false;
 
@@ -409,6 +460,7 @@ class _FoodThumbState extends State<FoodThumb> {
 
   void _resolve() {
     _glyph = lookupFoodGlyph(widget.name);
+    _assetPath = lookupFoodAsset(widget.name); // PATCH_NEW_ASSET_PACKS
     if (widget.imageUrl != null && widget.imageUrl!.trim().isNotEmpty) {
       FoodImageCache.seed(widget.name, widget.imageUrl);
       _url = widget.imageUrl!.trim();
@@ -443,6 +495,18 @@ class _FoodThumbState extends State<FoodThumb> {
   }
 
   Widget _content() {
+    // PATCH_NEW_ASSET_PACKS: prefer the illustrated asset when this food
+    // has one; a broken/renamed asset just falls back to the old glyph.
+    if (_assetPath != null) {
+      return Image.asset(
+        _assetPath!,
+        fit: BoxFit.contain,
+        width: widget.size,
+        height: widget.size,
+        errorBuilder: (_, __, ___) =>
+            _glyphView(_glyph ?? kFoodGlyphFallback),
+      );
+    }
     if (_glyph != null) return _glyphView(_glyph!);
     if (_url != null) {
       return Image.network(

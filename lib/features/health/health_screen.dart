@@ -349,8 +349,18 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
               style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
                   color: AppColors.sleepPurple)),
         ]),
-        Text(sleep.hours >= 8 ? '😊' : sleep.hours >= 6 ? '😐' : '😞',
-            style: const TextStyle(fontSize: 32)),
+        // PATCH_NEW_ASSET_PACKS: sleep-quality face -> assets/emoji/face_emojis/
+        Image.asset(
+          sleep.hours >= 8
+              ? 'assets/emoji/face_emojis/uwu.png'
+              : sleep.hours >= 6
+                  ? 'assets/emoji/face_emojis/wat.png'
+                  : 'assets/emoji/face_emojis/weep.png',
+          width: 32, height: 32,
+          errorBuilder: (_, __, ___) => Text(
+              sleep.hours >= 8 ? '😊' : sleep.hours >= 6 ? '😐' : '😞',
+              style: const TextStyle(fontSize: 32)),
+        ),
       ]),
       const SizedBox(height: 12),
       Row(children: [4, 5, 6, 7, 8, 9, 10].map((h) => Expanded(
@@ -518,9 +528,10 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
 
   Widget _moodCard(HealthState health, bool isAr, bool isDark) {
     final bg = isDark ? AppColors.darkCard : Colors.white;
+    // PATCH_NEW_ASSET_PACKS: mood faces -> assets/emoji/face_emojis/
     final moods = isAr
-        ? [['😄', 'ممتاز'], ['😊', 'جيد'], ['😐', 'عادي'], ['😔', 'تعبان'], ['😡', 'متوتر']]
-        : [['😄', 'Great'], ['😊', 'Good'], ['😐', 'Okay'], ['😔', 'Low'], ['😡', 'Stressed']];
+        ? [['assets/emoji/face_emojis/kirakira.png', 'ممتاز'], ['assets/emoji/face_emojis/uwu.png', 'جيد'], ['assets/emoji/face_emojis/wat.png', 'عادي'], ['assets/emoji/face_emojis/yawn.png', 'تعبان'], ['assets/emoji/face_emojis/nervous.png', 'متوتر']]
+        : [['assets/emoji/face_emojis/kirakira.png', 'Great'], ['assets/emoji/face_emojis/uwu.png', 'Good'], ['assets/emoji/face_emojis/wat.png', 'Okay'], ['assets/emoji/face_emojis/yawn.png', 'Low'], ['assets/emoji/face_emojis/nervous.png', 'Stressed']];
 
     return _card(bg, Column(children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -541,7 +552,9 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
               borderRadius: BorderRadius.circular(12),
             ),
             child: Column(children: [
-              Text(m[0], style: const TextStyle(fontSize: 28)),
+              Image.asset(m[0], width: 28, height: 28,
+                  errorBuilder: (_, __, ___) =>
+                      const Text('🙂', style: TextStyle(fontSize: 28))),
               Text(m[1],
                   style: const TextStyle(fontFamily: 'Cairo', fontSize: 9,
                       color: AppColors.lightMuted)),
