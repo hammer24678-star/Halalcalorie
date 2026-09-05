@@ -11,6 +11,7 @@ import '../../core/providers.dart';
 import '../../core/l10n.dart';
 import '../../core/food_emoji.dart';
 import '../../data/models/models.dart';
+import 'widgets/leaf_progress_ring.dart';
 
 import '../../core/ai_service.dart';
 
@@ -621,7 +622,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     final goal  = cals.goal;
     final eaten = cals.total;
     final left  = goal - eaten;
-    final pct   = goal > 0 ? (eaten / goal).clamp(0.0, 1.0) : 0.0;
+    final pct   = goal > 0 ? eaten / goal : 0.0;
     final calCol = eaten > goal ? AppColors.haramRed
         : eaten > goal * 0.85 ? AppColors.doubtOrange
         : isRamadan ? AppColors.accentGold : AppColors.brandGreen;
@@ -810,45 +811,46 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                               tl('المأكول', 'Eaten'),
                               '$eaten',
                               AppColors.brandGreen, isDark),
-                          // Calorie ring
-                          SizedBox(width: 120, height: 120,
-                            child: Stack(alignment: Alignment.center,
-                              children: [
-                              SizedBox.expand(
-                                child: CircularProgressIndicator(
-                                  value: pct,
-                                  strokeWidth: 11,
-                                  backgroundColor:
-                                      Colors.grey.shade200,
-                                  valueColor:
-                                      AlwaysStoppedAnimation((ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen)),
-                                  strokeCap: StrokeCap.round,
-                                ),
-                              ),
-                              Column(mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                Text('${left.abs()}',
-                                    style: TextStyle(
-                                        fontFamily: 'Cairo',
-                                        fontSize: 30,
-                                        fontWeight: FontWeight.w900,
-                                        color: calCol)),
-                                Text(
-                                  left < 0
-                                      ? tl('تجاوزت!', 'Over!')
-                                      : tl('متبقي', 'left'),
+                          // Calorie ring — animated leaf
+                          // (PATCH_LEAF_RING_AND_WORKOUT_ASSETS)
+                          LeafProgressRing(
+                            size: 120,
+                            progress: pct,
+                            proteinPct: ((goal * plan.proteinPct / 100) / 4) > 0
+                                ? cals.proteinTotal / ((goal * plan.proteinPct / 100) / 4)
+                                : 0.0,
+                            carbsPct: ((goal * plan.carbsPct / 100) / 4) > 0
+                                ? cals.carbsTotal / ((goal * plan.carbsPct / 100) / 4)
+                                : 0.0,
+                            fatPct: ((goal * plan.fatPct / 100) / 9) > 0
+                                ? cals.fatTotal / ((goal * plan.fatPct / 100) / 9)
+                                : 0.0,
+                            progressColor: calCol,
+                            isDark: isDark,
+                            isRamadan: isRamadan,
+                            child: Column(mainAxisSize: MainAxisSize.min,
+                                children: [
+                              Text('${left.abs()}',
                                   style: TextStyle(
                                       fontFamily: 'Cairo',
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w700,
-                                      color: calCol),
-                                ),
-                                Text('/ $goal',
-                                    style: TextStyle(
-                                        fontFamily: 'Cairo',
-                                        fontSize: 9,
-                                        color: muted)),
-                              ]),
+                                      fontSize: 30,
+                                      fontWeight: FontWeight.w900,
+                                      color: calCol)),
+                              Text(
+                                left < 0
+                                    ? tl('تجاوزت!', 'Over!')
+                                    : tl('متبقي', 'left'),
+                                style: TextStyle(
+                                    fontFamily: 'Cairo',
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w700,
+                                    color: calCol),
+                              ),
+                              Text('/ $goal',
+                                  style: TextStyle(
+                                      fontFamily: 'Cairo',
+                                      fontSize: 9,
+                                      color: muted)),
                             ]),
                           ),
                           _summaryBox(

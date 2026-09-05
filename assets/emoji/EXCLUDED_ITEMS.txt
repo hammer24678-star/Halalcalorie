@@ -1,0 +1,37 @@
+Items NOT copied into assets/emoji/, and why
+============================================================
+These reference specific fast-food brand trademarks/mascots
+(McDonald's, Wendy's, KFC, Popeyes) and were left out of a
+commercial app bundle on purpose. Re-add individually only
+after checking your own legal comfort with it.
+
+emoji_inspect/3678-fast-food-emojigg-pack/1608-sadmeal.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/2262-popeyeschickensandwich.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/2414-mcdonalds.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/2888-wendysspicychicken.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/3824-mcchicken.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/3924-happymeal.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/4398-wendysfries.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/4398-wendysspicynuggets.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/4554-chickenmcnuggets.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/5637-mcdonaldsfries.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/6199-baconator.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/6705-jrchicken.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/8748-sonofbaconator.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/9055-mcgriddle.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/9701-wendysfrosty.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/9725-mcdouble.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/3678-fast-food-emojigg-pack/kfcfries.png  -- excluded (brand/trademark keyword match)
+emoji_inspect/82526-ronald-donald-emojigg-pack/1608-sadmeal.png  -- excluded (entire pack is McDonald's/Ronald McDonald IP)
+emoji_inspect/82526-ronald-donald-emojigg-pack/2221-mcd-picknose.png  -- excluded (entire pack is McDonald's/Ronald McDonald IP)
+emoji_inspect/82526-ronald-donald-emojigg-pack/2414-mcdonalds.png  -- excluded (entire pack is McDonald's/Ronald McDonald IP)
+emoji_inspect/82526-ronald-donald-emojigg-pack/2423-working.png  -- excluded (entire pack is McDonald's/Ronald McDonald IP)
+emoji_inspect/82526-ronald-donald-emojigg-pack/2787-mcdonalds.gif  -- excluded (entire pack is McDonald's/Ronald McDonald IP)
+emoji_inspect/82526-ronald-donald-emojigg-pack/3410-mac-tonight.gif  -- excluded (entire pack is McDonald's/Ronald McDonald IP)
+emoji_inspect/82526-ronald-donald-emojigg-pack/3692-clownlaugh.gif  -- excluded (entire pack is McDonald's/Ronald McDonald IP)
+emoji_inspect/82526-ronald-donald-emojigg-pack/3924-happymeal.png  -- excluded (entire pack is McDonald's/Ronald McDonald IP)
+emoji_inspect/82526-ronald-donald-emojigg-pack/4554-chickenmcnuggets.png  -- excluded (entire pack is McDonald's/Ronald McDonald IP)
+emoji_inspect/82526-ronald-donald-emojigg-pack/4964-mcdonalds.png  -- excluded (entire pack is McDonald's/Ronald McDonald IP)
+emoji_inspect/82526-ronald-donald-emojigg-pack/5637-mcdonaldsfries.png  -- excluded (entire pack is McDonald's/Ronald McDonald IP)
+emoji_inspect/82526-ronald-donald-emojigg-pack/79474-pepeburger.png  -- excluded (entire pack is McDonald's/Ronald McDonald IP)
+emoji_inspect/82526-ronald-donald-emojigg-pack/9725-mcdouble.png  -- excluded (entire pack is McDonald's/Ronald McDonald IP)

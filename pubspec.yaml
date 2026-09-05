@@ -43,4 +43,11 @@ flutter:
   assets:
     - assets/logo.png
     - assets/images/
+    - assets/muscles/
+    - assets/emoji/food_drink/
+    - assets/emoji/cupcakes/
+    - assets/emoji/clipart_foods/
+    - assets/emoji/fast_food/
+    - assets/emoji/face_emojis/
+    - assets/emoji/blex_emotes/
     - assets/store/
