@@ -1,7 +1,7 @@
 // fitness_screen.dart — HalalCalorie v1.0
 // 23 workouts, category tabs, Ramadan mode, step-by-step player
 import 'dart:async'; import'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'../../core/theme.dart'; import'../../core/providers.dart';
-import '../../core/l10n.dart'; import'../../data/models/models.dart';
+import '../../core/l10n.dart'; import'../../data/models/models.dart'; import '../../data/muscle_assets.dart';
 
 // ══════════════════════════════════════════════════
 //  FitnessScreen
@@ -479,7 +479,14 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
             ]),
           ),
 
-          // ── Emoji + step info ─────────────────────────────
+          // ── Muscle illustration + emoji + step info ───────
+          // (PATCH_LEAF_RING_AND_WORKOUT_ASSETS)
+          Opacity(
+            opacity: isDark ? 0.55 : 0.7,
+            child: Image.asset(muscleAssetForCategory(w.category),
+                height: 88, fit: BoxFit.contain),
+          ),
+          const SizedBox(height: 4),
           Text(w.emoji, style: const TextStyle(fontSize: 64)),
           const SizedBox(height: 8),
 
