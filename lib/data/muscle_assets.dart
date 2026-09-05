@@ -27,3 +27,26 @@ const String kMuscleAssetDefault = 'assets/muscles/bicep_flex_hero.png';
 
 String muscleAssetForCategory(String category) =>
     kMuscleAssetByCategory[category] ?? kMuscleAssetDefault;
+
+
+// PATCH_LIFT_MUSCLE_ICONS
+// Per-exercise (not per-category) mapping for the Ranked Lifting list --
+// see lift_screen.dart's _ExerciseRow. Keyed by LiftExercise.id.
+const Map<String, String> kMuscleAssetByExerciseId = {
+  'squat':       'assets/muscles/quads_front.png',
+  'deadlift':    'assets/muscles/hamstrings_glutes_back.png',
+  'bench':       'assets/muscles/torso_chest_abs.png',
+  'ohp':         'assets/muscles/bicep_flex_arm_v2.png', // no deltoid art yet
+  'row':         'assets/muscles/back_lats_v1.png',
+  'hipthrust':   'assets/muscles/glutes.png',
+  'legpress':    'assets/muscles/quads_front.png',
+  'latpulldown': 'assets/muscles/back_lats_v2.png',
+  'curl':        'assets/muscles/bicep_flex_arm_v1.png',
+  'pullup':      'assets/muscles/back_lats_v3.png',
+  'dip':         'assets/muscles/chest_flex_crossed.png',
+  'pushup':      'assets/muscles/bicep_flex_arm_v3.png',
+  'plank':       'assets/muscles/abs_sixpack.png',
+};
+
+String? muscleAssetForExercise(String exerciseId) =>
+    kMuscleAssetByExerciseId[exerciseId];

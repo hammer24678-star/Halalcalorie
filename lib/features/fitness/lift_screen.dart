@@ -20,6 +20,7 @@ import 'package:confetti/confetti.dart';
 import '../../core/theme.dart';
 import '../../core/motion.dart';
 import '../../core/providers.dart';
+import '../../data/muscle_assets.dart';
 import '../../core/l10n.dart';
 
 // ════════════════════════════════════════════════════════════════════
@@ -549,8 +550,22 @@ class _ExerciseRow extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
-                child: Text(exercise.glyph,
-                    style: const TextStyle(fontSize: 20))),
+                child: muscleAssetForExercise(exercise.id) != null
+                    ? ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.asset(
+                          muscleAssetForExercise(exercise.id)!,
+                          width: 30,
+                          height: 30,
+                          fit: BoxFit.contain,
+                          // PATCH_LIFT_MUSCLE_ICONS: never let a missing
+                          // asset crash the row -- fall back to the emoji.
+                          errorBuilder: (_, __, ___) => Text(exercise.glyph,
+                              style: const TextStyle(fontSize: 20)),
+                        ),
+                      )
+                    : Text(exercise.glyph,
+                        style: const TextStyle(fontSize: 20))),
           ),
           const SizedBox(width: 12),
           Expanded(
