@@ -722,7 +722,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                               if (h < 17) return l.goodAfternoon;
                               return l.goodEvening;
                             }(),
-                            style: TextStyle(fontFamily: 'LemonBrush',
+                            style: TextStyle(fontFamily: 'Bravoon', fontWeight: FontWeight.w700,
                                 fontSize: 30, height: 1.0,
                                 color: isDark ? AppColors.greetGold : AppColors.greetGoldLight)),
                             Text(

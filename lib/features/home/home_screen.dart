@@ -411,8 +411,9 @@ _MedDisclaimer(isAr: isAr),
 
 // ════════════════════════════════════════════════════════════
 // HOME HERO — PATCH_V10_HOME_REMASTER
-// The v10 mockup's only use of LemonBrush: a big cursive time-of-day
-// greeting, with a streak badge and today's date. Didn't exist before.
+// PATCH_V17: greeting now uses Bravoon, matching every AppBar title
+// (e.g. 'My Body Metrics') instead of LemonBrush, which rendered as a
+// plain fallback next to it. Streak badge + today's date unchanged.
 // ════════════════════════════════════════════════════════════
 class _HomeHero extends StatelessWidget {
   final bool isAr, isDark;
@@ -483,7 +484,7 @@ class _HomeHero extends StatelessWidget {
               child: Text(
                 _greeting(now),
                 style: TextStyle(
-                  fontFamily: 'LemonBrush', fontSize: 42, height: 1.0,
+                  fontFamily: 'Bravoon', fontWeight: FontWeight.w700, fontSize: 42, height: 1.0,
                   color: isDark ? AppColors.greetGold : AppColors.greetGoldLight,
                 ),
               ),
