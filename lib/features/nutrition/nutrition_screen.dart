@@ -314,8 +314,8 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                       (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.18),
                       (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.04)]),
                     borderRadius: BorderRadius.circular(20)),
-                  child: Center(child: Text(foodEmoji(e.name),
-                      style: const TextStyle(fontSize: 36)))),
+                  child: Center(child: FoodThumb(name: e.name, size: 56, radius: 16,
+                      background: Colors.transparent))),
                 const SizedBox(width: 14),
                 Expanded(child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -722,9 +722,9 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                               if (h < 17) return l.goodAfternoon;
                               return l.goodEvening;
                             }(),
-                            style: TextStyle(fontFamily: 'Aligarh',
-                                fontSize: 18, fontWeight: FontWeight.w800,
-                                color: textC)),
+                            style: TextStyle(fontFamily: 'LemonBrush',
+                                fontSize: 30, height: 1.0,
+                                color: isDark ? AppColors.greetGold : AppColors.greetGoldLight)),
                             Text(
                               DateFormat(tLang(lang, 'EEEE، d MMMM', 'EEEE, MMMM d', 'EEEE, MMMM d', 'EEEE, MMMM d', 'EEEE, MMMM d', 'EEEE, MMMM d'),
                                   tLang(lang, 'ar', 'en', 'en', 'en', 'en', 'en')).format(DateTime.now()),
@@ -1630,9 +1630,8 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                         ),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Center(child: Text(
-                          foodEmoji(e.name),
-                          style: const TextStyle(fontSize: 22))),
+                      child: Center(child: FoodThumb(name: e.name, size: 38, radius: 9,
+                          background: Colors.transparent)),
                     ),
                     const SizedBox(width: 12),
                     Expanded(child: Column(
@@ -2069,16 +2068,8 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                   dense: true,
                   contentPadding: const EdgeInsets.symmetric(
                       horizontal: 4, vertical: 2),
-                  leading: Container(
-                    width: 42, height: 42,
-                    decoration: BoxDecoration(
-                      color: AppColors.brandGreen.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(11),
-                    ),
-                    child: Center(child: Text(
-                        foodEmoji(food.name),
-                        style: const TextStyle(fontSize: 20))),
-                  ),
+                  leading: FoodThumb(name: food.name, size: 42, radius: 11,
+                      background: AppColors.brandGreen.withOpacity(0.08)),
                   title: Text(isAr ? food.name : food.nameEn,
                       style: const TextStyle(fontFamily: 'Aligarh',
                           fontSize: 13,
@@ -2348,13 +2339,8 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
 
                 // Food row
                 Row(children: [
-                  Container(
-                    width: 52, height: 52,
-                    decoration: BoxDecoration(
-                      color: AppColors.brandGreen.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(14)),
-                    child: Center(child: Text(foodEmoji(name),
-                        style: const TextStyle(fontSize: 26)))),
+                  FoodThumb(name: name, size: 52, radius: 14,
+                      background: AppColors.brandGreen.withOpacity(0.1)),
                   const SizedBox(width: 12),
                   Expanded(child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
