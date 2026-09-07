@@ -3,7 +3,7 @@
 import 'dart:async'; import'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'../../core/theme.dart'; import'../../core/providers.dart';
 import '../../core/l10n.dart';
 import '../../core/motion.dart';
-import 'lift_screen.dart'; import'../../data/models/models.dart'; import '../../data/muscle_assets.dart';
+import 'lift_screen.dart'; import'../../data/models/models.dart'; import '../../data/muscle_assets.dart'; import '../../data/icon_assets.dart';
 
 // ══════════════════════════════════════════════════
 //  FitnessScreen
@@ -331,7 +331,12 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                           ),
                           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                             Row(children: [
-                              Text(w.emoji, style: const TextStyle(fontSize: 32)),
+                              workoutIconAsset(w.id, isSis) != null
+                                ? Image.asset(workoutIconAsset(w.id, isSis)!,
+                                    width: 44, height: 44, fit: BoxFit.contain,
+                                    errorBuilder: (_, __, ___) =>
+                                        Text(w.emoji, style: const TextStyle(fontSize: 32)))
+                                : Text(w.emoji, style: const TextStyle(fontSize: 32)),
                               const Spacer(),
                               if (locked)
                                 const Icon(Icons.lock, size: 16, color: AppColors.accentGold),

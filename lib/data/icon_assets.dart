@@ -205,3 +205,77 @@ String proteinAsset(String name) => '$_kIcons/proteins/$name.png';
 String pantryAsset(String name) => '$_kIcons/pantry_and_dishes/$name.png';
 String workoutBrotherAsset(String name) => '$_kIcons/workouts_brothers/$name.png';
 String workoutSisterAsset(String name) => '$_kIcons/workouts_sisters_hijab/$name.png';
+
+// ═══════════════════════════════════════════════════════════
+// WORKOUT ILLUSTRATIONS — PATCH_V15_FITNESS_ICONS
+// Hand-mapped from kWorkouts (lib/data/models/models.dart) to the
+// gender-matched illustration packs. Ids not listed here have no
+// confident match in that pack and keep their emoji -- see
+// fitness_screen.dart's use site for the fallback.
+// ═══════════════════════════════════════════════════════════
+const Map<String, String> kWorkoutIconBrothers = {
+  'w1': 'assets/icons/workouts_brothers/evening_walk.png',
+  'w6': 'assets/icons/workouts_brothers/brisk_walk_timer.png',
+  'w10': 'assets/icons/workouts_brothers/park_walk_family.png',
+  'w2': 'assets/icons/workouts_brothers/beginner_squats.png',
+  'w8': 'assets/icons/workouts_brothers/advanced_back_shirtless.png',
+  'w11': 'assets/icons/workouts_brothers/explosive_pushup.png',
+  'w4': 'assets/icons/workouts_brothers/mosque_walk.png',
+  'w14': 'assets/icons/workouts_brothers/mosque_walk.png',
+  'w15': 'assets/icons/workouts_brothers/mosque_walk.png',
+  'w21': 'assets/icons/workouts_brothers/mosque_walk.png',
+  'w17': 'assets/icons/workouts_brothers/no_equipment_run.png',
+  'w18': 'assets/icons/workouts_brothers/heavy_lifts_bench.png',
+  'w28': 'assets/icons/workouts_brothers/heavy_lifts_bench.png',
+  'w12': 'assets/icons/workouts_brothers/stair_walk.png',
+  'w23': 'assets/icons/workouts_brothers/no_equipment_run.png',
+  'w35': 'assets/icons/workouts_brothers/no_equipment_run.png',
+  'w24': 'assets/icons/workouts_brothers/explosive_pushup.png',
+  'w26': 'assets/icons/workouts_brothers/walk_with_friend.png',
+  'w32': 'assets/icons/workouts_brothers/home_weights_press.png',
+  'w34': 'assets/icons/workouts_brothers/power_circle.png',
+  'w20': 'assets/icons/workouts_brothers/park_walk_family.png',
+  'w30': 'assets/icons/workouts_brothers/walk_with_friend2.png',
+};
+
+const Map<String, String> kWorkoutIconSisters = {
+  'w3': 'assets/icons/workouts_sisters_hijab/beginner_yoga.png',
+  'w5': 'assets/icons/workouts_sisters_hijab/postnatal_recovery.png',
+  'w9': 'assets/icons/workouts_sisters_hijab/long_sit_stretch.png',
+  'w4': 'assets/icons/workouts_sisters_hijab/ramadan_family.png',
+  'w14': 'assets/icons/workouts_sisters_hijab/taraweeh_walk.png',
+  'w15': 'assets/icons/workouts_sisters_hijab/fajr_meditation.png',
+  'w21': 'assets/icons/workouts_sisters_hijab/fajr_meditation.png',
+  'w7': 'assets/icons/workouts_sisters_hijab/breathing_478.png',
+  'w31': 'assets/icons/workouts_sisters_hijab/breathing_478.png',
+  'w22': 'assets/icons/workouts_sisters_hijab/sleep_stretch.png',
+  'w27': 'assets/icons/workouts_sisters_hijab/pre_sleep_stretch.png',
+  'w16': 'assets/icons/workouts_sisters_hijab/mindful_session.png',
+  'w20': 'assets/icons/workouts_sisters_hijab/kids_balance.png',
+  'w17': 'assets/icons/workouts_sisters_hijab/cardio_circle_20.png',
+  'w35': 'assets/icons/workouts_sisters_hijab/cardio_circle_20.png',
+  'w25': 'assets/icons/workouts_sisters_hijab/cardio_circle_20.png',
+  'w19': 'assets/icons/workouts_sisters_hijab/functional_strength.png',
+  'w13': 'assets/icons/workouts_sisters_hijab/functional_strength.png',
+  'w12': 'assets/icons/workouts_sisters_hijab/lower_body_strength.png',
+  'w23': 'assets/icons/workouts_sisters_hijab/home_dance_cardio.png',
+  'w26': 'assets/icons/workouts_sisters_hijab/light_jog.png',
+  'w28': 'assets/icons/workouts_sisters_hijab/kettlebell_circle.png',
+  'w32': 'assets/icons/workouts_sisters_hijab/kettlebell_circle.png',
+  'w29': 'assets/icons/workouts_sisters_hijab/lotus_yoga.png',
+  'w33': 'assets/icons/workouts_sisters_hijab/lotus_yoga2.png',
+  'w34': 'assets/icons/workouts_sisters_hijab/morning_fitness.png',
+  'w6': 'assets/icons/workouts_sisters_hijab/morning_stretch.png',
+  'w1': 'assets/icons/workouts_sisters_hijab/family_evening_walk.png',
+  'w10': 'assets/icons/workouts_sisters_hijab/family_evening_walk.png',
+  'w30': 'assets/icons/workouts_sisters_hijab/family_race.png',
+};
+
+/// Gender-matched workout icon, or null to keep the emoji. Deliberately
+/// returns null rather than cross-gender art when a workout's `gender`
+/// is 'brothers'/'sisters' and the requesting screen's mode doesn't
+/// match -- the caller is expected to pass the right `isSis` for the
+/// current mode, not per-workout gender.
+String? workoutIconAsset(String workoutId, bool isSis) =>
+    (isSis ? kWorkoutIconSisters : kWorkoutIconBrothers)[workoutId];
+
