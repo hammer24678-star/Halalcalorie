@@ -86,6 +86,9 @@ class AppColors {
 class AppFonts {
   /// Workhorse UI font — headings, numbers and body text app-wide.
   static const aligarh = 'Aligarh';
+  /// Title font -- headlineLarge/headlineMedium/titleLarge and
+  /// AppBar titles app-wide. Added by patch_v12.
+  static const bravoon = 'Bravoon';
   /// Cursive accent — reserved for one-off flourishes, not body copy
   /// or buttons (e.g. a home-screen greeting, if one is added later).
   static const lemonBrush = 'LemonBrush';
@@ -153,9 +156,9 @@ class AppTheme {
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     ),
     textTheme: const TextTheme(
-      headlineLarge:  TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w900, color: AppColors.darkText),
-      headlineMedium: TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, color: AppColors.darkText),
-      titleLarge:     TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, color: AppColors.darkText),
+      headlineLarge:  TextStyle(fontFamily: 'Bravoon', fontWeight: FontWeight.w900, color: AppColors.darkText),
+      headlineMedium: TextStyle(fontFamily: 'Bravoon', fontWeight: FontWeight.w700, color: AppColors.darkText),
+      titleLarge:     TextStyle(fontFamily: 'Bravoon', fontWeight: FontWeight.w700, color: AppColors.darkText),
       bodyLarge:      TextStyle(fontFamily: 'Aligarh', color: AppColors.darkText),
       bodyMedium:     TextStyle(fontFamily: 'Aligarh', color: AppColors.darkMuted),
     ),
@@ -211,9 +214,9 @@ class AppTheme {
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
     ),
     textTheme: const TextTheme(
-      headlineLarge:  TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w900, color: AppColors.lightText),
-      headlineMedium: TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, color: AppColors.lightText),
-      titleLarge:     TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, color: AppColors.lightText),
+      headlineLarge:  TextStyle(fontFamily: 'Bravoon', fontWeight: FontWeight.w900, color: AppColors.lightText),
+      headlineMedium: TextStyle(fontFamily: 'Bravoon', fontWeight: FontWeight.w700, color: AppColors.lightText),
+      titleLarge:     TextStyle(fontFamily: 'Bravoon', fontWeight: FontWeight.w700, color: AppColors.lightText),
       bodyLarge:      TextStyle(fontFamily: 'Aligarh', color: AppColors.lightText),
       bodyMedium:     TextStyle(fontFamily: 'Aligarh', color: AppColors.lightMuted),
     ),
@@ -243,7 +246,7 @@ class AppTheme {
       elevation:        0,
       surfaceTintColor: Colors.transparent,
       titleTextStyle: TextStyle(
-        fontFamily: 'Aligarh', fontWeight: FontWeight.w800,
+        fontFamily: 'Bravoon', fontWeight: FontWeight.w800,
         fontSize: 18, color: AppColors.ramadanGold,
       ),
       iconTheme: IconThemeData(color: AppColors.ramadanGold),
@@ -309,9 +312,9 @@ class AppTheme {
       tileColor:   Colors.transparent,
     ),
     textTheme: const TextTheme(
-      headlineLarge:  TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w900, color: AppColors.ramadanText),
-      headlineMedium: TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, color: AppColors.ramadanText),
-      titleLarge:     TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, color: AppColors.ramadanText),
+      headlineLarge:  TextStyle(fontFamily: 'Bravoon', fontWeight: FontWeight.w900, color: AppColors.ramadanText),
+      headlineMedium: TextStyle(fontFamily: 'Bravoon', fontWeight: FontWeight.w700, color: AppColors.ramadanText),
+      titleLarge:     TextStyle(fontFamily: 'Bravoon', fontWeight: FontWeight.w700, color: AppColors.ramadanText),
       bodyLarge:      TextStyle(fontFamily: 'Aligarh', color: AppColors.ramadanText),
       bodyMedium:     TextStyle(fontFamily: 'Aligarh', color: AppColors.ramadanMuted),
       labelLarge:     TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, color: Color(0xFF1A0800)),
@@ -340,7 +343,7 @@ class AppTheme {
       elevation:        0,
       surfaceTintColor: Colors.transparent,
       titleTextStyle: TextStyle(
-        fontFamily: 'Aligarh', fontWeight: FontWeight.w800,
+        fontFamily: 'Bravoon', fontWeight: FontWeight.w800,
         fontSize: 18, color: Colors.white,
       ),
       iconTheme: IconThemeData(color: Colors.white),
@@ -406,9 +409,9 @@ class AppTheme {
       tileColor: Colors.transparent,
     ),
     textTheme: const TextTheme(
-      headlineLarge:  TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w900, color: AppColors.ramadanDayText),
-      headlineMedium: TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, color: AppColors.ramadanDayText),
-      titleLarge:     TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, color: AppColors.ramadanDayText),
+      headlineLarge:  TextStyle(fontFamily: 'Bravoon', fontWeight: FontWeight.w900, color: AppColors.ramadanDayText),
+      headlineMedium: TextStyle(fontFamily: 'Bravoon', fontWeight: FontWeight.w700, color: AppColors.ramadanDayText),
+      titleLarge:     TextStyle(fontFamily: 'Bravoon', fontWeight: FontWeight.w700, color: AppColors.ramadanDayText),
       bodyLarge:      TextStyle(fontFamily: 'Aligarh', color: AppColors.ramadanDayText),
       bodyMedium:     TextStyle(fontFamily: 'Aligarh', color: AppColors.ramadanDayMuted),
       labelLarge:     TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, color: Colors.white),

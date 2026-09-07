@@ -277,7 +277,7 @@ class _Mark extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(14),
               child: Image.asset(
-                'assets/icons/mosque_mark/mosque_medium.png',
+                'assets/logo.png',
                 fit: BoxFit.contain,
                 // A missing asset must never leave a blank splash.
                 errorBuilder: (_, __, ___) => _FallbackMark(accent: accent),

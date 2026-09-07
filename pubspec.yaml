@@ -92,3 +92,7 @@ flutter:
       fonts:
         - asset: assets/fonts/Alyamama-Bold.ttf
           weight: 700
+    - family: Bravoon
+      fonts:
+        - asset: assets/fonts/Bravoon.ttf
+          weight: 400
