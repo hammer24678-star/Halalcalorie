@@ -21,6 +21,7 @@ import '../../core/theme.dart';
 import '../../core/motion.dart';
 import '../../core/providers.dart';
 import '../../data/muscle_assets.dart';
+import '../../data/icon_assets.dart';
 import '../../core/l10n.dart';
 
 // ════════════════════════════════════════════════════════════════════
@@ -61,7 +62,7 @@ class RankBadge extends StatelessWidget {
                   ? rank.tier.nameEn[0].toUpperCase()
                   : '★',
               style: TextStyle(
-                fontFamily: 'Cairo',
+                fontFamily: 'Aligarh',
                 fontSize: size * 0.34,
                 height: 1,
                 fontWeight: FontWeight.w900,
@@ -72,7 +73,7 @@ class RankBadge extends StatelessWidget {
               Text(
                 rank.divisionNumeral,
                 style: TextStyle(
-                  fontFamily: 'Cairo',
+                  fontFamily: 'Aligarh',
                   fontSize: size * 0.17,
                   height: 1.1,
                   fontWeight: FontWeight.w800,
@@ -86,7 +87,7 @@ class RankBadge extends StatelessWidget {
         const SizedBox(height: 4),
         Text('${rank.lp} LP',
             style: TextStyle(
-                fontFamily: 'Cairo',
+                fontFamily: 'Aligarh',
                 fontSize: size * 0.15,
                 fontWeight: FontWeight.w700,
                 color: color)),
@@ -165,7 +166,7 @@ class RankChip extends StatelessWidget {
       child: Text(
         showLp ? '$label · ${rank.lp} LP' : label,
         style: TextStyle(
-          fontFamily: 'Cairo',
+          fontFamily: 'Aligarh',
           fontSize: 10.5,
           fontWeight: FontWeight.w800,
           color: rank.color,
@@ -248,7 +249,7 @@ class _LiftScreenState extends ConsumerState<LiftScreen> {
         appBar: AppBar(
           title: Text(l.liftTitle,
               style: const TextStyle(
-                  fontFamily: 'Cairo',
+                  fontFamily: 'Aligarh',
                   fontWeight: FontWeight.w800,
                   fontSize: 18)),
         ),
@@ -300,7 +301,7 @@ class _LiftScreenState extends ConsumerState<LiftScreen> {
                         child: Text(
                           liftGroupName(group, arabic: l.isAr).toUpperCase(),
                           style: TextStyle(
-                            fontFamily: 'Cairo',
+                            fontFamily: 'Aligarh',
                             fontSize: 11,
                             fontWeight: FontWeight.w800,
                             letterSpacing: 1.3,
@@ -405,11 +406,11 @@ class _OverallCard extends StatelessWidget {
                 children: [
                   Text(l.overallRankLabel,
                       style: TextStyle(
-                          fontFamily: 'Cairo', fontSize: 11, color: muted)),
+                          fontFamily: 'Aligarh', fontSize: 11, color: muted)),
                   const SizedBox(height: 2),
                   Text(rank.label(arabic: l.isAr),
                       style: TextStyle(
-                          fontFamily: 'Cairo',
+                          fontFamily: 'Aligarh',
                           fontSize: 22,
                           fontWeight: FontWeight.w900,
                           color: rank.color)),
@@ -426,7 +427,7 @@ class _OverallCard extends StatelessWidget {
                         ? l.maxRankReached
                         : '$toNext LP ${l.toNextDivision}',
                     style: TextStyle(
-                        fontFamily: 'Cairo', fontSize: 10.5, color: muted),
+                        fontFamily: 'Aligarh', fontSize: 10.5, color: muted),
                   ),
                 ]),
           ),
@@ -447,7 +448,7 @@ class _OverallCard extends StatelessWidget {
         child: Column(children: [
           Text(value,
               style: TextStyle(
-                  fontFamily: 'Cairo',
+                  fontFamily: 'Aligarh',
                   fontSize: 15,
                   fontWeight: FontWeight.w900,
                   color: text)),
@@ -455,7 +456,7 @@ class _OverallCard extends StatelessWidget {
           Text(label,
               textAlign: TextAlign.center,
               style: TextStyle(
-                  fontFamily: 'Cairo', fontSize: 9.5, color: muted)),
+                  fontFamily: 'Aligarh', fontSize: 9.5, color: muted)),
         ]),
       );
 
@@ -489,7 +490,7 @@ class _NeedsBodyweight extends StatelessWidget {
           Expanded(
             child: Text(l.needBodyweight,
                 style: const TextStyle(
-                    fontFamily: 'Cairo',
+                    fontFamily: 'Aligarh',
                     fontSize: 11.5,
                     height: 1.45,
                     fontWeight: FontWeight.w600,
@@ -550,11 +551,11 @@ class _ExerciseRow extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
-                child: muscleAssetForExercise(exercise.id) != null
+                child: exerciseIconAsset(exercise.id) != null
                     ? ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.asset(
-                          muscleAssetForExercise(exercise.id)!,
+                          exerciseIconAsset(exercise.id)!,
                           width: 30,
                           height: 30,
                           fit: BoxFit.contain,
@@ -574,7 +575,7 @@ class _ExerciseRow extends StatelessWidget {
                 children: [
                   Text(exercise.name(arabic: l.isAr),
                       style: TextStyle(
-                          fontFamily: 'Cairo',
+                          fontFamily: 'Aligarh',
                           fontSize: 13.5,
                           fontWeight: FontWeight.w700,
                           color: text)),
@@ -590,13 +591,13 @@ class _ExerciseRow extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(_bestLine(l),
                         style: TextStyle(
-                            fontFamily: 'Cairo', fontSize: 9.5, color: muted),
+                            fontFamily: 'Aligarh', fontSize: 9.5, color: muted),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis),
                   ] else
                     Text(l.notRankedYet,
                         style: TextStyle(
-                            fontFamily: 'Cairo', fontSize: 10, color: muted)),
+                            fontFamily: 'Aligarh', fontSize: 10, color: muted)),
                 ]),
           ),
           const SizedBox(width: 8),
@@ -650,7 +651,7 @@ class _PromotionDialog extends StatelessWidget {
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text(l.rankUp,
               style: TextStyle(
-                  fontFamily: 'Cairo',
+                  fontFamily: 'Aligarh',
                   fontSize: 13,
                   letterSpacing: 4,
                   fontWeight: FontWeight.w800,
@@ -670,7 +671,7 @@ class _PromotionDialog extends StatelessWidget {
           const SizedBox(height: 18),
           Text(to.label(arabic: l.isAr),
               style: TextStyle(
-                  fontFamily: 'Cairo',
+                  fontFamily: 'Aligarh',
                   fontSize: 22,
                   fontWeight: FontWeight.w900,
                   color: to.color)),
@@ -687,7 +688,7 @@ class _PromotionDialog extends StatelessWidget {
               ),
               child: Text(l.continueLabel,
                   style: const TextStyle(
-                      fontFamily: 'Cairo', fontWeight: FontWeight.w800)),
+                      fontFamily: 'Aligarh', fontWeight: FontWeight.w800)),
             ),
           ),
         ]),
@@ -798,7 +799,7 @@ class _LiftDetailScreenState extends ConsumerState<LiftDetailScreen> {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(isPr ? '🏆 ${l.newPersonalBest}' : '✓ ${l.setLogged}',
           style: const TextStyle(
-              fontFamily: 'Cairo', fontWeight: FontWeight.w700)),
+              fontFamily: 'Aligarh', fontWeight: FontWeight.w700)),
       backgroundColor:
           isPr ? AppColors.accentGold : AppColors.brandGreen,
       behavior: SnackBarBehavior.floating,
@@ -820,7 +821,7 @@ class _LiftDetailScreenState extends ConsumerState<LiftDetailScreen> {
         appBar: AppBar(),
         body: Center(
             child: Text(l.notFound,
-                style: const TextStyle(fontFamily: 'Cairo'))),
+                style: const TextStyle(fontFamily: 'Aligarh'))),
       );
     }
 
@@ -861,7 +862,7 @@ class _LiftDetailScreenState extends ConsumerState<LiftDetailScreen> {
         appBar: AppBar(
           title: Text(exercise.name(arabic: l.isAr),
               style: const TextStyle(
-                  fontFamily: 'Cairo',
+                  fontFamily: 'Aligarh',
                   fontWeight: FontWeight.w800,
                   fontSize: 17)),
           actions: [
@@ -1010,7 +1011,7 @@ class _StandingCard extends StatelessWidget {
         const SizedBox(height: 10),
         Text(rank.label(arabic: l.isAr),
             style: TextStyle(
-                fontFamily: 'Cairo',
+                fontFamily: 'Aligarh',
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
                 color: rank.color)),
@@ -1024,7 +1025,7 @@ class _StandingCard extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           toNext == null ? l.maxRankReached : '$toNext LP ${l.toNextDivision}',
-          style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: muted),
+          style: TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: muted),
         ),
         if (best != null) ...[
           const SizedBox(height: 14),
@@ -1035,7 +1036,7 @@ class _StandingCard extends StatelessWidget {
             const SizedBox(width: 8),
             Text(_bestText(l),
                 style: TextStyle(
-                    fontFamily: 'Cairo',
+                    fontFamily: 'Aligarh',
                     fontSize: 12,
                     fontWeight: FontWeight.w700,
                     color: text)),
@@ -1104,10 +1105,10 @@ class _RestTimerCard extends StatelessWidget {
           Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(l.restTimer,
                 style: TextStyle(
-                    fontFamily: 'Cairo', fontSize: 10.5, color: muted)),
+                    fontFamily: 'Aligarh', fontSize: 10.5, color: muted)),
             Text('$minutes:${seconds.toString().padLeft(2, '0')}',
                 style: const TextStyle(
-                    fontFamily: 'Cairo',
+                    fontFamily: 'Aligarh',
                     fontSize: 30,
                     height: 1.1,
                     fontWeight: FontWeight.w900,
@@ -1135,7 +1136,7 @@ class _RestTimerCard extends StatelessWidget {
               ),
               child: const Text('+30',
                   style: TextStyle(
-                      fontFamily: 'Cairo',
+                      fontFamily: 'Aligarh',
                       fontSize: 11,
                       fontWeight: FontWeight.w800,
                       color: AppColors.waterBlue)),
@@ -1203,7 +1204,7 @@ class _EntryCard extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(l.logASet,
             style: TextStyle(
-                fontFamily: 'Cairo',
+                fontFamily: 'Aligarh',
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
                 color: text)),
@@ -1276,10 +1277,10 @@ class _EntryCard extends StatelessWidget {
                   children: [
                     Text(l.thisSetWouldRank,
                         style: TextStyle(
-                            fontFamily: 'Cairo', fontSize: 10, color: muted)),
+                            fontFamily: 'Aligarh', fontSize: 10, color: muted)),
                     Text(preview.label(arabic: l.isAr),
                         style: TextStyle(
-                            fontFamily: 'Cairo',
+                            fontFamily: 'Aligarh',
                             fontSize: 15,
                             fontWeight: FontWeight.w900,
                             color: preview.color)),
@@ -1288,7 +1289,7 @@ class _EntryCard extends StatelessWidget {
                         '1RM ≈ ${estimateOneRepMax(exercise.kind == LiftKind.weightedBodyweight ? bodyweight + weight : weight, reps).round()} kg'
                         '  ·  ${(estimateOneRepMax(exercise.kind == LiftKind.weightedBodyweight ? bodyweight + weight : weight, reps) / bodyweight).toStringAsFixed(2)}× ${l.bodyweightShort}',
                         style: TextStyle(
-                            fontFamily: 'Cairo', fontSize: 9.5, color: muted),
+                            fontFamily: 'Aligarh', fontSize: 9.5, color: muted),
                       ),
                   ]),
             ),
@@ -1322,7 +1323,7 @@ class _EntryCard extends StatelessWidget {
                 : const Icon(Icons.add_rounded, color: Colors.white),
             label: Text(onLog == null ? l.needBodyweightShort : l.logSetCta,
                 style: const TextStyle(
-                    fontFamily: 'Cairo',
+                    fontFamily: 'Aligarh',
                     fontSize: 15,
                     fontWeight: FontWeight.w800,
                     color: Colors.white)),
@@ -1367,7 +1368,7 @@ class _Stepper extends StatelessWidget {
         width: 74,
         child: Text(label,
             style: TextStyle(
-                fontFamily: 'Cairo',
+                fontFamily: 'Aligarh',
                 fontSize: 11,
                 fontWeight: FontWeight.w700,
                 color: muted)),
@@ -1382,7 +1383,7 @@ class _Stepper extends StatelessWidget {
             children: [
               Text(value,
                   style: TextStyle(
-                      fontFamily: 'Cairo',
+                      fontFamily: 'Aligarh',
                       fontSize: 26,
                       fontWeight: FontWeight.w900,
                       color: text)),
@@ -1390,7 +1391,7 @@ class _Stepper extends StatelessWidget {
                 const SizedBox(width: 3),
                 Text(unit,
                     style: TextStyle(
-                        fontFamily: 'Cairo', fontSize: 12, color: muted)),
+                        fontFamily: 'Aligarh', fontSize: 12, color: muted)),
               ],
             ],
           ),
@@ -1436,11 +1437,11 @@ class _PlateRow extends StatelessWidget {
     final plates = plateBreakdown(target);
     if (plates.isEmpty) {
       return Text(l.platesNotExact,
-          style: TextStyle(fontFamily: 'Cairo', fontSize: 9.5, color: muted));
+          style: TextStyle(fontFamily: 'Aligarh', fontSize: 9.5, color: muted));
     }
     return Row(children: [
       Text('${l.perSide}  ',
-          style: TextStyle(fontFamily: 'Cairo', fontSize: 9.5, color: muted)),
+          style: TextStyle(fontFamily: 'Aligarh', fontSize: 9.5, color: muted)),
       Expanded(
         child: Wrap(
           spacing: 4,
@@ -1458,7 +1459,7 @@ class _PlateRow extends StatelessWidget {
                             ? '${p.toInt()}'
                             : p.toStringAsFixed(2).replaceAll('0', ''),
                         style: TextStyle(
-                            fontFamily: 'Cairo',
+                            fontFamily: 'Aligarh',
                             fontSize: 9.5,
                             fontWeight: FontWeight.w800,
                             color: muted)),
@@ -1505,13 +1506,13 @@ class _StandardsCard extends StatelessWidget {
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(l.standardsTitle,
             style: TextStyle(
-                fontFamily: 'Cairo',
+                fontFamily: 'Aligarh',
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
                 color: text)),
         const SizedBox(height: 4),
         Text(l.standardsHint,
-            style: TextStyle(fontFamily: 'Cairo', fontSize: 10, color: muted)),
+            style: TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: muted)),
         const SizedBox(height: 12),
         ...List.generate(kStrengthTiers.length, (i) {
           final tier = kStrengthTiers[i];
@@ -1532,7 +1533,7 @@ class _StandardsCard extends StatelessWidget {
               Expanded(
                 child: Text(l.isAr ? tier.nameAr : tier.nameEn,
                     style: TextStyle(
-                        fontFamily: 'Cairo',
+                        fontFamily: 'Aligarh',
                         fontSize: 11.5,
                         fontWeight:
                             reached ? FontWeight.w800 : FontWeight.w500,
@@ -1540,7 +1541,7 @@ class _StandardsCard extends StatelessWidget {
               ),
               Text(_requirement(value, l),
                   style: TextStyle(
-                      fontFamily: 'Cairo',
+                      fontFamily: 'Aligarh',
                       fontSize: 11,
                       fontWeight: FontWeight.w700,
                       color: reached ? text : muted)),
@@ -1606,7 +1607,7 @@ class _HistoryCard extends StatelessWidget {
         child: Center(
           child: Text(l.noSetsYet,
               style:
-                  TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted)),
+                  TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted)),
         ),
       );
     }
@@ -1623,14 +1624,14 @@ class _HistoryCard extends StatelessWidget {
         Row(children: [
           Text(l.historyTitle,
               style: TextStyle(
-                  fontFamily: 'Cairo',
+                  fontFamily: 'Aligarh',
                   fontSize: 13,
                   fontWeight: FontWeight.w800,
                   color: text)),
           const Spacer(),
           Text('${sets.length}',
               style: TextStyle(
-                  fontFamily: 'Cairo',
+                  fontFamily: 'Aligarh',
                   fontSize: 12,
                   fontWeight: FontWeight.w800,
                   color: muted)),
@@ -1666,7 +1667,7 @@ class _HistoryCard extends StatelessWidget {
                 Expanded(
                   child: Text(_line(s, l),
                       style: TextStyle(
-                          fontFamily: 'Cairo',
+                          fontFamily: 'Aligarh',
                           fontSize: 12,
                           fontWeight:
                               isBest ? FontWeight.w800 : FontWeight.w500,
@@ -1674,7 +1675,7 @@ class _HistoryCard extends StatelessWidget {
                 ),
                 Text(_when(s.time, l),
                     style: TextStyle(
-                        fontFamily: 'Cairo', fontSize: 9.5, color: muted)),
+                        fontFamily: 'Aligarh', fontSize: 9.5, color: muted)),
                 const SizedBox(width: 8),
                 RankChip(rank: rank, arabic: l.isAr, showLp: false),
               ]),

@@ -49,7 +49,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
 
     Widget section(String label) => Padding(
       padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),
-      child: Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.brandGreen, letterSpacing: 1.4)),
+      child: Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.brandGreen, letterSpacing: 1.4)),
     );
 
     Widget tile({
@@ -60,10 +60,10 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
       decoration: BoxDecoration(color: card,
           border: Border(bottom: BorderSide(color: border, width: 0.5))),
       child: ListTile(
-        leading: Text(emoji, style: const TextStyle(fontSize: 22)), title: Text(title, style: TextStyle(fontFamily:'Cairo',
+        leading: Text(emoji, style: const TextStyle(fontSize: 22)), title: Text(title, style: TextStyle(fontFamily:'Aligarh',
             fontWeight: FontWeight.w600, fontSize: 14,
             color: titleColor ?? text)),
-        subtitle: subtitle != null ? Text(subtitle, style: TextStyle(fontFamily:'Cairo', fontSize: 11, color: muted))
+        subtitle: subtitle != null ? Text(subtitle, style: TextStyle(fontFamily:'Aligarh', fontSize: 11, color: muted))
             : null,
         trailing: trailing,
         onTap: onTap,
@@ -87,7 +87,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
       textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         backgroundColor: bg,
-        appBar: AppBar( title: Text(t('الإعدادات ⚙️', 'Settings ⚙️'), style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w800)),
+        appBar: AppBar( title: Text(t('الإعدادات ⚙️', 'Settings ⚙️'), style: const TextStyle(fontFamily:'Aligarh', fontWeight: FontWeight.w800)),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
             onPressed: () => context.pop(),
@@ -111,11 +111,11 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             const Divider(height: 1, indent: 56),
             ListTile(
               title: Text(t('اللغة', 'Language'),
-                  style: TextStyle(fontFamily: 'Cairo',
+                  style: TextStyle(fontFamily: 'Aligarh',
                       fontWeight: FontWeight.w600, fontSize: 14,
                       color: text)),
               subtitle: Text(_langLabel(ref.watch(languageProvider)),
-                  style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                       color: muted)),
               trailing: const Icon(Icons.expand_more, size: 20),
               onTap: () => _showLangPicker(context),
@@ -127,13 +127,13 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                 ref.watch(macroPlanProvider).emoji(),
                 style: const TextStyle(fontSize: 22)),
               title: Text(t('خطة الماكرو', 'Macro Plan'),
-                  style: TextStyle(fontFamily: 'Cairo',
+                  style: TextStyle(fontFamily: 'Aligarh',
                       fontWeight: FontWeight.w600, fontSize: 14,
                       color: text)),
               subtitle: Text(
                 isAr ? ref.watch(macroPlanProvider).nameAr()
                      : ref.watch(macroPlanProvider).nameEn(),
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                     color: AppColors.brandGreen)),
               trailing: const Icon(Icons.expand_more, size: 20),
               onTap: () => _showMacroPicker(context),
@@ -153,7 +153,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(color: AppColors.accentGold.withOpacity(0.4)),
                 ),
-                child: Text( t('وضع رمضان فعّال — تمارين خفيفة أولاً • وصفات مناسبة للصائم • لافتة رمضان في الرئيسية', 'Ramadan mode active — light workouts first • fasting-friendly recipes • Ramadan banner on home'), style: const TextStyle(fontFamily:'Cairo', fontSize: 11,
+                child: Text( t('وضع رمضان فعّال — تمارين خفيفة أولاً • وصفات مناسبة للصائم • لافتة رمضان في الرئيسية', 'Ramadan mode active — light workouts first • fasting-friendly recipes • Ramadan banner on home'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 11,
                       color: AppColors.accentGold, height: 1.5),
                   textAlign: TextAlign.center,
                 ),
@@ -206,7 +206,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                   decoration: BoxDecoration(
                     color: AppColors.accentGold,
                     borderRadius: BorderRadius.circular(20),
-                  ), child: Text(t('ترقية', 'Upgrade'), style: const TextStyle(fontFamily:'Cairo',
+                  ), child: Text(t('ترقية', 'Upgrade'), style: const TextStyle(fontFamily:'Aligarh',
                           fontSize: 12, color: Colors.white, fontWeight: FontWeight.w700)),
                 ), onTap: () => context.push('/paywall'),
               )
@@ -242,7 +242,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             Center(child: Column(children: [ const Text('🌙', style: TextStyle(fontSize: 28)),
               const SizedBox(height: 8),
               Text( t('صُنع بعناية — بياناتك تبقى على جهازك ❤️', 'Made with care — your data stays on your device ❤️'),
-                textAlign: TextAlign.center, style: TextStyle(fontFamily:'Cairo', fontSize: 12,
+                textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 12,
                     color: muted, height: 1.8),
               ),
             ])),
@@ -294,7 +294,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                     borderRadius: BorderRadius.circular(2))),
                 const SizedBox(height: 16),
                 Text(tLang(lang, '🔔 إعدادات الإشعارات', '🔔 Notification Settings', '🔔 Paramètres de notification', '🔔 Bildirim Ayarları', '🔔 Tetapan Pemberitahuan', '🔔 Pengaturan Notifikasi'),
-                  style: TextStyle(fontFamily: 'Cairo', fontSize: 16,
+                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 16,
                     fontWeight: FontWeight.w800, color: text)),
                 const SizedBox(height: 16),
                 _NotifToggle(
@@ -335,7 +335,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12))),
                   child: Text(tLang(lang, 'حفظ', 'Save', 'Enregistrer', 'Kaydet', 'Simpan', 'Simpan'),
-                    style: const TextStyle(fontFamily: 'Cairo',
+                    style: const TextStyle(fontFamily: 'Aligarh',
                         color: Colors.white, fontWeight: FontWeight.w700)),
                 )),
               ]),
@@ -367,7 +367,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                 borderRadius: BorderRadius.circular(2))),
             const SizedBox(height: 16),
             Text(tLang(lang, 'خطط الماكرو', 'Macro Plans', 'Plans macro', 'Makro Planlar', 'Pelan Makro', 'Rencana Makro'),
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 16,
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 16,
                 fontWeight: FontWeight.w800, color: text)),
             const SizedBox(height: 8),
             ...MacroPlan.values.map((p) {
@@ -375,12 +375,12 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
               return ListTile(
                 leading: Text(p.emoji(), style: const TextStyle(fontSize: 24)),
                 title: Text(isAr ? p.nameAr() : p.nameEn(),
-                  style: TextStyle(fontFamily: 'Cairo',
+                  style: TextStyle(fontFamily: 'Aligarh',
                     fontWeight: sel ? FontWeight.w800 : FontWeight.w500,
                     color: sel ? AppColors.brandGreen : text)),
                 subtitle: Text(
                   'P:${p.proteinPct}%  C:${p.carbsPct}%  F:${p.fatPct}%',
-                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                  style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                       color: AppColors.lightMuted)),
                 trailing: sel
                   ? const Icon(Icons.check_circle,
@@ -426,7 +426,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                   borderRadius: BorderRadius.circular(2))),
               const SizedBox(height: 16),
               Text('🌐  Language / اللغة',
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 16,
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 16,
                 fontWeight: FontWeight.w800, color: text)),
             const SizedBox(height: 16),
             Expanded(
@@ -437,11 +437,11 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
               final sel = current == code;
               return ListTile(
                 leading: Text(flag, style: const TextStyle(fontSize: 24)),
-                title: Text(name, style: TextStyle(fontFamily: 'Cairo',
+                title: Text(name, style: TextStyle(fontFamily: 'Aligarh',
                   fontWeight: sel ? FontWeight.w800 : FontWeight.w500,
                   color: sel ? AppColors.brandGreen : text)),
                 subtitle: Text(sub, style: TextStyle(
-                  fontFamily: 'Cairo', fontSize: 11,
+                  fontFamily: 'Aligarh', fontSize: 11,
                   color: AppColors.lightMuted)),
                 trailing: sel
                   ? const Icon(Icons.check_circle,
@@ -465,7 +465,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
 
   void _editWaterGoal(BuildContext context, bool isAr) {
     final ctrl = TextEditingController( text:'${ref.read(waterProvider).goal}');
-    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'هدف الماء اليومي', 'Daily Water Goal', 'Objectif eau quotidien', 'Günlük Su Hedefi', 'Sasaran Air Harian', 'Target Air Harian'), style: const TextStyle(fontFamily:'Cairo')),
+    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'هدف الماء اليومي', 'Daily Water Goal', 'Objectif eau quotidien', 'Günlük Su Hedefi', 'Sasaran Air Harian', 'Target Air Harian'), style: const TextStyle(fontFamily:'Aligarh')),
       content: TextField(
         controller: ctrl, keyboardType: TextInputType.number,
         decoration: InputDecoration( hintText: tLang(lang, 'عدد الأكواب', 'Number of cups', 'Number of cups', 'Number of cups', 'Number of cups', 'Number of cups'), suffixText: tLang(lang, 'كوب', 'cups', 'verres', 'bardak', 'cawan', 'gelas'),
@@ -473,13 +473,13 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
         autofocus: true,
       ),
       actions: [
-        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Annuler', 'İptal', 'Batal', 'Batal'), style: const TextStyle(fontFamily:'Cairo'))),
+        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Annuler', 'İptal', 'Batal', 'Batal'), style: const TextStyle(fontFamily:'Aligarh'))),
         ElevatedButton(
           onPressed: () {
             final n = int.tryParse(ctrl.text.trim()) ?? 8;
             ref.read(waterProvider.notifier).setGoal(n.clamp(4, 20));
             if (context.mounted) Navigator.pop(context);
-          }, child: Text(tLang(lang, 'حفظ', 'Save', 'Enregistrer', 'Kaydet', 'Simpan', 'Simpan'), style: const TextStyle(fontFamily:'Cairo')),
+          }, child: Text(tLang(lang, 'حفظ', 'Save', 'Enregistrer', 'Kaydet', 'Simpan', 'Simpan'), style: const TextStyle(fontFamily:'Aligarh')),
         ),
       ],
     ));
@@ -488,7 +488,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
   void _editSleepGoal(BuildContext context, bool isAr) {
     final ctrl = TextEditingController(
         text: ref.read(sleepProvider).goal.toStringAsFixed(1));
-    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'هدف النوم', 'Sleep Goal', 'Objectif sommeil', 'Uyku Hedefi', 'Sasaran Tidur', 'Target Tidur'), style: const TextStyle(fontFamily:'Cairo')),
+    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'هدف النوم', 'Sleep Goal', 'Objectif sommeil', 'Uyku Hedefi', 'Sasaran Tidur', 'Target Tidur'), style: const TextStyle(fontFamily:'Aligarh')),
       content: TextField(
         controller: ctrl,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -497,23 +497,23 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
         autofocus: true,
       ),
       actions: [
-        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Annuler', 'İptal', 'Batal', 'Batal'), style: const TextStyle(fontFamily:'Cairo'))),
+        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Annuler', 'İptal', 'Batal', 'Batal'), style: const TextStyle(fontFamily:'Aligarh'))),
         ElevatedButton(
           onPressed: () { final h = double.tryParse(ctrl.text.trim().replaceAll(',', '.')) ?? 8.0;
             ref.read(sleepProvider.notifier).set(h.clamp(4.0, 12.0));
             if (context.mounted) Navigator.pop(context);
-          }, child: Text(tLang(lang, 'حفظ', 'Save', 'Enregistrer', 'Kaydet', 'Simpan', 'Simpan'), style: const TextStyle(fontFamily:'Cairo')),
+          }, child: Text(tLang(lang, 'حفظ', 'Save', 'Enregistrer', 'Kaydet', 'Simpan', 'Simpan'), style: const TextStyle(fontFamily:'Aligarh')),
         ),
       ],
     ));
   }
 
   void _confirmClearDay(BuildContext context, bool isAr) {
-    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'مسح سجل اليوم؟', 'Clear Today Log?', 'Effacer le journal?', 'Bugünkü Veriyi Sil?', 'Padam Log Hari Ini?', 'Hapus Log Hari Ini?'), style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700)),
+    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'مسح سجل اليوم؟', 'Clear Today Log?', 'Effacer le journal?', 'Bugünkü Veriyi Sil?', 'Padam Log Hari Ini?', 'Hapus Log Hari Ini?'), style: const TextStyle(fontFamily:'Aligarh', fontWeight: FontWeight.w700)),
       content: Text(
-        tLang(lang, 'سيُمسح سجل الوجبات والخطوات والماء لليوم فقط. لا يمكن التراجع.', 'Today\'s meals, steps, and water will be cleared. Cannot be undone.', 'Les repas, étapes et eau d\'aujourd\'hui seront effacés. Irréversible.', 'Bugünün öğünleri, adımları ve suyu silinecek. Geri alınamaz.', 'Makanan, langkah dan air hari ini akan dipadam. Tidak boleh dibatalkan.', 'Makanan, langkah dan air hari ini akan dihapus. Tidak dapat dibatalkan.'), style: const TextStyle(fontFamily:'Cairo', fontSize: 13, height: 1.5)),
+        tLang(lang, 'سيُمسح سجل الوجبات والخطوات والماء لليوم فقط. لا يمكن التراجع.', 'Today\'s meals, steps, and water will be cleared. Cannot be undone.', 'Les repas, étapes et eau d\'aujourd\'hui seront effacés. Irréversible.', 'Bugünün öğünleri, adımları ve suyu silinecek. Geri alınamaz.', 'Makanan, langkah dan air hari ini akan dipadam. Tidak boleh dibatalkan.', 'Makanan, langkah dan air hari ini akan dihapus. Tidak dapat dibatalkan.'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 13, height: 1.5)),
       actions: [
-        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Annuler', 'İptal', 'Batal', 'Batal'), style: const TextStyle(fontFamily:'Cairo'))),
+        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Annuler', 'İptal', 'Batal', 'Batal'), style: const TextStyle(fontFamily:'Aligarh'))),
         ElevatedButton(
           style: ElevatedButton.styleFrom(backgroundColor: AppColors.haramRed),
           onPressed: () async {
@@ -521,11 +521,11 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             await ref.read(waterProvider.notifier).set(0);
             await ref.read(healthProvider.notifier).setSteps(0);
             if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar( content: Text(tLang(lang, '✅ تم مسح سجل اليوم', '✅ Today log cleared', '✅ Journal effacé', '✅ Bugün temizlendi', '✅ Log hari ini dipadam', '✅ Log hari ini dihapus'), style: const TextStyle(fontFamily:'Cairo')),
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar( content: Text(tLang(lang, '✅ تم مسح سجل اليوم', '✅ Today log cleared', '✅ Journal effacé', '✅ Bugün temizlendi', '✅ Log hari ini dipadam', '✅ Log hari ini dihapus'), style: const TextStyle(fontFamily:'Aligarh')),
                 backgroundColor: AppColors.brandGreen,
               ));
             }
-          }, child: Text(tLang(lang, 'مسح', 'Clear', 'Effacer', 'Temizle', 'Padam', 'Hapus'), style: const TextStyle(fontFamily:'Cairo', color: Colors.white)),
+          }, child: Text(tLang(lang, 'مسح', 'Clear', 'Effacer', 'Temizle', 'Padam', 'Hapus'), style: const TextStyle(fontFamily:'Aligarh', color: Colors.white)),
         ),
       ],
     ));
@@ -565,9 +565,9 @@ class _NotifToggleState extends State<_NotifToggle> {
     final muted = widget.isDark ? AppColors.darkMuted : AppColors.lightMuted;
     return ListTile(
       contentPadding: EdgeInsets.zero,
-      title: Text(widget.label, style: TextStyle(fontFamily: 'Cairo',
+      title: Text(widget.label, style: TextStyle(fontFamily: 'Aligarh',
           fontWeight: FontWeight.w600, fontSize: 14, color: text)),
-      subtitle: Text(widget.sub, style: TextStyle(fontFamily: 'Cairo',
+      subtitle: Text(widget.sub, style: TextStyle(fontFamily: 'Aligarh',
           fontSize: 11, color: muted)),
       trailing: Switch(value: _value, onChanged: _toggle,
           activeColor: AppColors.brandGreen),

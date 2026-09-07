@@ -63,7 +63,7 @@ class LoginScreen extends ConsumerWidget {
                 const Text(
                   'هلال كالوري',
                   style: TextStyle(
-                    fontFamily: 'Cairo',
+                    fontFamily: 'Aligarh',
                     fontSize: 32, fontWeight: FontWeight.w900,
                     color: Colors.white,
                   ),
@@ -72,7 +72,7 @@ class LoginScreen extends ConsumerWidget {
                 Text(
                   'تتبع سعراتك • حلال ١٠٠٪',
                   style: TextStyle(
-                    fontFamily: 'Cairo',
+                    fontFamily: 'Aligarh',
                     fontSize: 15,
                     color: Colors.white.withOpacity(0.6),
                   ),
@@ -118,7 +118,7 @@ class LoginScreen extends ConsumerWidget {
                               const SizedBox(width: 10),
                               const Text('تسجيل الدخول بـ Google',
                                 style: TextStyle(
-                                  fontFamily: 'Cairo',
+                                  fontFamily: 'Aligarh',
                                   fontSize: 15, fontWeight: FontWeight.w700,
                                 )),
                             ],
@@ -134,7 +134,7 @@ class LoginScreen extends ConsumerWidget {
                   child: Text(
                     'متابعة بدون حساب',
                     style: TextStyle(
-                      fontFamily: 'Cairo',
+                      fontFamily: 'Aligarh',
                       fontSize: 13,
                       color: Colors.white.withOpacity(0.45),
                     ),
@@ -146,7 +146,7 @@ class LoginScreen extends ConsumerWidget {
                 Text(
                   'بياناتك محفوظة وآمنة تماماً',
                   style: TextStyle(
-                    fontFamily: 'Cairo',
+                    fontFamily: 'Aligarh',
                     fontSize: 11,
                     color: Colors.white.withOpacity(0.3),
                   ),

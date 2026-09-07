@@ -387,11 +387,11 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
           ),
           const SizedBox(height: 20),
           Text('اختر لغتك', style: TextStyle(
-            fontFamily: 'Cairo', fontSize: 28,
+            fontFamily: 'Aligarh', fontSize: 28,
             fontWeight: FontWeight.w900, color: textC)),
           const SizedBox(height: 4),
           Text('Choose your language', style: TextStyle(
-            fontFamily: 'Cairo', fontSize: 15, color: muted)),
+            fontFamily: 'Aligarh', fontSize: 15, color: muted)),
           const SizedBox(height: 28),
 
           // 2-column grid of language cards
@@ -431,11 +431,11 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(name, style: TextStyle(
-                          fontFamily: 'Cairo', fontSize: 13,
+                          fontFamily: 'Aligarh', fontSize: 13,
                           fontWeight: FontWeight.w700,
                           color: selected ? color : textC)),
                         Text(sub, style: TextStyle(
-                          fontFamily: 'Cairo', fontSize: 10,
+                          fontFamily: 'Aligarh', fontSize: 10,
                           color: muted)),
                       ],
                     )),
@@ -450,7 +450,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
           Text(
             lang == 'ar' ? '✨ يمكنك تغييرها لاحقاً من الإعدادات'
                          : '✨ You can change this later in settings',
-            style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted),
+            style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted),
             textAlign: TextAlign.center,
           ),
         ],
@@ -529,7 +529,7 @@ class _WelcomePage extends StatelessWidget {
 
           Text(lang == 'ar' ? step.title : step.titleEn, textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: 'Cairo', fontSize: 30, fontWeight: FontWeight.w900,
+              fontFamily: 'Aligarh', fontSize: 30, fontWeight: FontWeight.w900,
               color: isDark ? Colors.white : const Color(0xFF1F2A1F),
             )),
 
@@ -537,7 +537,7 @@ class _WelcomePage extends StatelessWidget {
 
           Text(lang == 'ar' ? step.subtitle : step.subtitleEn, textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: 'Cairo', fontSize: 16, height: 1.7,
+              fontFamily: 'Aligarh', fontSize: 16, height: 1.7,
               color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D),
             )),
 
@@ -553,7 +553,7 @@ class _WelcomePage extends StatelessWidget {
                 border: Border.all(color: step.color.withOpacity(0.3)),
               ),
               child: Text(c, style: TextStyle(
-                fontFamily: 'Cairo', fontSize: 13,
+                fontFamily: 'Aligarh', fontSize: 13,
                 fontWeight: FontWeight.w700, color: step.color,
               )),
             )).toList(),
@@ -587,11 +587,11 @@ class _QuestionShell extends ConsumerWidget {
           Text(emoji, style: const TextStyle(fontSize: 40)),
           const SizedBox(height: 10),
           Text(isAr ? title : titleEn, style: TextStyle(
-            fontFamily: 'Cairo', fontSize: 28, fontWeight: FontWeight.w900,
+            fontFamily: 'Aligarh', fontSize: 28, fontWeight: FontWeight.w900,
             color: isDark ? Colors.white : const Color(0xFF1F2A1F),
           )),
           Text(isAr ? titleEn : title, style: TextStyle(
-            fontFamily: 'Cairo', fontSize: 13,
+            fontFamily: 'Aligarh', fontSize: 13,
             color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D),
           )),
           const SizedBox(height: 24),
@@ -640,7 +640,7 @@ class _GenderCard extends ConsumerWidget {
             fontSize: selected ? 52 : 44)),
           const SizedBox(height: 10),
           Text(isAr ? labelAr : labelEn, style: TextStyle(
-            fontFamily: 'Cairo', fontSize: 18, fontWeight: FontWeight.w800,
+            fontFamily: 'Aligarh', fontSize: 18, fontWeight: FontWeight.w800,
             color: selected ? color : (isDark ? Colors.white : const Color(0xFF1F2A1F)),
           )),
           if (selected)
@@ -698,12 +698,12 @@ class _LangChoice extends StatelessWidget {
           Text(flag, style: TextStyle(fontSize: selected ? 52 : 44)),
           const SizedBox(height: 10),
           Text(label, style: TextStyle(
-            fontFamily: 'Cairo', fontSize: 18, fontWeight: FontWeight.w800,
+            fontFamily: 'Aligarh', fontSize: 18, fontWeight: FontWeight.w800,
             color: selected ? color
               : (isDark ? Colors.white : const Color(0xFF1F2A1F)),
           )),
           Text(sub, style: TextStyle(
-            fontFamily: 'Cairo', fontSize: 11,
+            fontFamily: 'Aligarh', fontSize: 11,
             color: selected ? color.withOpacity(0.8)
               : const Color(0xFF7D8590),
           )),
@@ -761,7 +761,7 @@ class _SelectTile extends ConsumerWidget {
           Text(emoji, style: const TextStyle(fontSize: 22)),
           const SizedBox(width: 12),
           Expanded(child: Text((!isAr && titleEn != null) ? titleEn! : title, style: TextStyle(
-            fontFamily: 'Cairo', fontSize: 14,
+            fontFamily: 'Aligarh', fontSize: 14,
             fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
             color: selected
               ? AppColors.halalGreen
@@ -822,13 +822,13 @@ class _NumberSlider extends StatelessWidget {
           children: [
             Text(v.toStringAsFixed(v % 1 == 0 ? 0 : 1),
               style: TextStyle(
-                fontFamily: 'Cairo', fontSize: 72, fontWeight: FontWeight.w900,
+                fontFamily: 'Aligarh', fontSize: 72, fontWeight: FontWeight.w900,
                 color: color, height: 1,
               )),
             Padding(
               padding: const EdgeInsets.only(bottom: 12, left: 8),
               child: Text(isAr ? unit : unitEn, style: TextStyle(
-                fontFamily: 'Cairo', fontSize: 18,
+                fontFamily: 'Aligarh', fontSize: 18,
                 fontWeight: FontWeight.w700, color: color.withOpacity(0.7),
               )),
             ),
@@ -864,10 +864,10 @@ class _NumberSlider extends StatelessWidget {
       // Min / Max labels
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Text('${min.toInt()} ${isAr ? unit : unitEn}',
-          style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
+          style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
             color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D))),
         Text('${max.toInt()} ${isAr ? unit : unitEn}',
-          style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
+          style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
             color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D))),
       ]),
 
@@ -905,7 +905,7 @@ class _AdjustBtn extends StatelessWidget {
           border: Border.all(color: color.withOpacity(0.3)),
         ),
         child: Text(label, style: TextStyle(
-          fontFamily: 'Cairo', fontSize: 14,
+          fontFamily: 'Aligarh', fontSize: 14,
           fontWeight: FontWeight.w800, color: color,
         )),
       ),
@@ -978,12 +978,12 @@ class _SummaryPage extends ConsumerWidget {
             const Text('🎉', style: TextStyle(fontSize: 44)),
             const SizedBox(height: 8),
             Text(t('كل شيء جاهز!', 'All Set!'), style: TextStyle(
-              fontFamily: 'Cairo', fontSize: 28, fontWeight: FontWeight.w900,
+              fontFamily: 'Aligarh', fontSize: 28, fontWeight: FontWeight.w900,
               color: isDark ? Colors.white : const Color(0xFF1F2A1F),
             )),
             Text(t('ملفك الشخصي محسوب',
                    'Your profile has been calculated'),
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 13, color: muted)),
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 13, color: muted)),
           ]),
         ),
 
@@ -1031,14 +1031,14 @@ class _SummaryPage extends ConsumerWidget {
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(t('هدف السعرات اليومي',
                      'Daily Calorie Goal'),
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: Colors.white70)),
+                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: Colors.white70)),
               Text(kcalStr, style: const TextStyle(
-                fontFamily: 'Cairo', fontSize: 24,
+                fontFamily: 'Aligarh', fontSize: 24,
                 fontWeight: FontWeight.w900, color: Colors.white,
               )),
               Text(t('محسوب لجسمك وهدفك',
                      'Calculated for your body & goal'),
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: Colors.white60)),
+                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: Colors.white60)),
             ])),
           ]),
         ),
@@ -1058,10 +1058,10 @@ class _SummaryPage extends ConsumerWidget {
             const SizedBox(width: 12),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(t('هدفك', 'Your Goal'), style: TextStyle(
-                fontFamily: 'Cairo', fontSize: 11, color: muted)),
+                fontFamily: 'Aligarh', fontSize: 11, color: muted)),
               Text(isAr ? goal.nameAr() : goal.nameEn(),
                 style: TextStyle(
-                  fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w800,
+                  fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w800,
                   color: isDark ? Colors.white : const Color(0xFF1F2A1F),
                 )),
             ]),
@@ -1092,11 +1092,11 @@ class _SummaryTile extends StatelessWidget {
         Text(emoji, style: const TextStyle(fontSize: 22)),
         const Spacer(),
         Text(value, style: TextStyle(
-          fontFamily: 'Cairo', fontSize: 18,
+          fontFamily: 'Aligarh', fontSize: 18,
           fontWeight: FontWeight.w900, color: color,
         )),
         Text(label, style: TextStyle(
-          fontFamily: 'Cairo', fontSize: 10,
+          fontFamily: 'Aligarh', fontSize: 10,
           color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D),
         )),
       ]),
@@ -1146,14 +1146,14 @@ class _TopBar extends ConsumerWidget {
           ),
           const Spacer(),
           Text('${page + 1} / $total', style: TextStyle(
-            fontFamily: 'Cairo', fontSize: 12,
+            fontFamily: 'Aligarh', fontSize: 12,
             color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D))),
           const Spacer(),
           if (onSkip != null)
             GestureDetector(
               onTap: onSkip,
               child: Text(tLang(lang, 'تخطي', 'Skip', 'Passer', 'Atla', 'Langkau', 'Lewati'),
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
+                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13,
                   fontWeight: FontWeight.w700, color: AppColors.halalGreen)),
             )
           else
@@ -1218,7 +1218,7 @@ class _BottomBar extends ConsumerWidget {
               shadowColor: Colors.transparent,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
             child: Text(label, style: const TextStyle(
-              fontFamily: 'Cairo', fontSize: 17,
+              fontFamily: 'Aligarh', fontSize: 17,
               fontWeight: FontWeight.w800, color: Colors.white)),
           ),
         ),

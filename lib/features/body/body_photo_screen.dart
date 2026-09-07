@@ -116,7 +116,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
             const Text('🔒', style: TextStyle(fontSize: 60)),
             const SizedBox(height: 14),
             Text(t('ميزة بريميوم حصرية', 'Premium Exclusive Feature'),
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 22, fontWeight: FontWeight.w800)),
+                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 22, fontWeight: FontWeight.w800)),
             const SizedBox(height: 8),
             Text(
               t(
@@ -124,14 +124,14 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
                 'Analyze your body composition from one photo:\n• Body fat % estimate\n• Muscle mass\n• Body type\n• Personalized recommendations',
               ),
               textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 13, color: muted, height: 1.7),
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 13, color: muted, height: 1.7),
             ),
             const SizedBox(height: 28),
             SizedBox(width: double.infinity, child: ElevatedButton(
               onPressed: () => Navigator.of(context).pop(),
               style: ElevatedButton.styleFrom(backgroundColor: AppColors.accentGold, padding: const EdgeInsets.symmetric(vertical: 14)),
               child: Text(t('🔓 ترقية للبريميوم', '🔓 Upgrade to Premium'),
-                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, color: Colors.white, fontWeight: FontWeight.w700)),
+                  style: const TextStyle(fontFamily: 'Aligarh', fontSize: 16, color: Colors.white, fontWeight: FontWeight.w700)),
             )),
           ],
         ))),
@@ -173,7 +173,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
                   onPressed: _analyze,
                   icon: const Text('🤖', style: TextStyle(fontSize: 18)),
                   label: Text(t('تحليل الجسم 🔍', 'Analyze Body 🔍'),
-                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
+                      style: const TextStyle(fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.accentGold,
                     padding: const EdgeInsets.symmetric(vertical: 14),
@@ -194,7 +194,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
                     border: Border.all(color: AppColors.haramRed.withOpacity(0.3)),
                     borderRadius: BorderRadius.circular(16),
                   ),
-                  child: Text(_error!, style: const TextStyle(fontFamily: 'Cairo', color: AppColors.haramRed, fontSize: 12)),
+                  child: Text(_error!, style: const TextStyle(fontFamily: 'Aligarh', color: AppColors.haramRed, fontSize: 12)),
                 ),
 
               // ── Results ───────────────────────────────
@@ -222,7 +222,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         Text(
           tLang(lang, 'قبل المتابعة — موافقة الخصوصية', 'Before continuing — Privacy Consent', 'Avant de continuer — Consentement confidentialité', 'Devam etmeden — Gizlilik Onayı', 'Sebelum teruskan — Persetujuan Privasi', 'Sebelum melanjutkan — Persetujuan Privasi'),
           textAlign: TextAlign.center,
-          style: const TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.w800),
+          style: const TextStyle(fontFamily: 'Aligarh', fontSize: 17, fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: 10),
         Text(
@@ -235,7 +235,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
               '• It is never saved or shared with any third party\n'
               '• Photo is deleted immediately after analysis\n'
               '• This feature is for personal use only',
-          style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted, height: 1.8),
+          style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted, height: 1.8),
         ),
         const SizedBox(height: 16),
         Container(
@@ -247,7 +247,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
           child: Text(
             tLang(lang, '⚠️ تحذير: هذه النتائج تقديرية وليست بديلاً عن فحص طبي متخصص', '⚠️ Warning: Results are estimates and not a substitute for professional medical assessment', '⚠️ Warning: Results are estimates and not a substitute for professional medical assessment', '⚠️ Warning: Results are estimates and not a substitute for professional medical assessment', '⚠️ Warning: Results are estimates and not a substitute for professional medical assessment', '⚠️ Warning: Results are estimates and not a substitute for professional medical assessment'),
             textAlign: TextAlign.center,
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.doubtOrange, height: 1.5),
+            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: AppColors.doubtOrange, height: 1.5),
           ),
         ),
         const SizedBox(height: 18),
@@ -255,7 +255,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
           onPressed: () => setState(() => _privacyConsented = true),
           style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandGreen, padding: const EdgeInsets.symmetric(vertical: 13)),
           child: Text(tLang(lang, '✓ أوافق وأكمل', '✓ I Agree & Continue', '✓ J\'accepte & continue', '✓ Kabul ediyorum & devam', '✓ Saya Setuju & Teruskan', '✓ Saya Setuju & Lanjutkan'),
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 14, color: Colors.white, fontWeight: FontWeight.w700)),
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 14, color: Colors.white, fontWeight: FontWeight.w700)),
         )),
       ]),
     );
@@ -277,7 +277,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         const SizedBox(height: 8),
         Text(
           tLang(lang, 'كيف تحصل على نتائج دقيقة؟', 'How to get accurate results?', 'Comment obtenir des résultats précis ?', 'Doğru sonuçlar nasıl elde edilir?', 'Bagaimana mendapat hasil tepat?', 'Cara mendapat hasil akurat?'),
-          style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
+          style: const TextStyle(fontFamily: 'Aligarh', fontSize: 16, fontWeight: FontWeight.w700, color: Colors.white),
         ),
         const SizedBox(height: 10),
         ...(isAr ? [
@@ -295,13 +295,13 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         ]).map((s) => Padding(
           padding: const EdgeInsets.only(bottom: 5),
           child: Align(alignment: Alignment.centerRight,
-            child: Text(s, style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: Colors.white70, height: 1.4))),
+            child: Text(s, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: Colors.white70, height: 1.4))),
         )),
         if (profile != null) ...[
           const Divider(color: Colors.white24, height: 16),
           Text(
             tLang(lang, 'يستخدم AI بياناتك: ${profile.weightKg}كجم / ${profile.heightCm.toInt()}سم / ${profile.age}سنة', 'AI uses your data: ${profile.weightKg}kg / ${profile.heightCm.toInt()}cm / ${profile.age}yrs', 'AI uses your data: ${profile.weightKg}kg / ${profile.heightCm.toInt()}cm / ${profile.age}yrs', 'AI uses your data: ${profile.weightKg}kg / ${profile.heightCm.toInt()}cm / ${profile.age}yrs', 'AI uses your data: ${profile.weightKg}kg / ${profile.heightCm.toInt()}cm / ${profile.age}yrs', 'AI uses your data: ${profile.weightKg}kg / ${profile.heightCm.toInt()}cm / ${profile.age}yrs'),
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: Colors.white60),
+            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: Colors.white60),
           ),
         ],
       ]),
@@ -342,7 +342,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text(emoji, style: const TextStyle(fontSize: 22)),
           const SizedBox(height: 4),
-          Text(label, style: TextStyle(fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.w700, color: color)),
+          Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, fontWeight: FontWeight.w700, color: color)),
         ]),
       ),
     );
@@ -362,12 +362,12 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
           Opacity(opacity: _pulse.value, child: const Text('🧬', style: TextStyle(fontSize: 42)))),
         const SizedBox(height: 10),
         Text(tLang(lang, 'يجري تحليل صورتك…', 'Analyzing your photo…'),
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700)),
+            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w700)),
         const SizedBox(height: 4),
         Text(
           tLang(lang, 'يُقدّر نسبة الدهون • نوع الجسم • التوصيات', 'Estimating body fat % • Body type • Recommendations', 'Estimating body fat % • Body type • Recommendations', 'Estimating body fat % • Body type • Recommendations', 'Estimating body fat % • Body type • Recommendations', 'Estimating body fat % • Body type • Recommendations'),
           textAlign: TextAlign.center,
-          style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
+          style: TextStyle(fontFamily: 'Aligarh', fontSize: 11,
             color: isDark ? AppColors.darkMuted : AppColors.lightMuted, height: 1.5),
         ),
         const SizedBox(height: 14),
@@ -396,7 +396,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
           // ── Header ──────────────────────────────────────
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text(tLang(lang, '🧬 نتائج التحليل', '🧬 Analysis Results', '🧬 Résultats d\'analyse', '🧬 Analiz Sonuçları', '🧬 Keputusan Analisis', '🧬 Hasil Analisis'),
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.w900)),
+                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 17, fontWeight: FontWeight.w900)),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(
@@ -405,7 +405,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
               ),
               child: Text(
                 tLang(lang, 'دقة: $confPct%', 'Conf: $confPct%', 'Conf: $confPct%', 'Conf: $confPct%', 'Conf: $confPct%', 'Conf: $confPct%'),
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 11, fontWeight: FontWeight.w700,
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 11, fontWeight: FontWeight.w700,
                   color: confPct > 50 ? AppColors.halalGreen : AppColors.doubtOrange),
               ),
             ),
@@ -437,7 +437,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
           // ── Posture note ─────────────────────────────────
           if (postureN.isNotEmpty) ...[
             Text(tLang(lang, '🦴 ملاحظات الوضعية:', '🦴 Posture Notes:', '🦴 Notes de posture :', '🦴 Duruş Notları:', '🦴 Nota Postur:', '🦴 Catatan Postur:'),
-                style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 13)),
+                style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 13)),
             const SizedBox(height: 6),
             Container(
               padding: const EdgeInsets.all(10),
@@ -446,7 +446,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Text(postureN,
-                  style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted, height: 1.5)),
+                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted, height: 1.5)),
             ),
             const SizedBox(height: 14),
           ],
@@ -454,7 +454,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
           // ── Recommendations ───────────────────────────────
           if (recs.isNotEmpty) ...[
             Text(tLang(lang, '💡 توصيات مخصصة لك:', '💡 Personalized Recommendations:', '💡 Recommandations personnalisées :', '💡 Kişisel Tavsiyeler:', '💡 Cadangan Diperibadikan:', '💡 Rekomendasi Personal:'),
-                style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 13)),
+                style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 13)),
             const SizedBox(height: 8),
             ...recs.asMap().entries.map((e) => Padding(
               padding: const EdgeInsets.only(bottom: 7),
@@ -463,11 +463,11 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
                   width: 22, height: 22,
                   decoration: BoxDecoration(color: AppColors.accentGold.withOpacity(0.15), shape: BoxShape.circle),
                   child: Center(child: Text('${e.key + 1}',
-                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, fontWeight: FontWeight.w900, color: AppColors.accentGold))),
+                      style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10, fontWeight: FontWeight.w900, color: AppColors.accentGold))),
                 ),
                 const SizedBox(width: 8),
                 Expanded(child: Text(e.value,
-                    style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted, height: 1.5))),
+                    style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted, height: 1.5))),
               ]),
             )),
             const SizedBox(height: 14),
@@ -483,11 +483,11 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
               ),
               child: Column(children: [
                 Text(tLang(lang, '📊 مقارنة مع حسابات ملفك', '📊 Comparison with Profile Calculations', '📊 Comparaison avec calculs du profil', '📊 Profil Hesaplamalarıyla Karşılaştırma', '📊 Perbandingan dengan Pengiraan Profil', '📊 Perbandingan dengan Perhitungan Profil'),
-                    style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 12, color: AppColors.brandGreen)),
+                    style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 12, color: AppColors.brandGreen)),
                 const SizedBox(height: 8),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
                   _compareRow(tLang(lang, 'صورة', 'Photo', 'Photo', 'Fotoğraf', 'Foto', 'Foto'), '${r.bodyFatPercent.toStringAsFixed(1)}%', AppColors.accentGold),
-                  const Text('vs', style: TextStyle(fontFamily: 'Cairo', color: AppColors.lightMuted, fontSize: 12)),
+                  const Text('vs', style: TextStyle(fontFamily: 'Aligarh', color: AppColors.lightMuted, fontSize: 12)),
                   _compareRow(tLang(lang, 'حساب', 'Calc.', 'Calc.', 'Hesapla.', 'Kira.', 'Hitung.'), '${profile.bodyFatPercent.toStringAsFixed(1)}%', AppColors.brandGreen),
                 ]),
               ]),
@@ -499,7 +499,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
           // ── Disclaimer ────────────────────────────────────
           Text(
             tLang(lang, '⚠️ تنبيه: هذه النتائج تقديرية بدقة ٦٠-٧٥٪. لا تستخدمها كبديل للقياسات الطبية أو الاستشارة المتخصصة.', '⚠️ Disclaimer: These results are estimates with 60-75% accuracy. Do not use as a substitute for medical measurements or professional consultation.', '⚠️ Disclaimer: These results are estimates with 60-75% accuracy. Do not use as a substitute for medical measurements or professional consultation.', '⚠️ Disclaimer: These results are estimates with 60-75% accuracy. Do not use as a substitute for medical measurements or professional consultation.', '⚠️ Disclaimer: These results are estimates with 60-75% accuracy. Do not use as a substitute for medical measurements or professional consultation.', '⚠️ Disclaimer: These results are estimates with 60-75% accuracy. Do not use as a substitute for medical measurements or professional consultation.'),
-            style: TextStyle(fontFamily: 'Cairo', fontSize: 9.5, color: muted, height: 1.6),
+            style: TextStyle(fontFamily: 'Aligarh', fontSize: 9.5, color: muted, height: 1.6),
           ),
 
           const SizedBox(height: 14),
@@ -509,7 +509,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
             onPressed: () => setState(() { _image = null; _result = null; _state = BodyAnalysisState.idle; }),
             icon: const Icon(Icons.refresh, size: 16),
             label: Text(tLang(lang, 'تحليل صورة جديدة', 'Analyze New Photo', 'Analyser une nouvelle photo', 'Yeni Fotoğraf Analiz Et', 'Analisis Foto Baru', 'Analisis Foto Baru'),
-                style: const TextStyle(fontFamily: 'Cairo')),
+                style: const TextStyle(fontFamily: 'Aligarh')),
             style: OutlinedButton.styleFrom(foregroundColor: AppColors.accentGold, side: const BorderSide(color: AppColors.accentGold)),
           )),
         ]),
@@ -527,10 +527,10 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
       ),
       child: Column(children: [
         Text(value, textAlign: TextAlign.center,
-            style: TextStyle(fontFamily: 'Cairo', fontSize: small ? 14 : 18, fontWeight: FontWeight.w900, color: color, height: 1.1)),
+            style: TextStyle(fontFamily: 'Aligarh', fontSize: small ? 14 : 18, fontWeight: FontWeight.w900, color: color, height: 1.1)),
         const SizedBox(height: 3),
         Text(label, textAlign: TextAlign.center,
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 9, color: AppColors.lightMuted)),
+            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 9, color: AppColors.lightMuted)),
       ]),
     ));
   }
@@ -553,9 +553,9 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         Text(tLang(lang, 'مقياس الدهون:', 'Fat Scale:', 'Échelle de graisse :', 'Yağ Ölçeği:', 'Skala Lemak:', 'Skala Lemak:'),
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.w700)),
+            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12, fontWeight: FontWeight.w700)),
         Text(isAr ? catAr : catEn,
-            style: TextStyle(fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.w700, color: bfCol)),
+            style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, fontWeight: FontWeight.w700, color: bfCol)),
       ]),
       const SizedBox(height: 6),
       Stack(children: [
@@ -578,8 +578,8 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
 
   Widget _compareRow(String label, String value, Color color) {
     return Column(children: [
-      Text(value, style: TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w900, color: color)),
-      Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, color: AppColors.lightMuted)),
+      Text(value, style: TextStyle(fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w900, color: color)),
+      Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: AppColors.lightMuted)),
     ]);
   }
 }

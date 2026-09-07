@@ -77,7 +77,7 @@ class AppRouter {
       errorBuilder: (_, state) => Scaffold(
         body: Center(
           child: Text('Route error: ${state.error}',
-              style: const TextStyle(fontFamily: 'Cairo')),
+              style: const TextStyle(fontFamily: 'Aligarh')),
         ),
       ),
     );

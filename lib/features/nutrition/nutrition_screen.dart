@@ -12,6 +12,7 @@ import '../../core/l10n.dart';
 import '../../core/food_emoji.dart';
 import '../../data/models/models.dart';
 import 'widgets/leaf_progress_ring.dart';
+import '../../data/icon_assets.dart';
 
 import '../../core/ai_service.dart';
 
@@ -78,11 +79,13 @@ const _kWholesomeFoods = <String, (String, String, String)>{
                        'Complete protein and choline'),
 };
 
-/// Returns the glyph and note for a recognised whole food, else null.
-(String, String, String)? _checkWholesomeFood(String name) {
+/// Returns the glyph, notes, and matched key for a recognised whole food,
+/// else null. The key lets the caller look up an icon-pack asset without
+/// re-deriving it from the (possibly duplicated) emoji glyph.
+(String, String, String, String)? _checkWholesomeFood(String name) {
   final n = name.toLowerCase();
   for (final e in _kWholesomeFoods.entries) {
-    if (n.contains(e.key)) return e.value;
+    if (n.contains(e.key)) return (e.value.$1, e.value.$2, e.value.$3, e.key);
   }
   return null;
 }
@@ -182,8 +185,13 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                     Row(children: [
-                      Text(wholesome.$1,
-                        style: const TextStyle(fontSize: 20)),
+                      wholesomeFoodAsset(wholesome.$4) != null
+                        ? Image.asset(wholesomeFoodAsset(wholesome.$4)!,
+                            width: 20, height: 20,
+                            errorBuilder: (_, __, ___) => Text(wholesome.$1,
+                                style: const TextStyle(fontSize: 20)))
+                        : Text(wholesome.$1,
+                            style: const TextStyle(fontSize: 20)),
                       const SizedBox(width: 8),
                       Text(tLang(lang, '🌿 طعام كامل — أُضيف!',
                           '🌿 Whole food — logged!',
@@ -192,19 +200,19 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           '🌿 Makanan penuh — dilog!',
                           '🌿 Makanan utuh — dicatat!',
                           '🌿 مکمل غذا — درج ہو گئی!'),
-                        style: const TextStyle(fontFamily: 'Cairo',
+                        style: const TextStyle(fontFamily: 'Aligarh',
                             fontWeight: FontWeight.w800, fontSize: 14,
                             color: Colors.white)),
                     ]),
                     const SizedBox(height: 3),
                     Text(isAr ? wholesome.$2 : wholesome.$3,
-                      style: const TextStyle(fontFamily: 'Cairo',
+                      style: const TextStyle(fontFamily: 'Aligarh',
                           fontSize: 11, color: Colors.white70, height: 1.3)),
                   ])
                 : Row(children: [
                     const Text('✅ ', style: TextStyle(fontSize: 16)),
                     Text('$name ${isAr ? "أضيف" : "added"}',
-                        style: const TextStyle(fontFamily: 'Cairo',
+                        style: const TextStyle(fontFamily: 'Aligarh',
                             fontWeight: FontWeight.w700)),
                   ]),
               backgroundColor: wholesome != null
@@ -313,7 +321,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                   Text(e.name, style: TextStyle(
-                      fontFamily: 'Cairo', fontSize: 19,
+                      fontFamily: 'Aligarh', fontSize: 19,
                       fontWeight: FontWeight.w900, color: textC)),
                   const SizedBox(height: 6),
                   if (tags.isNotEmpty) Wrap(spacing: 5, runSpacing: 4,
@@ -326,7 +334,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         border: Border.all(
                             color: (t['c'] as Color).withOpacity(0.3))),
                       child: Text('${t["e"]} ${t["l"]}',
-                          style: TextStyle(fontFamily: 'Cairo',
+                          style: TextStyle(fontFamily: 'Aligarh',
                               fontSize: 9, fontWeight: FontWeight.w700,
                               color: t['c'] as Color)),
                     )).toList()),
@@ -357,11 +365,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         strokeCap: StrokeCap.round)),
                       Column(mainAxisSize: MainAxisSize.min, children: [
                         Text('${e.kcal}', style: const TextStyle(
-                            fontFamily: 'Cairo', fontSize: 20,
+                            fontFamily: 'Aligarh', fontSize: 20,
                             fontWeight: FontWeight.w900,
                             color: AppColors.brandGreen)),
                         Text(tLang(lang, 'سعرة', 'kcal', 'kcal', 'kcal', 'kcal', 'kkal'), style: TextStyle(
-                            fontFamily: 'Cairo', fontSize: 9,
+                            fontFamily: 'Aligarh', fontSize: 9,
                             color: muted)),
                       ]),
                     ])),
@@ -370,15 +378,15 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                     Text('${(pctKcal*100).toInt()}%',
-                        style: const TextStyle(fontFamily: 'Cairo',
+                        style: const TextStyle(fontFamily: 'Aligarh',
                             fontSize: 32, fontWeight: FontWeight.w900,
                             color: AppColors.brandGreen)),
                     Text(tLang(lang, 'من هدفك اليومي', 'of your daily goal', 'de votre objectif quotidien', 'günlük hedefinizin', 'daripada matlamat harian anda', 'dari target harian Anda'),
-                        style: TextStyle(fontFamily: 'Cairo',
+                        style: TextStyle(fontFamily: 'Aligarh',
                             fontSize: 11, color: muted)),
                     const SizedBox(height: 4),
                     Text('${goal.toInt()} ${isAr?"سعرة كهدف":"kcal goal"}',
-                        style: TextStyle(fontFamily: 'Cairo',
+                        style: TextStyle(fontFamily: 'Aligarh',
                             fontSize: 11,
                             color: muted.withOpacity(0.7))),
                   ])),
@@ -388,7 +396,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
 
               // Macros
               Text(tLang(lang, '🔬 المغذيات الكبرى', '🔬 Macronutrients', '🔬 Macronutriments', '🔬 Makrobesinler', '🔬 Makronutrien', '🔬 Makronutrien'),
-                  style: TextStyle(fontFamily: 'Cairo',
+                  style: TextStyle(fontFamily: 'Aligarh',
                       fontSize: 14, fontWeight: FontWeight.w800,
                       color: textC)),
               const SizedBox(height: 10),
@@ -407,7 +415,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
 
               // Micronutrients
               Text(tLang(lang, '🧪 مغذيات دقيقة (تقديرية)', '🧪 Micronutrients (estimated)', '🧪 Micronutrients (estimated)', '🧪 Micronutrients (estimated)', '🧪 Micronutrients (estimated)', '🧪 Micronutrients (estimated)'),
-                  style: TextStyle(fontFamily: 'Cairo',
+                  style: TextStyle(fontFamily: 'Aligarh',
                       fontSize: 14, fontWeight: FontWeight.w800,
                       color: textC)),
               const SizedBox(height: 10),
@@ -432,7 +440,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                     const SizedBox(height: 6),
                     Text(
                       tLang(lang, '* القيم التفصيلية متاحة عند التحليل بالكاميرا (مميزات مدفوعة)', '* Detailed values available via AI photo scan (premium)', '* Detailed values available via AI photo scan (premium)', '* Detailed values available via AI photo scan (premium)', '* Detailed values available via AI photo scan (premium)', '* Detailed values available via AI photo scan (premium)'),
-                      style: TextStyle(fontFamily: 'Cairo', fontSize: 9.5, color: muted),
+                      style: TextStyle(fontFamily: 'Aligarh', fontSize: 9.5, color: muted),
                     ),
                   ])),
               const SizedBox(height: 16),
@@ -449,7 +457,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   const Text('📖', style: TextStyle(fontSize: 22)),
                   const SizedBox(width: 10),
                   Expanded(child: Text(foodNote(),
-                      style: const TextStyle(fontFamily: 'Cairo',
+                      style: const TextStyle(fontFamily: 'Aligarh',
                           fontSize: 12, color: AppColors.brandGreen,
                           height: 1.6, fontStyle: FontStyle.italic))),
                 ]),
@@ -466,7 +474,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   icon: const Icon(Icons.delete_outline,
                       color: AppColors.haramRed, size: 18),
                   label: Text(tLang(lang, 'حذف', 'Delete', 'Supprimer', 'Sil', 'Padam', 'Hapus'),
-                      style: const TextStyle(fontFamily: 'Cairo',
+                      style: const TextStyle(fontFamily: 'Aligarh',
                           color: AppColors.haramRed,
                           fontWeight: FontWeight.w700)),
                   style: OutlinedButton.styleFrom(
@@ -488,7 +496,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   icon: const Icon(Icons.add_circle_outline,
                       color: Colors.white, size: 18),
                   label: Text(tLang(lang, 'أضف مرة أخرى', 'Log Again', 'Enregistrer à nouveau', 'Tekrar Kaydet', 'Log Lagi', 'Catat Lagi'),
-                      style: const TextStyle(fontFamily: 'Cairo',
+                      style: const TextStyle(fontFamily: 'Aligarh',
                           color: Colors.white,
                           fontWeight: FontWeight.w700)),
                   style: ElevatedButton.styleFrom(
@@ -519,11 +527,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
       child: Column(crossAxisAlignment: CrossAxisAlignment.start,
           children: [
         Row(children: [
-          Text(label, style: TextStyle(fontFamily: 'Cairo',
+          Text(label, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 13, fontWeight: FontWeight.w700, color: color)),
           const Spacer(),
           Text('${val.toStringAsFixed(1)}g / ${goal.toInt()}g',
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                   color: color.withOpacity(0.8),
                   fontWeight: FontWeight.w600)),
           const SizedBox(width: 8),
@@ -534,7 +542,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
               color: color.withOpacity(0.12),
               borderRadius: BorderRadius.circular(10)),
             child: Text('${(pct*100).toInt()}%',
-                style: TextStyle(fontFamily: 'Cairo',
+                style: TextStyle(fontFamily: 'Aligarh',
                     fontSize: 10, fontWeight: FontWeight.w800,
                     color: color))),
         ]),
@@ -553,7 +561,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   color: color.withOpacity(0.3), blurRadius: 4)]))),
         ]),
         const SizedBox(height: 5),
-        Text(note, style: TextStyle(fontFamily: 'Cairo',
+        Text(note, style: TextStyle(fontFamily: 'Aligarh',
             fontSize: 10, color: color.withOpacity(0.75))),
       ]),
     );
@@ -565,11 +573,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
           mainAxisSize: MainAxisSize.min, children: [
         Text(emoji, style: const TextStyle(fontSize: 22)),
         const SizedBox(height: 2),
-        Text(val, style: const TextStyle(fontFamily: 'Cairo',
+        Text(val, style: const TextStyle(fontFamily: 'Aligarh',
             fontSize: 12, fontWeight: FontWeight.w800,
             color: AppColors.accentGold)),
         Text(label, style: TextStyle(
-            fontFamily: 'Cairo', fontSize: 9, color: muted)),
+            fontFamily: 'Aligarh', fontSize: 9, color: muted)),
       ]));
 
 
@@ -584,9 +592,9 @@ class _NutritionState extends ConsumerState<NutritionScreen>
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text(emoji, style: const TextStyle(fontSize: 22)),
           const SizedBox(height: 4),
-          Text(val, style: TextStyle(fontFamily: 'Cairo',
+          Text(val, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 14, fontWeight: FontWeight.w900, color: color)),
-          Text(label, style: TextStyle(fontFamily: 'Cairo',
+          Text(label, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 9, color: color.withOpacity(0.8))),
         ]),
       ));
@@ -594,10 +602,10 @@ class _NutritionState extends ConsumerState<NutritionScreen>
   Widget _microItem(String emoji, String label, String val) =>
       Column(mainAxisSize: MainAxisSize.min, children: [
         Text(emoji, style: const TextStyle(fontSize: 18)),
-        Text(val, style: const TextStyle(fontFamily: 'Cairo',
+        Text(val, style: const TextStyle(fontFamily: 'Aligarh',
             fontSize: 12, fontWeight: FontWeight.w800,
             color: AppColors.accentGold)),
-        Text(label, style: const TextStyle(fontFamily: 'Cairo',
+        Text(label, style: const TextStyle(fontFamily: 'Aligarh',
             fontSize: 9, color: AppColors.lightMuted)),
       ]);
 
@@ -640,7 +648,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
           elevation: 4,
           icon: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
           label: Text(tl('أضف طعام', 'Add Food'),
-              style: const TextStyle(fontFamily: 'Cairo',
+              style: const TextStyle(fontFamily: 'Aligarh',
                   color: Colors.white, fontWeight: FontWeight.w800,
                   fontSize: 14)),
         ),
@@ -657,7 +665,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
             ),
           ),
           title: Text(tl('التغذية', 'Nutrition'),
-              style: const TextStyle(fontFamily: 'Cairo',
+              style: const TextStyle(fontFamily: 'Aligarh',
                   fontWeight: FontWeight.w800, fontSize: 18)),
           backgroundColor: Colors.transparent,
           foregroundColor: Colors.white,
@@ -675,10 +683,10 @@ class _NutritionState extends ConsumerState<NutritionScreen>
             indicatorColor: isRamadan ? AppColors.accentGold : Colors.white,
             indicatorWeight: 3,
             indicatorSize: TabBarIndicatorSize.label,
-            labelStyle: const TextStyle(fontFamily: 'Cairo',
+            labelStyle: const TextStyle(fontFamily: 'Aligarh',
                 fontWeight: FontWeight.w700, fontSize: 14),
             unselectedLabelStyle: const TextStyle(
-                fontFamily: 'Cairo', fontSize: 14),
+                fontFamily: 'Aligarh', fontSize: 14),
             labelColor: Colors.white,
             unselectedLabelColor: Colors.white54,
             tabs: [
@@ -714,13 +722,13 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                               if (h < 17) return l.goodAfternoon;
                               return l.goodEvening;
                             }(),
-                            style: TextStyle(fontFamily: 'Cairo',
+                            style: TextStyle(fontFamily: 'Aligarh',
                                 fontSize: 18, fontWeight: FontWeight.w800,
                                 color: textC)),
                             Text(
                               DateFormat(tLang(lang, 'EEEE، d MMMM', 'EEEE, MMMM d', 'EEEE, MMMM d', 'EEEE, MMMM d', 'EEEE, MMMM d', 'EEEE, MMMM d'),
                                   tLang(lang, 'ar', 'en', 'en', 'en', 'en', 'en')).format(DateTime.now()),
-                              style: TextStyle(fontFamily: 'Cairo',
+                              style: TextStyle(fontFamily: 'Aligarh',
                                   fontSize: 11, color: muted)),
                           ]),
                         Container(
@@ -733,7 +741,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                 color: accent.withOpacity(0.3)),
                           ),
                           child: Text('🎯 $goal ${tl(" سعرة", "kcal")}',
-                            style: const TextStyle(fontFamily: 'Cairo',
+                            style: const TextStyle(fontFamily: 'Aligarh',
                                 fontSize: 12, fontWeight: FontWeight.w700,
                                 color: AppColors.brandGreen)),
                         ),
@@ -762,7 +770,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           tl('ابدأ يومك بوجبة فيها بروتين 🍽️',
                              'Start the day with some protein 🍽️'),
                           style: const TextStyle(
-                              fontFamily: 'Cairo', fontSize: 12,
+                              fontFamily: 'Aligarh', fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: AppColors.brandGreen, height: 1.4),
                         )),
@@ -792,7 +800,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           children: [
                             Text(
                               isAr ? plan.nameAr() : plan.nameEn(),
-                              style: const TextStyle(fontFamily: 'Cairo',
+                              style: const TextStyle(fontFamily: 'Aligarh',
                                   fontSize: 12, fontWeight: FontWeight.w700,
                                   color: AppColors.brandGreen)),
                             Text(plan.emoji(),
@@ -832,7 +840,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                 children: [
                               Text('${left.abs()}',
                                   style: TextStyle(
-                                      fontFamily: 'Cairo',
+                                      fontFamily: 'Aligarh',
                                       fontSize: 30,
                                       fontWeight: FontWeight.w900,
                                       color: calCol)),
@@ -841,14 +849,14 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                     ? tl('تجاوزت!', 'Over!')
                                     : tl('متبقي', 'left'),
                                 style: TextStyle(
-                                    fontFamily: 'Cairo',
+                                    fontFamily: 'Aligarh',
                                     fontSize: 10,
                                     fontWeight: FontWeight.w700,
                                     color: calCol),
                               ),
                               Text('/ $goal',
                                   style: TextStyle(
-                                      fontFamily: 'Cairo',
+                                      fontFamily: 'Aligarh',
                                       fontSize: 9,
                                       color: muted)),
                             ]),
@@ -884,7 +892,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                 child: Text(
                                   '${p.emoji()} ${isAr ? p.nameAr() : p.nameEn()}',
                                   style: TextStyle(
-                                    fontFamily: 'Cairo', fontSize: 11,
+                                    fontFamily: 'Aligarh', fontSize: 11,
                                     fontWeight: sel ? FontWeight.w700 : FontWeight.w400,
                                     color: sel ? Colors.white : muted,
                                   ),
@@ -926,11 +934,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(tl('الماء', 'Water'),
-                                  style: TextStyle(fontFamily: 'Cairo',
+                                  style: TextStyle(fontFamily: 'Aligarh',
                                     fontSize: 12, fontWeight: FontWeight.w600,
                                     color: AppColors.waterBlue)),
                                 Text('${ref.watch(waterProvider).cups} / ${ref.watch(waterProvider).goal}  •  ${(ref.watch(waterProvider).percent * 100).toInt()}%',
-                                  style: TextStyle(fontFamily: 'Cairo',
+                                  style: TextStyle(fontFamily: 'Aligarh',
                                     fontSize: 10,
                                     color: AppColors.waterBlue.withOpacity(0.75))),
                               ],
@@ -1063,7 +1071,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         const SizedBox(width: 8),
                         Text(tl('السعرات الأسبوعية',
                                 'Weekly Calories'),
-                            style: TextStyle(fontFamily: 'Cairo',
+                            style: TextStyle(fontFamily: 'Aligarh',
                                 fontSize: 14,
                                 fontWeight: FontWeight.w700,
                                 color: textC)),
@@ -1079,7 +1087,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                   tl('تعذر تحميل البيانات',
                                      'Could not load data'),
                                   style: TextStyle(
-                                      fontFamily: 'Cairo',
+                                      fontFamily: 'Aligarh',
                                       color: muted))),
                           data: (data) {
                             final today = DateTime.now();
@@ -1123,7 +1131,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                     getTitlesWidget: (v, _) => Text(
                                         days[v.toInt()],
                                         style: TextStyle(
-                                            fontFamily: 'Cairo',
+                                            fontFamily: 'Aligarh',
                                             fontSize: 9,
                                             color: muted,
                                             fontWeight:
@@ -1162,11 +1170,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   Column(crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                     Text(tl('وصفات بسيطة', 'Simple Recipes'),
-                        style: TextStyle(fontFamily: 'Cairo',
+                        style: TextStyle(fontFamily: 'Aligarh',
                             fontSize: 18, fontWeight: FontWeight.w800,
                             color: textC)),
                     Text(tl('اضغط للإضافة', 'Tap to add'),
-                        style: TextStyle(fontFamily: 'Cairo',
+                        style: TextStyle(fontFamily: 'Aligarh',
                             fontSize: 11, color: muted)),
                   ]),
                 ]),
@@ -1203,7 +1211,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                             style: const TextStyle(fontSize: 26))),
                       ),
                       title: Text(r.nameAr,
-                          style: const TextStyle(fontFamily: 'Cairo',
+                          style: const TextStyle(fontFamily: 'Aligarh',
                               fontWeight: FontWeight.w700,
                               fontSize: 13)),
                       subtitle: Padding(
@@ -1231,7 +1239,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                               content: Text(
                                   '${r.nameAr} ${isAr ? "أضيف ✓" : "added ✓"}',
                                   style: const TextStyle(
-                                      fontFamily: 'Cairo')),
+                                      fontFamily: 'Aligarh')),
                               backgroundColor: ref.read(ramadanModeProvider)
                                   ? AppColors.accentGold
                                   : AppColors.brandGreen,
@@ -1286,10 +1294,10 @@ class _NutritionState extends ConsumerState<NutritionScreen>
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(val, style: TextStyle(fontFamily: 'Cairo',
+          Text(val, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 24, fontWeight: FontWeight.w900, color: color)),
           const SizedBox(height: 2),
-          Text(label, style: TextStyle(fontFamily: 'Cairo',
+          Text(label, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 10, color: color.withOpacity(0.85),
               fontWeight: FontWeight.w700)),
         ]),
@@ -1302,10 +1310,10 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     final pctInt = (pct * 100).toInt();
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(label, style: TextStyle(fontFamily: 'Cairo',
+        Text(label, style: TextStyle(fontFamily: 'Aligarh',
             fontSize: 12, fontWeight: FontWeight.w600, color: color)),
         Text('${current.toInt()}g / ${target.toInt()}g  •  $pctInt%',
-            style: TextStyle(fontFamily: 'Cairo',
+            style: TextStyle(fontFamily: 'Aligarh',
                 fontSize: 10, color: color.withOpacity(0.75))),
       ]),
       const SizedBox(height: 5),
@@ -1343,7 +1351,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(8)),
-    child: Text(text, style: TextStyle(fontFamily: 'Cairo',
+    child: Text(text, style: TextStyle(fontFamily: 'Aligarh',
         fontSize: 10, color: color, fontWeight: FontWeight.w600)),
   );
 
@@ -1372,12 +1380,12 @@ class _NutritionState extends ConsumerState<NutritionScreen>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(t('تقرير الأسبوع 🔒', 'Weekly Report 🔒'),
-                  style: const TextStyle(fontFamily: 'Cairo',
+                  style: const TextStyle(fontFamily: 'Aligarh',
                     fontWeight: FontWeight.w700, fontSize: 13,
                     color: AppColors.accentGold)),
                 Text(t('متوسط سعرات • التزام • أفضل يوم — بريميوم',
                   'Avg calories • Adherence • Best day — Premium'),
-                  style: TextStyle(fontFamily: 'Cairo',
+                  style: TextStyle(fontFamily: 'Aligarh',
                     fontSize: 11, color: muted)),
               ])),
             const Icon(Icons.arrow_forward_ios,
@@ -1428,7 +1436,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(t('تقرير الأسبوع ⭐', 'Weekly Report ⭐'),
-            style: const TextStyle(fontFamily: 'Cairo',
+            style: const TextStyle(fontFamily: 'Aligarh',
               fontWeight: FontWeight.w800, fontSize: 14,
               color: AppColors.brandGreen)),
           const SizedBox(height: 14),
@@ -1451,9 +1459,9 @@ class _NutritionState extends ConsumerState<NutritionScreen>
       Color col, bool isDark) =>
     Column(children: [
       Text(emoji, style: const TextStyle(fontSize: 16)),
-      Text(val, style: TextStyle(fontFamily: 'Cairo',
+      Text(val, style: TextStyle(fontFamily: 'Aligarh',
         fontWeight: FontWeight.w800, fontSize: 13, color: col)),
-      Text(label, style: TextStyle(fontFamily: 'Cairo',
+      Text(label, style: TextStyle(fontFamily: 'Aligarh',
         fontSize: 9,
         color: isDark ? AppColors.darkMuted : AppColors.lightMuted)),
     ]);
@@ -1531,12 +1539,12 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                 Text(widget.title,
-                    style: TextStyle(fontFamily: 'Cairo',
+                    style: TextStyle(fontFamily: 'Aligarh',
                         fontSize: 15, fontWeight: FontWeight.w700,
                         color: widget.textC)),
                 if (_totalKcal > 0)
                   Text('$_totalKcal kcal',
-                      style: const TextStyle(fontFamily: 'Cairo',
+                      style: const TextStyle(fontFamily: 'Aligarh',
                           fontSize: 11,
                           color: AppColors.brandGreen,
                           fontWeight: FontWeight.w600)),
@@ -1558,7 +1566,7 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                         color: accentCol, size: 16),
                     const SizedBox(width: 3),
                     Text(tLang(lang, 'أضف', 'Add', 'Ajouter', 'Ekle', 'Tambah', 'Tambah'),
-                        style: TextStyle(fontFamily: 'Cairo',
+                        style: TextStyle(fontFamily: 'Aligarh',
                             fontSize: 11,
                             color: accentCol,
                             fontWeight: FontWeight.w700)),
@@ -1582,7 +1590,7 @@ class _MealSectionState extends ConsumerState<_MealSection> {
               child: Row(children: [
                 const SizedBox(width: 32),
                 Text(tLang(lang, 'لم تسجل وجبات بعد', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet'),
-                    style: TextStyle(fontFamily: 'Cairo',
+                    style: TextStyle(fontFamily: 'Aligarh',
                         fontSize: 12, color: widget.muted)),
               ]),
             )
@@ -1631,7 +1639,7 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                       Text(e.name, style: TextStyle(
-                          fontFamily: 'Cairo',
+                          fontFamily: 'Aligarh',
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                           color: widget.textC)),
@@ -1652,12 +1660,12 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                         children: [
                       Text('${e.kcal}',
                           style: const TextStyle(
-                              fontFamily: 'Cairo',
+                              fontFamily: 'Aligarh',
                               fontSize: 18,
                               fontWeight: FontWeight.w900,
                               color: AppColors.brandGreen)),
                       Text('kcal', style: TextStyle(
-                          fontFamily: 'Cairo',
+                          fontFamily: 'Aligarh',
                           fontSize: 9,
                           color: widget.muted)),
                     ]),
@@ -1675,7 +1683,7 @@ class _MealSectionState extends ConsumerState<_MealSection> {
   }
 
   Widget _miniTag(String text, Color color) => Text(text,
-      style: TextStyle(fontFamily: 'Cairo',
+      style: TextStyle(fontFamily: 'Aligarh',
           fontSize: 10, color: color));
 }
 
@@ -1829,7 +1837,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             Text(
               L.fromLang(lang).mindfulEatingTip,
               style: const TextStyle(
-                fontFamily: 'Cairo', fontSize: 11,
+                fontFamily: 'Aligarh', fontSize: 11,
                 color: AppColors.brandGreen,
                 fontWeight: FontWeight.w700),
             ),
@@ -1851,7 +1859,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             ),
             const SizedBox(width: 10),
             Text(tl('أضف طعام', 'Add Food'),
-                style: TextStyle(fontFamily: 'Cairo',
+                style: TextStyle(fontFamily: 'Aligarh',
                     fontSize: 18, fontWeight: FontWeight.w800,
                     color: isDark
                         ? AppColors.darkText : AppColors.lightText)),
@@ -1877,10 +1885,10 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
               borderRadius: BorderRadius.circular(12),
             ),
             indicatorSize: TabBarIndicatorSize.tab,
-            labelStyle: const TextStyle(fontFamily: 'Cairo',
+            labelStyle: const TextStyle(fontFamily: 'Aligarh',
                 fontWeight: FontWeight.w700, fontSize: 12),
             unselectedLabelStyle: const TextStyle(
-                fontFamily: 'Cairo', fontSize: 12),
+                fontFamily: 'Aligarh', fontSize: 12),
             labelColor: Colors.white,
             unselectedLabelColor: AppColors.brandGreen,
             dividerColor: Colors.transparent,
@@ -1908,14 +1916,14 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     textDirection: isAr
                         ? TextDirection.rtl : TextDirection.ltr,
                     style: const TextStyle(
-                        fontFamily: 'Cairo', fontSize: 14),
+                        fontFamily: 'Aligarh', fontSize: 14),
                     onSubmitted: (_) => _search(),
                     textInputAction: TextInputAction.search,
                     decoration: InputDecoration(
                       hintText: tl(
                           'تفاحة، دجاج، أرز...',
                           'apple, chicken, rice...'),
-                      hintStyle: TextStyle(fontFamily: 'Cairo',
+                      hintStyle: TextStyle(fontFamily: 'Aligarh',
                           fontSize: 13, color: muted),
                       prefixIcon: const Icon(Icons.search_rounded,
                           color: AppColors.brandGreen),
@@ -1964,7 +1972,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     alignment: isAr
                         ? Alignment.centerRight : Alignment.centerLeft,
                     child: Text(tl('شائع:', 'Popular:'),
-                        style: TextStyle(fontFamily: 'Cairo',
+                        style: TextStyle(fontFamily: 'Aligarh',
                             fontSize: 12, color: muted,
                             fontWeight: FontWeight.w600)),
                   ),
@@ -1995,7 +2003,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                                   .withOpacity(0.2)),
                         ),
                         child: Text(s, style: const TextStyle(
-                            fontFamily: 'Cairo', fontSize: 12,
+                            fontFamily: 'Aligarh', fontSize: 12,
                             color: AppColors.brandGreen,
                             fontWeight: FontWeight.w600)),
                       ),
@@ -2012,7 +2020,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                       const SizedBox(height: 12),
                       Text(tl('نبحث في كل المصادر...',
                               'Searching every source...'),
-                          style: TextStyle(fontFamily: 'Cairo',
+                          style: TextStyle(fontFamily: 'Aligarh',
                               fontSize: 11.5, color: muted)),
                     ]),
                   ),
@@ -2031,7 +2039,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                   onChanged: (v) =>
                       setState(() => _filter = v.toLowerCase()),
                   style: const TextStyle(
-                      fontFamily: 'Cairo', fontSize: 13),
+                      fontFamily: 'Aligarh', fontSize: 13),
                   decoration: InputDecoration(
                     hintText: tl('بحث سريع...', 'Quick search...'),
                     prefixIcon: const Icon(Icons.filter_list_rounded,
@@ -2072,26 +2080,26 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                         style: const TextStyle(fontSize: 20))),
                   ),
                   title: Text(isAr ? food.name : food.nameEn,
-                      style: const TextStyle(fontFamily: 'Cairo',
+                      style: const TextStyle(fontFamily: 'Aligarh',
                           fontSize: 13,
                           fontWeight: FontWeight.w600)),
                   subtitle: Text(
                       '💪 ${food.proteinG}g  '
                       '🍚 ${food.carbsG}g  '
                       '🥑 ${food.fatG}g',
-                      style: TextStyle(fontFamily: 'Cairo',
+                      style: TextStyle(fontFamily: 'Aligarh',
                           fontSize: 10, color: muted)),
                   trailing: Row(mainAxisSize: MainAxisSize.min,
                       children: [
                     Column(mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                       Text('${food.kcal}',
-                          style: const TextStyle(fontFamily: 'Cairo',
+                          style: const TextStyle(fontFamily: 'Aligarh',
                               fontSize: 15,
                               fontWeight: FontWeight.w900,
                               color: AppColors.brandGreen)),
                       const Text('kcal',
-                          style: TextStyle(fontFamily: 'Cairo',
+                          style: TextStyle(fontFamily: 'Aligarh',
                               fontSize: 8,
                               color: AppColors.lightMuted)),
                     ]),
@@ -2155,7 +2163,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                 const SizedBox(height: 8),
                 Text(tl('* الحقول الاختيارية بالجرام',
                          '* Optional fields in grams'),
-                    style: TextStyle(fontFamily: 'Cairo',
+                    style: TextStyle(fontFamily: 'Aligarh',
                         fontSize: 10, color: muted)),
                 const SizedBox(height: 16),
                 SizedBox(width: double.infinity,
@@ -2170,7 +2178,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                             content: Text(
                                 tLang(lang, 'أدخل الاسم والسعرات', 'Enter name and calories', 'Enter name and calories', 'Enter name and calories', 'Enter name and calories', 'Enter name and calories'),
                                 style: const TextStyle(
-                                    fontFamily: 'Cairo')),
+                                    fontFamily: 'Aligarh')),
                             backgroundColor: AppColors.haramRed,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
@@ -2195,7 +2203,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                             color: Colors.white),
                     label: Text(
                         tl('اضف للعداد', 'Add to Tracker'),
-                        style: const TextStyle(fontFamily: 'Cairo',
+                        style: const TextStyle(fontFamily: 'Aligarh',
                             fontSize: 15, color: Colors.white,
                             fontWeight: FontWeight.w800)),
                     style: ElevatedButton.styleFrom(
@@ -2352,12 +2360,12 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(name,
-                        style: TextStyle(fontFamily: 'Cairo', fontSize: 15,
+                        style: TextStyle(fontFamily: 'Aligarh', fontSize: 15,
                             fontWeight: FontWeight.w800, color: textC),
                         maxLines: 1, overflow: TextOverflow.ellipsis),
                       Text(
                         '${tl("أساس 100ج — ", "Base 100g — ")}${kcal100.round()} ${tl("سعرة", "kcal")}',
-                        style: TextStyle(fontFamily: 'Cairo',
+                        style: TextStyle(fontFamily: 'Aligarh',
                             fontSize: 10, color: muted)),
                     ])),
                 ]),
@@ -2388,7 +2396,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                                 : Colors.transparent,
                             borderRadius: BorderRadius.circular(10)),
                           child: Center(child: Text(unitLabels[i],
-                            style: TextStyle(fontFamily: 'Cairo',
+                            style: TextStyle(fontFamily: 'Aligarh',
                               fontSize: 11, fontWeight: FontWeight.w700,
                               color: unitIdx == i
                                   ? Colors.white
@@ -2417,11 +2425,11 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                         decimal: true),
                     textAlign: TextAlign.center,
                     onChanged: (_) => setS(() {}),
-                    style: const TextStyle(fontFamily: 'Cairo',
+                    style: const TextStyle(fontFamily: 'Aligarh',
                         fontSize: 24, fontWeight: FontWeight.w900),
                     decoration: InputDecoration(
                       suffixText: ' ${unitLabels[unitIdx]}',
-                      suffixStyle: TextStyle(fontFamily: 'Cairo',
+                      suffixStyle: TextStyle(fontFamily: 'Aligarh',
                           fontSize: 13, color: muted,
                           fontWeight: FontWeight.w600),
                       border: OutlineInputBorder(
@@ -2482,7 +2490,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                           border: Border.all(
                               color: AppColors.brandGreen.withOpacity(0.3))),
                         child: Text(lbl, style: TextStyle(
-                          fontFamily: 'Cairo', fontSize: 12,
+                          fontFamily: 'Aligarh', fontSize: 12,
                           fontWeight: FontWeight.w700,
                           color: active
                               ? Colors.white
@@ -2505,7 +2513,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                           color: AppColors.accentGold.withOpacity(0.25))),
                     child: Text(
                       '= ${grams.toStringAsFixed(unitIdx == 2 ? 1 : 0)} ${tl("جرام", "g")}',
-                      style: const TextStyle(fontFamily: 'Cairo',
+                      style: const TextStyle(fontFamily: 'Aligarh',
                           fontSize: 12, fontWeight: FontWeight.w700,
                           color: AppColors.accentGold)),
                   ),
@@ -2556,7 +2564,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16))),
                   child: Text(tl('أضف للعداد', 'Add to Tracker'),
-                    style: const TextStyle(fontFamily: 'Cairo',
+                    style: const TextStyle(fontFamily: 'Aligarh',
                         fontSize: 15, color: Colors.white,
                         fontWeight: FontWeight.w800)),
                 )),
@@ -2584,10 +2592,10 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
 
   Widget _gramMacro(String val, String label, Color color) =>
     Column(mainAxisSize: MainAxisSize.min, children: [
-      Text(val, style: TextStyle(fontFamily: 'Cairo', fontSize: 13,
+      Text(val, style: TextStyle(fontFamily: 'Aligarh', fontSize: 13,
           fontWeight: FontWeight.w900, color: color)),
       const SizedBox(height: 1),
-      Text(label, style: TextStyle(fontFamily: 'Cairo', fontSize: 9,
+      Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 9,
           color: color.withOpacity(0.75))),
     ]);
 
@@ -2604,11 +2612,11 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
         padding: const EdgeInsets.only(bottom: 8),
         child: Row(children: [
           Text(tl('النتائج', 'Results'),
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
                   fontWeight: FontWeight.w700, color: muted)),
           const Spacer(),
           Text('${_results.length}',
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
                   fontWeight: FontWeight.w800, color: muted)),
         ]),
       ),
@@ -2624,7 +2632,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             size: 16, color: AppColors.brandGreen),
         label: Text(tl('لم تجد طعامك؟ أدخله يدوياً',
                 'Not listed? Enter it manually'),
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 11.5,
+            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11.5,
                 fontWeight: FontWeight.w700,
                 color: AppColors.brandGreen)),
       ),
@@ -2670,7 +2678,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
               Text(name,
-                  style: const TextStyle(fontFamily: 'Cairo',
+                  style: const TextStyle(fontFamily: 'Aligarh',
                       fontSize: 13, fontWeight: FontWeight.w700),
                   maxLines: 1, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 2),
@@ -2679,14 +2687,14 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     '💪 ${protein.toStringAsFixed(1)}g  '
                     '🍚 ${carbs.toStringAsFixed(1)}g  '
                     '🥑 ${fat.toStringAsFixed(1)}g',
-                    style: TextStyle(fontFamily: 'Cairo',
+                    style: TextStyle(fontFamily: 'Aligarh',
                         fontSize: 9.5, color: muted),
                     maxLines: 1, overflow: TextOverflow.ellipsis)),
               ]),
               const SizedBox(height: 2),
               Row(children: [
                 Text(basis,
-                    style: TextStyle(fontFamily: 'Cairo',
+                    style: TextStyle(fontFamily: 'Aligarh',
                         fontSize: 9, color: muted),
                     maxLines: 1, overflow: TextOverflow.ellipsis),
                 if (source.isNotEmpty) ...[
@@ -2698,11 +2706,11 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             const SizedBox(width: 8),
             Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               Text('${kcal.round()}',
-                  style: const TextStyle(fontFamily: 'Cairo',
+                  style: const TextStyle(fontFamily: 'Aligarh',
                       fontSize: 15, fontWeight: FontWeight.w900,
                       color: AppColors.brandGreen)),
               const Text('kcal',
-                  style: TextStyle(fontFamily: 'Cairo',
+                  style: TextStyle(fontFamily: 'Aligarh',
                       fontSize: 8, color: AppColors.lightMuted)),
             ]),
             const SizedBox(width: 8),
@@ -2736,7 +2744,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(label,
-          style: TextStyle(fontFamily: 'Cairo', fontSize: 8,
+          style: TextStyle(fontFamily: 'Aligarh', fontSize: 8,
               fontWeight: FontWeight.w800, color: color)),
     );
   }
@@ -2749,13 +2757,13 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
         const Text('🔍', style: TextStyle(fontSize: 34)),
         const SizedBox(height: 10),
         Text(tl('لا نتائج لهذا البحث', 'No matches for that search'),
-            style: TextStyle(fontFamily: 'Cairo', fontSize: 13,
+            style: TextStyle(fontFamily: 'Aligarh', fontSize: 13,
                 fontWeight: FontWeight.w700, color: muted)),
         const SizedBox(height: 6),
         Text(tl('جرّب اسماً أبسط، أو أدخل القيم يدوياً',
                 'Try a simpler name, or enter the values manually'),
             textAlign: TextAlign.center,
-            style: TextStyle(fontFamily: 'Cairo',
+            style: TextStyle(fontFamily: 'Aligarh',
                 fontSize: 11, color: muted)),
         const SizedBox(height: 14),
         OutlinedButton.icon(
@@ -2765,7 +2773,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
           },
           icon: const Icon(Icons.edit_rounded, size: 16),
           label: Text(tl('إدخال يدوي', 'Manual entry'),
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 12,
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12,
                   fontWeight: FontWeight.w700)),
           style: OutlinedButton.styleFrom(
             foregroundColor: AppColors.brandGreen,
@@ -2825,18 +2833,18 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                   Text(name,
-                      style: TextStyle(fontFamily: 'Cairo', fontSize: 15,
+                      style: TextStyle(fontFamily: 'Aligarh', fontSize: 15,
                           fontWeight: FontWeight.w800, color: textC),
                       maxLines: 2, overflow: TextOverflow.ellipsis),
                   Text('${tl("لكل حصة — ", "Per serving — ")}'
                        '${kcal.round()} ${tl("سعرة", "kcal")}',
-                      style: TextStyle(fontFamily: 'Cairo',
+                      style: TextStyle(fontFamily: 'Aligarh',
                           fontSize: 10, color: muted)),
                 ])),
               ]),
               const SizedBox(height: 20),
               Text(tl('عدد الحصص', 'Servings'),
-                  style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                       fontWeight: FontWeight.w700, color: muted)),
               const SizedBox(height: 10),
               Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -2848,7 +2856,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                         ? count.toInt().toString()
                         : count.toStringAsFixed(1),
                     textAlign: TextAlign.center,
-                    style: const TextStyle(fontFamily: 'Cairo', fontSize: 30,
+                    style: const TextStyle(fontFamily: 'Aligarh', fontSize: 30,
                         fontWeight: FontWeight.w900))),
                 const SizedBox(width: 18),
                 _gramBtn(Icons.add_rounded,
@@ -2871,7 +2879,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text('$n',
-                          style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
+                          style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
                               fontWeight: FontWeight.w700,
                               color: active
                                   ? Colors.white
@@ -2906,7 +2914,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(16))),
                 child: Text(tl('أضف للعداد', 'Add to Tracker'),
-                    style: const TextStyle(fontFamily: 'Cairo',
+                    style: const TextStyle(fontFamily: 'Aligarh',
                         fontSize: 15, color: Colors.white,
                         fontWeight: FontWeight.w800)),
               )),
@@ -2942,12 +2950,12 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             Expanded(child: Column(
               crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(t('تقرير الأسبوع 🔒', 'Weekly Report 🔒'),
-                style: const TextStyle(fontFamily: 'Cairo',
+                style: const TextStyle(fontFamily: 'Aligarh',
                   fontWeight: FontWeight.w700, fontSize: 13,
                   color: AppColors.accentGold)),
               Text(t('متوسط السعرات • الالتزام • أفضل يوم — بريميوم',
                 'Avg calories • Adherence • Best day — Premium'),
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: muted)),
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: muted)),
             ])),
             const Icon(Icons.arrow_forward_ios, size: 13,
               color: AppColors.accentGold),
@@ -2993,7 +3001,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             const Text('📊', style: TextStyle(fontSize: 20)),
             const SizedBox(width: 8),
             Text(t('تقرير الأسبوع ⭐', 'Weekly Report ⭐'),
-              style: const TextStyle(fontFamily: 'Cairo',
+              style: const TextStyle(fontFamily: 'Aligarh',
                 fontWeight: FontWeight.w800, fontSize: 14,
                 color: AppColors.brandGreen)),
           ]),
@@ -3015,7 +3023,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                 Clipboard.setData(ClipboardData(text: txt));
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                   content: Text(t('نُسخت!', 'Copied!'),
-                    style: const TextStyle(fontFamily: 'Cairo')),
+                    style: const TextStyle(fontFamily: 'Aligarh')),
                   backgroundColor: AppColors.brandGreen,
                   duration: const Duration(seconds: 2)));
               }
@@ -3066,7 +3074,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     )),
                     const SizedBox(height: 2),
                     Text(e.key.split('/').last,
-                      style: TextStyle(fontFamily: 'Cairo',
+                      style: TextStyle(fontFamily: 'Aligarh',
                         fontSize: 8, color: muted)),
                   ]));
               }).toList()),
@@ -3079,9 +3087,9 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
   Widget _weekStat(String emoji, String val, String label, Color col, bool isDark) =>
     Column(children: [
       Text(emoji, style: const TextStyle(fontSize: 16)),
-      Text(val, style: TextStyle(fontFamily: 'Cairo',
+      Text(val, style: TextStyle(fontFamily: 'Aligarh',
         fontWeight: FontWeight.w800, fontSize: 13, color: col)),
-      Text(label, style: TextStyle(fontFamily: 'Cairo',
+      Text(label, style: TextStyle(fontFamily: 'Aligarh',
         fontSize: 9, color: isDark ? AppColors.darkMuted : AppColors.lightMuted)),
     ]);
 
@@ -3096,10 +3104,10 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text(emoji, style: const TextStyle(fontSize: 18)),
           const SizedBox(height: 2),
-          Text(val, style: TextStyle(fontFamily: 'Cairo',
+          Text(val, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 13, fontWeight: FontWeight.w900,
               color: color)),
-          Text(label, style: TextStyle(fontFamily: 'Cairo',
+          Text(label, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 8, color: color.withOpacity(0.8))),
         ]),
       ));
@@ -3120,10 +3128,10 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             ? TextDirection.rtl : TextDirection.ltr,
         keyboardType: isText
             ? TextInputType.text : TextInputType.number,
-        style: const TextStyle(fontFamily: 'Cairo', fontSize: 14),
+        style: const TextStyle(fontFamily: 'Aligarh', fontSize: 14),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: const TextStyle(fontFamily: 'Cairo'),
+          labelStyle: const TextStyle(fontFamily: 'Aligarh'),
           prefixIcon: Icon(icon,
               color: iconColor ?? AppColors.brandGreen, size: 20),
           suffixText: suffix,
@@ -3153,10 +3161,10 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
         keyboardType: const TextInputType.numberWithOptions(
             decimal: true),
         textDirection: TextDirection.ltr,
-        style: const TextStyle(fontFamily: 'Cairo', fontSize: 12),
+        style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12),
         decoration: InputDecoration(
           labelText: label,
-          labelStyle: TextStyle(fontFamily: 'Cairo',
+          labelStyle: TextStyle(fontFamily: 'Aligarh',
               fontSize: 11, color: color),
           suffixText: 'g',
           border: OutlineInputBorder(
@@ -3252,7 +3260,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
           const SizedBox(height: 20),
           Text(tl('مخطط الوجبات الذكي', 'Smart Meal Planner'),
               textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: 'Cairo',
+              style: TextStyle(fontFamily: 'Aligarh',
                   fontSize: 22, fontWeight: FontWeight.w900,
                   color: widget.textC)),
           const SizedBox(height: 8),
@@ -3260,7 +3268,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
               tl('خطة وجبات يومية مخصصة لجسمك وأهدافك الصحية',
                  'Daily meal plan tailored to your body and health goals'),
               textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: 'Cairo',
+              style: TextStyle(fontFamily: 'Aligarh',
                   fontSize: 13, color: widget.muted, height: 1.6)),
           const SizedBox(height: 8),
           ...([
@@ -3273,7 +3281,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
           ]).map((s) => Padding(
             padding: const EdgeInsets.symmetric(vertical: 3),
             child: Text(s, style: const TextStyle(
-                fontFamily: 'Cairo', fontSize: 12,
+                fontFamily: 'Aligarh', fontSize: 12,
                 color: AppColors.brandGreen)),
           )),
           const SizedBox(height: 24),
@@ -3287,7 +3295,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16))),
             child: Text(tl('🔓 افتح بريميوم', '🔓 Unlock Premium'),
-                style: const TextStyle(fontFamily: 'Cairo',
+                style: const TextStyle(fontFamily: 'Aligarh',
                     fontSize: 16, color: Colors.white,
                     fontWeight: FontWeight.w800)),
           )),
@@ -3319,13 +3327,13 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                   children: [
                 Text(tl('مخطط الوجبات الذكي',
                         'Smart Meal Planner'),
-                    style: TextStyle(fontFamily: 'Cairo',
+                    style: TextStyle(fontFamily: 'Aligarh',
                         fontSize: 15, fontWeight: FontWeight.w800,
                         color: widget.textC)),
                 if (widget.profile != null)
                   Text(
                       tLang(lang, 'هدفك: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal', 'Your goal: ${widget.profile.calorieGoalKcal.toInt()} kcal'),
-                      style: const TextStyle(fontFamily: 'Cairo',
+                      style: const TextStyle(fontFamily: 'Aligarh',
                           fontSize: 11,
                           color: AppColors.brandGreen)),
               ])),
@@ -3337,10 +3345,10 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
               textDirection: isAr
                   ? TextDirection.rtl : TextDirection.ltr,
               style: const TextStyle(
-                  fontFamily: 'Cairo', fontSize: 13),
+                  fontFamily: 'Aligarh', fontSize: 13),
               decoration: InputDecoration(
                 hintText: tLang(lang, 'مثال: رمضان، نباتي، قليل الكربوهيدرات...', 'e.g. Ramadan, vegetarian, low carb...', 'e.g. Ramadan, vegetarian, low carb...', 'e.g. Ramadan, vegetarian, low carb...', 'e.g. Ramadan, vegetarian, low carb...', 'e.g. Ramadan, vegetarian, low carb...'),
-                hintStyle: TextStyle(fontFamily: 'Cairo',
+                hintStyle: TextStyle(fontFamily: 'Aligarh',
                     fontSize: 12, color: widget.muted),
                 filled: true,
                 fillColor: AppColors.brandGreen.withOpacity(0.04),
@@ -3370,12 +3378,12 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                               color: Colors.white, strokeWidth: 2)),
                       const SizedBox(width: 10),
                       Text(tl('جاري التوليد...', 'Generating...'),
-                          style: const TextStyle(fontFamily: 'Cairo',
+                          style: const TextStyle(fontFamily: 'Aligarh',
                               color: Colors.white)),
                     ])
                   : Text(
                       tl('✨ ولد خطة وجبات', '✨ Generate Meal Plan'),
-                      style: const TextStyle(fontFamily: 'Cairo',
+                      style: const TextStyle(fontFamily: 'Aligarh',
                           color: Colors.white, fontSize: 14,
                           fontWeight: FontWeight.w800)),
             )),
@@ -3399,7 +3407,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                   : _genError!.contains('timeout')
                   ? (tLang(lang, 'انتهت مهلة الاتصال، حاول مجدداً', 'Connection timed out, try again', 'Connexion expirée, réessayez', 'Bağlantı zaman aşımına uğradı, tekrar deneyin', 'Sambungan tamat masa, cuba lagi', 'Koneksi habis waktu, coba lagi'))
                   : (tLang(lang, 'فشل توليد الخطة، حاول مجدداً', 'Plan generation failed, try again', 'Génération du plan échouée, réessayez', 'Plan oluşturma başarısız, tekrar deneyin', 'Penjanaan pelan gagal, cuba lagi', 'Pembuatan rencana gagal, coba lagi')),
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
+                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13,
                   color: AppColors.haramRed, fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
               ),
@@ -3423,7 +3431,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                     const SizedBox(height: 8),
                     Text(
                         tLang(lang, 'حدث خطأ، حاول مجدداً', 'An error occurred, try again', 'An error occurred, try again', 'An error occurred, try again', 'An error occurred, try again', 'An error occurred, try again'),
-                        style: TextStyle(fontFamily: 'Cairo',
+                        style: TextStyle(fontFamily: 'Aligarh',
                             color: widget.muted)),
                   ]))
                 : Column(
@@ -3442,7 +3450,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                     ),
                     const SizedBox(width: 10),
                     Text(tl('خطتك الشخصية', 'Your Personal Plan'),
-                        style: const TextStyle(fontFamily: 'Cairo',
+                        style: const TextStyle(fontFamily: 'Aligarh',
                             fontWeight: FontWeight.w800,
                             fontSize: 15,
                             color: AppColors.brandGreen)),
@@ -3457,7 +3465,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                         await Clipboard.setData(ClipboardData(text: txt));
                         if (mounted) ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(tl('نُسخت الخطة!','Plan copied!'),
-                            style: const TextStyle(fontFamily:'Cairo')),
+                            style: const TextStyle(fontFamily:'Aligarh')),
                             backgroundColor: AppColors.brandGreen,
                             duration: const Duration(seconds: 2)));
                       }
@@ -3474,7 +3482,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                   const Divider(height: 1),
                   const SizedBox(height: 14),
                   Text(_result!, style: TextStyle(
-                      fontFamily: 'Cairo', fontSize: 13,
+                      fontFamily: 'Aligarh', fontSize: 13,
                       height: 1.9,
                       color: widget.isDark
                           ? AppColors.darkText

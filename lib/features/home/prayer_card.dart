@@ -72,7 +72,10 @@ class _PrayerTimesCardState extends ConsumerState<PrayerTimesCard> {
                     top: Radius.circular(16)),
               ),
               child: Row(children: [
-                const Text('🕌', style: TextStyle(fontSize: 22)),
+                Image.asset('assets/icons/mosque_mark/mosque_small.png',
+                    width: 22, height: 22,
+                    errorBuilder: (_, __, ___) =>
+                        const Text('🕌', style: TextStyle(fontSize: 22))),
                 const SizedBox(width: 10),
                 Expanded(child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,7 +84,7 @@ class _PrayerTimesCardState extends ConsumerState<PrayerTimesCard> {
                       '${L.fromLang(ref.watch(languageProvider)).nextPrayer}: '
                       '${widget.isAr ? next.nameAr : next.nameEn}',
                       style: const TextStyle(
-                        fontFamily: 'Cairo',
+                        fontFamily: 'Aligarh',
                         fontSize: 12, fontWeight: FontWeight.w800,
                         color: Colors.white,
                       ),
@@ -89,7 +92,7 @@ class _PrayerTimesCardState extends ConsumerState<PrayerTimesCard> {
                     Text(
                       times.formatTime(next.time),
                       style: const TextStyle(
-                        fontFamily: 'Cairo',
+                        fontFamily: 'Aligarh',
                         fontSize: 11, color: Colors.white70,
                       ),
                     ),
@@ -105,7 +108,7 @@ class _PrayerTimesCardState extends ConsumerState<PrayerTimesCard> {
                   child: Text(
                     '${h}س ${m}د',
                     style: const TextStyle(
-                      fontFamily: 'Cairo',
+                      fontFamily: 'Aligarh',
                       fontSize: 13, fontWeight: FontWeight.w900,
                       color: Colors.white,
                     ),
@@ -173,7 +176,7 @@ class _PrayerItem extends StatelessWidget {
       Text(
         isAr ? prayer.nameAr : prayer.nameEn,
         style: TextStyle(
-          fontFamily: 'Cairo',
+          fontFamily: 'Aligarh',
           fontSize: 9, fontWeight: FontWeight.w700,
           color: color,
         ),
@@ -182,7 +185,7 @@ class _PrayerItem extends StatelessWidget {
       Text(
         times.formatTime(prayer.time),
         style: TextStyle(
-          fontFamily: 'Cairo',
+          fontFamily: 'Aligarh',
           fontSize: 10, fontWeight: FontWeight.w800,
           color: isNext ? AppColors.brandGreen : color,
         ),

@@ -90,13 +90,13 @@ class _FitnessState extends ConsumerState<FitnessScreen>
           ),
           backgroundColor: Colors.transparent,
           title: Text(l.fitnessTitle,
-              style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800, fontSize: 18)),
+              style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w800, fontSize: 18)),
           actions: [
             if (workoutMin > 0)
               Padding(
                 padding: const EdgeInsets.only(right: 14),
                 child: Chip(
-                  backgroundColor: Colors.white.withOpacity(0.2), label: Text('$workoutMin ${t("د","min")}', style: const TextStyle(fontFamily:'Cairo',
+                  backgroundColor: Colors.white.withOpacity(0.2), label: Text('$workoutMin ${t("د","min")}', style: const TextStyle(fontFamily:'Aligarh',
                           fontSize: 11, color: Colors.white, fontWeight: FontWeight.w700)), avatar: const Text('🔥', style: TextStyle(fontSize: 13)),
                 ),
               ),
@@ -106,7 +106,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
             isScrollable: true,
             indicatorColor: Colors.white,
             labelColor: Colors.white,
-            unselectedLabelColor: Colors.white70, labelStyle: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700, fontSize: 11), unselectedLabelStyle: const TextStyle(fontFamily:'Cairo', fontSize: 11),
+            unselectedLabelColor: Colors.white70, labelStyle: const TextStyle(fontFamily:'Aligarh', fontWeight: FontWeight.w700, fontSize: 11), unselectedLabelStyle: const TextStyle(fontFamily:'Aligarh', fontSize: 11),
             tabAlignment: TabAlignment.start,
             tabs: _cats.map((c) => Tab(text: catLabels[c] ?? c)).toList(),
           ),
@@ -121,7 +121,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                 const SizedBox(width: 8),
                 Expanded(child: Text(
                   isSis && isRamadan ? t('وضع النساء + رمضان — تمارين محتشمة وخفيفة', 'Women + Ramadan — modest and light sessions')
-                      : isRamadan ? l.ramadanModeLabel : t('وضع النساء — تمارين محتشمة', 'Women mode — modest sessions'), style: TextStyle(fontFamily:'Cairo', fontSize: 11,
+                      : isRamadan ? l.ramadanModeLabel : t('وضع النساء — تمارين محتشمة', 'Women mode — modest sessions'), style: TextStyle(fontFamily:'Aligarh', fontSize: 11,
                       fontWeight: FontWeight.w700,
                       color: isRamadan && !isSis ? AppColors.ramadanGold : isSis ? AppColors.accentGold : AppColors.brandGreen),
                 )),
@@ -160,7 +160,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                           children: [
                             Text(l.strengthCardTitle,
                                 style: TextStyle(
-                                    fontFamily: 'Cairo',
+                                    fontFamily: 'Aligarh',
                                     fontSize: 12.5,
                                     fontWeight: FontWeight.w800,
                                     color: isDark
@@ -174,7 +174,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                                         '$ranked/${kLiftExercises.length} '
                                         '${l.liftsRanked}',
                                 style: TextStyle(
-                                    fontFamily: 'Cairo',
+                                    fontFamily: 'Aligarh',
                                     fontSize: 10.5,
                                     color: muted),
                                 maxLines: 1,
@@ -234,10 +234,10 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                 child: Row(children: [
                   Text(rec.emoji, style: const TextStyle(fontSize: 28)),
                   const SizedBox(width: 12),
-                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(isAr ?'⚡ موصى به الآن' : '⚡ Recommended Now', style: TextStyle(fontFamily:'Cairo', fontSize: 10,
+                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(isAr ?'⚡ موصى به الآن' : '⚡ Recommended Now', style: TextStyle(fontFamily:'Aligarh', fontSize: 10,
                             color: isRamadan ? AppColors.accentGold : Colors.white70)),
-                    Text(isAr ? rec.titleAr : rec.titleEn, style: const TextStyle(fontFamily:'Cairo', fontSize: 13,
-                            fontWeight: FontWeight.w800, color: Colors.white)), Text('${rec.durationMin} ${isAr ? "دقيقة" : "min"}  •  ${isAr ? rec.level : rec.levelEn}', style: const TextStyle(fontFamily:'Cairo', fontSize: 10, color: Colors.white70)),
+                    Text(isAr ? rec.titleAr : rec.titleEn, style: const TextStyle(fontFamily:'Aligarh', fontSize: 13,
+                            fontWeight: FontWeight.w800, color: Colors.white)), Text('${rec.durationMin} ${isAr ? "دقيقة" : "min"}  •  ${isAr ? rec.level : rec.levelEn}', style: const TextStyle(fontFamily:'Aligarh', fontSize: 10, color: Colors.white70)),
                   ])),
                   const Icon(Icons.play_circle_filled, color: Colors.white, size: 32),
                 ]),
@@ -255,7 +255,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                 return Center(child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [ const Text('🔍', style: TextStyle(fontSize: 42)),
-                    const SizedBox(height: 12), Text(t('لا تمارين في هذه الفئة', 'No workouts in this category'), style: TextStyle(fontFamily:'Cairo', color: muted)),
+                    const SizedBox(height: 12), Text(t('لا تمارين في هذه الفئة', 'No workouts in this category'), style: TextStyle(fontFamily:'Aligarh', color: muted)),
                   ],
                 ));
               }
@@ -272,7 +272,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                   child: Text(
                     t('القوة تُبنى بالتكرار، لا بيوم واحد شديد',
                       'Strength is built by repetition, not by one hard day'),
-                    textAlign: TextAlign.center, style: TextStyle(fontFamily:'Cairo', fontSize: 12,
+                    textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 12,
                         color: barCol, height: 1.6, fontStyle: FontStyle.italic),
                   ),
                 ),
@@ -337,7 +337,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                                 const Icon(Icons.lock, size: 16, color: AppColors.accentGold),
                             ]),
                             const SizedBox(height: 8),
-                            Text(isAr ? w.titleAr : w.titleEn, style: TextStyle(fontFamily:'Cairo',
+                            Text(isAr ? w.titleAr : w.titleEn, style: TextStyle(fontFamily:'Aligarh',
                                     fontWeight: FontWeight.w700, fontSize: 11,
                                     height: 1.4, color: isDark ? AppColors.darkText : AppColors.lightText),
                                 maxLines: 2, overflow: TextOverflow.ellipsis),
@@ -348,10 +348,10 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                                 decoration: BoxDecoration(
                                     color: lc.withOpacity(0.13),
                                     borderRadius: BorderRadius.circular(20)),
-                                child: Text(isAr ? w.level : w.levelEn, style: TextStyle(fontFamily:'Cairo',
+                                child: Text(isAr ? w.level : w.levelEn, style: TextStyle(fontFamily:'Aligarh',
                                         fontSize: 9, fontWeight: FontWeight.w700, color: lc)),
                               ),
-                              const Spacer(), Text('${w.durationMin}${t("د","m")}', style: TextStyle(fontFamily:'Cairo',
+                              const Spacer(), Text('${w.durationMin}${t("د","m")}', style: TextStyle(fontFamily:'Aligarh',
                                       fontSize: 11, color: muted)),
                             ]),
                           ]),
@@ -386,14 +386,14 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                           blurRadius: 14, offset: const Offset(0, 5))],
                       ),
                       child: Row(children: [
-                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(t('🔒 ${kWorkouts.where((w) => w.isPremium).length} خطة متقدمة', '🔒 ${kWorkouts.where((w) => w.isPremium).length} Advanced Plans'), style: const TextStyle(fontFamily:'Cairo',
-                                  fontWeight: FontWeight.w800, fontSize: 14, color: Colors.white)), Text(t('HIIT • كارديو • تناسق • قوة كاملة', 'HIIT • Cardio • Toning • Full strength'), style: const TextStyle(fontFamily:'Cairo',
+                        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(t('🔒 ${kWorkouts.where((w) => w.isPremium).length} خطة متقدمة', '🔒 ${kWorkouts.where((w) => w.isPremium).length} Advanced Plans'), style: const TextStyle(fontFamily:'Aligarh',
+                                  fontWeight: FontWeight.w800, fontSize: 14, color: Colors.white)), Text(t('HIIT • كارديو • تناسق • قوة كاملة', 'HIIT • Cardio • Toning • Full strength'), style: const TextStyle(fontFamily:'Aligarh',
                                   fontSize: 11, color: Colors.white70)),
                         ])),
                         ElevatedButton( onPressed: () => context.push('/paywall'),
                           style: ElevatedButton.styleFrom(
                               backgroundColor: AppColors.accentGold,
-                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8)), child: Text(t('ترقية', 'Upgrade'), style: const TextStyle(fontFamily:'Cairo',
+                              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8)), child: Text(t('ترقية', 'Upgrade'), style: const TextStyle(fontFamily:'Aligarh',
                                   fontSize: 12, color: Colors.white, fontWeight: FontWeight.w700)),
                         ),
                       ]),
@@ -546,7 +546,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
             icon: const Icon(Icons.close, color: Colors.white),
             onPressed: () => context.pop(),
           ),
-          title: Text(isAr ? w.titleAr : w.titleEn, style: const TextStyle(fontFamily:'Cairo', fontSize: 14,
+          title: Text(isAr ? w.titleAr : w.titleEn, style: const TextStyle(fontFamily:'Aligarh', fontSize: 14,
                   fontWeight: FontWeight.w700)),
           backgroundColor: isRamadan ? AppColors.ramadanCard : AppColors.brandGreen,
         ),
@@ -556,7 +556,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
           Container(
             margin: const EdgeInsets.only(bottom: 20),
             child: Column(children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [ Text(t('التقدم الكلي', 'Overall Progress'), style: TextStyle(fontFamily:'Cairo', fontSize: 11, color: muted)), Text('${(_overallProgress * 100).toInt()}%', style: TextStyle(fontFamily:'Cairo', fontSize: 11,
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [ Text(t('التقدم الكلي', 'Overall Progress'), style: TextStyle(fontFamily:'Aligarh', fontSize: 11, color: muted)), Text('${(_overallProgress * 100).toInt()}%', style: TextStyle(fontFamily:'Aligarh', fontSize: 11,
                         fontWeight: FontWeight.w700, color: AppColors.brandGreen)),
               ]),
               const SizedBox(height: 6),
@@ -586,19 +586,19 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
               child: Text(
                 key: ValueKey(_stepIndex),
                 isAr ? step.nameAr : step.nameEn,
-                textAlign: TextAlign.center, style: TextStyle(fontFamily:'Cairo', fontSize: 18,
+                textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 18,
                     fontWeight: FontWeight.w800, color: text, height: 1.3),
               ),
             ),
           if (!_hasSteps)
-            Text(isAr ? w.titleAr : w.titleEn, textAlign: TextAlign.center, style: TextStyle(fontFamily:'Cairo', fontSize: 16,
+            Text(isAr ? w.titleAr : w.titleEn, textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 16,
                     fontWeight: FontWeight.w700, color: text)),
 
           // Step instruction
           if (_hasSteps && step?.instructionAr != null && !_done) ...[
             const SizedBox(height: 8),
             Text(isAr ? step!.instructionAr! : (step!.instructionEn ?? step.instructionAr!),
-                textAlign: TextAlign.center, style: TextStyle(fontFamily:'Cairo', fontSize: 13,
+                textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 13,
                     color: muted, height: 1.5)),
           ],
 
@@ -636,11 +636,11 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
                     scale: _running ? _pulse.value : 1.0,
                     child: Text(
                       _hasSteps && step?.durationSec == 0 ?'${step?.reps ?? 0}\n${t("مرة","reps")}': _fmt(rem.clamp(0, 9999)),
-                      textAlign: TextAlign.center, style: TextStyle(fontFamily:'Cairo', fontSize: 36,
+                      textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 36,
                           fontWeight: FontWeight.w900, color: text, height: 1.1),
                     ),
                   ),
-                ), Text(_hasSteps ? t('للخطوة','for step') : t('متبقي','remaining'), style: TextStyle(fontFamily:'Cairo', fontSize: 12, color: muted)),
+                ), Text(_hasSteps ? t('للخطوة','for step') : t('متبقي','remaining'), style: TextStyle(fontFamily:'Aligarh', fontSize: 12, color: muted)),
               ],
             ]),
           ])),
@@ -679,7 +679,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
                 border: Border.all(color: AppColors.accentGold.withOpacity(0.3)),
               ),
               child: Text( '💡 ${isAr ? w.note! : (w.noteEn ?? w.note!)}',
-                textAlign: TextAlign.center, style: TextStyle(fontFamily:'Cairo', fontSize: 12,
+                textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 12,
                     color: AppColors.accentGold, fontStyle: FontStyle.italic, height: 1.6),
               ),
             ),
@@ -696,13 +696,13 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
                 border: Border.all(color: AppColors.brandGreen.withOpacity(0.3)),
               ),
               child: Column(children: [ const Text('🌟', style: TextStyle(fontSize: 52)),
-                const SizedBox(height: 12), Text(t('أحسنت!', 'Well done!'), style: const TextStyle(fontFamily:'Cairo', fontSize: 22,
+                const SizedBox(height: 12), Text(t('أحسنت!', 'Well done!'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 22,
                         fontWeight: FontWeight.w900, color: AppColors.brandGreen)),
                 const SizedBox(height: 6), Text(t('أتممت ${w.durationMin} دقيقة من ${isAr ? w.titleAr : w.titleEn}', 'Completed ${w.durationMin} min of ${isAr ? w.titleAr : w.titleEn}'),
-                    textAlign: TextAlign.center, style: TextStyle(fontFamily:'Cairo', fontSize: 13, color: muted, height: 1.5)),
+                    textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 13, color: muted, height: 1.5)),
                 const SizedBox(height: 20),
                 SizedBox(width: double.infinity, child: ElevatedButton(
-                  onPressed: () => context.pop(), child: Text(t('رجوع للتمارين', 'Back to Workouts'), style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700)),
+                  onPressed: () => context.pop(), child: Text(t('رجوع للتمارين', 'Back to Workouts'), style: const TextStyle(fontFamily:'Aligarh', fontWeight: FontWeight.w700)),
                 )),
               ]),
             ),
@@ -713,7 +713,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
                 onPressed: _toggle,
                 style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14)),
-                child: Text( _running ? t('⏸ إيقاف', '⏸ Pause') : t('▶ ابدأ', '▶ Start'), style: const TextStyle(fontFamily:'Cairo',
+                child: Text( _running ? t('⏸ إيقاف', '⏸ Pause') : t('▶ ابدأ', '▶ Start'), style: const TextStyle(fontFamily:'Aligarh',
                       fontSize: 16, fontWeight: FontWeight.w700),
                 ),
               )),
@@ -722,13 +722,13 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
                 Expanded(child: OutlinedButton(
                   onPressed: () => setState(() { _nextStep(); }),
                   style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14)), child: Text(t('⏭ التالي', '⏭ Next'), style: const TextStyle(fontFamily:'Cairo', fontSize: 14)),
+                      padding: const EdgeInsets.symmetric(vertical: 14)), child: Text(t('⏭ التالي', '⏭ Next'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 14)),
                 ))
               else
                 Expanded(child: OutlinedButton(
                   onPressed: () { _timer?.cancel(); _finish(); setState(() {}); },
                   style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14)), child: Text(t('✓ أكملت', '✓ Done'), style: const TextStyle(fontFamily:'Cairo', fontSize: 14)),
+                      padding: const EdgeInsets.symmetric(vertical: 14)), child: Text(t('✓ أكملت', '✓ Done'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 14)),
                 )),
             ]),
           ],

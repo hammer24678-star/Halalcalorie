@@ -15,8 +15,8 @@ import 'providers.dart';
 /// City → (english name, country, latitude, longitude).
 /// Arabic spellings map to the same entry so either form resolves.
 const _kCities = <String, (String, String, double, double)>{
-  'cairo': ('Cairo', 'Egypt', 30.0444, 31.2357),
-  'القاهرة': ('Cairo', 'Egypt', 30.0444, 31.2357),
+  'cairo': ('Aligarh', 'Egypt', 30.0444, 31.2357),
+  'القاهرة': ('Aligarh', 'Egypt', 30.0444, 31.2357),
   'alexandria': ('Alexandria', 'Egypt', 31.2001, 29.9187),
   'الإسكندرية': ('Alexandria', 'Egypt', 31.2001, 29.9187),
   'giza': ('Giza', 'Egypt', 30.0131, 31.2089),

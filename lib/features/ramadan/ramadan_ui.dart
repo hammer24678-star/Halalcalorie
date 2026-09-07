@@ -183,7 +183,7 @@ class RamadanHero extends ConsumerWidget {
                       children: [
                         Text(l.ramadanKareem,
                             style: TextStyle(
-                                fontFamily: 'Cairo',
+                                fontFamily: 'Aligarh',
                                 fontSize: 20,
                                 fontWeight: FontWeight.w900,
                                 color: theme.accent)),
@@ -206,7 +206,7 @@ class RamadanHero extends ConsumerWidget {
                           Flexible(
                             child: Text(theme.statusText(l),
                                 style: TextStyle(
-                                    fontFamily: 'Cairo',
+                                    fontFamily: 'Aligarh',
                                     fontSize: 10.5,
                                     fontWeight: FontWeight.w600,
                                     color: Colors.white.withOpacity(0.72)),
@@ -261,7 +261,7 @@ class RamadanHero extends ConsumerWidget {
                 Text(l.ramadanTimesEstimated,
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontFamily: 'Cairo',
+                        fontFamily: 'Aligarh',
                         fontSize: 9.5,
                         color: Colors.white.withOpacity(0.45))),
               ],
@@ -303,7 +303,7 @@ class RamadanHero extends ConsumerWidget {
                 child: Text(theme.tip(l),
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                        fontFamily: 'Cairo',
+                        fontFamily: 'Aligarh',
                         fontSize: 10.5,
                         height: 1.55,
                         color: Colors.white.withOpacity(0.65))),
@@ -490,20 +490,20 @@ class _DayChip extends StatelessWidget {
       child: Column(mainAxisSize: MainAxisSize.min, children: [
         Text(inRamadan ? l.dayLabel : l.inDaysLabel,
             style: TextStyle(
-                fontFamily: 'Cairo',
+                fontFamily: 'Aligarh',
                 fontSize: 8,
                 color: Colors.white.withOpacity(0.45))),
         const SizedBox(height: 2),
         Text(inRamadan ? '${hijri.day}' : '$days',
             style: TextStyle(
-                fontFamily: 'Cairo',
+                fontFamily: 'Aligarh',
                 fontSize: 20,
                 height: 1.1,
                 fontWeight: FontWeight.w900,
                 color: accent)),
         Text(inRamadan ? '/ ${hijri.daysInMonth}' : l.daysShort,
             style: TextStyle(
-                fontFamily: 'Cairo',
+                fontFamily: 'Aligarh',
                 fontSize: 7.5,
                 color: Colors.white.withOpacity(0.45))),
       ]),
@@ -554,14 +554,14 @@ class _CountdownDial extends StatelessWidget {
         Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           Text(label,
               style: TextStyle(
-                  fontFamily: 'Cairo',
+                  fontFamily: 'Aligarh',
                   fontSize: 10,
                   fontWeight: FontWeight.w700,
                   color: Colors.white.withOpacity(0.55))),
           const SizedBox(height: 2),
           Text(text,
               style: TextStyle(
-                  fontFamily: 'Cairo',
+                  fontFamily: 'Aligarh',
                   fontSize: 40,
                   height: 1.1,
                   fontWeight: FontWeight.w900,
@@ -571,7 +571,7 @@ class _CountdownDial extends StatelessWidget {
                   ])),
           Text(unit,
               style: TextStyle(
-                  fontFamily: 'Cairo',
+                  fontFamily: 'Aligarh',
                   fontSize: 8.5,
                   letterSpacing: 1.5,
                   color: Colors.white.withOpacity(0.35))),
@@ -584,7 +584,7 @@ class _CountdownDial extends StatelessWidget {
             ),
             child: Text(target,
                 style: TextStyle(
-                    fontFamily: 'Cairo',
+                    fontFamily: 'Aligarh',
                     fontSize: 10,
                     fontWeight: FontWeight.w800,
                     color: accent)),
@@ -702,12 +702,12 @@ class _WindowTile extends StatelessWidget {
               Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Text(label,
                 style: TextStyle(
-                    fontFamily: 'Cairo',
+                    fontFamily: 'Aligarh',
                     fontSize: 9.5,
                     color: Colors.white.withOpacity(0.5))),
             Text(time,
                 style: TextStyle(
-                    fontFamily: 'Cairo',
+                    fontFamily: 'Aligarh',
                     fontSize: 13,
                     fontWeight: FontWeight.w900,
                     color: highlight ? accent : Colors.white70)),
@@ -747,7 +747,7 @@ class _ActionChip extends StatelessWidget {
           Flexible(
             child: Text(label,
                 style: TextStyle(
-                    fontFamily: 'Cairo',
+                    fontFamily: 'Aligarh',
                     fontSize: 11,
                     fontWeight: FontWeight.w800,
                     color: accent),
@@ -832,7 +832,7 @@ class RamadanStrip extends ConsumerWidget {
         Expanded(
           child: Text(isFasting ? l.iftarIn : l.suhoorIn,
               style: TextStyle(
-                  fontFamily: 'Cairo',
+                  fontFamily: 'Aligarh',
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
                   color: theme.accent)),
@@ -842,7 +842,7 @@ class RamadanStrip extends ConsumerWidget {
                 ? '$hours${l.isAr ? 'س' : 'h'} $minutes${l.isAr ? 'د' : 'm'}'
                 : '$minutes${l.isAr ? 'د' : 'm'}',
             style: TextStyle(
-                fontFamily: 'Cairo',
+                fontFamily: 'Aligarh',
                 fontSize: 13,
                 fontWeight: FontWeight.w900,
                 color: theme.accent)),

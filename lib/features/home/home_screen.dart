@@ -14,6 +14,7 @@ import '../../core/motion.dart';
 import '../../core/prayer_provider.dart';
 import '../../data/models/models.dart';
 import '../../data/models/user_profile.dart';
+import '../../data/icon_assets.dart';
 
 
 // Cycle to next language in the supported list
@@ -228,7 +229,7 @@ child: Row(mainAxisSize: MainAxisSize.min, children: [
 Text(isRamadan ? '🌙' : '🌿', style: const TextStyle(fontSize: 12)),
 const SizedBox(width: 5),
 const Text('HalalCalorie', style: TextStyle(
-fontFamily: 'Cairo', fontSize: 13,
+fontFamily: 'Alyamama', fontSize: 13,
 fontWeight: FontWeight.w800, color: Colors.white,
 letterSpacing: 0.2,
 )),
@@ -415,7 +416,7 @@ class _MedDisclaimer extends StatelessWidget {
           ? '⚕️ هذا التطبيق لأغراض المعلومات العامة فقط وليس بديلاً عن الاستشارة الطبية المتخصصة. استشر طبيبك أو أخصائياً معتمداً قبل اتخاذ أي قرارات صحية.'
           : '⚕️ This app is for general informational purposes only and is not a substitute for professional medical advice, diagnosis or treatment. Always consult a qualified healthcare professional before making health decisions.',
         style: const TextStyle(
-          fontFamily: 'Cairo',
+          fontFamily: 'Aligarh',
           fontSize: 10.5,
           color: Color(0xFF8B949E),
           height: 1.5,
@@ -499,10 +500,10 @@ Expanded(child: Column(
 crossAxisAlignment: CrossAxisAlignment.start,
 children: [
 Text(tLang(lang, 'الصلاة القادمة', 'Next Prayer', 'Prochaine prière', 'Sonraki Namaz', 'Solat Seterusnya', 'Shalat Berikutnya'),
-style: TextStyle(fontFamily: 'Cairo',
+style: TextStyle(fontFamily: 'Aligarh',
 fontSize: 11, color: muted)),
 Text(nm, style: const TextStyle(
-fontFamily: 'Cairo', fontSize: 20,
+fontFamily: 'Aligarh', fontSize: 20,
 fontWeight: FontWeight.w900, color: AppColors.halalGreen,
 )),
  ],
@@ -517,7 +518,7 @@ border: Border.all(
 color: AppColors.brandGreen.withOpacity(0.3), width: 0.5),
 ),
 child: Text(countdown, style: const TextStyle(
-fontFamily: 'Cairo', fontSize: 14,
+fontFamily: 'Aligarh', fontSize: 14,
 fontWeight: FontWeight.w900, color: AppColors.halalGreen,
 )),
 ),
@@ -542,13 +543,13 @@ final col = active ? AppColors.halalGreen
 
 return Column(children: [
 Text(name, style: TextStyle(
-fontFamily: 'Cairo', fontSize: 9,
+fontFamily: 'Aligarh', fontSize: 9,
 fontWeight: active ? FontWeight.w800 : FontWeight.w400,
 color: col,
 )),
 const SizedBox(height: 3),
 Text(fmtTime(ph, pm), style: TextStyle(
-fontFamily: 'Cairo', fontSize: 11,
+fontFamily: 'Aligarh', fontSize: 11,
 fontWeight: active ? FontWeight.w900 : FontWeight.w400,
 color: col,
 )),
@@ -607,7 +608,7 @@ child: Column(children: [
 // Header
 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
 Text(t('سعرات اليوم', "Today's Calories"),
-style: TextStyle(fontFamily: 'Cairo',
+style: TextStyle(fontFamily: 'Aligarh',
 fontSize: 13, fontWeight: FontWeight.w700, color: text)),
 GestureDetector(
 onTap: onAdd,
@@ -621,7 +622,7 @@ child: Row(mainAxisSize: MainAxisSize.min, children: [
 const Icon(Icons.add_rounded, color: Colors.white, size: 13),
 const SizedBox(width: 3),
 Text(t('أضف', 'Add'), style: const TextStyle(
-fontFamily: 'Cairo', fontSize: 11,
+fontFamily: 'Aligarh', fontSize: 11,
 fontWeight: FontWeight.w800, color: Colors.white,
 )),
  ]),
@@ -652,12 +653,12 @@ duration: const Duration(milliseconds: 800),
 curve: Curves.easeOutCubic,
 builder: (_, v, __) => Text('`$v',
 style: TextStyle(
-fontFamily: 'Cairo', fontSize: 26,
+fontFamily: 'Aligarh', fontSize: 26,
 fontWeight: FontWeight.w900, color: calCol, height: 1,
 )),
 ),
 Text(t('مأكول', 'eaten'), style: TextStyle(
-fontFamily: 'Cairo', fontSize: 9, color: muted)),
+fontFamily: 'Aligarh', fontSize: 9, color: muted)),
  ],
 ),
 ),
@@ -700,7 +701,7 @@ if (pct >= 0.90)
       child: Text(
         t('اترك في معدتك مساحة — ثلث طعام وثلث شراب وثلث فراغ',
           'Leave room in the stomach: a third food, a third drink, a third air'),
-        style: const TextStyle(fontFamily: 'Cairo', fontSize: 10,
+        style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10,
           color: AppColors.brandGreen,
           fontWeight: FontWeight.w600, height: 1.4),
         textAlign: TextAlign.center,
@@ -749,7 +750,7 @@ class _FastingDayBanner extends ConsumerWidget {
             t('يوم صيام سنة — $dayName 🌿',
               'Fasting day — $dayName 🌿'),
             style: const TextStyle(
-              fontFamily: 'Cairo', fontSize: 13,
+              fontFamily: 'Aligarh', fontSize: 13,
               fontWeight: FontWeight.w700,
               color: AppColors.accentGold),
           ),
@@ -757,7 +758,7 @@ class _FastingDayBanner extends ConsumerWidget {
             t('الاثنين والخميس أشهر يومَي صيام تطوّعي',
               'Monday and Thursday are the usual voluntary fasting days'),
             style: const TextStyle(
-              fontFamily: 'Cairo', fontSize: 11,
+              fontFamily: 'Aligarh', fontSize: 11,
               color: AppColors.accentGold, height: 1.4),
           ),
         ])),
@@ -776,9 +777,9 @@ const _KvRow(this.label, this.value, this.valueColor, this.muted);
 Widget build(BuildContext context) => Row(
 mainAxisAlignment: MainAxisAlignment.spaceBetween,
 children: [
-Text(label, style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: muted)),
+Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: muted)),
 Text(value, style: TextStyle(
-fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w900, color: valueColor)),
+fontFamily: 'Aligarh', fontSize: 16, fontWeight: FontWeight.w900, color: valueColor)),
  ],
 );
 }
@@ -791,7 +792,7 @@ const _MacroBar(this.label, this.val, this.max, this.color);
 @override
 Widget build(BuildContext context) => Row(children: [
 SizedBox(width: 14, child: Text(label, style: TextStyle(
-fontFamily: 'Cairo', fontSize: 9, fontWeight: FontWeight.w800, color: color))),
+fontFamily: 'Aligarh', fontSize: 9, fontWeight: FontWeight.w800, color: color))),
 const SizedBox(width: 6),
 Expanded(child: ClipRRect(
 borderRadius: BorderRadius.circular(3),
@@ -804,7 +805,7 @@ backgroundColor: color.withOpacity(0.1),
 )),
 const SizedBox(width: 6),
 Text('${val.toInt()}g', style: TextStyle(
-fontFamily: 'Cairo', fontSize: 9, color: color, fontWeight: FontWeight.w700)),
+fontFamily: 'Aligarh', fontSize: 9, color: color, fontWeight: FontWeight.w700)),
  ]);
 }
 
@@ -990,15 +991,19 @@ borderRadius: BorderRadius.circular(12),
 border: Border.all(color: widget.border, width: 0.5),
 ),
 child: Column(children: [
-Text(widget.emoji, style: const TextStyle(fontSize: 18)),
+statusGlyphForEmoji(widget.emoji) != null
+    ? Image.asset(statusGlyphForEmoji(widget.emoji)!, width: 18, height: 18,
+        errorBuilder: (_, __, ___) =>
+            Text(widget.emoji, style: const TextStyle(fontSize: 18)))
+    : Text(widget.emoji, style: const TextStyle(fontSize: 18)),
 const SizedBox(height: 5),
 RichText(text: TextSpan(children: [
 TextSpan(text: widget.value, style: TextStyle(
-fontFamily: 'Cairo', fontSize: 15,
+fontFamily: 'Aligarh', fontSize: 15,
 fontWeight: FontWeight.w900, color: widget.color,
 )),
 TextSpan(text: widget.total, style: TextStyle(
-fontFamily: 'Cairo', fontSize: 10, color: widget.muted,
+fontFamily: 'Aligarh', fontSize: 10, color: widget.muted,
 )),
  ])),
 const SizedBox(height: 4),
@@ -1012,7 +1017,7 @@ backgroundColor: widget.color.withOpacity(0.1),
 ),
 const SizedBox(height: 4),
 Text(widget.label, style: TextStyle(
-fontFamily: 'Cairo', fontSize: 9, color: widget.muted)),
+fontFamily: 'Aligarh', fontSize: 9, color: widget.muted)),
 ]),
 ),
 ),
@@ -1040,13 +1045,13 @@ void _showStreakDialog(BuildContext context, int streak, bool isAr, String lang,
         const Text('🔥', style: TextStyle(fontSize: 56)),
         const SizedBox(height: 12),
         Text('$streak', style: const TextStyle(
-          fontFamily: 'Cairo', fontSize: 48,
+          fontFamily: 'Aligarh', fontSize: 48,
           fontWeight: FontWeight.w900, color: AppColors.haramRed)),
         Text(tLang(lang, 'يوم تتابع', 'day streak', 'jours de suite', 'günlük seri', 'hari berturut', 'hari berturut'), style: const TextStyle(
-          fontFamily: 'Cairo', fontSize: 14, color: AppColors.haramRed)),
+          fontFamily: 'Aligarh', fontSize: 14, color: AppColors.haramRed)),
         const SizedBox(height: 16),
         Text(msg, textAlign: TextAlign.center, style: const TextStyle(
-          fontFamily: 'Cairo', fontSize: 13, height: 1.5)),
+          fontFamily: 'Aligarh', fontSize: 13, height: 1.5)),
         const SizedBox(height: 20),
         if (streak > 0) LinearProgressIndicator(
           value: (streak % 30) / 30,
@@ -1057,12 +1062,12 @@ void _showStreakDialog(BuildContext context, int streak, bool isAr, String lang,
         ),
         if (streak > 0) Padding(padding: const EdgeInsets.only(top: 6),
           child: Text(tLang(lang, '${streak % 30}/30 يوم للجائزة التالية 🎁', '${streak % 30}/30 days to next milestone 🎁', '${streak % 30}/30 days to next milestone 🎁', '${streak % 30}/30 days to next milestone 🎁', '${streak % 30}/30 days to next milestone 🎁', '${streak % 30}/30 days to next milestone 🎁'),
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 10,
+            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10,
               color: AppColors.haramRed))),
         const SizedBox(height: 16),
         TextButton(onPressed: () => Navigator.pop(context),
           child: Text(tLang(lang, 'حسناً 👍', 'Got it 👍', 'Compris 👍', 'Anlaşıldı 👍', 'Faham 👍', 'Mengerti 👍'),
-            style: const TextStyle(fontFamily: 'Cairo',
+            style: const TextStyle(fontFamily: 'Aligarh',
               color: AppColors.brandGreen, fontWeight: FontWeight.w700))),
       ],
     )),
@@ -1110,7 +1115,7 @@ Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
 children: [
 Row(children: [
 Text(isAr ? '📖 كلمة اليوم' : '📖 Note of the day',
-style: const TextStyle(fontFamily: 'Cairo',
+style: const TextStyle(fontFamily: 'Aligarh',
 fontSize: 10, fontWeight: FontWeight.w700,
 color: AppColors.brandGreen)),
 const Spacer(),
@@ -1137,7 +1142,7 @@ const SizedBox(height: 7),
 Text(
 isAr ? hadith['ar']! : hadith['en']!,
 style: TextStyle(
-fontFamily: 'Cairo',
+fontFamily: 'Aligarh',
 fontSize: isAr ? 13 : 12,
 height: 1.65, fontStyle: FontStyle.italic,
 color: text,
@@ -1189,15 +1194,15 @@ class _AscentCard extends ConsumerWidget {
                 border: Border.all(color: col.withOpacity(0.55), width: 1.1),
                 borderRadius: BorderRadius.circular(6)),
               child: Text(ascent.rank.letter,
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                     fontWeight: FontWeight.w900, color: col)),
             ),
             const SizedBox(width: 9),
             Expanded(child: Text(l.ascentHomeCard,
-              style: TextStyle(fontFamily: 'Cairo',
+              style: TextStyle(fontFamily: 'Aligarh',
                   fontWeight: FontWeight.w800, fontSize: 14, color: text))),
             Text('${l.levelShort} ${ascent.level}',
-              style: TextStyle(fontFamily: 'Cairo',
+              style: TextStyle(fontFamily: 'Aligarh',
                   fontSize: 12, fontWeight: FontWeight.w800, color: col)),
             const SizedBox(width: 6),
             Icon(Icons.arrow_forward_ios, size: 12, color: muted),
@@ -1225,10 +1230,10 @@ class _AscentCard extends ConsumerWidget {
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text('${ascent.questsDone}/${kQuests.length} ${l.questsLabel}'
                  '  ·  ${ascent.score}/1000',
-              style: TextStyle(fontFamily: 'Cairo',
+              style: TextStyle(fontFamily: 'Aligarh',
                   fontSize: 11, color: col, fontWeight: FontWeight.w700)),
             Text(ascent.chain > 0 ? '🔥 ${ascent.chain}' : '+${ascent.todayXp} XP',
-              style: TextStyle(fontFamily: 'Cairo',
+              style: TextStyle(fontFamily: 'Aligarh',
                   fontSize: 11, color: muted)),
           ]),
         ]),
@@ -1270,7 +1275,7 @@ const Color(0xFFBF8700)),
 
 return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
 Text(tLang(lang, 'ابدأ الآن', 'Quick Actions', 'Actions rapides', 'Hızlı İşlemler', 'Tindakan Pantas', 'Tindakan Cepat'),
-style: TextStyle(fontFamily: 'Cairo',
+style: TextStyle(fontFamily: 'Aligarh',
 fontSize: 13, fontWeight: FontWeight.w700, color: muted)),
 const SizedBox(height: 10),
 Row(children: items.map((item) => Expanded(
@@ -1339,18 +1344,21 @@ decoration: BoxDecoration(
 color: item.color.withOpacity(0.12),
 borderRadius: BorderRadius.circular(9),
 ),
-child: Center(child: Text(item.emoji,
-style: const TextStyle(fontSize: 17))),
+child: Center(child: statusGlyphForEmoji(item.emoji) != null
+    ? Image.asset(statusGlyphForEmoji(item.emoji)!, width: 20, height: 20,
+        errorBuilder: (_, __, ___) =>
+            Text(item.emoji, style: const TextStyle(fontSize: 17)))
+    : Text(item.emoji, style: const TextStyle(fontSize: 17))),
 ),
 const SizedBox(height: 7),
 Text(item.title, style: TextStyle(
-fontFamily: 'Cairo', fontSize: 11,
+fontFamily: 'Aligarh', fontSize: 11,
 fontWeight: FontWeight.w700, color: widget.text),
 textAlign: TextAlign.center,
 maxLines: 1, overflow: TextOverflow.ellipsis),
 const SizedBox(height: 2),
 Text(item.sub, style: TextStyle(
-fontFamily: 'Cairo', fontSize: 9,
+fontFamily: 'Aligarh', fontSize: 9,
 color: item.color),
 textAlign: TextAlign.center,
 maxLines: 1),
@@ -1387,7 +1395,7 @@ color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
 width: 0.5),
 ),
 child: Center(child: Text(icon, style: TextStyle(
-fontFamily: isText ? 'Cairo' : null,
+fontFamily: isText ? 'Aligarh' : null,
 fontSize: isText ? 11 : 15,
 fontWeight: isText ? FontWeight.w800 : null,
 color: isDark ? AppColors.darkText : AppColors.lightText,

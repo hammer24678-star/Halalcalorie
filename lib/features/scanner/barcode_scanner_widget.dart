@@ -41,7 +41,7 @@ class _BarcodeScannerWidgetState extends State<BarcodeScannerWidget> {
         if (err.errorCode == MobileScannerErrorCode.permissionDenied) {
           return Center(child: Text(
             'Camera permission denied',
-            style: const TextStyle(color: AppColors.haramRed, fontFamily: 'Cairo'),
+            style: const TextStyle(color: AppColors.haramRed, fontFamily: 'Aligarh'),
           ));
         }
         return const Center(child: Text('Camera error',

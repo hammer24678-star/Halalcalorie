@@ -51,3 +51,44 @@ flutter:
     - assets/emoji/face_emojis/
     - assets/emoji/blex_emotes/
     - assets/store/
+    - assets/icons/mood_faces/
+    - assets/icons/status_glyphs/
+    - assets/icons/mosque_mark/
+    - assets/icons/wholesome_foods_10/
+    - assets/icons/avatars/
+    - assets/icons/fruits/
+    - assets/icons/vegetables/
+    - assets/icons/proteins/
+    - assets/icons/pantry_and_dishes/
+    - assets/icons/gym_strength/
+    - assets/icons/workouts_brothers/
+    - assets/icons/workouts_sisters_hijab/
+
+  fonts:
+    - family: Aligarh
+      fonts:
+        - asset: assets/fonts/AligarhArabicFREEPERSONALUSE-Thin.otf
+          weight: 100
+        - asset: assets/fonts/AligarhArabicFREEPERSONALUSE-ExtraLight.otf
+          weight: 200
+        - asset: assets/fonts/AligarhArabicFREEPERSONALUSE-Light.otf
+          weight: 300
+        - asset: assets/fonts/AligarhArabicFREEPERSONALUSE-Regular.otf
+          weight: 400
+        - asset: assets/fonts/AligarhArabicFREEPERSONALUSE-Medium.otf
+          weight: 500
+        - asset: assets/fonts/AligarhArabicFREEPERSONALUSE-SemiBold.otf
+          weight: 600
+        - asset: assets/fonts/AligarhArabicFREEPERSONALUSE-Bold.otf
+          weight: 700
+        - asset: assets/fonts/AligarhArabicFREEPERSONALUSE-ExtraBold.otf
+          weight: 800
+        - asset: assets/fonts/AligarhArabicFREEPERSONALUSE-Black.otf
+          weight: 900
+    - family: LemonBrush
+      fonts:
+        - asset: assets/fonts/LemonBrush-Regular.otf
+    - family: Alyamama
+      fonts:
+        - asset: assets/fonts/Alyamama-Bold.ttf
+          weight: 700

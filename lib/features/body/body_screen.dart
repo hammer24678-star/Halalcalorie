@@ -57,12 +57,12 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
           Text(
             tLang(lang, 'أكمل إعداد ملفك الشخصي أولاً', 'Complete your profile setup first', 'Complétez d\'abord votre profil', 'Önce profilinizi tamamlayın', 'Lengkapkan profil anda dahulu', 'Lengkapi profil Anda terlebih dahulu'),
             textAlign: TextAlign.center,
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.w700)),
+            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 17, fontWeight: FontWeight.w700)),
           const SizedBox(height: 10),
           Text(
             tLang(lang, 'أدخل طولك ووزنك وعمرك لحساب مقاييس جسمك', 'Enter your height, weight and age to calculate precise body metrics', 'Enter your height, weight and age to calculate precise body metrics', 'Enter your height, weight and age to calculate precise body metrics', 'Enter your height, weight and age to calculate precise body metrics', 'Enter your height, weight and age to calculate precise body metrics'),
             textAlign: TextAlign.center,
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, color: AppColors.lightMuted, height: 1.6)),
+            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13, color: AppColors.lightMuted, height: 1.6)),
           const SizedBox(height: 28),
           SizedBox(width: double.infinity, child: ElevatedButton.icon(
             onPressed: () {
@@ -73,7 +73,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
             },
             icon: const Icon(Icons.edit_note, color: Colors.white),
             label: Text(tLang(lang, 'إعداد الملف الشخصي', 'Setup My Profile', 'Configurer mon profil', 'Profilimi Kur', 'Sediakan Profil Saya', 'Atur Profil Saya'),
-              style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontWeight: FontWeight.w700)),
+              style: const TextStyle(fontFamily: 'Aligarh', color: Colors.white, fontWeight: FontWeight.w700)),
           )),
         ]))),
       );
@@ -96,8 +96,8 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         bottom: TabBar(
           controller: _tab,
           indicatorColor: AppColors.accentGold,
-          labelStyle: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 12),
-          unselectedLabelStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 12),
+          labelStyle: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 12),
+          unselectedLabelStyle: const TextStyle(fontFamily: 'Aligarh', fontSize: 12),
           labelColor: Colors.white, unselectedLabelColor: Colors.white70,
           tabs: [
             Tab(text: tLang(lang, 'نظرة عامة', 'Overview', 'Aperçu', 'Genel Bakış', 'Gambaran Keseluruhan', 'Ikhtisar')),
@@ -144,7 +144,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
           Text(p.isMale ? '🧔' : '🧕', style: const TextStyle(fontSize: 48)),
           const SizedBox(height: 8),
           Text('${p.weightKg.toStringAsFixed(1)} kg  •  ${p.heightCm.toInt()} cm  •  ${p.age} ${isAr ? "سنة" : "yrs"}',
-              style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+              style: const TextStyle(fontFamily: 'Aligarh', color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
           const SizedBox(height: 12),
           Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
             _heroStat(tLang(lang, 'BMI', 'BMI', 'IMC', 'VKİ', 'BMI', 'IMT'), p.bmi.toStringAsFixed(1), _bmiColor(p.bmi), subtitle: isAr ? p.bmiCategoryAr : p.bmiCategoryEn),
@@ -294,9 +294,9 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
             decoration: BoxDecoration(color: AppColors.brandGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
             child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
               Text(tLang(lang, 'الهدف اليومي الإجمالي', 'Total Daily Goal', 'Objectif quotidien total', 'Toplam Günlük Hedef', 'Sasaran Harian Jumlah', 'Target Harian Total'),
-                  style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 13)),
+                  style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 13)),
               Text('${p.calorieGoalKcal.toInt()} kcal',
-                  style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.brandGreen)),
+                  style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w900, fontSize: 16, color: AppColors.brandGreen)),
             ]),
           ),
         ]),
@@ -311,15 +311,15 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text('${p.waterLiters} L / ${isAr ? "يوم" : "day"}',
-                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.waterBlue)),
+                  style: const TextStyle(fontFamily: 'Aligarh', fontSize: 26, fontWeight: FontWeight.w900, color: AppColors.waterBlue)),
               Text('≈ ${p.waterCupsGoal} ${isAr ? "كوب" : "cups"} (250 ml)',
-                  style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted)),
+                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted)),
             ]),
             const Text('💧', style: TextStyle(fontSize: 40)),
           ]),
           const SizedBox(height: 10),
           Text(tLang(lang, 'الحساب: ${p.weightKg.toStringAsFixed(0)} كجم × 0.033 = ${p.waterLiters} لتر/يوم\n${p.activityLevel == ActivityLevel.veryActive || p.activityLevel == ActivityLevel.extraActive ? "مع إضافة ٠.٥ لتر للنشاط العالي" : ""}', 'Calculation: ${p.weightKg.toStringAsFixed(0)} kg × 0.033 = ${p.waterLiters} L/day\n${p.activityLevel == ActivityLevel.veryActive || p.activityLevel == ActivityLevel.extraActive ? "With +0.5L for high activity" : ""}', 'Calculation: ${p.weightKg.toStringAsFixed(0)} kg × 0.033 = ${p.waterLiters} L/day\n${p.activityLevel == ActivityLevel.veryActive || p.activityLevel == ActivityLevel.extraActive ? "With +0.5L for high activity" : ""}', 'Calculation: ${p.weightKg.toStringAsFixed(0)} kg × 0.033 = ${p.waterLiters} L/day\n${p.activityLevel == ActivityLevel.veryActive || p.activityLevel == ActivityLevel.extraActive ? "With +0.5L for high activity" : ""}', 'Calculation: ${p.weightKg.toStringAsFixed(0)} kg × 0.033 = ${p.waterLiters} L/day\n${p.activityLevel == ActivityLevel.veryActive || p.activityLevel == ActivityLevel.extraActive ? "With +0.5L for high activity" : ""}', 'Calculation: ${p.weightKg.toStringAsFixed(0)} kg × 0.033 = ${p.waterLiters} L/day\n${p.activityLevel == ActivityLevel.veryActive || p.activityLevel == ActivityLevel.extraActive ? "With +0.5L for high activity" : ""}'),
-            style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: muted, height: 1.5)),
+            style: TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: muted, height: 1.5)),
         ]),
       ),
 
@@ -331,9 +331,9 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         child: Column(children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text(tLang(lang, 'البروتين اليومي المُوصى به:', 'Recommended daily protein:', 'Protéines quotidiennes recommandées :', 'Günlük önerilen protein:', 'Protein harian disyorkan:', 'Protein harian yang direkomendasikan:'),
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 13, color: muted)),
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 13, color: muted)),
             Text('${p.proteinGrams.toInt()} g',
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 22, fontWeight: FontWeight.w900, color: AppColors.halalGreen)),
+                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 22, fontWeight: FontWeight.w900, color: AppColors.halalGreen)),
           ]),
           const SizedBox(height: 10),
           Text(
@@ -344,17 +344,17 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
               : isPremium
                 ? 'Lean body mass: ${p.leanBodyMassKg.toStringAsFixed(1)} kg\nRate: ×${p.primaryGoal == FitnessGoal.gainMuscle ? "2.0" : "1.6"} g/kg'
                 : 'Unlock Premium for lean mass & muscle details',
-            style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: isPremium ? muted : AppColors.accentGold, height: 1.5),
+            style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: isPremium ? muted : AppColors.accentGold, height: 1.5),
           ),
           const SizedBox(height: 10),
           // Everyday protein sources
           Text(tLang(lang, '✨ مصادر بروتين يومية:', '✨ Everyday protein sources:', '✨ Sources de protéines du quotidien :', '✨ Günlük protein kaynakları:', '✨ Sumber protein harian:', '✨ Sumber protein harian:'),
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.brandGreen)),
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12, fontWeight: FontWeight.w700, color: AppColors.brandGreen)),
           const SizedBox(height: 6),
           Wrap(spacing: 6, runSpacing: 4, children: (isAr
             ? ['دجاج مشوي', 'لحم حلال', 'بيض', 'عدس', 'فاصوليا', 'سمك', 'حليب', 'تمر', 'لبن']
             : ['Grilled chicken', 'Halal meat', 'Eggs', 'Lentils', 'Beans', 'Fish', 'Milk', 'Dates', 'Yogurt']
-          ).map((s) => Chip(label: Text(s, style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, color: Colors.white)), backgroundColor: AppColors.brandGreen, padding: EdgeInsets.zero, materialTapTargetSize: MaterialTapTargetSize.shrinkWrap)).toList()),
+          ).map((s) => Chip(label: Text(s, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: Colors.white)), backgroundColor: AppColors.brandGreen, padding: EdgeInsets.zero, materialTapTargetSize: MaterialTapTargetSize.shrinkWrap)).toList()),
         ]),
       ),
 
@@ -374,7 +374,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         border: Border.all(color: AppColors.brandGreen, width: 1.5)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(tLang(lang, '✏️ تحديث بياناتك', '✏️ Update Your Data', '✏️ Mettez à jour vos données', '✏️ Verilerinizi Güncelleyin', '✏️ Kemas Kini Data Anda', '✏️ Perbarui Data Anda'),
-            style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: AppColors.brandGreen)),
+            style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, color: AppColors.brandGreen)),
         const SizedBox(height: 10),
         Row(children: [
           Expanded(child: _editField(_wCtrl, tLang(lang, 'الوزن كجم', 'Weight kg', 'Poids kg', 'Ağırlık kg', 'Berat kg', 'Berat kg'))),
@@ -393,10 +393,10 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
       keyboardType: TextInputType.number,
       textAlign: TextAlign.center,
       textDirection: TextDirection.ltr,
-      style: const TextStyle(fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w700),
+      style: const TextStyle(fontFamily: 'Aligarh', fontSize: 16, fontWeight: FontWeight.w700),
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(fontFamily: 'Cairo', fontSize: 11),
+        hintStyle: const TextStyle(fontFamily: 'Aligarh', fontSize: 11),
         contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8), borderSide: const BorderSide(color: AppColors.brandGreen, width: 2)),
@@ -416,7 +416,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(ref.read(languageProvider) == 'ar' ? 'تم تحديث البيانات ✓' : 'Data Updated ✓',
-            style: const TextStyle(fontFamily: 'Cairo')),
+            style: const TextStyle(fontFamily: 'Aligarh')),
         backgroundColor: AppColors.brandGreen,
       ));
     }
@@ -425,9 +425,9 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
   // ── Reusable widgets ─────────────────────────────────────
   Widget _heroStat(String label, String value, Color color, {String subtitle = ''}) {
     return Column(children: [
-      Text(value, style: TextStyle(fontFamily: 'Cairo', fontSize: 22, fontWeight: FontWeight.w900, color: color)),
-      Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: Colors.white70)),
-      if (subtitle.isNotEmpty) Text(subtitle, style: TextStyle(fontFamily: 'Cairo', fontSize: 10, color: Colors.white54)),
+      Text(value, style: TextStyle(fontFamily: 'Aligarh', fontSize: 22, fontWeight: FontWeight.w900, color: color)),
+      Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: Colors.white70)),
+      if (subtitle.isNotEmpty) Text(subtitle, style: TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: Colors.white54)),
     ]);
   }
 
@@ -442,8 +442,8 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
           Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
         ]),
         const SizedBox(height: 6),
-        Text(value, style: TextStyle(fontFamily: 'Cairo', fontSize: 16, fontWeight: FontWeight.w900, color: color)),
-        Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, color: AppColors.lightMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
+        Text(value, style: TextStyle(fontFamily: 'Aligarh', fontSize: 16, fontWeight: FontWeight.w900, color: color)),
+        Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: AppColors.lightMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
       ]),
     );
   }
@@ -457,9 +457,9 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text(tLang(lang, 'مؤشر كتلة الجسم', 'Body Mass Index', 'Indice de masse corporelle', 'Vücut Kitle İndeksi', 'Indeks Jisim Badan', 'Indeks Massa Tubuh'),
-              style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 14, color: textC)),
+              style: TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 14, color: textC)),
           Text('BMI: ${p.bmi.toStringAsFixed(1)}',
-              style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w900, fontSize: 18, color: _bmiColor(p.bmi))),
+              style: TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w900, fontSize: 18, color: _bmiColor(p.bmi))),
         ]),
         const SizedBox(height: 12),
         Stack(children: [
@@ -482,17 +482,17 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         ]),
         const SizedBox(height: 5),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(tLang(lang, 'نقص', 'Under', 'En dessous', 'Altında', 'Di bawah', 'Di bawah'), style: TextStyle(fontFamily: 'Cairo', fontSize: 9, color: muted)),
-          Text(tLang(lang, 'مثالي', 'Normal', 'Normal', 'Normal', 'Normal', 'Normal'), style: TextStyle(fontFamily: 'Cairo', fontSize: 9, color: muted)),
-          Text(tLang(lang, 'زيادة', 'Over', 'Au-dessus', 'Üzerinde', 'Melebihi', 'Melebihi'), style: TextStyle(fontFamily: 'Cairo', fontSize: 9, color: muted)),
-          Text(tLang(lang, 'سمنة', 'Obese', 'Obèse', 'Obez', 'Obes', 'Obesitas'), style: TextStyle(fontFamily: 'Cairo', fontSize: 9, color: muted)),
+          Text(tLang(lang, 'نقص', 'Under', 'En dessous', 'Altında', 'Di bawah', 'Di bawah'), style: TextStyle(fontFamily: 'Aligarh', fontSize: 9, color: muted)),
+          Text(tLang(lang, 'مثالي', 'Normal', 'Normal', 'Normal', 'Normal', 'Normal'), style: TextStyle(fontFamily: 'Aligarh', fontSize: 9, color: muted)),
+          Text(tLang(lang, 'زيادة', 'Over', 'Au-dessus', 'Üzerinde', 'Melebihi', 'Melebihi'), style: TextStyle(fontFamily: 'Aligarh', fontSize: 9, color: muted)),
+          Text(tLang(lang, 'سمنة', 'Obese', 'Obèse', 'Obez', 'Obes', 'Obesitas'), style: TextStyle(fontFamily: 'Aligarh', fontSize: 9, color: muted)),
         ]),
         const SizedBox(height: 10),
         Container(
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(color: _bmiColor(p.bmi).withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
           child: Text(_bmiAdvice(p, isAr),
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: textC, height: 1.6)),
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: textC, height: 1.6)),
         ),
       ]),
     );
@@ -511,11 +511,11 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         const SizedBox(width: 14),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Text(tLang(lang, '${diff.abs().toStringAsFixed(1)} كجم ${isOver ? "للوصول للمثالي" : "للوصول للمثالي"}', '${diff.abs().toStringAsFixed(1)} kg to ideal weight', '${diff.abs().toStringAsFixed(1)} kg to ideal weight', '${diff.abs().toStringAsFixed(1)} kg to ideal weight', '${diff.abs().toStringAsFixed(1)} kg to ideal weight', '${diff.abs().toStringAsFixed(1)} kg to ideal weight'),
-            style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, color: color, fontSize: 14)),
+            style: TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, color: color, fontSize: 14)),
           Text(isAr
             ? isOver ? 'يُنصح بعجز ٥٠٠ سعرة يومياً' : 'يُنصح بفائض ٣٠٠ سعرة يومياً'
             : isOver ? '500 kcal deficit recommended daily' : '300 kcal surplus recommended daily',
-            style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: muted)),
+            style: TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: muted)),
         ])),
       ]),
     );
@@ -538,13 +538,13 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
           ),
           child: Column(children: [
             Text(tLang(lang, '📈 منحنى الوزن', '📈 Weight Trend', '📈 Tendance de poids', '📈 Ağırlık Trendi', '📈 Trend Berat', '📈 Tren Berat'),
-                style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700,
+                style: TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700,
                     fontSize: 14, color: textC)),
             const SizedBox(height: 16),
             Icon(Icons.add_chart, size: 48, color: AppColors.brandGreen.withOpacity(0.5)),
             const SizedBox(height: 8),
             Text(tLang(lang, 'اضغط لتسجيل وزنك اليوم', 'Tap to log your weight today', 'Appuyez pour enregistrer votre poids', 'Bugünkü ağırlığını kaydetmek için dokun', 'Ketuk untuk log berat anda hari ini', 'Ketuk untuk mencatat berat Anda hari ini'),
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted)),
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted)),
           ]),
         ),
       );
@@ -564,7 +564,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
             Row(children: [
               Expanded(child: Text(tLang(lang, 'منحنى الوزن', 'Weight Trend', 'Tendance de poids', 'Ağırlık Trendi', 'Trend Berat', 'Tren Berat'),
-                  style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700,
+                  style: TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700,
                       fontSize: 14, color: textC))),
               GestureDetector(
                 onTap: () => _showAddWeightDialog(isAr),
@@ -574,7 +574,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
                     color: AppColors.brandGreen,
                     borderRadius: BorderRadius.circular(20)),
                   child: Text(tLang(lang, '+ سجل', '+ Log', '+ Enregistrer', '+ Kaydet', '+ Log', '+ Catat'),
-                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                      style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                           color: Colors.white, fontWeight: FontWeight.w700)),
                 ),
               ),
@@ -583,11 +583,11 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
             Center(child: Column(children: [
               if (single != null)
                 Text('${single.weightKg.toStringAsFixed(1)} kg',
-                    style: const TextStyle(fontFamily: 'Cairo', fontSize: 32,
+                    style: const TextStyle(fontFamily: 'Aligarh', fontSize: 32,
                         fontWeight: FontWeight.w900, color: AppColors.brandGreen)),
               const SizedBox(height: 6),
               Text(tLang(lang, 'سجل وزنك غدا لرؤية المنحنى', 'Log again tomorrow to see your trend', 'Enregistrez demain pour voir votre tendance', 'Trendini görmek için yarın tekrar kaydet', 'Log lagi esok untuk lihat trend anda', 'Catat lagi besok untuk melihat tren Anda'),
-                  style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted)),
+                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted)),
             ])),
           ]),
         ),
@@ -613,11 +613,11 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           Expanded(child: Text(tLang(lang, '📈 منحنى الوزن', '📈 Weight Trend', '📈 Tendance de poids', '📈 Ağırlık Trendi', '📈 Trend Berat', '📈 Tren Berat'),
-              style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700,
+              style: TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700,
                   fontSize: 14, color: textC))),
           Text(
             '${diff >= 0 ? "+" : ""}${diff.toStringAsFixed(1)} kg',
-            style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800,
+            style: TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w800,
                 fontSize: 14, color: trendColor),
           ),
           const SizedBox(width: 8),
@@ -628,7 +628,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
               decoration: BoxDecoration(
                 color: AppColors.brandGreen, borderRadius: BorderRadius.circular(20)),
               child: Text(tLang(lang, '+ سجّل', '+ Log', '+ Enregistrer', '+ Kaydet', '+ Log', '+ Catat'),
-                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                  style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                       color: Colors.white, fontWeight: FontWeight.w700)),
             ),
           ),
@@ -646,7 +646,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
               leftTitles: AxisTitles(sideTitles: SideTitles(
                 showTitles: true, reservedSize: 36,
                 getTitlesWidget: (v, _) => Text(v.toStringAsFixed(0),
-                    style: TextStyle(fontFamily: 'Cairo', fontSize: 9, color: muted)),
+                    style: TextStyle(fontFamily: 'Aligarh', fontSize: 9, color: muted)),
               )),
               topTitles:   AxisTitles(sideTitles: SideTitles(showTitles: false)),
               rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
@@ -677,9 +677,9 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         const SizedBox(height: 10),
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text(tLang(lang, 'بداية: ${first.toStringAsFixed(1)} kg', 'Start: ${first.toStringAsFixed(1)} kg', 'Start: ${first.toStringAsFixed(1)} kg', 'Start: ${first.toStringAsFixed(1)} kg', 'Start: ${first.toStringAsFixed(1)} kg', 'Start: ${first.toStringAsFixed(1)} kg'),
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 10, color: muted)),
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: muted)),
           Text(tLang(lang, 'الآن: ${last.toStringAsFixed(1)} kg', 'Now: ${last.toStringAsFixed(1)} kg', 'Now: ${last.toStringAsFixed(1)} kg', 'Now: ${last.toStringAsFixed(1)} kg', 'Now: ${last.toStringAsFixed(1)} kg', 'Now: ${last.toStringAsFixed(1)} kg'),
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 10,
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 10,
                   fontWeight: FontWeight.w700, color: textC)),
         ]),
       ]),
@@ -690,7 +690,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
     final ctrl = TextEditingController();
     showDialog(context: context, builder: (dialogCtx) => AlertDialog(
       title: Text(tLang(lang, 'سجّل وزنك', 'Log Your Weight', 'Enregistrez votre poids', 'Ağırlığınızı Kaydedin', 'Log Berat Anda', 'Catat Berat Anda'),
-          style: const TextStyle(fontFamily: 'Cairo')),
+          style: const TextStyle(fontFamily: 'Aligarh')),
       content: TextField(
         controller: ctrl,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -704,7 +704,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         TextButton(
           onPressed: () => Navigator.of(dialogCtx).pop(),
           child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Annuler', 'İptal', 'Batal', 'Batal'),
-              style: const TextStyle(fontFamily: 'Cairo')),
+              style: const TextStyle(fontFamily: 'Aligarh')),
         ),
         ElevatedButton(
           onPressed: () {
@@ -715,7 +715,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
             ref.read(weightLogProvider.notifier).add(kg);
           },
           child: Text(tLang(lang, 'حفظ', 'Save', 'Enregistrer', 'Kaydet', 'Simpan', 'Simpan'),
-              style: const TextStyle(fontFamily: 'Cairo')),
+              style: const TextStyle(fontFamily: 'Aligarh')),
         ),
       ],
     )).whenComplete(ctrl.dispose);
@@ -754,7 +754,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
               Text(
                 tLang(lang, 'تحليل الجسم بالصورة 🤖', 'AI Body Photo Analysis 🤖', 'Analyse corporelle IA 🤖', 'AI Vücut Fotoğraf Analizi 🤖', 'Analisis Foto Badan AI 🤖', 'Analisis Foto Tubuh AI 🤖'),
                 style: TextStyle(
-                  fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 13,
+                  fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 13,
                   color: isPremium ? AppColors.accentGold : AppColors.brandGreen,
                 ),
               ),
@@ -767,7 +767,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
                 ),
                 child: Text(
                   isPremium ? (tLang(lang, '⭐ متاح', '⭐ Ready', '⭐ Prêt', '⭐ Hazır', '⭐ Sedia', '⭐ Siap')) : (tLang(lang, 'جديد!', 'NEW!', 'NOUVEAU !', 'YENİ!', 'BARU!', 'BARU!')),
-                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 9,
+                  style: const TextStyle(fontFamily: 'Aligarh', fontSize: 9,
                       fontWeight: FontWeight.w900, color: Colors.white),
                 ),
               ),
@@ -775,7 +775,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
             const SizedBox(height: 3),
             Text(
               tLang(lang, 'صورة واحدة ← نسبة الدهون + كتلة العضلات + نوع الجسم', 'One photo ← Body fat % + Muscle mass + Body type', 'One photo ← Body fat % + Muscle mass + Body type', 'One photo ← Body fat % + Muscle mass + Body type', 'One photo ← Body fat % + Muscle mass + Body type', 'One photo ← Body fat % + Muscle mass + Body type'),
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                   color: AppColors.lightMuted, height: 1.4),
             ),
             if (!isPremium)
@@ -783,7 +783,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
                 padding: const EdgeInsets.only(top: 3),
                 child: Text(
                   tLang(lang, '🔒 يتطلب بريميوم', '🔒 Requires Premium', '🔒 Nécessite Premium', '🔒 Premium Gerektirir', '🔒 Memerlukan Premium', '🔒 Memerlukan Premium'),
-                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 10,
+                  style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10,
                       color: AppColors.accentGold, fontWeight: FontWeight.w700),
                 ),
               ),
@@ -811,9 +811,9 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
             const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(tLang(lang, 'افتح بريميوم', 'Unlock Premium', 'Débloquer Premium', 'Premium\'u Aç', 'Buka Kunci Premium', 'Buka Premium'),
-                  style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 15, color: AppColors.accentGold)),
+                  style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 15, color: AppColors.accentGold)),
               Text(tLang(lang, 'لرؤية: نسبة الدهون الدقيقة • كتلة العضلات • الكتلة النحيفة', 'See: Exact body fat % • Muscle mass • Lean body mass', 'Voir : % graisse exact • Masse musculaire • Masse maigre', 'Gör: Kesin yağ oranı • Kas kitlesi • Yağsız kütle', 'Lihat: % lemak tepat • Jisim otot • Jisim tanpa lemak', 'Lihat: % lemak tepat • Massa otot • Massa tanpa lemak'),
-                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.lightMuted)),
+                  style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: AppColors.lightMuted)),
             ])),
             const Icon(Icons.arrow_forward_ios, size: 14, color: AppColors.accentGold),
           ]),
@@ -836,14 +836,14 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         const SizedBox(width: 10),
         Expanded(child: Text(
           tLang(lang, 'بعض المقاييس تتطلب بريميوم — اضغط ⭐ لفتحها', 'Some metrics require Premium — Tap ⭐ to unlock', 'Certaines métriques nécessitent Premium — Appuyez sur ⭐', 'Bazı metrikler Premium gerektirir — ⭐\'ya dokunun', 'Sesetengah metrik perlu Premium — Ketuk ⭐', 'Beberapa metrik perlu Premium — Ketuk ⭐'),
-          style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.accentGold),
+          style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: AppColors.accentGold),
         )),
         GestureDetector(
           onTap: () => context.push('/paywall'),
           child: Container(padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(color: AppColors.accentGold, borderRadius: BorderRadius.circular(20)),
             child: Text(tLang(lang, 'ترقية', 'Upgrade', 'Mettre à niveau', 'Yükselt', 'Naik Taraf', 'Upgrade'),
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: Colors.white, fontWeight: FontWeight.w700))),
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: Colors.white, fontWeight: FontWeight.w700))),
         ),
       ]),
     );
@@ -853,14 +853,14 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
     final pct = (grams / (max > 0 ? max : 1)).clamp(0.0, 1.0);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w600)),
-        Text('${grams.toInt()} g', style: TextStyle(fontFamily: 'Cairo', fontSize: 14, fontWeight: FontWeight.w900, color: color)),
+        Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13, fontWeight: FontWeight.w600)),
+        Text('${grams.toInt()} g', style: TextStyle(fontFamily: 'Aligarh', fontSize: 14, fontWeight: FontWeight.w900, color: color)),
       ]),
       const SizedBox(height: 5),
       LinearProgressIndicator(value: pct, backgroundColor: Colors.grey.shade200,
           valueColor: AlwaysStoppedAnimation(color), borderRadius: BorderRadius.circular(6), minHeight: 8),
       Text('${(grams * _calPerGram(label)).toInt()} kcal',
-          style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, color: AppColors.lightMuted)),
+          style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: AppColors.lightMuted)),
     ]);
   }
 
@@ -872,7 +872,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
 
   Widget _sectionTitle(String t, Color textC) => Padding(
     padding: const EdgeInsets.only(bottom: 10),
-    child: Text(t, style: TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w700, color: textC)),
+    child: Text(t, style: TextStyle(fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w700, color: textC)),
   );
 
   Widget _detailRow(String label, String value, Color valueColor, String sub, Color bg, Color textC, Color muted) {
@@ -883,11 +883,11 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8)]),
       child: Row(children: [
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(label, style: TextStyle(fontFamily: 'Cairo', fontSize: 13, color: textC)),
+          Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 13, color: textC)),
           if (sub.isNotEmpty)
-            Text(sub, style: TextStyle(fontFamily: 'Cairo', fontSize: 10, color: muted)),
+            Text(sub, style: TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: muted)),
         ])),
-        Text(value, style: TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w900, color: valueColor)),
+        Text(value, style: TextStyle(fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w900, color: valueColor)),
       ]),
     );
   }
@@ -895,14 +895,14 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
   Widget _infoExpandable(String title, String body, bool isDark, Color bg, Color muted) {
     return ExpansionTile(
       tilePadding: EdgeInsets.zero,
-      title: Text(title, style: TextStyle(fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w600, color: isDark ? AppColors.darkText : AppColors.lightText)),
+      title: Text(title, style: TextStyle(fontFamily: 'Aligarh', fontSize: 13, fontWeight: FontWeight.w600, color: isDark ? AppColors.darkText : AppColors.lightText)),
       backgroundColor: bg,
       collapsedBackgroundColor: bg,
       children: [
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(color: bg, borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12))),
-          child: Text(body, style: TextStyle(fontFamily: 'Cairo', fontSize: 12, height: 1.7, color: muted)),
+          child: Text(body, style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, height: 1.7, color: muted)),
         ),
       ],
     );

@@ -163,7 +163,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                       child: Text(
                         l.appName,
                         style: TextStyle(
-                          fontFamily: 'Cairo',
+                          fontFamily: 'Aligarh',
                           fontSize: 30,
                           fontWeight: FontWeight.w900,
                           letterSpacing: 0.5,
@@ -191,7 +191,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
                         l.appTagline,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'Cairo',
+                          fontFamily: 'Aligarh',
                           fontSize: 13,
                           height: 1.5,
                           color: Colors.white.withOpacity(0.66),
@@ -277,7 +277,7 @@ class _Mark extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.all(14),
               child: Image.asset(
-                'assets/logo.png',
+                'assets/icons/mosque_mark/mosque_medium.png',
                 fit: BoxFit.contain,
                 // A missing asset must never leave a blank splash.
                 errorBuilder: (_, __, ___) => _FallbackMark(accent: accent),

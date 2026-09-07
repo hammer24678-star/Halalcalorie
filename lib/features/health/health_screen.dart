@@ -6,6 +6,7 @@ import '../../core/providers.dart';
 import '../../core/l10n.dart';
 import '../../data/models/models.dart';
 import '../../core/health_service.dart';
+import '../../data/icon_assets.dart';
 
 class HealthScreen extends ConsumerStatefulWidget {
   const HealthScreen({super.key});
@@ -92,7 +93,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         ),
         backgroundColor: Colors.transparent,
         title: Text(t('الصحة والعافية', 'Health & Wellness'),
-            style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800, fontSize: 18)),
+            style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w800, fontSize: 18)),
         actions: [
           GestureDetector(
             onTap: () => ref.read(themeProvider.notifier).toggle(),
@@ -108,9 +109,9 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           indicatorColor: AppColors.accentGold,
           indicatorWeight: 3,
           labelStyle: const TextStyle(
-              fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 12),
+              fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 12),
           unselectedLabelStyle:
-              const TextStyle(fontFamily: 'Cairo', fontSize: 12),
+              const TextStyle(fontFamily: 'Aligarh', fontSize: 12),
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white60,
           tabs: [
@@ -190,9 +191,9 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
             Text(label,
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: muted)),
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: muted)),
             Text('${score.toInt()}/${max.toInt()}',
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 10,
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 10,
                     fontWeight: FontWeight.w700, color: col)),
           ]),
           const SizedBox(height: 3),
@@ -236,11 +237,11 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
               children: [
             Text(l.dailyHealthScore,
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 14,
+                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 14,
                     fontWeight: FontWeight.w700)),
             const SizedBox(height: 2),
             Text(scoreLabel(),
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
                     color: scoreColor())),
           ])),
           SizedBox(width: 80, height: 80,
@@ -253,7 +254,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                 strokeCap: StrokeCap.round,
               )),
               Text('$total',
-                  style: TextStyle(fontFamily: 'Cairo', fontSize: 22,
+                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 22,
                       fontWeight: FontWeight.w900, color: scoreColor())),
             ])),
           ]),
@@ -276,18 +277,18 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           RichText(text: TextSpan(children: [
             TextSpan(text: '${water.cups}',
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 28,
+                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 28,
                     fontWeight: FontWeight.w900,
                     color: AppColors.waterBlue)),
             TextSpan(text: ' / ${water.goal} ${isAr ? "أكواب" : "cups"}',
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 14,
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 14,
                     color: muted)),
           ])),
           Text('${(water.cups * 0.25).toStringAsFixed(2)} ${isAr ? "لتر" : "L"}',
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted)),
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted)),
         ]),
         Text('${(water.percent * 100).toInt()}%',
-            style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700,
+            style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700,
                 fontSize: 13, color: AppColors.waterBlue)),
       ]),
       const SizedBox(height: 12),
@@ -315,7 +316,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
               foregroundColor: AppColors.waterBlue,
               side: const BorderSide(color: AppColors.waterBlue)),
           child: Text(tLang(lang, 'كوب -', '- Cup', '- Verre', '- Bardak', '- Cawan', '- Gelas'),
-              style: const TextStyle(fontFamily: 'Cairo')),
+              style: const TextStyle(fontFamily: 'Aligarh')),
         )),
         const SizedBox(width: 8),
         Expanded(child: ElevatedButton(
@@ -323,7 +324,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.waterBlue),
           child: Text(tLang(lang, '+ كوب', '+ Cup', '+ Verre', '+ Bardak', '+ Cawan', '+ Gelas'),
-              style: const TextStyle(fontFamily: 'Cairo', color: Colors.white)),
+              style: const TextStyle(fontFamily: 'Aligarh', color: Colors.white)),
         )),
       ]),
     ]));
@@ -338,15 +339,15 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           RichText(text: TextSpan(children: [
             TextSpan(text: '${sleep.hours.toInt()}',
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 28,
+                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 28,
                     fontWeight: FontWeight.w900,
                     color: AppColors.sleepPurple)),
             TextSpan(text: ' ${isAr ? "ساعات" : "hours"}',
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 14,
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 14,
                     color: muted)),
           ])),
           Text(isAr ? sleep.qualityAr() : sleep.qualityEn(),
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13,
                   color: AppColors.sleepPurple)),
         ]),
         // PATCH_NEW_ASSET_PACKS: sleep-quality face -> assets/emoji/face_emojis/
@@ -377,7 +378,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                   : Colors.grey.shade200,
             ),
             child: Center(child: Text('$h',
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                     fontWeight: FontWeight.w700,
                     color: sleep.hours >= h ? Colors.white : muted))),
           ),
@@ -396,7 +397,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
             '${tLang(lang, 'الهدف', 'Goal')}: '
             '${sleep.goal.toInt()} ${tLang(lang, 'ساعات', 'hours')}',
             textAlign: TextAlign.center,
-            style: TextStyle(fontFamily: 'Cairo', fontSize: 10, color: muted)),
+            style: TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: muted)),
       ),
     ]));
   }
@@ -417,7 +418,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
             crossAxisAlignment: CrossAxisAlignment.start, children: [
           Row(children: [
             Text('${health.steps}',
-                style: const TextStyle(fontFamily: 'Cairo',
+                style: const TextStyle(fontFamily: 'Aligarh',
                     fontSize: 36, fontWeight: FontWeight.w900,
                     color: AppColors.halalGreen)),
             const SizedBox(width: 8),
@@ -435,7 +436,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                         shape: BoxShape.circle)),
                   const SizedBox(width: 4),
                   Text(tLang(lang, 'مباشر', 'LIVE', 'EN DIRECT', 'CANLI', 'LANGSUNG', 'LANGSUNG'),
-                      style: const TextStyle(fontFamily: 'Cairo',
+                      style: const TextStyle(fontFamily: 'Aligarh',
                           fontSize: 10, fontWeight: FontWeight.w800,
                           color: AppColors.halalGreen)),
                 ]))
@@ -449,12 +450,12 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                     color: Colors.orange.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(8)),
                   child: Text(tLang(lang, '▶ تشغيل', '▶ Start', '▶ Démarrer', '▶ Başlat', '▶ Mula', '▶ Mulai'),
-                      style: const TextStyle(fontFamily: 'Cairo',
+                      style: const TextStyle(fontFamily: 'Aligarh',
                           fontSize: 10, fontWeight: FontWeight.w800,
                           color: Colors.orange)))),
           ]),
           Text('/ ${health.stepsGoal} ${isAr?"خطوة":"steps"}',
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 12,
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
                   color: AppColors.halalGreen.withOpacity(0.7))),
         ])),
         Text(pct >= 1.0?'🏆':pct >= 0.7?'💪':'🚶',
@@ -488,7 +489,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       ]),
       const SizedBox(height: 12),
       Text(tLang(lang, 'ضبط يدوي:', 'Manual adjust:', 'Ajustement manuel :', 'Manuel ayar:', 'Laraskan manual:', 'Sesuaikan manual:'),
-          style: TextStyle(fontFamily: 'Cairo', fontSize: 10,
+          style: TextStyle(fontFamily: 'Aligarh', fontSize: 10,
               color: isDark?AppColors.darkMuted:AppColors.lightMuted)),
       const SizedBox(height: 6),
       Row(children: [1000, 3000, 5000].map((n) => Expanded(
@@ -503,7 +504,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                     color: AppColors.halalGreen.withOpacity(0.4)),
                 padding: const EdgeInsets.symmetric(vertical: 6)),
             child: Text('+$n', style: const TextStyle(
-                fontFamily: 'Cairo', fontSize: 10)),
+                fontFamily: 'Aligarh', fontSize: 10)),
           ),
         ),
       )).toList()),
@@ -519,19 +520,23 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           borderRadius: BorderRadius.circular(12),
           border: Border.all(color: color.withOpacity(0.2))),
         child: Column(children: [
-          Text(emoji, style: const TextStyle(fontSize: 20)),
-          Text(val, style: TextStyle(fontFamily: 'Cairo',
+          statusGlyphForEmoji(emoji) != null
+              ? Image.asset(statusGlyphForEmoji(emoji)!, width: 20, height: 20,
+                  errorBuilder: (_, __, ___) =>
+                      Text(emoji, style: const TextStyle(fontSize: 20)))
+              : Text(emoji, style: const TextStyle(fontSize: 20)),
+          Text(val, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 13, fontWeight: FontWeight.w800, color: color)),
-          Text(label, style: TextStyle(fontFamily: 'Cairo',
+          Text(label, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 9, color: color.withOpacity(0.8))),
         ])));
 
   Widget _moodCard(HealthState health, bool isAr, bool isDark) {
     final bg = isDark ? AppColors.darkCard : Colors.white;
-    // PATCH_NEW_ASSET_PACKS: mood faces -> assets/emoji/face_emojis/
+    // PATCH_V10_REDESIGN: mood faces -> assets/icons/mood_faces/ (8 purpose-drawn moods)
     final moods = isAr
-        ? [['assets/emoji/face_emojis/kirakira.png', 'ممتاز'], ['assets/emoji/face_emojis/uwu.png', 'جيد'], ['assets/emoji/face_emojis/wat.png', 'عادي'], ['assets/emoji/face_emojis/yawn.png', 'تعبان'], ['assets/emoji/face_emojis/nervous.png', 'متوتر']]
-        : [['assets/emoji/face_emojis/kirakira.png', 'Great'], ['assets/emoji/face_emojis/uwu.png', 'Good'], ['assets/emoji/face_emojis/wat.png', 'Okay'], ['assets/emoji/face_emojis/yawn.png', 'Low'], ['assets/emoji/face_emojis/nervous.png', 'Stressed']];
+        ? kMoodFacesAr.map((m) => [m['asset']!, m['label']!]).toList()
+        : kMoodFacesEn.map((m) => [m['asset']!, m['label']!]).toList();
 
     return _card(bg, Column(children: [
       Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -556,7 +561,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                   errorBuilder: (_, __, ___) =>
                       const Text('🙂', style: TextStyle(fontSize: 28))),
               Text(m[1],
-                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 9,
+                  style: const TextStyle(fontFamily: 'Aligarh', fontSize: 9,
                       color: AppColors.lightMuted)),
             ]),
           ),
@@ -568,7 +573,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           child: Text(
               tLang(lang, 'سجلت مزاجك: ${health.mood}', 'Mood recorded: ${health.mood}', 'Mood recorded: ${health.mood}', 'Mood recorded: ${health.mood}', 'Mood recorded: ${health.mood}', 'Mood recorded: ${health.mood}'),
               textAlign: TextAlign.center,
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13,
                   fontWeight: FontWeight.w700,
                   color: AppColors.brandGreen)),
         ),
@@ -590,18 +595,18 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       Row(children: [
         Column(children: [
           Text('${health.heartRate}',
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 32,
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 32,
                   fontWeight: FontWeight.w900,
                   color: AppColors.haramRed)),
           Text(tLang(lang, 'نبضة/دقيقة', 'bpm', 'bpm', 'bpm', 'bpm', 'bpm'),
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                   color: AppColors.lightMuted)),
         ]),
         const SizedBox(width: 20),
         Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
             children: [
           Text(tLang(lang, 'المعدل الطبيعي: 60-100', 'Normal: 60-100 bpm', 'Normal : 60-100 bpm', 'Normal: 60-100 bpm', 'Normal: 60-100 bpm', 'Normal: 60-100 bpm'),
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 12)),
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12)),
           const SizedBox(height: 6),
           LinearProgressIndicator(
               value: ((health.heartRate - 40) / 80).clamp(0.0, 1.0),
@@ -611,7 +616,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
               minHeight: 8),
           const SizedBox(height: 4),
           Text(hrLbl,
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 11,
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                   fontWeight: FontWeight.w700, color: hrCol)),
         ])),
       ]),
@@ -640,7 +645,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
               backgroundColor: AppColors.halalGreen,
               padding: const EdgeInsets.symmetric(vertical: 8)),
           child: Text(tLang(lang, 'قياس', 'Measure', 'Mesurer', 'Ölç', 'Ukur', 'Ukur'),
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                   color: Colors.white)),
         )),
       ]),
@@ -685,17 +690,17 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
             }
           },
           child: Text(tLang(lang, 'احسب BMI', 'Calculate BMI', 'Calculer l\'IMC', 'VKİ Hesapla', 'Kira BMI', 'Hitung IMT'),
-              style: const TextStyle(fontFamily: 'Cairo')),
+              style: const TextStyle(fontFamily: 'Aligarh')),
         )),
         if (bmi != null) ...[
           const SizedBox(height: 14),
           Text(bmi.toStringAsFixed(1),
               textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 36,
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 36,
                   fontWeight: FontWeight.w900, color: _bmiColor(bmi))),
           Text(_bmiLabel(bmi, isAr),
               textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 16,
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 16,
                   fontWeight: FontWeight.w700, color: _bmiColor(bmi))),
         ],
       ])),
@@ -711,9 +716,9 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           padding: const EdgeInsets.symmetric(vertical: 7),
           child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-            Text(r[0], style: const TextStyle(fontFamily: 'Cairo', fontSize: 13)),
+            Text(r[0], style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13)),
             Text('${r[1]} ${isAr ? "سعرة" : "kcal"}',
-                style: const TextStyle(fontFamily: 'Cairo', fontSize: 13,
+                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13,
                     fontWeight: FontWeight.w700,
                     color: AppColors.haramRed)),
           ]),
@@ -730,11 +735,11 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
 
     return ListView(padding: const EdgeInsets.all(14), children: [
       Text(tLang(lang, 'مقالات صحية', 'Health Articles', 'Articles santé', 'Sağlık Makaleleri', 'Artikel Kesihatan', 'Artikel Kesehatan'),
-          style: const TextStyle(fontFamily: 'Cairo', fontSize: 15,
+          style: const TextStyle(fontFamily: 'Aligarh', fontSize: 15,
               fontWeight: FontWeight.w700)),
       const SizedBox(height: 4),
       Text(tLang(lang, 'اضغط على أي مقال للقراءة', 'Tap any article to read', 'Appuyez sur un article pour lire', 'Okumak için herhangi bir makaleye dokun', 'Ketuk mana-mana artikel untuk baca', 'Ketuk artikel mana saja untuk membaca'),
-          style: TextStyle(fontFamily: 'Cairo', fontSize: 11, color: muted)),
+          style: TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: muted)),
       const SizedBox(height: 14),
       ...kHealthArticles.map((a) {
         final isOpen   = _expandedArticle == a.id;
@@ -769,10 +774,10 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                     Text(a.title,
-                        style: const TextStyle(fontFamily: 'Cairo',
+                        style: const TextStyle(fontFamily: 'Aligarh',
                             fontWeight: FontWeight.w700, fontSize: 13)),
                     Text(a.summary,
-                        style: TextStyle(fontFamily: 'Cairo',
+                        style: TextStyle(fontFamily: 'Aligarh',
                             fontSize: 11, color: muted)),
                   ])),
                   AnimatedRotation(
@@ -791,7 +796,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                           children: [
                           const Divider(height: 20),
                           Text(a.body,
-                              style: TextStyle(fontFamily: 'Cairo',
+                              style: TextStyle(fontFamily: 'Aligarh',
                                   fontSize: 12, height: 1.8,
                                   color: isDark
                                       ? AppColors.darkText
@@ -821,7 +826,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         ),
       ),
       const SizedBox(width: 8),
-      Text(t, style: TextStyle(fontFamily: 'Cairo', fontSize: 15,
+      Text(t, style: TextStyle(fontFamily: 'Aligarh', fontSize: 15,
           fontWeight: FontWeight.w700,
           color: isDark ? AppColors.darkText : AppColors.lightText)),
     ]),

@@ -185,7 +185,7 @@ class _PremiumNavState extends ConsumerState<_PremiumNav>
                             AnimatedDefaultTextStyle(
                               duration: const Duration(milliseconds: 200),
                               style: TextStyle(
-                                fontFamily: 'Cairo',
+                                fontFamily: 'Aligarh',
                                 fontSize: 9,
                                 fontWeight: active ? FontWeight.w800 : FontWeight.w400,
                                 color: active

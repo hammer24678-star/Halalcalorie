@@ -115,9 +115,9 @@ class _ScannerState extends ConsumerState<ScannerScreen>
   }
 
   void _showLimitDialog(bool isAr) {
-    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'وصلت الحد اليومي', 'Daily Limit Reached', 'Limite journalière atteinte', 'Günlük Limit Aşıldı', 'Had Harian Dicapai', 'Batas Harian Tercapai'), style: const TextStyle(fontFamily:'Cairo')), content: Text(tLang(lang, 'استخدمت ٣ ماسحات اليوم.\nترقّ للبريميوم للمزيد.', 'You have used 3 scans today.\nUpgrade for unlimited.', 'Vous avez utilisé 3 scans aujourd\'hui.\nPassez à Premium.', 'Bugün 3 tarama kullandınız.\nSınırsız için yükseltin.', 'Anda telah menggunakan 3 imbasan.\nNaik taraf untuk tanpa had.', 'Anda telah menggunakan 3 pemindaian.\nUpgrade untuk tak terbatas.'), style: const TextStyle(fontFamily:'Cairo')),
+    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'وصلت الحد اليومي', 'Daily Limit Reached', 'Limite journalière atteinte', 'Günlük Limit Aşıldı', 'Had Harian Dicapai', 'Batas Harian Tercapai'), style: const TextStyle(fontFamily:'Aligarh')), content: Text(tLang(lang, 'استخدمت ٣ ماسحات اليوم.\nترقّ للبريميوم للمزيد.', 'You have used 3 scans today.\nUpgrade for unlimited.', 'Vous avez utilisé 3 scans aujourd\'hui.\nPassez à Premium.', 'Bugün 3 tarama kullandınız.\nSınırsız için yükseltin.', 'Anda telah menggunakan 3 imbasan.\nNaik taraf untuk tanpa had.', 'Anda telah menggunakan 3 pemindaian.\nUpgrade untuk tak terbatas.'), style: const TextStyle(fontFamily:'Aligarh')),
       actions: [
-        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إغلاق', 'Close', 'Fermer', 'Kapat', 'Tutup', 'Tutup'), style: const TextStyle(fontFamily: 'Cairo'))), ElevatedButton(onPressed: () { if (context.mounted) Navigator.pop(context); context.push('/paywall'); }, child: Text(tLang(lang, '⭐ ترقية', '⭐ Upgrade', '⭐ Mettre à niveau', '⭐ Yükselt', '⭐ Naik Taraf', '⭐ Upgrade'), style: const TextStyle(fontFamily: 'Cairo'))),
+        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إغلاق', 'Close', 'Fermer', 'Kapat', 'Tutup', 'Tutup'), style: const TextStyle(fontFamily: 'Aligarh'))), ElevatedButton(onPressed: () { if (context.mounted) Navigator.pop(context); context.push('/paywall'); }, child: Text(tLang(lang, '⭐ ترقية', '⭐ Upgrade', '⭐ Mettre à niveau', '⭐ Yükselt', '⭐ Naik Taraf', '⭐ Upgrade'), style: const TextStyle(fontFamily: 'Aligarh'))),
       ],
     ));
   }
@@ -141,7 +141,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               padding: const EdgeInsets.symmetric(horizontal: 14),
               child: Row(mainAxisSize: MainAxisSize.min, children: [
                 const Icon(Icons.history, color: Colors.white),
-                const SizedBox(width: 4), Text('${scan.history.length}', style: const TextStyle(color: Colors.white70, fontSize: 12, fontFamily:'Cairo')),
+                const SizedBox(width: 4), Text('${scan.history.length}', style: const TextStyle(color: Colors.white70, fontSize: 12, fontFamily:'Aligarh')),
               ]),
             ),
           ),
@@ -175,7 +175,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               ),
               const SizedBox(width: 14),
               Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Row(children: [ Text(t('تحليل الطعام بـ AI 🤖', 'AI Food Analyzer 🤖'), style: const TextStyle(fontFamily:'Cairo', fontSize: 15,
+                Row(children: [ Text(t('تحليل الطعام بـ AI 🤖', 'AI Food Analyzer 🤖'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 15,
                           fontWeight: FontWeight.w800, color: Colors.white)),
                   const SizedBox(width: 6),
                   Container(
@@ -183,12 +183,12 @@ class _ScannerState extends ConsumerState<ScannerScreen>
                     decoration: BoxDecoration(
                       color: AppColors.accentGold,
                       borderRadius: BorderRadius.circular(20),
-                    ), child: Text(t('جديد!', 'NEW!'), style: const TextStyle(fontFamily:'Cairo', fontSize: 9,
+                    ), child: Text(t('جديد!', 'NEW!'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 9,
                             fontWeight: FontWeight.w900, color: Colors.white)),
                   ),
                 ]),
                 const SizedBox(height: 3),
-                Text( t('صوّر أي طعام ← سعرات + بروتين + حكم حلال فوراً', 'Photo any food ← Calories + Protein + Halal status instantly'), style: const TextStyle(fontFamily:'Cairo', fontSize: 11,
+                Text( t('صوّر أي طعام ← سعرات + بروتين + حكم حلال فوراً', 'Photo any food ← Calories + Protein + Halal status instantly'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 11,
                       color: Colors.white70, height: 1.4),
                 ),
               ])),
@@ -203,7 +203,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
         Row(children: [
           const Expanded(child: Divider()),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10), child: Text(t('أو امسح باركود', 'or scan barcode'), style: TextStyle(fontFamily:'Cairo', fontSize: 12, color: muted)),
+            padding: const EdgeInsets.symmetric(horizontal: 10), child: Text(t('أو امسح باركود', 'or scan barcode'), style: TextStyle(fontFamily:'Aligarh', fontSize: 12, color: muted)),
           ),
           const Expanded(child: Divider()),
         ]),
@@ -245,7 +245,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
                     ? (tLang(lang, '♾️ غير محدود', '♾️ Unlimited', '♾️ Illimité', '♾️ Sınırsız', '♾️ Tanpa Had', '♾️ Tanpa Batas'))
                     : '${t("متبقي", "Left")}: ${(3 - scan.todayCount).clamp(0, 3)}/3',
                 style: const TextStyle(
-                    fontFamily: 'Cairo', fontSize: 11,
+                    fontFamily: 'Aligarh', fontSize: 11,
                     color: Colors.white, fontWeight: FontWeight.w700),
               ),
             )),
@@ -259,7 +259,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
           Expanded(child: TextField(
             controller: _barcodeCtrl,
             textDirection: TextDirection.ltr,
-            decoration: InputDecoration( hintText: t('أدخل الباركود يدوياً...', 'Enter barcode manually...'), hintStyle: const TextStyle(fontFamily:'Cairo', fontSize: 12),
+            decoration: InputDecoration( hintText: t('أدخل الباركود يدوياً...', 'Enter barcode manually...'), hintStyle: const TextStyle(fontFamily:'Aligarh', fontSize: 12),
               border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
               prefixIcon: const Icon(Icons.qr_code),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -278,7 +278,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
 
         const SizedBox(height: 14),
 
-        // ── Demo products ───────────────────────────────── Text(t('جرّب هذه المنتجات:', 'Try these products:'), style: const TextStyle(fontFamily:'Cairo', fontSize: 13, fontWeight: FontWeight.w700)),
+        // ── Demo products ───────────────────────────────── Text(t('جرّب هذه المنتجات:', 'Try these products:'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 13, fontWeight: FontWeight.w700)),
         const SizedBox(height: 8),
 
         ElevatedButton(
@@ -290,7 +290,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
             backgroundColor: AppColors.brandGreen.withOpacity(0.1),
             foregroundColor: AppColors.brandGreen,
             elevation: 0,
-          ), child: Text(t('📷 مسح عشوائي', '📷 Random Scan'), style: const TextStyle(fontFamily:'Cairo', fontSize: 12)),
+          ), child: Text(t('📷 مسح عشوائي', '📷 Random Scan'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 12)),
         ),
 
         const SizedBox(height: 8),
@@ -317,8 +317,8 @@ class _ScannerState extends ConsumerState<ScannerScreen>
                 Expanded(child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [ Text(p.name, style: const TextStyle(fontFamily:'Cairo', fontSize: 10,
-                        fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis), Text(p.barcode, style: TextStyle(fontFamily:'Cairo', fontSize: 9, color: muted)),
+                  children: [ Text(p.name, style: const TextStyle(fontFamily:'Aligarh', fontSize: 10,
+                        fontWeight: FontWeight.w700), maxLines: 1, overflow: TextOverflow.ellipsis), Text(p.barcode, style: TextStyle(fontFamily:'Aligarh', fontSize: 9, color: muted)),
                   ]),
                 ),
               ]),
@@ -343,7 +343,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               Text(
                 tLang(lang, '📡 جارٍ البحث في Open Food Facts…', '📡 Searching Open Food Facts…', '📡 Searching Open Food Facts…', '📡 Searching Open Food Facts…', '📡 Searching Open Food Facts…', '📡 Searching Open Food Facts…'),
                 style: const TextStyle(
-                  fontFamily: 'Cairo', fontSize: 13,
+                  fontFamily: 'Aligarh', fontSize: 13,
                   color: AppColors.brandGreen,
                   fontWeight: FontWeight.w600),
                 textAlign: TextAlign.center,
@@ -382,10 +382,10 @@ class _ScannerState extends ConsumerState<ScannerScreen>
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
             Text(_statusEmoji(r.status), style: const TextStyle(fontSize: 42)),
             const SizedBox(width: 14),
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(label, style: TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w900,
-                  fontSize: 20, color: col)), Text(r.name, style: const TextStyle(fontFamily:'Cairo', fontSize: 14,
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(label, style: TextStyle(fontFamily:'Aligarh', fontWeight: FontWeight.w900,
+                  fontSize: 20, color: col)), Text(r.name, style: const TextStyle(fontFamily:'Aligarh', fontSize: 14,
                   fontWeight: FontWeight.w600)),
-              if (r.brand != null && r.brand!.isNotEmpty) Text(r.brand!, style: TextStyle(fontFamily:'Cairo', fontSize: 11, color: muted)),
+              if (r.brand != null && r.brand!.isNotEmpty) Text(r.brand!, style: TextStyle(fontFamily:'Aligarh', fontSize: 11, color: muted)),
             ]),
           ]),
           const Divider(height: 20),
@@ -406,7 +406,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
             ]),
             const SizedBox(height: 4),
             Text(t('لكل ١٠٠ج', 'per 100g'),
-              style: TextStyle(fontFamily: 'Cairo', fontSize: 9, color: muted),
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 9, color: muted),
               textAlign: TextAlign.center),
           ],
           const SizedBox(height: 12),
@@ -415,7 +415,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               onPressed: () => setState(() { _result = null; _barcodeCtrl.clear(); }),
               icon: const Icon(Icons.refresh, size: 16),
               label: Text(t('مسح آخر', 'Scan Again'),
-                style: const TextStyle(fontFamily: 'Cairo')),
+                style: const TextStyle(fontFamily: 'Aligarh')),
               style: OutlinedButton.styleFrom(
                 foregroundColor: AppColors.brandGreen,
                 side: const BorderSide(color: AppColors.brandGreen),
@@ -429,14 +429,14 @@ class _ScannerState extends ConsumerState<ScannerScreen>
                       r.name, r.kcal!);
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(tLang(lang, '✅ أُضيف للعداد', '✅ Added to tracker', '✅ Ajouté au suivi', '✅ Takibe eklendi', '✅ Ditambah ke penjejak', '✅ Ditambahkan ke pelacak'),
-                        style: const TextStyle(fontFamily: 'Cairo')),
+                        style: const TextStyle(fontFamily: 'Aligarh')),
                     backgroundColor: AppColors.brandGreen,
                     duration: const Duration(seconds: 2),
                   ));
                 },
                 icon: const Icon(Icons.add_rounded, color: Colors.white, size: 16),
                 label: Text(t('أضف للعداد', 'Add to Log'),
-                    style: const TextStyle(fontFamily: 'Cairo', color: Colors.white, fontSize: 12)),
+                    style: const TextStyle(fontFamily: 'Aligarh', color: Colors.white, fontSize: 12)),
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandGreen),
               ))
             else
@@ -444,7 +444,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
                 onPressed: () => context.push('/food-photo'),
                 icon: const Text('📸', style: TextStyle(fontSize: 14)),
                 label: Text(t('تحليل AI', 'AI Analysis'),
-                    style: const TextStyle(fontFamily: 'Cairo', color: Colors.white)),
+                    style: const TextStyle(fontFamily: 'Aligarh', color: Colors.white)),
                 style: ElevatedButton.styleFrom(backgroundColor: AppColors.brandGreen),
               )),
           ]),
@@ -456,15 +456,15 @@ class _ScannerState extends ConsumerState<ScannerScreen>
   Widget _macroCol(String emoji, String val, String label, Color col) =>
     Column(children: [
       Text(emoji, style: const TextStyle(fontSize: 16)),
-      Text(val, style: TextStyle(fontFamily:'Cairo',
+      Text(val, style: TextStyle(fontFamily:'Aligarh',
           fontWeight: FontWeight.w800, fontSize: 13, color: col)),
       Text(label, style: TextStyle(
-          fontFamily:'Cairo', fontSize: 9, color: col)),
+          fontFamily:'Aligarh', fontSize: 9, color: col)),
     ]);
 
   Widget _row(String label, String val) => Padding(
     padding: const EdgeInsets.symmetric(vertical: 4),
-    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text('$label: ', style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 12)), Expanded(child: Text(val, style: const TextStyle(fontFamily:'Cairo', fontSize: 12, color: AppColors.lightMuted))),
+    child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text('$label: ', style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 12)), Expanded(child: Text(val, style: const TextStyle(fontFamily:'Aligarh', fontSize: 12, color: AppColors.lightMuted))),
     ]),
   );
 
@@ -476,14 +476,14 @@ class _ScannerState extends ConsumerState<ScannerScreen>
       shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(22))),
       builder: (_) => Column(children: [
         Padding(
-          padding: const EdgeInsets.all(14), child: Text(tLang(lang, 'سجل الماسحات', 'Scan History', 'Historique des scans', 'Tarama Geçmişi', 'Sejarah Imbasan', 'Riwayat Pemindaian'), style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w700, fontSize: 16)),
+          padding: const EdgeInsets.all(14), child: Text(tLang(lang, 'سجل الماسحات', 'Scan History', 'Historique des scans', 'Tarama Geçmişi', 'Sejarah Imbasan', 'Riwayat Pemindaian'), style: const TextStyle(fontFamily:'Aligarh', fontWeight: FontWeight.w700, fontSize: 16)),
         ),
-        if (history.isEmpty) Expanded(child: Center(child: Text(tLang(lang, 'لا توجد ماسحات بعد', 'No scans yet', 'Aucun scan encore', 'Henüz tarama yok', 'Belum ada imbasan', 'Belum ada pemindaian'), style: const TextStyle(fontFamily:'Cairo', color: AppColors.lightMuted))))
+        if (history.isEmpty) Expanded(child: Center(child: Text(tLang(lang, 'لا توجد ماسحات بعد', 'No scans yet', 'Aucun scan encore', 'Henüz tarama yok', 'Belum ada imbasan', 'Belum ada pemindaian'), style: const TextStyle(fontFamily:'Aligarh', color: AppColors.lightMuted))))
         else
           Expanded(child: ListView(children: history.map((r) => ListTile(
-            leading: Text(_statusEmoji(r.status), style: const TextStyle(fontSize: 22)), title: Text(r.name, style: const TextStyle(fontFamily:'Cairo', fontWeight: FontWeight.w600, fontSize: 13)), subtitle: Text(r.brand ??'', style: const TextStyle(fontFamily: 'Cairo', fontSize: 11)),
+            leading: Text(_statusEmoji(r.status), style: const TextStyle(fontSize: 22)), title: Text(r.name, style: const TextStyle(fontFamily:'Aligarh', fontWeight: FontWeight.w600, fontSize: 13)), subtitle: Text(r.brand ??'', style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11)),
             trailing: Text(
-              isAr ? _labelAr(r.status) : _labelEn(r.status), style: TextStyle(fontFamily:'Cairo', fontSize: 11, fontWeight: FontWeight.w700,
+              isAr ? _labelAr(r.status) : _labelEn(r.status), style: TextStyle(fontFamily:'Aligarh', fontSize: 11, fontWeight: FontWeight.w700,
                   color: _statusColor(r.status)),
             ),
           )).toList())),

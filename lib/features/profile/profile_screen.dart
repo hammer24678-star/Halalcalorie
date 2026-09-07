@@ -75,7 +75,7 @@ class ProfileScreen extends ConsumerWidget {
               margin: const EdgeInsets.symmetric(vertical: 10),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
               decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
-              child: Text(_langLabel(lang), style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
+              child: Text(_langLabel(lang), style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
             ),
           ),
           // Dark toggle
@@ -96,19 +96,23 @@ class ProfileScreen extends ConsumerWidget {
             Container(width: 96, height: 96,
               decoration: BoxDecoration(shape: BoxShape.circle,
                 color: isSis ? AppColors.accentGold.withOpacity(0.15) : AppColors.brandGreen.withOpacity(0.12)),
-              child: Center(child: Text(isSis ? '🧕' : '🧔', style: const TextStyle(fontSize: 44)))),
+              child: ClipOval(child: Image.asset(
+                isSis ? kAvatarSisters : kAvatarBrothers,
+                width: 96, height: 96, fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Center(
+                    child: Text(isSis ? '🧕' : '🧔', style: const TextStyle(fontSize: 44)))))),
             const SizedBox(height: 11),
             Text(isSis ? l.womanLabel : l.manLabel,
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.w800, color: textC)),
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 17, fontWeight: FontWeight.w800, color: textC)),
             const SizedBox(height: 3),
             Text(isSis ? l.sistersMode : l.menMode,
-                style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted)),
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted)),
             if (profile != null) ...[
               const SizedBox(height: 6),
               Text('${profile.age} ${l.yrsLabel} • ${profile.heightCm.toInt()} cm • ${profile.weightKg.toStringAsFixed(1)} kg',
-                  style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: muted)),
+                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted)),
               Text(isAr ? profile.primaryGoal.nameAr() : profile.primaryGoal.nameEn(),
-                  style: TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.brandGreen, fontWeight: FontWeight.w700)),
+                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: AppColors.brandGreen, fontWeight: FontWeight.w700)),
             ],
             if (isPremium) ...[
               const SizedBox(height: 10),
@@ -134,7 +138,7 @@ class ProfileScreen extends ConsumerWidget {
                            : planName == 'yearly'  ? 'Yearly Premium'
                            : planName == 'monthly' ? 'Monthly Premium'
                            : 'Premium'),
-                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 12,
+                      style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12,
                           fontWeight: FontWeight.w700, color: AppColors.accentGold),
                     ),
                   ]),
@@ -162,7 +166,7 @@ class ProfileScreen extends ConsumerWidget {
             boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 14, offset: const Offset(0, 3))]),
           child: Column(children: [
             Text(t('🏆 إحصائياتك الكلية', '🏆 Lifetime Stats'),
-                style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 14)),
+                style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 14)),
             const SizedBox(height: 12),
             Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
               _lifeStat('🔥', '$streak', t('أيام تتابع', 'Streak'), AppColors.haramRed),
@@ -188,9 +192,9 @@ class ProfileScreen extends ConsumerWidget {
               child: Column(children: [
                 Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                   Text(t('💪 مقاييس جسمك', '💪 Body Metrics'),
-                      style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 13)),
+                      style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 13)),
                   Text(t('مشاهدة الكل ←', '→ View All'),
-                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.brandGreen)),
+                      style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: AppColors.brandGreen)),
                 ]),
                 const SizedBox(height: 10),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
@@ -227,10 +231,10 @@ class ProfileScreen extends ConsumerWidget {
                 const SizedBox(width: 11),
                 Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   Text(t('ترقية إلى بريميوم', 'Upgrade to Premium'),
-                      style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.brandGreen)),
+                      style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.brandGreen)),
                   Text(t('ماسحات غير محدودة + ١٨٠ تمرين + مخطط AI + مقاييس دقيقة',
                          'Unlimited scans + 180 workouts + AI planner + precise body metrics'),
-                      style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.lightMuted)),
+                      style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: AppColors.lightMuted)),
                 ])),
                 const Icon(Icons.arrow_back_ios, size: 14, color: AppColors.brandGreen),
               ]),
@@ -271,11 +275,11 @@ class ProfileScreen extends ConsumerWidget {
               context: context, applicationName: 'HalalCalorie / HalalCalorie',
               applicationVersion: '0.6.0',
               children: [const Text('© 2026 HalalCalorie — Halal • Private • Ad-free',
-                  style: TextStyle(fontFamily: 'Cairo'))])),
+                  style: TextStyle(fontFamily: 'Aligarh'))])),
             ListTile(
               leading: const Text('🚪', style: TextStyle(fontSize: 20)),
               title: Text(t('تسجيل الخروج','Sign Out'),
-                  style: const TextStyle(fontFamily: 'Cairo', fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.haramRed)),
+                  style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.haramRed)),
               onTap: () => _signOut(context, ref, isAr),
             ),
           ]),
@@ -318,7 +322,7 @@ class ProfileScreen extends ConsumerWidget {
           const Text('🏅', style: TextStyle(fontSize: 20)),
           const SizedBox(width: 10),
           Expanded(child: Text(t('إنجازاتك','Your Achievements'),
-            style: TextStyle(fontFamily: 'Cairo',
+            style: TextStyle(fontFamily: 'Aligarh',
               fontWeight: FontWeight.w800, fontSize: 14,
               color: isDark ? Colors.white : const Color(0xFF1F2A1F)))),
           Container(
@@ -327,7 +331,7 @@ class ProfileScreen extends ConsumerWidget {
               color: AppColors.accentGold.withOpacity(0.15),
               borderRadius: BorderRadius.circular(20)),
             child: Text('$earned/${badges.length}',
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 11,
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11,
                 fontWeight: FontWeight.w700, color: AppColors.accentGold)),
           ),
         ]),
@@ -340,7 +344,7 @@ class ProfileScreen extends ConsumerWidget {
             onTap: () => context.push('/paywall'),
             child: Center(child: Text(
               t('⭐ ترقّ لفتح كل الإنجازات','⭐ Upgrade to unlock all badges'),
-              style: const TextStyle(fontFamily: 'Cairo',
+              style: const TextStyle(fontFamily: 'Aligarh',
                 fontSize: 11, color: AppColors.accentGold))),
           ),
         ],
@@ -367,7 +371,7 @@ class ProfileScreen extends ConsumerWidget {
           Text(emoji, style: const TextStyle(fontSize: 22)),
           const SizedBox(height: 3),
           Text(label,
-            style: TextStyle(fontFamily: 'Cairo', fontSize: 8,
+            style: TextStyle(fontFamily: 'Aligarh', fontSize: 8,
               fontWeight: FontWeight.w600,
               color: earned ? AppColors.accentGold : muted),
             textAlign: TextAlign.center, maxLines: 2,
@@ -382,9 +386,9 @@ class ProfileScreen extends ConsumerWidget {
     return Column(children: [
       Text(emoji, style: const TextStyle(fontSize: 20)),
       const SizedBox(height: 3),
-      Text(val, style: TextStyle(fontFamily: 'Cairo', fontSize: 14,
+      Text(val, style: TextStyle(fontFamily: 'Aligarh', fontSize: 14,
           fontWeight: FontWeight.w900, color: col)),
-      Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 9,
+      Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 9,
           color: AppColors.lightMuted)),
     ]);
   }
@@ -397,24 +401,24 @@ class ProfileScreen extends ConsumerWidget {
       child: Column(children: [
         Text(emoji, style: const TextStyle(fontSize: 28)),
         const SizedBox(height: 2),
-        Text(val, style: const TextStyle(fontFamily: 'Cairo', fontSize: 20, fontWeight: FontWeight.w900)),
-        Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 10, color: AppColors.lightMuted)),
+        Text(val, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 20, fontWeight: FontWeight.w900)),
+        Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: AppColors.lightMuted)),
       ]),
     ));
   }
 
   Widget _bodyMini(String label, String value, Color color) {
     return Column(children: [
-      Text(value, style: TextStyle(fontFamily: 'Cairo', fontSize: 15, fontWeight: FontWeight.w900, color: color)),
-      Text(label, style: const TextStyle(fontFamily: 'Cairo', fontSize: 9, color: AppColors.lightMuted)),
+      Text(value, style: TextStyle(fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w900, color: color)),
+      Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 9, color: AppColors.lightMuted)),
     ]);
   }
 
   Widget _settingTile(String emoji, String title, String sub, VoidCallback onTap) {
     return ListTile(
       leading: Text(emoji, style: const TextStyle(fontSize: 20)),
-      title: Text(title, style: const TextStyle(fontFamily: 'Cairo', fontSize: 13)),
-      subtitle: sub.isNotEmpty ? Text(sub, style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.lightMuted)) : null,
+      title: Text(title, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13)),
+      subtitle: sub.isNotEmpty ? Text(sub, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: AppColors.lightMuted)) : null,
       trailing: const Icon(Icons.arrow_back_ios, size: 14, color: AppColors.lightMuted),
       onTap: onTap,
     );
@@ -429,13 +433,13 @@ class ProfileScreen extends ConsumerWidget {
 
   void _showCityPicker(BuildContext context, WidgetRef ref, bool isAr) {
     final lang = ref.read(languageProvider);
-    const cities = ['Cairo', 'Alexandria', 'Giza', 'Riyadh', 'Jeddah', 'Dubai', 'Abu Dhabi', 'Jakarta', 'Kuala Lumpur', 'Istanbul', 'London'];
+    const cities = ['Aligarh', 'Alexandria', 'Giza', 'Riyadh', 'Jeddah', 'Dubai', 'Abu Dhabi', 'Jakarta', 'Kuala Lumpur', 'Istanbul', 'London'];
     showModalBottomSheet(context: context, builder: (_) => ListView(padding: const EdgeInsets.all(16), children: [
       Text(tLang(lang, 'اختر مدينتك', 'Choose Your City', 'Choisissez votre ville', 'Şehrinizi Seçin', 'Pilih Bandar Anda', 'Pilih Kota Anda'),
-          style: const TextStyle(fontFamily: 'Cairo', fontSize: 20, fontWeight: FontWeight.w700)),
+          style: const TextStyle(fontFamily: 'Aligarh', fontSize: 20, fontWeight: FontWeight.w700)),
       const SizedBox(height: 12),
       ...cities.map((c) => ListTile(
-        title: Text(c, style: TextStyle(fontFamily: 'Cairo',
+        title: Text(c, style: TextStyle(fontFamily: 'Aligarh',
           color: ref.read(cityProvider) == c ? AppColors.brandGreen : null,
           fontWeight: ref.read(cityProvider) == c ? FontWeight.w700 : FontWeight.w400)),
         trailing: ref.read(cityProvider) == c ? const Icon(Icons.check, color: AppColors.brandGreen) : null,
@@ -456,7 +460,7 @@ class ProfileScreen extends ConsumerWidget {
           const Text('⭐', style: TextStyle(fontSize: 40)),
           const SizedBox(height: 8),
           Text(tLang(lang, 'إدارة اشتراكك', 'Manage Your Subscription', 'Gérer votre abonnement', 'Aboneliğinizi Yönetin', 'Urus Langganan Anda', 'Kelola Langganan Anda'),
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 17, fontWeight: FontWeight.w800)),
+            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 17, fontWeight: FontWeight.w800)),
           const SizedBox(height: 6),
           Text(
             isAr
@@ -467,15 +471,15 @@ class ProfileScreen extends ConsumerWidget {
                  : planName == 'yearly'  ? 'Yearly plan — auto-renews annually'
                  : 'Monthly plan — auto-renews monthly'),
             textAlign: TextAlign.center,
-            style: const TextStyle(fontFamily: 'Cairo', fontSize: 12, color: AppColors.lightMuted),
+            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: AppColors.lightMuted),
           ),
           const SizedBox(height: 20),
           if (planName != 'lifetime') ListTile(
             leading: const Text('📱', style: TextStyle(fontSize: 22)),
             title: Text(tLang(lang, 'إلغاء الاشتراك', 'Cancel Subscription', 'Annuler l\'abonnement', 'Aboneliği İptal Et', 'Batalkan Langganan', 'Batalkan Langganan'),
-              style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w600, color: AppColors.haramRed)),
+              style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w600, color: AppColors.haramRed)),
             subtitle: Text(tLang(lang, 'من خلال App Store أو Google Play', 'Via App Store or Google Play', 'Via App Store ou Google Play', 'App Store veya Google Play üzerinden', 'Melalui App Store atau Google Play', 'Melalui App Store atau Google Play'),
-              style: const TextStyle(fontFamily: 'Cairo', fontSize: 11, color: AppColors.lightMuted)),
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: AppColors.lightMuted)),
             onTap: () {
               if (context.mounted) Navigator.pop(context);
               // Deep link to subscription management
@@ -486,7 +490,7 @@ class ProfileScreen extends ConsumerWidget {
           ListTile(
             leading: const Text('🔄', style: TextStyle(fontSize: 22)),
             title: Text(tLang(lang, 'استعادة المشتريات', 'Restore Purchases', 'Restaurer les achats', 'Satın Almaları Geri Yükle', 'Pulihkan Pembelian', 'Pulihkan Pembelian'),
-              style: const TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w600)),
+              style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w600)),
             onTap: () async {
               if (context.mounted) Navigator.pop(context);
               final result = await RevenueCatService.restore();
@@ -494,7 +498,7 @@ class ProfileScreen extends ConsumerWidget {
                 content: Text(result.success
                   ? (tLang(lang, '✅ تم استعادة الاشتراك', '✅ Subscription restored', '✅ Abonnement restauré', '✅ Abonelik geri yüklendi', '✅ Langganan dipulihkan', '✅ Langganan dipulihkan'))
                   : (tLang(lang, 'لم يتم العثور على مشتريات', 'No purchases found', 'Aucun achat trouvé', 'Satın alma bulunamadı', 'Tiada pembelian dijumpai', 'Tidak ada pembelian ditemukan')),
-                style: const TextStyle(fontFamily: 'Cairo')),
+                style: const TextStyle(fontFamily: 'Aligarh')),
                 backgroundColor: result.success ? AppColors.brandGreen : AppColors.haramRed,
               ));
             },
@@ -508,14 +512,14 @@ class ProfileScreen extends ConsumerWidget {
   Future<void> _signOut(BuildContext context, WidgetRef ref, bool isAr) async {
     final lang = ref.read(languageProvider);
     final ok = await showDialog<bool>(context: context, builder: (_) => AlertDialog(
-      title: Text(tLang(lang, 'تسجيل الخروج', 'Sign Out', 'Se déconnecter', 'Çıkış Yap', 'Log Keluar', 'Keluar'), style: const TextStyle(fontFamily: 'Cairo')),
-      content: Text(tLang(lang, 'هل أنت متأكد؟', 'Are you sure?', 'Êtes-vous sûr ?', 'Emin misiniz?', 'Adakah anda pasti?', 'Anda yakin?'), style: const TextStyle(fontFamily: 'Cairo')),
+      title: Text(tLang(lang, 'تسجيل الخروج', 'Sign Out', 'Se déconnecter', 'Çıkış Yap', 'Log Keluar', 'Keluar'), style: const TextStyle(fontFamily: 'Aligarh')),
+      content: Text(tLang(lang, 'هل أنت متأكد؟', 'Are you sure?', 'Êtes-vous sûr ?', 'Emin misiniz?', 'Adakah anda pasti?', 'Anda yakin?'), style: const TextStyle(fontFamily: 'Aligarh')),
       actions: [
         TextButton(onPressed: () => Navigator.pop(context, false),
-          child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Annuler', 'İptal', 'Batal', 'Batal'), style: const TextStyle(fontFamily: 'Cairo'))),
+          child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Annuler', 'İptal', 'Batal', 'Batal'), style: const TextStyle(fontFamily: 'Aligarh'))),
         TextButton(onPressed: () => Navigator.pop(context, true),
           child: Text(tLang(lang, 'خروج', 'Sign Out', 'Se déconnecter', 'Çıkış Yap', 'Log Keluar', 'Keluar'),
-            style: const TextStyle(fontFamily: 'Cairo', color: AppColors.haramRed))),
+            style: const TextStyle(fontFamily: 'Aligarh', color: AppColors.haramRed))),
       ],
     ));
     if (ok == true && context.mounted) {
