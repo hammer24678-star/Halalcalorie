@@ -10,6 +10,7 @@ import '../../core/providers.dart';
 import '../../core/l10n.dart';
 import '../../core/revenuecat_service.dart';
 import '../../data/models/user_profile.dart';
+import 'package:halalcalorie/data/icon_assets.dart';
 
 // ══════════════════════════════════════════════════
 //  ProfileScreen
