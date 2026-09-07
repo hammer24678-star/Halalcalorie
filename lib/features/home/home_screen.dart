@@ -596,9 +596,9 @@ class _MedDisclaimer extends StatelessWidget {
       margin: const EdgeInsets.only(top: 8, bottom: 16),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF161B22),
+        color: AppColors.darkCard,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFF30363D), width: 0.5),
+        border: Border.all(color: AppColors.darkBorder, width: 0.5),
       ),
       child: Text(
         isAr
@@ -607,7 +607,7 @@ class _MedDisclaimer extends StatelessWidget {
         style: const TextStyle(
           fontFamily: 'Aligarh',
           fontSize: 10.5,
-          color: Color(0xFF8B949E),
+          color: AppColors.darkMuted,
           height: 1.5,
         ),
         textAlign: TextAlign.center,
@@ -1018,7 +1018,7 @@ const sw = 9.0;
 
 // Track
 final trackPaint = Paint()
-..color = isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF)
+..color = isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF)
 ..strokeWidth = sw
 ..style = PaintingStyle.stroke
 ..strokeCap = StrokeCap.round;
@@ -1581,10 +1581,10 @@ child: Container(
 margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 3),
 width: 34, height: 34,
 decoration: BoxDecoration(
-color: isDark ? const Color(0xFF21262D) : const Color(0xFFF6F8FA),
+color: isDark ? AppColors.darkCardAlt : AppColors.lightCard,
 borderRadius: BorderRadius.circular(8),
 border: Border.all(
-color: isDark ? const Color(0xFF30363D) : const Color(0xFFD0D7DE),
+color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
 width: 0.5),
 ),
 child: Center(child: Text(icon, style: TextStyle(

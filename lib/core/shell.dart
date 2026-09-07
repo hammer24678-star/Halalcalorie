@@ -122,8 +122,8 @@ class _PremiumNavState extends ConsumerState<_PremiumNav>
 
   @override
   Widget build(BuildContext context) {
-    final bg         = widget.isDark ? const Color(0xFF161B22) : Colors.white;
-    final border     = widget.isDark ? const Color(0xFF21262D) : const Color(0xFFD0D7DE);
+    final bg         = widget.isDark ? AppColors.darkCard : Colors.white;
+    final border     = widget.isDark ? AppColors.darkBorder : AppColors.lightBorder;
     // Ramadan mode: swap all greens to gold
     final activeColor = widget.isRamadan ? AppColors.accentGold : AppColors.halalGreen;
     final activeBg    = widget.isRamadan

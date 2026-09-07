@@ -317,7 +317,7 @@ class ProfileScreen extends ConsumerWidget {
       decoration: BoxDecoration(
         color: bg, borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF))),
+          color: isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF))),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
           const Text('🏅', style: TextStyle(fontSize: 20)),

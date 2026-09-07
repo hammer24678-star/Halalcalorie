@@ -128,7 +128,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
     final isDark = ref.watch(themeProvider);
     final lang   = ref.watch(languageProvider);
     final size   = MediaQuery.of(context).size;
-    final bg     = isDark ? const Color(0xFF0D1117) : const Color(0xFFF0F4F8);
+    final bg     = isDark ? AppColors.darkBg : const Color(0xFFF0F4F8);
 
     return Scaffold(
       backgroundColor: bg,
@@ -628,10 +628,10 @@ class _GenderCard extends ConsumerWidget {
         decoration: BoxDecoration(
           color: selected
             ? color.withOpacity(0.12)
-            : (isDark ? const Color(0xFF161B22) : Colors.white),
+            : (isDark ? AppColors.darkCard : Colors.white),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color: selected ? color : (isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF)),
+            color: selected ? color : (isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF)),
             width: selected ? 2 : 0.5,
           ),
         ),
@@ -682,11 +682,11 @@ class _LangChoice extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
             ? color.withOpacity(0.12)
-            : (isDark ? const Color(0xFF161B22) : Colors.white),
+            : (isDark ? AppColors.darkCard : Colors.white),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: selected ? color
-              : (isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF)),
+              : (isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF)),
             width: selected ? 2.5 : 0.5,
           ),
           boxShadow: selected
@@ -748,12 +748,12 @@ class _SelectTile extends ConsumerWidget {
         decoration: BoxDecoration(
           color: selected
             ? AppColors.halalGreen.withOpacity(0.1)
-            : (isDark ? const Color(0xFF161B22) : Colors.white),
+            : (isDark ? AppColors.darkCard : Colors.white),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
             color: selected
               ? AppColors.halalGreen
-              : (isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF)),
+              : (isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF)),
             width: selected ? 2 : 0.5,
           ),
         ),
@@ -936,8 +936,8 @@ class _SummaryPage extends ConsumerWidget {
     final isAr   = lang == 'ar' || lang == 'ur';
     String t(String ar, String en) => isAr ? ar : en;
     final isMale = gender == 'brothers';
-    final card   = isDark ? const Color(0xFF161B22) : Colors.white;
-    final border = isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF);
+    final card   = isDark ? AppColors.darkCard : Colors.white;
+    final border = isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF);
     final muted  = isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D);
 
     // Quick BMI calculation
@@ -1136,7 +1136,7 @@ class _TopBar extends ConsumerWidget {
               child: Container(
                 width: 36, height: 36,
                 decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF),
+                  color: isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(Icons.arrow_back_ios_rounded, size: 14,
@@ -1165,7 +1165,7 @@ class _TopBar extends ConsumerWidget {
           child: LinearProgressIndicator(
             value: pct,
             minHeight: 4,
-            backgroundColor: isDark ? const Color(0xFF21262D) : const Color(0xFFE8E4DF),
+            backgroundColor: isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF),
             valueColor: const AlwaysStoppedAnimation(AppColors.halalGreen),
           ),
         ),
