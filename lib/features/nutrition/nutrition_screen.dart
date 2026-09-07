@@ -763,12 +763,12 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                             color: AppColors.brandGreen.withOpacity(0.3)),
                       ),
                       child: Row(children: [
-                        const Text('🌿',
+                        const Text('🌱',
                             style: TextStyle(fontSize: 22)),
                         const SizedBox(width: 10),
                         Expanded(child: Text(
-                          tl('ابدأ يومك بوجبة فيها بروتين 🍽️',
-                             'Start the day with some protein 🍽️'),
+                          tl('ابدأ يومك بوجبة غنية بالبروتين',
+                             'Start the day with a protein-rich meal'),
                           style: const TextStyle(
                               fontFamily: 'Aligarh', fontSize: 12,
                               fontWeight: FontWeight.w600,
