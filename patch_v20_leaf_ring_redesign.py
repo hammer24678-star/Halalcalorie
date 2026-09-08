@@ -1,4 +1,73 @@
-// leaf_progress_ring.dart
+#!/usr/bin/env python3
+"""
+patch_v20_leaf_ring_redesign.py — replace the ugly leaf ring
+==============================================================
+
+WHAT THIS DOES
+  Rewrites lib/features/nutrition/widgets/leaf_progress_ring.dart from
+  scratch. The old painter (PATCH_LEAF_RING_AND_WORKOUT_ASSETS) drew the
+  full leaf outline + midrib + side veins even at 0% progress, which at
+  rest reads as a bare skeleton/branch diagram rather than a leaf — that's
+  the "ugly" ring on the Nutrition "Today" tab.
+
+  New design, same file, same public API (LeafProgressRing with the same
+  constructor args), so NOTHING else needs to change — nutrition_screen.dart
+  keeps calling it exactly as before:
+    - A clean circular track + gradient progress arc (matches the style
+      already used for the Home screen's calorie ring), with a soft glow
+      and a breathing end-cap dot.
+    - A small leaf badge sitting at the top of the ring (a crescent in
+      Ramadan mode) — the only "leaf" left in the design, as a marker
+      instead of the whole shape.
+    - Protein / carbs / fat as three small dots along the *lower* arc,
+      sized by how full each macro is — a compact legend instead of dots
+      scattered down a central spine.
+    - Progress past 100% of goal gets a thin second ring just outside the
+      main one, instead of silently clamping.
+
+  Motion is unchanged in spirit: smooth fill sweep on change, a slow
+  breathing pulse on the end-cap and macro dots, nothing spins or bounces
+  at rest.
+
+SAFETY
+  Whole-file replace, gated on a marker check (same idempotent pattern as
+  patch_leaf_ring_and_workout_assets.py's write_new_file): refuses to
+  touch the file unless it still contains the OLD marker (confirms this
+  is the file we expect to replace), and skips if the NEW marker is
+  already present (already applied). Run from the project root.
+"""
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent
+LEDGER = []
+
+
+def _log(label, status):
+    LEDGER.append((label, status))
+
+
+def replace_file(rel_path, new_content, label, old_marker, new_marker):
+    p = ROOT / rel_path
+    if not p.exists():
+        raise SystemExit(f"ERROR ({label}): {rel_path} not found under {ROOT}")
+    existing = p.read_text(encoding="utf-8")
+    if new_marker in existing:
+        _log(label, "SKIPPED-ALREADY")
+        return
+    if old_marker not in existing:
+        raise SystemExit(
+            f"ERROR ({label}): {rel_path} doesn't contain the expected "
+            f"marker {old_marker!r} -- refusing to overwrite unknown content."
+        )
+    p.write_text(new_content, encoding="utf-8")
+    _log(label, "REPLACED")
+
+
+LEAF_WIDGET = "lib/features/nutrition/widgets/leaf_progress_ring.dart"
+OLD_MARKER = "PATCH_LEAF_RING_AND_WORKOUT_ASSETS"
+NEW_MARKER = "PATCH_V20_RING_REDESIGN"
+
+LEAF_WIDGET_SOURCE = r'''// leaf_progress_ring.dart
 // PATCH_V20_RING_REDESIGN
 //
 // v20 rework of the Nutrition "Today" ring. The original leaf silhouette
@@ -344,3 +413,24 @@ class _RingPainter extends CustomPainter {
         old.t != t;
   }
 }
+'''
+
+
+def main():
+    print("=" * 70)
+    print("Nutrition ring: v20 redesign (leaf silhouette -> clean glow ring)")
+    print("=" * 70)
+    replace_file(LEAF_WIDGET, LEAF_WIDGET_SOURCE,
+                 "leaf_progress_ring.dart full rewrite", OLD_MARKER, NEW_MARKER)
+
+    print()
+    print("=" * 70)
+    for label, status in LEDGER:
+        print(f"  {status:16s} {label}")
+    print("=" * 70)
+    print("Public API (LeafProgressRing + all its named params) is unchanged,")
+    print("so nutrition_screen.dart needs no edits — just rebuild.")
+
+
+if __name__ == "__main__":
+    main()
