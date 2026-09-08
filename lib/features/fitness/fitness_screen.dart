@@ -214,32 +214,60 @@ class _FitnessState extends ConsumerState<FitnessScreen>
             return _anim(0, GestureDetector(
               onTap: () => Navigator.push(bCtx, MaterialPageRoute(
                   builder: (_) => WorkoutPlayerScreen(workoutId: rec!.id))),
+              // PATCH_V21_UI_POLISH: taller recommended banner, clearer hierarchy
               child: Container(
-                margin: const EdgeInsets.fromLTRB(14, 10, 14, 0),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                margin: const EdgeInsets.fromLTRB(14, 12, 14, 0),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: isRamadan
                         ? [AppColors.ramadanNight, AppColors.ramadanCardAlt]
                         : isSis
                             ? [const Color(0xFFB8860B), const Color(0xFFDAA520)]
-                            : [const Color(0xFF1A6B3C), AppColors.brandGreen],
+                            : [const Color(0xFF145C32), const Color(0xFF2E9C40)],
                     begin: Alignment.topLeft, end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(20),
                   boxShadow: [BoxShadow(
-                    color: AppColors.brandGreen.withOpacity(0.35),
-                    blurRadius: 18, offset: const Offset(0, 6))],
+                    color: (isRamadan ? AppColors.ramadanGold : AppColors.brandGreen)
+                        .withOpacity(0.38),
+                    blurRadius: 22, offset: const Offset(0, 8))],
                 ),
                 child: Row(children: [
-                  Text(rec.emoji, style: const TextStyle(fontSize: 28)),
-                  const SizedBox(width: 12),
-                  Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [ Text(isAr ?'⚡ موصى به الآن' : '⚡ Recommended Now', style: TextStyle(fontFamily:'Aligarh', fontSize: 10,
+                  Container(
+                    width: 48, height: 48,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Center(child: Text(rec.emoji,
+                        style: const TextStyle(fontSize: 26))),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start, children: [
+                    Text(isAr ? '⚡ موصى به الآن' : '⚡ Recommended Now',
+                        style: TextStyle(fontFamily: 'Aligarh', fontSize: 11,
+                            fontWeight: FontWeight.w700,
                             color: isRamadan ? AppColors.accentGold : Colors.white70)),
-                    Text(isAr ? rec.titleAr : rec.titleEn, style: const TextStyle(fontFamily:'Aligarh', fontSize: 13,
-                            fontWeight: FontWeight.w800, color: Colors.white)), Text('${rec.durationMin} ${isAr ? "دقيقة" : "min"}  •  ${isAr ? rec.level : rec.levelEn}', style: const TextStyle(fontFamily:'Aligarh', fontSize: 10, color: Colors.white70)),
+                    const SizedBox(height: 3),
+                    Text(isAr ? rec.titleAr : rec.titleEn,
+                        style: const TextStyle(fontFamily: 'Aligarh', fontSize: 15,
+                            fontWeight: FontWeight.w900, color: Colors.white, height: 1.15)),
+                    const SizedBox(height: 2),
+                    Text('${rec.durationMin} ${isAr ? "دقيقة" : "min"}  •  ${isAr ? rec.level : rec.levelEn}',
+                        style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11,
+                            color: Colors.white70)),
                   ])),
-                  const Icon(Icons.play_circle_filled, color: Colors.white, size: 32),
+                  Container(
+                    width: 44, height: 44,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.22),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.play_arrow_rounded,
+                        color: Colors.white, size: 28),
+                  ),
                 ]),
               ),
             ));
@@ -280,9 +308,10 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                 GridView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
+                  // PATCH_V21_UI_POLISH: roomier cards
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2, mainAxisSpacing: 12,
-                    crossAxisSpacing: 12, childAspectRatio: 0.88),
+                    crossAxisCount: 2, mainAxisSpacing: 14,
+                    crossAxisSpacing: 14, childAspectRatio: 0.82),
                   itemCount: list.length,
                   itemBuilder: (_, i) {
                     final w  = list[i];
@@ -343,8 +372,8 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                             ]),
                             const SizedBox(height: 8),
                             Text(isAr ? w.titleAr : w.titleEn, style: TextStyle(fontFamily:'Aligarh',
-                                    fontWeight: FontWeight.w700, fontSize: 11,
-                                    height: 1.4, color: isDark ? AppColors.darkText : AppColors.lightText),
+                                    fontWeight: FontWeight.w800, fontSize: 13,
+                                    height: 1.3, color: isDark ? AppColors.darkText : AppColors.lightText),
                                 maxLines: 2, overflow: TextOverflow.ellipsis),
                             const Spacer(),
                             Row(children: [

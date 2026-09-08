@@ -896,11 +896,12 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(20),
+                        padding: const EdgeInsets.fromLTRB(12, 16, 12, 20),
                     child: Column(children: [
-                      // Top row: eaten | ring | burned
+                      // Top row: eaten | ring | burned  — PATCH_V21
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           _summaryBox('🍴',
                               tl('المأكول', 'Eaten'),
@@ -909,7 +910,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           // Calorie ring — animated leaf
                           // (PATCH_LEAF_RING_AND_WORKOUT_ASSETS)
                           LeafProgressRing(
-                            size: 120,
+                            size: 168, // PATCH_V21_UI_POLISH: was 120 — hero ring
                             progress: pct,
                             proteinPct: ((goal * plan.proteinPct / 100) / 4) > 0
                                 ? cals.proteinTotal / ((goal * plan.proteinPct / 100) / 4)
@@ -925,26 +926,31 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                             isRamadan: isRamadan,
                             child: Column(mainAxisSize: MainAxisSize.min,
                                 children: [
+                              // PATCH_V21_UI_POLISH: alive number hierarchy
                               Text('${left.abs()}',
                                   style: TextStyle(
                                       fontFamily: 'Aligarh',
-                                      fontSize: 30,
+                                      fontSize: 38,
                                       fontWeight: FontWeight.w900,
+                                      height: 1.0,
+                                      letterSpacing: -0.5,
                                       color: calCol)),
+                              const SizedBox(height: 2),
                               Text(
                                 left < 0
                                     ? tl('سعرة زيادة', 'kcal over')
                                     : tl('سعرة متبقية', 'kcal remaining'),
                                 style: TextStyle(
                                     fontFamily: 'Aligarh',
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w700,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w800,
                                     color: calCol),
                               ),
                               Text(ofGoalLabel,
                                   style: TextStyle(
                                       fontFamily: 'Aligarh',
-                                      fontSize: 9,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w600,
                                       color: muted)),
                             ]),
                           ),
@@ -1379,39 +1385,42 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     );
   }
 
+  // PATCH_V21_UI_POLISH: tall premium side tiles next to the hero ring
   Widget _summaryBox(String emoji, String label, String val,
       Color color, bool isDark) =>
       Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        width: 78,
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.07),
-          borderRadius: BorderRadius.circular(16),
+          color: color.withOpacity(isDark ? 0.10 : 0.07),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withOpacity(0.22), width: 1),
+          boxShadow: [
+            BoxShadow(
+              color: color.withOpacity(0.12),
+              blurRadius: 14,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Stack(clipBehavior: Clip.none, children: [
-            Row(mainAxisSize: MainAxisSize.min, children: [
-              Text(val, style: TextStyle(fontFamily: 'Aligarh',
-                  fontSize: 18, fontWeight: FontWeight.w900, color: color)),
-              const SizedBox(width: 8),
-              Container(
-                width: 30, height: 30,
-                decoration: BoxDecoration(
-                  color: color.withOpacity(0.18),
-                  borderRadius: BorderRadius.circular(10)),
-                child: Center(child: Text(emoji,
-                    style: const TextStyle(fontSize: 15))),
-              ),
-            ]),
-            Positioned(
-              top: -3, right: -3,
-              child: Container(width: 7, height: 7,
-                  decoration: BoxDecoration(
-                      color: color, shape: BoxShape.circle)),
+          Container(
+            width: 36, height: 36,
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(12),
             ),
-          ]),
-          const SizedBox(height: 6),
-          Text(label, style: TextStyle(fontFamily: 'Aligarh',
-              fontSize: 10, color: color.withOpacity(0.85),
+            child: Center(child: Text(emoji,
+                style: const TextStyle(fontSize: 18))),
+          ),
+          const SizedBox(height: 10),
+          Text(val, style: TextStyle(fontFamily: 'Aligarh',
+              fontSize: 22, fontWeight: FontWeight.w900,
+              height: 1.0, color: color)),
+          const SizedBox(height: 4),
+          Text(label, textAlign: TextAlign.center,
+              style: TextStyle(fontFamily: 'Aligarh',
+              fontSize: 10, color: color.withOpacity(0.9),
               fontWeight: FontWeight.w700)),
         ]),
       );
@@ -1635,18 +1644,23 @@ class _MealSectionState extends ConsumerState<_MealSection> {
         ? const Color(0xFF6B7FD4)
         : AppColors.halalGreen;
 
+    // PATCH_V21_UI_POLISH: soft full-round card, icon badge, kcal pill
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
         color: widget.cardBg,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(22),
         boxShadow: [
           BoxShadow(
-              color: accentCol.withOpacity(0.10),
-              blurRadius: 14, offset: const Offset(0, 4)),
+              color: accentCol.withOpacity(0.14),
+              blurRadius: 18, offset: const Offset(0, 6)),
+          BoxShadow(
+              color: Colors.black.withOpacity(widget.isDark ? 0.22 : 0.04),
+              blurRadius: 10, offset: const Offset(0, 2)),
         ],
-        border: Border(
-          left: BorderSide(color: accentCol, width: 3.5),
+        border: Border.all(
+          color: accentCol.withOpacity(0.28),
+          width: 1.1,
         ),
       ),
       child: Column(children: [
@@ -1654,57 +1668,86 @@ class _MealSectionState extends ConsumerState<_MealSection> {
         InkWell(
           onTap: () => setState(() => _expanded = !_expanded),
           borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(20)),
+              top: Radius.circular(22)),
           child: Padding(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 16, vertical: 14),
+            padding: const EdgeInsets.fromLTRB(14, 14, 12, 14),
             child: Row(children: [
-              Text(widget.emoji,
-                  style: const TextStyle(fontSize: 22)),
-              const SizedBox(width: 10),
+              // Colored icon badge
+              Container(
+                width: 44, height: 44,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      accentCol.withOpacity(0.28),
+                      accentCol.withOpacity(0.10),
+                    ],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                  borderRadius: BorderRadius.circular(14),
+                  border: Border.all(color: accentCol.withOpacity(0.35)),
+                ),
+                child: Center(child: Text(widget.emoji,
+                    style: const TextStyle(fontSize: 22))),
+              ),
+              const SizedBox(width: 12),
               Expanded(child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                 Text(widget.title,
                     style: TextStyle(fontFamily: 'Aligarh',
-                        fontSize: 15, fontWeight: FontWeight.w700,
-                        color: widget.textC)),
+                        fontSize: 16, fontWeight: FontWeight.w800,
+                        color: widget.textC, height: 1.15)),
+                const SizedBox(height: 3),
                 if (_totalKcal > 0)
-                  Text('$_totalKcal kcal',
-                      style: const TextStyle(fontFamily: 'Aligarh',
-                          fontSize: 11,
-                          color: AppColors.brandGreen,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: AppColors.brandGreen.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text('$_totalKcal kcal',
+                        style: const TextStyle(fontFamily: 'Aligarh',
+                            fontSize: 11,
+                            color: AppColors.brandGreen,
+                            fontWeight: FontWeight.w800)),
+                  )
+                else
+                  Text(tLang(lang, 'فارغ', 'Empty', 'Vide', 'Boş', 'Kosong', 'Kosong'),
+                      style: TextStyle(fontFamily: 'Aligarh',
+                          fontSize: 11, color: widget.muted,
                           fontWeight: FontWeight.w600)),
               ])),
-              // Add button
+              // Add button — filled soft pill
               GestureDetector(
                 onTap: widget.onAdd,
                 child: Container(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 6),
+                      horizontal: 14, vertical: 8),
                   decoration: BoxDecoration(
-                    color: accentCol.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    color: accentCol.withOpacity(0.14),
+                    borderRadius: BorderRadius.circular(22),
                     border: Border.all(
-                        color: accentCol.withOpacity(0.35)),
+                        color: accentCol.withOpacity(0.45)),
                   ),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
                     Icon(Icons.add_rounded,
-                        color: accentCol, size: 16),
+                        color: accentCol, size: 17),
                     const SizedBox(width: 3),
                     Text(tLang(lang, 'أضف', 'Add', 'Ajouter', 'Ekle', 'Tambah', 'Tambah'),
                         style: TextStyle(fontFamily: 'Aligarh',
-                            fontSize: 11,
+                            fontSize: 12,
                             color: accentCol,
-                            fontWeight: FontWeight.w700)),
+                            fontWeight: FontWeight.w800)),
                   ]),
                 ),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 4),
               Icon(_expanded
                   ? Icons.keyboard_arrow_up_rounded
                   : Icons.keyboard_arrow_down_rounded,
-                  color: widget.muted, size: 20),
+                  color: widget.muted, size: 22),
             ]),
           ),
         ),
@@ -1718,7 +1761,8 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                 const SizedBox(width: 32),
                 Text(tLang(lang, 'لم تسجل وجبات بعد', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet', 'No foods logged yet'),
                     style: TextStyle(fontFamily: 'Aligarh',
-                        fontSize: 12, color: widget.muted)),
+                        fontSize: 13, color: widget.muted,
+                        fontWeight: FontWeight.w600)),
               ]),
             )
           else ...[

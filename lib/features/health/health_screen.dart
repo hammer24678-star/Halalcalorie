@@ -416,10 +416,12 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
         Expanded(child: Column(
             crossAxisAlignment: CrossAxisAlignment.start, children: [
+          // PATCH_V21_UI_POLISH: bigger steps hero
           Row(children: [
             Text('${health.steps}',
                 style: const TextStyle(fontFamily: 'Aligarh',
-                    fontSize: 36, fontWeight: FontWeight.w900,
+                    fontSize: 42, fontWeight: FontWeight.w900,
+                    height: 1.0,
                     color: AppColors.halalGreen)),
             const SizedBox(width: 8),
             if (_stepServiceRunning)
@@ -542,19 +544,25 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: moods.map((m) => GestureDetector(
           onTap: () => ref.read(healthProvider.notifier).setMood(m[1]),
+          // PATCH_V21_UI_POLISH: selected mood glow
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            padding: const EdgeInsets.all(8),
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
             decoration: BoxDecoration(
               color: health.mood == m[1]
-                  ? AppColors.brandGreen.withOpacity(0.12)
+                  ? AppColors.brandGreen.withOpacity(0.16)
                   : Colors.transparent,
               border: Border.all(
                   color: health.mood == m[1]
                       ? AppColors.brandGreen
                       : Colors.transparent,
                   width: 2),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(14),
+              boxShadow: health.mood == m[1]
+                  ? [BoxShadow(
+                      color: AppColors.brandGreen.withOpacity(0.25),
+                      blurRadius: 10)]
+                  : null,
             ),
             child: Column(children: [
               Image.asset(m[0], width: 28, height: 28,
@@ -608,9 +616,12 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           Text(tLang(lang, 'المعدل الطبيعي: 60-100', 'Normal: 60-100 bpm', 'Normal : 60-100 bpm', 'Normal: 60-100 bpm', 'Normal: 60-100 bpm', 'Normal: 60-100 bpm'),
               style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12)),
           const SizedBox(height: 6),
+          // PATCH_V21_UI_POLISH: dark-mode aware track
           LinearProgressIndicator(
               value: ((health.heartRate - 40) / 80).clamp(0.0, 1.0),
-              backgroundColor: Colors.grey.shade200,
+              backgroundColor: isDark
+                  ? AppColors.darkBorder
+                  : Colors.grey.shade200,
               valueColor: AlwaysStoppedAnimation(hrCol),
               borderRadius: BorderRadius.circular(6),
               minHeight: 8),
@@ -812,25 +823,28 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     ]);
   }
 
+  // PATCH_V21_UI_POLISH: accent-bar section titles
   Widget _sectionTitle(String t, bool isDark) => Padding(
-    padding: const EdgeInsets.only(bottom: 10),
-    child: Row(children: [
-      Container(
-        width: 4, height: 20,
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(
-            colors: [AppColors.brandGreen, AppColors.halalGreen],
-            begin: Alignment.topCenter, end: Alignment.bottomCenter,
+        padding: const EdgeInsets.only(bottom: 10, top: 2),
+        child: Row(children: [
+          Container(
+            width: 4, height: 18,
+            decoration: BoxDecoration(
+              color: AppColors.brandGreen,
+              borderRadius: BorderRadius.circular(4),
+            ),
           ),
-          borderRadius: BorderRadius.circular(2),
-        ),
-      ),
-      const SizedBox(width: 8),
-      Text(t, style: TextStyle(fontFamily: 'Aligarh', fontSize: 15,
-          fontWeight: FontWeight.w700,
-          color: isDark ? AppColors.darkText : AppColors.lightText)),
-    ]),
-  );
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(t,
+                style: TextStyle(
+                    fontFamily: 'Aligarh',
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? AppColors.darkText : AppColors.lightText)),
+          ),
+        ]),
+      );
 
   Widget _card(Color bg, Widget child) => Container(
     padding: const EdgeInsets.all(16),
