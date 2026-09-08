@@ -799,8 +799,10 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                             // set (v17 moved this to Bravoon on your
                             // explicit call — flagging the reversal since
                             // it undoes that, per the v18 patch note).
-                            style: TextStyle(fontFamily: 'LemonBrush',
-                                fontSize: 34, height: 1.0,
+                            // PATCH_V22_REMASTER: Bravoon matches Home titles
+                            style: TextStyle(fontFamily: 'Bravoon',
+                                fontWeight: FontWeight.w700,
+                                fontSize: 36, height: 1.0,
                                 color: isRamadan ? AppColors.ramadanGold
                                     : isDark ? AppColors.greetGold
                                               : AppColors.greetGoldLight)),
@@ -898,69 +900,69 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                       Padding(
                         padding: const EdgeInsets.fromLTRB(12, 16, 12, 20),
                     child: Column(children: [
-                      // Top row: eaten | ring | burned  — PATCH_V21
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          _summaryBox('🍴',
-                              tl('المأكول', 'Eaten'),
-                              '$eaten',
-                              AppColors.brandGreen, isDark),
-                          // Calorie ring — animated leaf
-                          // (PATCH_LEAF_RING_AND_WORKOUT_ASSETS)
-                          LeafProgressRing(
-                            size: 168, // PATCH_V21_UI_POLISH: was 120 — hero ring
-                            progress: pct,
-                            proteinPct: ((goal * plan.proteinPct / 100) / 4) > 0
-                                ? cals.proteinTotal / ((goal * plan.proteinPct / 100) / 4)
-                                : 0.0,
-                            carbsPct: ((goal * plan.carbsPct / 100) / 4) > 0
-                                ? cals.carbsTotal / ((goal * plan.carbsPct / 100) / 4)
-                                : 0.0,
-                            fatPct: ((goal * plan.fatPct / 100) / 9) > 0
-                                ? cals.fatTotal / ((goal * plan.fatPct / 100) / 9)
-                                : 0.0,
-                            progressColor: calCol,
-                            isDark: isDark,
-                            isRamadan: isRamadan,
-                            child: Column(mainAxisSize: MainAxisSize.min,
-                                children: [
-                              // PATCH_V21_UI_POLISH: alive number hierarchy
-                              Text('${left.abs()}',
-                                  style: TextStyle(
-                                      fontFamily: 'Aligarh',
-                                      fontSize: 38,
-                                      fontWeight: FontWeight.w900,
-                                      height: 1.0,
-                                      letterSpacing: -0.5,
-                                      color: calCol)),
-                              const SizedBox(height: 2),
-                              Text(
-                                left < 0
-                                    ? tl('سعرة زيادة', 'kcal over')
-                                    : tl('سعرة متبقية', 'kcal remaining'),
+                      // PATCH_V22_REMASTER: hero ring DOMINANT (centered),
+                      // stats as a clean row underneath — no side squeeze.
+                      Center(
+                        child: LeafProgressRing(
+                          size: 200,
+                          progress: pct,
+                          proteinPct: ((goal * plan.proteinPct / 100) / 4) > 0
+                              ? cals.proteinTotal / ((goal * plan.proteinPct / 100) / 4)
+                              : 0.0,
+                          carbsPct: ((goal * plan.carbsPct / 100) / 4) > 0
+                              ? cals.carbsTotal / ((goal * plan.carbsPct / 100) / 4)
+                              : 0.0,
+                          fatPct: ((goal * plan.fatPct / 100) / 9) > 0
+                              ? cals.fatTotal / ((goal * plan.fatPct / 100) / 9)
+                              : 0.0,
+                          progressColor: calCol,
+                          isDark: isDark,
+                          isRamadan: isRamadan,
+                          child: Column(mainAxisSize: MainAxisSize.min, children: [
+                            Text('${left.abs()}',
+                                style: TextStyle(
+                                    fontFamily: 'Aligarh',
+                                    fontSize: 44,
+                                    fontWeight: FontWeight.w900,
+                                    height: 1.0,
+                                    letterSpacing: -1.0,
+                                    color: calCol)),
+                            const SizedBox(height: 3),
+                            Text(
+                              left < 0
+                                  ? tl('سعرة زيادة', 'kcal over')
+                                  : tl('سعرة متبقية', 'kcal remaining'),
+                              style: TextStyle(
+                                  fontFamily: 'Aligarh',
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: calCol),
+                            ),
+                            Text(ofGoalLabel,
                                 style: TextStyle(
                                     fontFamily: 'Aligarh',
                                     fontSize: 11,
-                                    fontWeight: FontWeight.w800,
-                                    color: calCol),
-                              ),
-                              Text(ofGoalLabel,
-                                  style: TextStyle(
-                                      fontFamily: 'Aligarh',
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600,
-                                      color: muted)),
-                            ]),
-                          ),
-                          _summaryBox('🔥',
+                                    fontWeight: FontWeight.w600,
+                                    color: muted)),
+                          ]),
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      // Stat row under the ring
+                      Row(
+                        children: [
+                          Expanded(child: _summaryBox('🍴',
+                              tl('المأكول', 'Eaten'),
+                              '$eaten',
+                              AppColors.brandGreen, isDark)),
+                          const SizedBox(width: 12),
+                          Expanded(child: _summaryBox('🔥',
                               tl('المحروق', 'Burned'),
                               '$burnedKcal',
-                              AppColors.haramRed, isDark),
+                              AppColors.haramRed, isDark)),
                         ],
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 8),
                     ]),          // end macro Column
                   ),            // end Padding
                   ]),           // end outer Column
@@ -1385,43 +1387,39 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     );
   }
 
-  // PATCH_V21_UI_POLISH: tall premium side tiles next to the hero ring
+  // PATCH_V22_REMASTER: horizontal stat tiles under the hero ring
   Widget _summaryBox(String emoji, String label, String val,
       Color color, bool isDark) =>
       Container(
-        width: 78,
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
         decoration: BoxDecoration(
-          color: color.withOpacity(isDark ? 0.10 : 0.07),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.22), width: 1),
-          boxShadow: [
-            BoxShadow(
-              color: color.withOpacity(0.12),
-              blurRadius: 14,
-              offset: const Offset(0, 4),
-            ),
-          ],
+          color: color.withOpacity(isDark ? 0.12 : 0.08),
+          borderRadius: BorderRadius.circular(18),
+          border: Border.all(color: color.withOpacity(0.28), width: 1),
         ),
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
+        child: Row(children: [
           Container(
-            width: 36, height: 36,
+            width: 40, height: 40,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.18),
+              color: color.withOpacity(0.20),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(child: Text(emoji,
-                style: const TextStyle(fontSize: 18))),
+                style: const TextStyle(fontSize: 20))),
           ),
-          const SizedBox(height: 10),
-          Text(val, style: TextStyle(fontFamily: 'Aligarh',
-              fontSize: 22, fontWeight: FontWeight.w900,
-              height: 1.0, color: color)),
-          const SizedBox(height: 4),
-          Text(label, textAlign: TextAlign.center,
-              style: TextStyle(fontFamily: 'Aligarh',
-              fontSize: 10, color: color.withOpacity(0.9),
-              fontWeight: FontWeight.w700)),
+          const SizedBox(width: 12),
+          Expanded(child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(val, style: TextStyle(fontFamily: 'Aligarh',
+                  fontSize: 24, fontWeight: FontWeight.w900,
+                  height: 1.0, color: color)),
+              const SizedBox(height: 2),
+              Text(label, style: TextStyle(fontFamily: 'Aligarh',
+                  fontSize: 11, color: color.withOpacity(0.9),
+                  fontWeight: FontWeight.w700)),
+            ],
+          )),
         ]),
       );
 

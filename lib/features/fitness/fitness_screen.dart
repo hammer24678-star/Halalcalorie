@@ -289,19 +289,24 @@ class _FitnessState extends ConsumerState<FitnessScreen>
               }
               return ListView(padding: const EdgeInsets.all(14), children: [
                 // Coaching line at top
+                // PATCH_V22_REMASTER: coaching quote
                 Container(
-                  margin: const EdgeInsets.only(bottom: 14),
-                  padding: const EdgeInsets.all(14),
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
                   decoration: BoxDecoration(
-                    color: barCol.withOpacity(0.08),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: barCol.withOpacity(0.2)),
+                    color: barCol.withOpacity(0.10),
+                    borderRadius: BorderRadius.circular(18),
+                    border: Border.all(color: barCol.withOpacity(0.25)),
                   ),
                   child: Text(
                     t('القوة تُبنى بالتكرار، لا بيوم واحد شديد',
                       'Strength is built by repetition, not by one hard day'),
-                    textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 12,
-                        color: barCol, height: 1.6, fontStyle: FontStyle.italic),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontFamily: 'Aligarh', fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: barCol, height: 1.55,
+                        fontStyle: FontStyle.italic),
                   ),
                 ),
 

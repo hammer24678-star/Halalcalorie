@@ -478,33 +478,19 @@ class _HomeHero extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(top: streak > 0 ? 40 : 0),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            // PATCH_V21_UI_POLISH: match Nutrition's unique LemonBrush +
-            // evening crescent treatment so both heroes feel like one app.
+            // PATCH_V22_REMASTER: Bravoon for hero titles (user choice)
             Transform.rotate(
               angle: -0.035,
               alignment: Alignment.centerLeft,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text(
-                    _greeting(now),
-                    style: TextStyle(
-                      fontFamily: 'LemonBrush',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 40,
-                      height: 1.0,
-                      color: isDark ? AppColors.greetGold : AppColors.greetGoldLight,
-                    ),
-                  ),
-                  if (now.hour >= 17) ...[
-                    const SizedBox(width: 8),
-                    const Text('🌙', style: TextStyle(fontSize: 28)),
-                  ] else if (now.hour < 12) ...[
-                    const SizedBox(width: 8),
-                    const Text('☀️', style: TextStyle(fontSize: 26)),
-                  ],
-                ],
+              child: Text(
+                _greeting(now),
+                style: TextStyle(
+                  fontFamily: 'Bravoon',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 42,
+                  height: 1.0,
+                  color: isDark ? AppColors.greetGold : AppColors.greetGoldLight,
+                ),
               ),
             ),
             const SizedBox(height: 6),
