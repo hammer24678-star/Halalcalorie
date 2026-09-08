@@ -1445,9 +1445,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text(label, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 13, fontWeight: FontWeight.w700, color: color)),
+          // PATCH_V23: higher contrast secondary macro text
           Text('${current.toInt()}/${target.toInt()}$gLabel  •  $pctInt%',
               style: TextStyle(fontFamily: 'Aligarh',
-                  fontSize: 10, color: color.withOpacity(0.75))),
+                  fontSize: 11, fontWeight: FontWeight.w700,
+                  color: color.withOpacity(0.95))),
         ]),
         const SizedBox(height: 5),
         Stack(children: [
@@ -2229,6 +2231,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
               ),
               Expanded(child: ListView(
                 padding: const EdgeInsets.symmetric(horizontal: 12),
+                // PATCH_V23: nameEn first so illustrated food logos resolve
                 children: kQuickFoods
                     .where((f) => _filter.isEmpty ||
                         f.name.toLowerCase().contains(_filter) ||
@@ -2236,13 +2239,15 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     .map((food) => ListTile(
                   dense: true,
                   contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 4, vertical: 2),
-                  leading: FoodThumb(name: food.name, size: 42, radius: 11,
-                      background: AppColors.brandGreen.withOpacity(0.08)),
+                      horizontal: 4, vertical: 6),
+                  leading: FoodThumb(
+                      name: '${food.nameEn} ${food.name}',
+                      size: 52, radius: 14,
+                      background: AppColors.brandGreen.withOpacity(0.10)),
                   title: Text(isAr ? food.name : food.nameEn,
                       style: const TextStyle(fontFamily: 'Aligarh',
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600)),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700)),
                   subtitle: Text(
                       '💪 ${food.proteinG}g  '
                       '🍚 ${food.carbsG}g  '

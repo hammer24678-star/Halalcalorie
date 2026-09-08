@@ -81,26 +81,38 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     final isAr   = lang == 'ar' || lang == 'ur';
     String t(String ar, String en) => tLang(lang, ar, en);
 
+    // PATCH_V23: remastered Health chrome
     return Scaffold(
+      backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
       appBar: AppBar(
         flexibleSpace: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Color(0xFF1A2A1A), Color(0xFF1A6B3C)],
+              colors: isDark
+                  ? [const Color(0xFF0A1A12), const Color(0xFF145C32)]
+                  : [const Color(0xFF1A6B3C), AppColors.brandGreen],
               begin: Alignment.topLeft, end: Alignment.bottomRight,
             ),
           ),
         ),
         backgroundColor: Colors.transparent,
         title: Text(t('الصحة والعافية', 'Health & Wellness'),
-            style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w800, fontSize: 18)),
+            style: const TextStyle(fontFamily: 'Bravoon',
+                fontWeight: FontWeight.w400, fontSize: 22, color: Colors.white)),
         actions: [
           GestureDetector(
             onTap: () => ref.read(themeProvider.notifier).toggle(),
             child: Padding(
               padding: const EdgeInsets.only(right: 14),
-              child: Icon(isDark ? Icons.wb_sunny_outlined : Icons.nightlight_round,
-                  color: Colors.white, size: 22),
+              child: Container(
+                width: 36, height: 36,
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(isDark ? Icons.wb_sunny_outlined : Icons.nightlight_round,
+                    color: Colors.white, size: 18),
+              ),
             ),
           ),
         ],
@@ -109,9 +121,9 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           indicatorColor: AppColors.accentGold,
           indicatorWeight: 3,
           labelStyle: const TextStyle(
-              fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 12),
+              fontFamily: 'Aligarh', fontWeight: FontWeight.w800, fontSize: 13),
           unselectedLabelStyle:
-              const TextStyle(fontFamily: 'Aligarh', fontSize: 12),
+              const TextStyle(fontFamily: 'Aligarh', fontSize: 13),
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white60,
           tabs: [
@@ -237,8 +249,9 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
               children: [
             Text(l.dailyHealthScore,
-                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 14,
-                    fontWeight: FontWeight.w700)),
+                style: TextStyle(fontFamily: 'Aligarh', fontSize: 15,
+                    fontWeight: FontWeight.w800,
+                    color: isDark ? AppColors.darkText : AppColors.lightText)),
             const SizedBox(height: 2),
             Text(scoreLabel(),
                 style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
@@ -259,11 +272,17 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
             ])),
           ]),
         ),
+        // PATCH_V23: padded score bars + bottom spacing
         const SizedBox(height: 14),
-        scoreBar(l.water,      wScore, 25, AppColors.waterBlue),
-        scoreBar(l.sleepLabel, slScore, 25, AppColors.sleepPurple),
-        scoreBar(l.stepsLabel, stScore, 25, AppColors.halalGreen),
-        scoreBar(l.moodLabel,  mScore, 25, AppColors.accentGold),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+          child: Column(children: [
+            scoreBar(l.water,      wScore, 25, AppColors.waterBlue),
+            scoreBar(l.sleepLabel, slScore, 25, AppColors.sleepPurple),
+            scoreBar(l.stepsLabel, stScore, 25, AppColors.halalGreen),
+            scoreBar(l.moodLabel,  mScore, 25, AppColors.accentGold),
+          ]),
+        ),
       ]),
     );
   }
@@ -302,9 +321,10 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         )),
       ),
       const SizedBox(height: 12),
+      // PATCH_V23: dark-safe water track
       LinearProgressIndicator(
           value: water.percent.clamp(0.0, 1.0),
-          backgroundColor: Colors.grey.shade200,
+          backgroundColor: isDark ? AppColors.darkBorder : Colors.grey.shade200,
           valueColor: const AlwaysStoppedAnimation(AppColors.waterBlue),
           borderRadius: BorderRadius.circular(8),
           minHeight: 10),
@@ -457,8 +477,9 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                           color: Colors.orange)))),
           ]),
           Text('/ ${health.stepsGoal} ${isAr?"خطوة":"steps"}',
-              style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
-                  color: AppColors.halalGreen.withOpacity(0.7))),
+              style: TextStyle(fontFamily: 'Aligarh', fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.halalGreen.withOpacity(0.85))),
         ])),
         Text(pct >= 1.0?'🏆':pct >= 0.7?'💪':'🚶',
             style: const TextStyle(fontSize: 42)),
@@ -823,14 +844,17 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     ]);
   }
 
-  // PATCH_V21_UI_POLISH: accent-bar section titles
+  // PATCH_V23: stronger section titles
   Widget _sectionTitle(String t, bool isDark) => Padding(
-        padding: const EdgeInsets.only(bottom: 10, top: 2),
+        padding: const EdgeInsets.only(bottom: 12, top: 4),
         child: Row(children: [
           Container(
-            width: 4, height: 18,
+            width: 4, height: 20,
             decoration: BoxDecoration(
-              color: AppColors.brandGreen,
+              gradient: const LinearGradient(
+                colors: [AppColors.brandGreen, AppColors.halalGreen],
+                begin: Alignment.topCenter, end: Alignment.bottomCenter,
+              ),
               borderRadius: BorderRadius.circular(4),
             ),
           ),
@@ -839,20 +863,28 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
             child: Text(t,
                 style: TextStyle(
                     fontFamily: 'Aligarh',
-                    fontSize: 16,
-                    fontWeight: FontWeight.w800,
+                    fontSize: 17,
+                    fontWeight: FontWeight.w900,
                     color: isDark ? AppColors.darkText : AppColors.lightText)),
           ),
         ]),
       );
 
+  // PATCH_V23: elevated soft cards
   Widget _card(Color bg, Widget child) => Container(
-    padding: const EdgeInsets.all(16),
+    padding: const EdgeInsets.all(18),
     decoration: BoxDecoration(
       color: bg,
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(22),
+      border: Border.all(
+        color: bg == AppColors.darkCard
+            ? AppColors.darkBorder
+            : Colors.black.withOpacity(0.04),
+      ),
       boxShadow: [
-        BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 18, offset: const Offset(0, 4)),
+        BoxShadow(
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 20, offset: const Offset(0, 6)),
       ],
     ),
     child: child,
