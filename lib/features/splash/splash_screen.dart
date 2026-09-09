@@ -18,6 +18,7 @@ import '../../core/theme.dart';
 import '../../core/motion.dart';
 import '../../core/providers.dart';
 import '../../core/l10n.dart';
+import '../../data/icon_assets.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -273,14 +274,21 @@ class _Mark extends StatelessWidget {
             ),
             child: child,
           ),
+          // PATCH_V26_DARK_OUTLINE_AR_TITLES: solid plate under logo kills fringe
           child: ClipOval(
-            child: Padding(
-              padding: const EdgeInsets.all(14),
-              child: Image.asset(
-                'assets/logo.png',
-                fit: BoxFit.contain,
-                // A missing asset must never leave a blank splash.
-                errorBuilder: (_, __, ___) => _FallbackMark(accent: accent),
+            child: ColoredBox(
+              color: const Color(0xFF0E1A14),
+              child: Padding(
+                padding: const EdgeInsets.all(14),
+                child: Image.asset(
+                  'assets/logo.png',
+                  fit: BoxFit.contain,
+                  filterQuality: FilterQuality.high,
+                  gaplessPlayback: true,
+                  isAntiAlias: true,
+                  // A missing asset must never leave a blank splash.
+                  errorBuilder: (_, __, ___) => _FallbackMark(accent: accent),
+                ),
               ),
             ),
           ),

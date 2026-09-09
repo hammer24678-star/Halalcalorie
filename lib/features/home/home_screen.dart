@@ -478,14 +478,14 @@ class _HomeHero extends StatelessWidget {
         Padding(
           padding: EdgeInsets.only(top: streak > 0 ? 40 : 0),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            // PATCH_V22_REMASTER: Bravoon for hero titles (user choice)
+            // PATCH_V26_DARK_OUTLINE_AR_TITLES: LemonBrush Arabic only
             Transform.rotate(
               angle: -0.035,
               alignment: Alignment.centerLeft,
               child: Text(
                 _greeting(now),
                 style: TextStyle(
-                  fontFamily: 'Bravoon',
+                  fontFamily: lang == 'ar' ? 'LemonBrush' : 'Bravoon',
                   fontWeight: FontWeight.w700,
                   fontSize: 42,
                   height: 1.0,
@@ -573,7 +573,8 @@ class _WholesomeFoodStrip extends StatelessWidget {
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
-                  Image.asset(f['asset']!, width: 18, height: 18,
+                  // PATCH_V26: dark-safe food glyph
+                  darkSafeAsset(f['asset']!, width: 18, height: 18, isDark: isDark,
                       errorBuilder: (_, __, ___) => const SizedBox(width: 18, height: 18)),
                   const SizedBox(width: 7),
                   Text(isAr ? f['ar']! : f['en']!, style: TextStyle(
@@ -687,9 +688,9 @@ blurRadius: 12, spreadRadius: 0,
 ),
 child: ClipRRect(
     borderRadius: BorderRadius.circular(10),
-    child: Image.asset('assets/icons/mosque_mark/mosque_small.png',
-        width: 26, height: 26, fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => const Center(
+    child: darkSafeAsset('assets/icons/mosque_mark/mosque_small.png',
+        width: 26, height: 26, isDark: isDark,
+        errorChild: const Center(
             child: Text('🕌', style: TextStyle(fontSize: 22))))),
 ),
 ),
@@ -1190,7 +1191,7 @@ border: Border.all(color: widget.border, width: 0.5),
 ),
 child: Column(children: [
 statusGlyphForEmoji(widget.emoji) != null
-    ? Image.asset(statusGlyphForEmoji(widget.emoji)!, width: 18, height: 18,
+    ? darkSafeAsset(statusGlyphForEmoji(widget.emoji)!, width: 18, height: 18, isDark: isDark,
         errorBuilder: (_, __, ___) =>
             Text(widget.emoji, style: const TextStyle(fontSize: 18)))
     : Text(widget.emoji, style: const TextStyle(fontSize: 18)),
@@ -1543,7 +1544,7 @@ color: item.color.withOpacity(0.12),
 borderRadius: BorderRadius.circular(9),
 ),
 child: Center(child: statusGlyphForEmoji(item.emoji) != null
-    ? Image.asset(statusGlyphForEmoji(item.emoji)!, width: 20, height: 20,
+    ? darkSafeAsset(statusGlyphForEmoji(item.emoji)!, width: 20, height: 20, isDark: isDark,
         errorBuilder: (_, __, ___) =>
             Text(item.emoji, style: const TextStyle(fontSize: 17)))
     : Text(item.emoji, style: const TextStyle(fontSize: 17))),

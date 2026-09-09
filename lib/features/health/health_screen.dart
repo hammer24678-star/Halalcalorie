@@ -96,8 +96,10 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           ),
         ),
         backgroundColor: Colors.transparent,
+        // PATCH_V26_DARK_OUTLINE_AR_TITLES: LemonBrush for Arabic titles only
         title: Text(t('الصحة والعافية', 'Health & Wellness'),
-            style: const TextStyle(fontFamily: 'Bravoon',
+            style: TextStyle(
+                fontFamily: lang == 'ar' ? 'LemonBrush' : 'Bravoon',
                 fontWeight: FontWeight.w400, fontSize: 22, color: Colors.white)),
         actions: [
           GestureDetector(
@@ -162,7 +164,8 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       _anim(3, _sectionTitle('🚶 ${isAr ? "خطوات اليوم" : "Today Steps"}', isDark)),
       _anim(3, _stepsCard(health, isAr, isDark)),
       const SizedBox(height: 16),
-      _anim(4, _sectionTitle('😊 ${isAr ? "مزاجك اليوم" : "Today Mood"}', isDark)),
+      // PATCH_V26_DARK_OUTLINE_AR_TITLES: correct Arabic wording
+      _anim(4, _sectionTitle('😊 ${isAr ? "مزاجك اليومي" : "Today Mood"}', isDark)),
       _anim(4, _moodCard(health, isAr, isDark)),
       const SizedBox(height: 16),
       _anim(5, _sectionTitle('❤️ ${isAr ? "معدل النبض" : "Heart Rate"}', isDark)),
@@ -544,8 +547,8 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           border: Border.all(color: color.withOpacity(0.2))),
         child: Column(children: [
           statusGlyphForEmoji(emoji) != null
-              ? Image.asset(statusGlyphForEmoji(emoji)!, width: 20, height: 20,
-                  errorBuilder: (_, __, ___) =>
+              ? darkSafeAsset(statusGlyphForEmoji(emoji)!, width: 20, height: 20, isDark: isDark,
+                  errorChild:
                       Text(emoji, style: const TextStyle(fontSize: 20)))
               : Text(emoji, style: const TextStyle(fontSize: 20)),
           Text(val, style: TextStyle(fontFamily: 'Aligarh',
@@ -585,13 +588,13 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                       blurRadius: 10)]
                   : null,
             ),
+            // PATCH_V26_DARK_OUTLINE_AR_TITLES: kill PNG fringe + dark labels
             child: Column(children: [
-              Image.asset(m[0], width: 28, height: 28,
-                  errorBuilder: (_, __, ___) =>
-                      const Text('🙂', style: TextStyle(fontSize: 28))),
+              darkSafeAsset(m[0], width: 28, height: 28, isDark: isDark,
+                  errorChild: const Text('🙂', style: TextStyle(fontSize: 28))),
               Text(m[1],
-                  style: const TextStyle(fontFamily: 'Aligarh', fontSize: 9,
-                      color: AppColors.lightMuted)),
+                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 9,
+                      color: isDark ? AppColors.darkMuted : AppColors.lightMuted)),
             ]),
           ),
         )).toList(),

@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 // icon_assets.dart
 // PATCH_V10_REDESIGN
 //
@@ -279,3 +281,41 @@ const Map<String, String> kWorkoutIconSisters = {
 String? workoutIconAsset(String workoutId, bool isSis) =>
     (isSis ? kWorkoutIconSisters : kWorkoutIconBrothers)[workoutId];
 
+
+// ─────────────────────────────────────────────────────────────────
+// PATCH_V26_DARK_OUTLINE_AR_TITLES
+// Transparent PNG packs leave a light fringe against forest-dark
+// surfaces. darkSafeAsset composites them cleanly without tinting
+// full-colour emoji art.
+// ─────────────────────────────────────────────────────────────────
+Widget darkSafeAsset(
+  String path, {
+  double? width,
+  double? height,
+  BoxFit fit = BoxFit.contain,
+  bool isDark = false,
+  Widget? errorChild,
+  BorderRadius? radius,
+}) {
+  final img = Image.asset(
+    path,
+    width: width,
+    height: height,
+    fit: fit,
+    filterQuality: FilterQuality.high,
+    gaplessPlayback: true,
+    isAntiAlias: true,
+    errorBuilder: errorChild == null
+        ? null
+        : (_, __, ___) => errorChild,
+  );
+  if (!isDark) return img;
+  final child = radius != null
+      ? ClipRRect(borderRadius: radius, child: img)
+      : img;
+  // Soft forest plate ≈ darkCard so residual light fringe blends away.
+  return ColoredBox(
+    color: const Color(0xFF0E1A14),
+    child: child,
+  );
+}

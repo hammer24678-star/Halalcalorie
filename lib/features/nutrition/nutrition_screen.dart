@@ -799,8 +799,9 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                             // set (v17 moved this to Bravoon on your
                             // explicit call — flagging the reversal since
                             // it undoes that, per the v18 patch note).
-                            // PATCH_V22_REMASTER: Bravoon matches Home titles
-                            style: TextStyle(fontFamily: 'Bravoon',
+                            // PATCH_V26_DARK_OUTLINE_AR_TITLES: LemonBrush Arabic only
+                            style: TextStyle(
+                                fontFamily: lang == 'ar' ? 'LemonBrush' : 'Bravoon',
                                 fontWeight: FontWeight.w700,
                                 fontSize: 36, height: 1.0,
                                 color: isRamadan ? AppColors.ramadanGold

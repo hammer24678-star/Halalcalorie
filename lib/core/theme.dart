@@ -89,9 +89,9 @@ class AppFonts {
   /// Title font -- headlineLarge/headlineMedium/titleLarge and
   /// AppBar titles app-wide. Added by patch_v12.
   static const bravoon = 'Bravoon';
-  /// Cursive accent -- not currently used anywhere (the home/nutrition
-  /// greetings that used to reference this moved to Bravoon in v17).
-  /// Left registered in pubspec in case a future flourish wants it.
+  /// Arabic title font (AppBar + hero greetings when lang == 'ar').
+  /// PATCH_V26_DARK_OUTLINE_AR_TITLES: restored for Arabic-only titles.
+  /// Other languages keep Bravoon.
   static const lemonBrush = 'LemonBrush';
   /// Decorative display font — reserved for the "HalalCalorie" wordmark.
   static const alyamama = 'Alyamama';

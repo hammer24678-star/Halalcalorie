@@ -91,8 +91,9 @@ class _FitnessState extends ConsumerState<FitnessScreen>
           ),
           // PATCH_V24_FITNESS_REMASTER
           backgroundColor: Colors.transparent,
+          // PATCH_V26_DARK_OUTLINE_AR_TITLES: LemonBrush Arabic only
           title: Text(l.fitnessTitle,
-              style: const TextStyle(fontFamily: 'Bravoon',
+              style: TextStyle(fontFamily: lang == 'ar' ? 'LemonBrush' : 'Bravoon',
                   fontWeight: FontWeight.w400, fontSize: 26, color: Colors.white)),
           actions: [
             if (workoutMin > 0)
