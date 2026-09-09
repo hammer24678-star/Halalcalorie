@@ -14,6 +14,7 @@
 import 'package:flutter/material.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'open_food_facts_service.dart';
+import '../data/icon_assets.dart'; // PATCH_V29_FOODTHUMB_DARK_SAFE
 
 /// Shown when a food cannot be identified and no photo is available.
 const String kFoodGlyphFallback = '🍽️';
@@ -595,13 +596,16 @@ class _FoodThumbState extends State<FoodThumb> {
     // PATCH_NEW_ASSET_PACKS: prefer the illustrated asset when this food
     // has one; a broken/renamed asset just falls back to the old glyph.
     if (_assetPath != null) {
-      return Image.asset(
+      // PATCH_V29_FOODTHUMB_DARK_SAFE: forest-plate composite kills the light PNG fringe
+      // in dark mode (same fix as mood faces / status glyphs).
+      return darkSafeAsset(
         _assetPath!,
         fit: BoxFit.contain,
         width: widget.size,
         height: widget.size,
-        errorBuilder: (_, __, ___) =>
-            _glyphView(_glyph ?? kFoodGlyphFallback),
+        isDark: Theme.of(context).brightness == Brightness.dark,
+        radius: BorderRadius.circular(widget.radius),
+        errorChild: _glyphView(_glyph ?? kFoodGlyphFallback),
       );
     }
     if (_glyph != null) return _glyphView(_glyph!);

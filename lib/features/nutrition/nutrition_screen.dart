@@ -251,10 +251,11 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                     Row(children: [
+                      // PATCH_V29_FOODTHUMB_DARK_SAFE
                       wholesomeFoodAsset(wholesome.$4) != null
-                        ? Image.asset(wholesomeFoodAsset(wholesome.$4)!,
-                            width: 20, height: 20,
-                            errorBuilder: (_, __, ___) => Text(wholesome.$1,
+                        ? darkSafeAsset(wholesomeFoodAsset(wholesome.$4)!,
+                            width: 20, height: 20, isDark: isDark,
+                            errorChild: Text(wholesome.$1,
                                 style: const TextStyle(fontSize: 20)))
                         : Text(wholesome.$1,
                             style: const TextStyle(fontSize: 20)),
