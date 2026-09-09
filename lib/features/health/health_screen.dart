@@ -547,7 +547,9 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
           border: Border.all(color: color.withOpacity(0.2))),
         child: Column(children: [
           statusGlyphForEmoji(emoji) != null
-              ? darkSafeAsset(statusGlyphForEmoji(emoji)!, width: 20, height: 20, isDark: isDark,
+              ? // PATCH_V27_FIX_HEALTH_ISDARK_SCOPE: isDark isn't in scope at this call site, compute locally
+                  darkSafeAsset(statusGlyphForEmoji(emoji)!, width: 20, height: 20,
+                      isDark: Theme.of(context).brightness == Brightness.dark,
                   errorChild:
                       Text(emoji, style: const TextStyle(fontSize: 20)))
               : Text(emoji, style: const TextStyle(fontSize: 20)),

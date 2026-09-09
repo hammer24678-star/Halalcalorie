@@ -1,3 +1,4 @@
+// PATCH_V27_FIX_DARKSAFEASSET_ERRORBUILDER
 // home_screen.dart — HalalCalorie — Ultra-polished v4
 // Staggered entrance · Animated calorie ring · Live prayer · Glass cards
 import 'dart:async';
@@ -575,7 +576,7 @@ class _WholesomeFoodStrip extends StatelessWidget {
                 child: Row(mainAxisSize: MainAxisSize.min, children: [
                   // PATCH_V26: dark-safe food glyph
                   darkSafeAsset(f['asset']!, width: 18, height: 18, isDark: isDark,
-                      errorBuilder: (_, __, ___) => const SizedBox(width: 18, height: 18)),
+                      errorChild: const SizedBox(width: 18, height: 18)),
                   const SizedBox(width: 7),
                   Text(isAr ? f['ar']! : f['en']!, style: TextStyle(
                       fontFamily: 'Aligarh', fontSize: 12.5,
@@ -1192,7 +1193,7 @@ border: Border.all(color: widget.border, width: 0.5),
 child: Column(children: [
 statusGlyphForEmoji(widget.emoji) != null
     ? darkSafeAsset(statusGlyphForEmoji(widget.emoji)!, width: 18, height: 18, isDark: isDark,
-        errorBuilder: (_, __, ___) =>
+        errorChild:
             Text(widget.emoji, style: const TextStyle(fontSize: 18)))
     : Text(widget.emoji, style: const TextStyle(fontSize: 18)),
 const SizedBox(height: 5),
@@ -1545,7 +1546,7 @@ borderRadius: BorderRadius.circular(9),
 ),
 child: Center(child: statusGlyphForEmoji(item.emoji) != null
     ? darkSafeAsset(statusGlyphForEmoji(item.emoji)!, width: 20, height: 20, isDark: isDark,
-        errorBuilder: (_, __, ___) =>
+        errorChild:
             Text(item.emoji, style: const TextStyle(fontSize: 17)))
     : Text(item.emoji, style: const TextStyle(fontSize: 17))),
 ),
