@@ -1,3 +1,4 @@
+// PATCH_V28_FIX_HOME_ISDARK_SCOPE
 // PATCH_V27_FIX_DARKSAFEASSET_ERRORBUILDER
 // home_screen.dart — HalalCalorie — Ultra-polished v4
 // Staggered entrance · Animated calorie ring · Live prayer · Glass cards
@@ -1192,7 +1193,7 @@ border: Border.all(color: widget.border, width: 0.5),
 ),
 child: Column(children: [
 statusGlyphForEmoji(widget.emoji) != null
-    ? darkSafeAsset(statusGlyphForEmoji(widget.emoji)!, width: 18, height: 18, isDark: isDark,
+    ? darkSafeAsset(statusGlyphForEmoji(widget.emoji)!, width: 18, height: 18, isDark: Theme.of(context).brightness == Brightness.dark,
         errorChild:
             Text(widget.emoji, style: const TextStyle(fontSize: 18)))
     : Text(widget.emoji, style: const TextStyle(fontSize: 18)),
@@ -1545,7 +1546,7 @@ color: item.color.withOpacity(0.12),
 borderRadius: BorderRadius.circular(9),
 ),
 child: Center(child: statusGlyphForEmoji(item.emoji) != null
-    ? darkSafeAsset(statusGlyphForEmoji(item.emoji)!, width: 20, height: 20, isDark: isDark,
+    ? darkSafeAsset(statusGlyphForEmoji(item.emoji)!, width: 20, height: 20, isDark: Theme.of(context).brightness == Brightness.dark,
         errorChild:
             Text(item.emoji, style: const TextStyle(fontSize: 17)))
     : Text(item.emoji, style: const TextStyle(fontSize: 17))),
