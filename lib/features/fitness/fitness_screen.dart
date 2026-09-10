@@ -401,11 +401,15 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                                   : barCol.withOpacity(0.06),
                               child: Stack(children: [
                                 Center(
+                                  // PATCH_V30_DARKSAFE_PLATE_COLOR: plate matched to this
+                                  // tile's own tinted wash, not a flat guess.
                                   child: iconPath != null
-                                      ? Image.asset(iconPath,
+                                      ? darkSafeAsset(iconPath,
                                           width: 88, height: 88, fit: BoxFit.contain,
-                                          errorBuilder: (_, __, ___) =>
-                                              Text(w.emoji, style: const TextStyle(fontSize: 48)))
+                                          isDark: isDark,
+                                          plateColor: Color.alphaBlend(
+                                              barCol.withOpacity(0.08), card),
+                                          errorChild: Text(w.emoji, style: const TextStyle(fontSize: 48)))
                                       : Text(w.emoji, style: const TextStyle(fontSize: 48)),
                                 ),
                                 if (locked)
@@ -689,11 +693,14 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
                 ),
               ),
               child: Center(
+                // PATCH_V30_DARKSAFE_PLATE_COLOR: plate matches this container's own
+                // flat 0xFF1A2E22 fill exactly, so it truly disappears.
                 child: iconPath != null
-                    ? Image.asset(iconPath,
+                    ? darkSafeAsset(iconPath,
                         width: 100, height: 100, fit: BoxFit.contain,
-                        errorBuilder: (_, __, ___) =>
-                            Text(w.emoji, style: const TextStyle(fontSize: 56)))
+                        isDark: isDark,
+                        plateColor: const Color(0xFF1A2E22),
+                        errorChild: Text(w.emoji, style: const TextStyle(fontSize: 56)))
                     : Text(w.emoji, style: const TextStyle(fontSize: 56)),
               ),
             );

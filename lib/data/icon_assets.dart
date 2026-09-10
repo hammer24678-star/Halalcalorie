@@ -296,6 +296,7 @@ Widget darkSafeAsset(
   bool isDark = false,
   Widget? errorChild,
   BorderRadius? radius,
+  Color? plateColor, // PATCH_V30_DARKSAFE_PLATE_COLOR
 }) {
   final img = Image.asset(
     path,
@@ -309,13 +310,19 @@ Widget darkSafeAsset(
         ? null
         : (_, __, ___) => errorChild,
   );
-  if (!isDark) return img;
-  final child = radius != null
+  // PATCH_V30_DARKSAFE_PLATE_COLOR: clip now applies in both modes -- previously a light-mode
+  // caller passing `radius` silently lost it.
+  final clipped = radius != null
       ? ClipRRect(borderRadius: radius, child: img)
       : img;
-  // Soft forest plate ≈ darkCard so residual light fringe blends away.
+  if (!isDark) return clipped;
+  // Plate defaults to the old flat forest tone for existing callers that
+  // don't pass one (mood faces, FoodThumb, status glyphs -- unchanged).
+  // New callers should pass the *actual* local surface color (via
+  // Color.alphaBlend for a tinted overlay) -- a mismatched flat plate is
+  // exactly what drew a visible box instead of hiding the fringe.
   return ColoredBox(
-    color: const Color(0xFF0E1A14),
-    child: child,
+    color: plateColor ?? const Color(0xFF0E1A14),
+    child: clipped,
   );
 }

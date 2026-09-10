@@ -567,7 +567,13 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         : kMoodFacesEn.map((m) => [m['asset']!, m['label']!]).toList();
 
     return _card(bg, Column(children: [
-      Row(mainAxisAlignment: MainAxisAlignment.spaceAround,
+      // PATCH_V30_MOOD_WRAP: Row+spaceAround overflowed past the card's
+      // right edge at 8 moods (spaceAround only shares *leftover*
+      // space -- it doesn't shrink or wrap). Wrap keeps every face
+      // inside the card, dropping to a second line instead.
+      Wrap(
+        alignment: WrapAlignment.spaceAround,
+        runSpacing: 8,
         children: moods.map((m) => GestureDetector(
           onTap: () => ref.read(healthProvider.notifier).setMood(m[1]),
           // PATCH_V21_UI_POLISH: selected mood glow

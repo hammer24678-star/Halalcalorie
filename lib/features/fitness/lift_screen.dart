@@ -551,19 +551,22 @@ class _ExerciseRow extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
+                // PATCH_V30_DARKSAFE_PLATE_COLOR: plate matched to this row's own tinted
+                // background instead of the mismatched v26 default.
                 child: exerciseIconAsset(exercise.id) != null
-                    ? ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          exerciseIconAsset(exercise.id)!,
-                          width: 30,
-                          height: 30,
-                          fit: BoxFit.contain,
-                          // PATCH_LIFT_MUSCLE_ICONS: never let a missing
-                          // asset crash the row -- fall back to the emoji.
-                          errorBuilder: (_, __, ___) => Text(exercise.glyph,
-                              style: const TextStyle(fontSize: 20)),
-                        ),
+                    ? darkSafeAsset(
+                        exerciseIconAsset(exercise.id)!,
+                        width: 30,
+                        height: 30,
+                        fit: BoxFit.contain,
+                        isDark: Theme.of(context).brightness == Brightness.dark,
+                        radius: BorderRadius.circular(10),
+                        plateColor: Color.alphaBlend(
+                            (logged ? rank.color : muted).withOpacity(0.10), card),
+                        // PATCH_LIFT_MUSCLE_ICONS: never let a missing
+                        // asset crash the row -- fall back to the emoji.
+                        errorChild: Text(exercise.glyph,
+                            style: const TextStyle(fontSize: 20)),
                       )
                     : Text(exercise.glyph,
                         style: const TextStyle(fontSize: 20))),
