@@ -12,6 +12,7 @@ import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/models/models.dart';
+import '../../data/icon_assets.dart'; // PATCH_V31_BODY_OVERVIEW_REMASTER
 
 class BodyScreen extends ConsumerStatefulWidget {
   const BodyScreen({super.key});
@@ -141,7 +142,18 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
           boxShadow: [BoxShadow(color: AppColors.brandGreen.withOpacity(0.35), blurRadius: 16, offset: const Offset(0, 6))],
         ),
         child: Column(children: [
-          Text(p.isMale ? '🧔' : '🧕', style: const TextStyle(fontSize: 48)),
+          // PATCH_V31_BODY_OVERVIEW_REMASTER: same avatar art + ClipOval convention as
+          // ProfileScreen -- this screen previously used the plain emoji.
+          Container(
+            width: 72, height: 72,
+            decoration: BoxDecoration(shape: BoxShape.circle,
+                color: Colors.white.withOpacity(0.18)),
+            child: ClipOval(child: Image.asset(
+              p.isMale ? kAvatarBrothers : kAvatarSisters,
+              width: 72, height: 72, fit: BoxFit.cover,
+              errorBuilder: (_, __, ___) => Center(
+                  child: Text(p.isMale ? '🧔' : '🧕', style: const TextStyle(fontSize: 40))))),
+          ),
           const SizedBox(height: 8),
           Text('${p.weightKg.toStringAsFixed(1)} kg  •  ${p.heightCm.toInt()} cm  •  ${p.age} ${isAr ? "سنة" : "yrs"}',
               style: const TextStyle(fontFamily: 'Aligarh', color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
@@ -161,10 +173,12 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         shrinkWrap: true, physics: const NeverScrollableScrollPhysics(),
         crossAxisCount: 2, mainAxisSpacing: 11, crossAxisSpacing: 11, childAspectRatio: 1.6,
         children: [
-          _metricCard(tLang(lang, 'وزنك الحالي', 'Current Weight', 'Poids actuel', 'Mevcut Ağırlık', 'Berat Semasa', 'Berat Saat Ini'), '${p.weightKg.toStringAsFixed(1)} kg', '⚖️', AppColors.brandGreen, cardBg),
-          _metricCard(tLang(lang, 'الوزن المثالي', 'Ideal Weight', 'Poids idéal', 'İdeal Ağırlık', 'Berat Ideal', 'Berat Ideal'), '${p.idealWeightKg.toStringAsFixed(1)} kg', '🎯', AppColors.accentGold, cardBg),
-          _metricCard(tLang(lang, 'هدف السعرات', 'Calorie Goal', 'Objectif calorique', 'Kalori Hedefi', 'Sasaran Kalori', 'Target Kalori'), '${p.calorieGoalKcal.toInt()} kcal', '🔥', AppColors.haramRed, cardBg),
-          _metricCard(tLang(lang, 'الماء اليومي', 'Daily Water', 'Eau quotidienne', 'Günlük Su', 'Air Harian', 'Air Harian'), '${p.waterLiters} L', '💧', AppColors.waterBlue, cardBg),
+          // PATCH_V31_BODY_OVERVIEW_REMASTER: pass isDark/muted through so the card can
+          // fix its own dark-mode label color instead of hardcoding one.
+          _metricCard(tLang(lang, 'وزنك الحالي', 'Current Weight', 'Poids actuel', 'Mevcut Ağırlık', 'Berat Semasa', 'Berat Saat Ini'), '${p.weightKg.toStringAsFixed(1)} kg', '⚖️', AppColors.brandGreen, cardBg, isDark: isDark, muted: muted),
+          _metricCard(tLang(lang, 'الوزن المثالي', 'Ideal Weight', 'Poids idéal', 'İdeal Ağırlık', 'Berat Ideal', 'Berat Ideal'), '${p.idealWeightKg.toStringAsFixed(1)} kg', '🎯', AppColors.accentGold, cardBg, isDark: isDark, muted: muted),
+          _metricCard(tLang(lang, 'هدف السعرات', 'Calorie Goal', 'Objectif calorique', 'Kalori Hedefi', 'Sasaran Kalori', 'Target Kalori'), '${p.calorieGoalKcal.toInt()} kcal', '🔥', AppColors.haramRed, cardBg, isDark: isDark, muted: muted),
+          _metricCard(tLang(lang, 'الماء اليومي', 'Daily Water', 'Eau quotidienne', 'Günlük Su', 'Air Harian', 'Air Harian'), '${p.waterLiters} L', '💧', AppColors.waterBlue, cardBg, isDark: isDark, muted: muted),
         ],
       ),
 
@@ -431,19 +445,28 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
     ]);
   }
 
-  Widget _metricCard(String label, String value, String emoji, Color color, Color bg) {
+  // PATCH_V31_BODY_OVERVIEW_REMASTER: icon badge instead of emoji+dot, hairline border to
+  // match every other remastered card, and `label` now actually uses
+  // the theme-aware `muted` color instead of a hardcoded light-mode one.
+  Widget _metricCard(String label, String value, String emoji, Color color, Color bg,
+      {bool isDark = false, Color muted = AppColors.lightMuted}) {
     return Container(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 10)]),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? AppColors.darkBorder2 : AppColors.lightBorder),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.20 : 0.06), blurRadius: 10)],
+      ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-          Text(emoji, style: const TextStyle(fontSize: 22)),
-          Container(width: 8, height: 8, decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-        ]),
-        const SizedBox(height: 6),
+        Container(
+          width: 34, height: 34,
+          decoration: BoxDecoration(color: color.withOpacity(isDark ? 0.16 : 0.12), shape: BoxShape.circle),
+          child: Center(child: Text(emoji, style: const TextStyle(fontSize: 17))),
+        ),
+        const SizedBox(height: 8),
         Text(value, style: TextStyle(fontFamily: 'Aligarh', fontSize: 16, fontWeight: FontWeight.w900, color: color)),
-        Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: AppColors.lightMuted), maxLines: 1, overflow: TextOverflow.ellipsis),
+        Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: muted), maxLines: 1, overflow: TextOverflow.ellipsis),
       ]),
     );
   }
@@ -452,8 +475,14 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
     final bmiPct = ((p.bmi - 10) / 35).clamp(0.0, 1.0);
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 14, offset: const Offset(0, 3))]),
+      // PATCH_V31_BODY_OVERVIEW_REMASTER: hairline border so the card reads as a card against
+      // dark backgrounds instead of nearly matching the scaffold color.
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: isDark ? AppColors.darkBorder2 : Colors.black.withOpacity(0.04)),
+        boxShadow: [BoxShadow(color: Colors.black.withOpacity(isDark ? 0.20 : 0.06), blurRadius: 14, offset: const Offset(0, 3))],
+      ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Text(tLang(lang, 'مؤشر كتلة الجسم', 'Body Mass Index', 'Indice de masse corporelle', 'Vücut Kitle İndeksi', 'Indeks Jisim Badan', 'Indeks Massa Tubuh'),
