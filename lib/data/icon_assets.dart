@@ -131,6 +131,22 @@ const Map<String, String> kGymPhotoAssetByExerciseId = {
   'dip': '$_kIcons/gym_strength/gymC_tricep_dip.png',
   'pushup': '$_kIcons/gym_strength/gymC_pushup.png',
   'plank': '$_kIcons/gym_strength/gymC_plank.png',
+  // PATCH_V34_15_NEW_LIFTS: icons for the 15 new lifts above.
+  'rdl': '$_kIcons/gym_strength/gymD_romanian_deadlift.png',
+  'cablerow': '$_kIcons/gym_strength/gymD_seated_cable_row.png',
+  'onearmrow': '$_kIcons/gym_strength/gymD_one_arm_row.png',
+  'farmerscarry': '$_kIcons/gym_strength/gymD_farmers_carry.png',
+  'lateralraise': '$_kIcons/gym_strength/gymD_lateral_raise.png',
+  'cablefly': '$_kIcons/gym_strength/gymD_cable_fly.png',
+  'inclinebench': '$_kIcons/gym_strength/gymD_incline_bench.png',
+  'triceppushdown': '$_kIcons/gym_strength/gymD_tricep_pushdown.png',
+  'skullcrusher': '$_kIcons/gym_strength/gymD_skull_crusher.png',
+  'walklunge': '$_kIcons/gym_strength/gymD_walking_lunge.png',
+  'splitsquat': '$_kIcons/gym_strength/gymD_split_squat.png',
+  'stepup': '$_kIcons/gym_strength/gymD_step_up.png',
+  'kbswing': '$_kIcons/gym_strength/gymD_kettlebell_swing.png',
+  'boxjump': '$_kIcons/gym_strength/gymD_box_jump.png',
+  'russiantwist': '$_kIcons/gym_strength/gymD_russian_twist.png',
 };
 
 /// Drop-in replacement for muscleAssetForExercise(): tries the new

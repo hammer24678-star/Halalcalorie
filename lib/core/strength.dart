@@ -266,6 +266,99 @@ const kLiftExercises = <LiftExercise>[
     maleStandards:   [20, 45, 75, 110, 150, 195, 240, 300, 360],
     femaleStandards: [15, 35, 60, 95, 130, 170, 215, 270, 330],
   ),
+  // PATCH_V34_15_NEW_LIFTS: 15 new lifts, see this script's header for how these
+  // were chosen and why standards below are estimates, not sourced
+  // published data like the original 13 above.
+  LiftExercise(
+    id: 'rdl', nameEn: 'Romanian Deadlift', nameAr: 'رفعة رومانية', glyph: '🏋️',
+    kind: LiftKind.loaded, group: 'back',
+    maleStandards:   [0.50, 0.80, 1.10, 1.45, 1.80, 2.15, 2.50, 2.85, 3.20],
+    femaleStandards: [0.35, 0.55, 0.80, 1.05, 1.35, 1.65, 1.90, 2.15, 2.40],
+  ),
+  LiftExercise(
+    id: 'cablerow', nameEn: 'Seated Cable Row', nameAr: 'تجديف كابل جالس', glyph: '🚣',
+    kind: LiftKind.loaded, group: 'back',
+    maleStandards:   [0.35, 0.55, 0.78, 1.00, 1.25, 1.48, 1.68, 1.85, 2.05],
+    femaleStandards: [0.25, 0.38, 0.55, 0.72, 0.90, 1.08, 1.22, 1.36, 1.50],
+  ),
+  LiftExercise(
+    id: 'onearmrow', nameEn: 'One-Arm Dumbbell Row', nameAr: 'تجديف دمبل بيد واحدة', glyph: '🚣',
+    kind: LiftKind.loaded, group: 'back',
+    maleStandards:   [0.18, 0.28, 0.40, 0.53, 0.66, 0.79, 0.90, 1.00, 1.10],
+    femaleStandards: [0.10, 0.16, 0.24, 0.32, 0.40, 0.48, 0.55, 0.62, 0.70],
+  ),
+  LiftExercise(
+    id: 'farmerscarry', nameEn: "Farmer's Carry", nameAr: 'حمل المزارع', glyph: '🧳',
+    kind: LiftKind.loaded, group: 'back',
+    maleStandards:   [0.40, 0.60, 0.85, 1.10, 1.40, 1.70, 2.00, 2.30, 2.60],
+    femaleStandards: [0.25, 0.40, 0.58, 0.78, 1.00, 1.22, 1.44, 1.65, 1.90],
+  ),
+  LiftExercise(
+    id: 'lateralraise', nameEn: 'Lateral Raise', nameAr: 'رفرفة جانبية', glyph: '🤷',
+    kind: LiftKind.loaded, group: 'shoulders',
+    maleStandards:   [0.06, 0.10, 0.14, 0.19, 0.24, 0.29, 0.34, 0.39, 0.45],
+    femaleStandards: [0.04, 0.06, 0.09, 0.12, 0.16, 0.20, 0.24, 0.28, 0.32],
+  ),
+  LiftExercise(
+    id: 'cablefly', nameEn: 'Cable Fly', nameAr: 'فتح كابل للصدر', glyph: '🦋',
+    kind: LiftKind.loaded, group: 'chest',
+    maleStandards:   [0.10, 0.16, 0.24, 0.32, 0.40, 0.48, 0.55, 0.62, 0.70],
+    femaleStandards: [0.06, 0.10, 0.15, 0.20, 0.26, 0.32, 0.38, 0.44, 0.50],
+  ),
+  LiftExercise(
+    id: 'inclinebench', nameEn: 'Incline Bench Press', nameAr: 'بنش مائل', glyph: '💪',
+    kind: LiftKind.loaded, group: 'chest',
+    maleStandards:   [0.28, 0.45, 0.65, 0.90, 1.15, 1.40, 1.62, 1.82, 2.00],
+    femaleStandards: [0.16, 0.26, 0.38, 0.52, 0.68, 0.84, 0.98, 1.10, 1.22],
+  ),
+  LiftExercise(
+    id: 'triceppushdown', nameEn: 'Tricep Pushdown', nameAr: 'ضغط الترايسبس بالكابل', glyph: '💪',
+    kind: LiftKind.loaded, group: 'arms',
+    maleStandards:   [0.15, 0.24, 0.34, 0.45, 0.56, 0.68, 0.79, 0.90, 1.00],
+    femaleStandards: [0.08, 0.13, 0.19, 0.26, 0.33, 0.40, 0.46, 0.53, 0.60],
+  ),
+  LiftExercise(
+    id: 'skullcrusher', nameEn: 'Skull Crusher', nameAr: 'كسر الجمجمة', glyph: '💀',
+    kind: LiftKind.loaded, group: 'arms',
+    maleStandards:   [0.15, 0.24, 0.34, 0.45, 0.56, 0.68, 0.79, 0.90, 1.00],
+    femaleStandards: [0.08, 0.13, 0.19, 0.26, 0.33, 0.40, 0.46, 0.53, 0.60],
+  ),
+  LiftExercise(
+    id: 'walklunge', nameEn: 'Walking Lunge', nameAr: 'اندفاع بالمشي', glyph: '🚶',
+    kind: LiftKind.loaded, group: 'legs',
+    maleStandards:   [0.15, 0.25, 0.38, 0.52, 0.68, 0.84, 1.00, 1.15, 1.30],
+    femaleStandards: [0.10, 0.18, 0.28, 0.40, 0.52, 0.65, 0.78, 0.90, 1.02],
+  ),
+  LiftExercise(
+    id: 'splitsquat', nameEn: 'Bulgarian Split Squat', nameAr: 'سكوات بلغاري', glyph: '🦵',
+    kind: LiftKind.loaded, group: 'legs',
+    maleStandards:   [0.15, 0.25, 0.38, 0.52, 0.68, 0.84, 1.00, 1.15, 1.30],
+    femaleStandards: [0.10, 0.18, 0.28, 0.40, 0.52, 0.65, 0.78, 0.90, 1.02],
+  ),
+  LiftExercise(
+    id: 'stepup', nameEn: 'Box Step-Up', nameAr: 'صعود الصندوق', glyph: '🪜',
+    kind: LiftKind.loaded, group: 'legs',
+    maleStandards:   [0.20, 0.32, 0.46, 0.62, 0.78, 0.95, 1.10, 1.25, 1.40],
+    femaleStandards: [0.12, 0.20, 0.30, 0.42, 0.54, 0.66, 0.78, 0.90, 1.00],
+  ),
+  LiftExercise(
+    id: 'kbswing', nameEn: 'Kettlebell Swing', nameAr: 'أرجحة الكيتل بيل', glyph: '🏋️',
+    kind: LiftKind.loaded, group: 'legs',
+    maleStandards:   [0.20, 0.32, 0.45, 0.60, 0.75, 0.90, 1.05, 1.20, 1.35],
+    femaleStandards: [0.14, 0.22, 0.32, 0.44, 0.56, 0.68, 0.80, 0.92, 1.05],
+  ),
+  LiftExercise(
+    id: 'boxjump', nameEn: 'Box Jump', nameAr: 'قفز الصندوق', glyph: '📦',
+    kind: LiftKind.bodyweight, group: 'legs',
+    maleStandards:   [5, 10, 18, 28, 40, 52, 65, 80, 95],
+    femaleStandards: [3, 7, 13, 20, 30, 40, 50, 62, 75],
+  ),
+  LiftExercise(
+    id: 'russiantwist', nameEn: 'Russian Twist', nameAr: 'لفة روسية', glyph: '🌀',
+    kind: LiftKind.loaded, group: 'core',
+    maleStandards:   [0.10, 0.16, 0.24, 0.32, 0.40, 0.48, 0.56, 0.64, 0.72],
+    femaleStandards: [0.06, 0.10, 0.15, 0.20, 0.26, 0.32, 0.38, 0.44, 0.50],
+  ),
 ];
 
 LiftExercise? liftById(String id) {
