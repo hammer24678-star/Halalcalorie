@@ -815,10 +815,16 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                     ),
                     // PATCH_V32_HEALTH_ARTICLE_ICONS: illustrated badge, emoji stays
                     // as the errorBuilder fallback.
+                    // PATCH_V33_DARK_FRINGE_FIX: darkSafeAsset composites a
+                    // plate behind the transparent PNG in dark mode so the
+                    // light fringe doesn't show against the dark card.
                     child: Center(child: a.iconAsset != null
-                        ? Image.asset(healthArticleAsset(a.iconAsset!),
+                        ? darkSafeAsset(healthArticleAsset(a.iconAsset!),
                             width: 28, height: 28, fit: BoxFit.contain,
-                            errorBuilder: (_, __, ___) => Text(a.icon,
+                            isDark: isDark,
+                            plateColor: Color.alphaBlend(
+                                artColor.withOpacity(0.18), bg),
+                            errorChild: Text(a.icon,
                                 style: const TextStyle(fontSize: 24)))
                         : Text(a.icon,
                             style: const TextStyle(fontSize: 24))),
