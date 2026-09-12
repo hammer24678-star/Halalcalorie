@@ -553,6 +553,9 @@ class _ExerciseRow extends StatelessWidget {
             child: Center(
                 // PATCH_V30_DARKSAFE_PLATE_COLOR: plate matched to this row's own tinted
                 // background instead of the mismatched v26 default.
+                // PATCH_V35_ICON_FALLBACKS: emoji fallback dimmed + shrunk to match
+                // the 30px illustrated icons instead of popping as a
+                // full-size native emoji.
                 child: exerciseIconAsset(exercise.id) != null
                     ? darkSafeAsset(
                         exerciseIconAsset(exercise.id)!,
@@ -565,11 +568,11 @@ class _ExerciseRow extends StatelessWidget {
                             (logged ? rank.color : muted).withOpacity(0.10), card),
                         // PATCH_LIFT_MUSCLE_ICONS: never let a missing
                         // asset crash the row -- fall back to the emoji.
-                        errorChild: Text(exercise.glyph,
-                            style: const TextStyle(fontSize: 20)),
+                        errorChild: Opacity(opacity: 0.5, child: Text(exercise.glyph,
+                            style: const TextStyle(fontSize: 15))),
                       )
-                    : Text(exercise.glyph,
-                        style: const TextStyle(fontSize: 20))),
+                    : Opacity(opacity: 0.5, child: Text(exercise.glyph,
+                        style: const TextStyle(fontSize: 15)))),
           ),
           const SizedBox(width: 12),
           Expanded(
