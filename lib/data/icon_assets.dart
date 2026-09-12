@@ -206,6 +206,9 @@ String vegetableAsset(String name) => '$_kIcons/vegetables/$name.png';
 String proteinAsset(String name) => '$_kIcons/proteins/$name.png';
 String pantryAsset(String name) => '$_kIcons/pantry_and_dishes/$name.png';
 String workoutBrotherAsset(String name) => '$_kIcons/workouts_brothers/$name.png';
+
+// PATCH_V32_HEALTH_ARTICLE_ICONS
+String healthArticleAsset(String name) => '$_kIcons/health/$name.png';
 String workoutSisterAsset(String name) => '$_kIcons/workouts_sisters_hijab/$name.png';
 
 // ═══════════════════════════════════════════════════════════

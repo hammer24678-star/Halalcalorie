@@ -813,8 +813,15 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                       color: artColor.withOpacity(0.18),
                       borderRadius: BorderRadius.circular(14),
                     ),
-                    child: Center(child: Text(a.icon,
-                        style: const TextStyle(fontSize: 24))),
+                    // PATCH_V32_HEALTH_ARTICLE_ICONS: illustrated badge, emoji stays
+                    // as the errorBuilder fallback.
+                    child: Center(child: a.iconAsset != null
+                        ? Image.asset(healthArticleAsset(a.iconAsset!),
+                            width: 28, height: 28, fit: BoxFit.contain,
+                            errorBuilder: (_, __, ___) => Text(a.icon,
+                                style: const TextStyle(fontSize: 24)))
+                        : Text(a.icon,
+                            style: const TextStyle(fontSize: 24))),
                   ),
                   const SizedBox(width: 10),
                   Expanded(child: Column(
