@@ -870,7 +870,7 @@ const kHealthArticles = [
   HealthArticle(id:'h8', icon:'⚖️', colorValue:0xFFFF5722, title:'الوزن ومؤشر كتلة الجسم',
     summary:'احسب وزنك المثالي',
     body:'BMI = الوزن ÷ الطول²\n\n• أقل من 18.5 = نقص وزن\n• 18.5-24.9 = وزن مثالي ✓\n• 25-29.9 = زيادة وزن\n• 30+ = سمنة\n\nالصيام المتقطع يقلل الوزن 3-8% خلال 8 أسابيع.'),
-  HealthArticle(id:'h9', icon:'💊', colorValue:0xFF009688, title:'المكملات والفيتامينات',
+  HealthArticle(id:'h9', icon:'💊', iconAsset:'label_reading', colorValue:0xFF009688, title:'المكملات والفيتامينات',
     summary:'ما تحتاجه فعلاً',
     body:'الأهم:\n• فيتامين D3: 2000-4000 وحدة\n• أوميجا 3: 1-2 جرام\n• مغنيسيوم: 300-400 ملجم\n\nمن السنة:\n• الحبة السوداء: فيها شفاء\n• العسل الطبيعي: مضاد جرثومي'),
   HealthArticle(id:'h10', icon:'🩸', colorValue:0xFFF44336, title:'فحوصات سنوية أساسية',
