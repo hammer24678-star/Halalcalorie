@@ -739,6 +739,13 @@ class _NutritionState extends ConsumerState<NutritionScreen>
           foregroundColor: textC,
           elevation: 0,
           actions: [
+            // PATCH_V37_ICON_OVERHAUL: Barcode was Home-only before -- wasn't reachable from Nutrition.
+            IconButton(
+              icon: Icon(Icons.qr_code_scanner_rounded,
+                  color: accent, size: 26),
+              onPressed: () => context.push('/scanner'),
+              tooltip: tl('باركود', 'Barcode'),
+            ),
             IconButton(
               icon: Icon(Icons.add_circle_outline_rounded,
                   color: accent, size: 26),
