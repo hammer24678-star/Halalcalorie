@@ -40,6 +40,16 @@ android {
         versionName "__VERSION_NAME__"
     }
 
+    // PATCH_V40_16KB_PAGE_SIZE: keep native libs uncompressed + page-aligned in
+    // the APK/AAB so Play's 16 KB check passes regardless of AGP's
+    // minSdk-based default. minSdk 24 already implies this under
+    // AGP 8.3+/9.x, but don't leave a Play-blocking check implicit.
+    packaging {
+        jniLibs {
+            useLegacyPackaging = false
+        }
+    }
+
     signingConfigs {
         release {
             storeFile file(System.getenv("KEYSTORE_PATH") ?: "keystore.jks")
