@@ -25,12 +25,26 @@ class HealthService {
   }
   static Future<bool> isAuthorized() async => true;
 
+  /// True while the step subscription is live.
+  static bool get isRunning => _sub != null;
+
+  /// Read-only check — never shows a permission dialog.
+  static Future<bool> hasActivityPermission() async {
+    try {
+      final s = await Permission.activityRecognition.status;
+      return s.isGranted || s.isLimited;
+    } catch (_) {
+      return false;
+    }
+  }
+
   static Future<void> startStepTracking(
     void Function(int steps) onStep, {
     void Function(String)? onStatus,
+    bool askPermissions = true,
   }) async {
     _onStep = onStep;
-    await requestPermissions();
+    if (askPermissions) await requestPermissions();
 
     if (!_ready) {
       try {

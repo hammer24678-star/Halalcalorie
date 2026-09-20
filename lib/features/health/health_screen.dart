@@ -56,7 +56,6 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    HealthService.stopTracking();
     _tab.dispose();
     _stagger.dispose();
     _weightCtrl.dispose();
@@ -65,12 +64,8 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   }
 
   Future<void> _startStepService() async {
-    await HealthService.startStepTracking((steps) {
-      if (!mounted) return;
-      ref.read(healthProvider.notifier).setSteps(steps);
-      if (!_stepServiceRunning)
-        setState(() => _stepServiceRunning = true);
-    });
+    // The tracker outlives this screen; here it may ask for the permission.
+    await ref.read(stepTrackerProvider).ensureStarted();
     if (mounted) setState(() => _stepServiceRunning = true);
   }
 

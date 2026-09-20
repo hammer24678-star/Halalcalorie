@@ -1,4 +1,3 @@
-import 'dart:math';
 // ============================================================
 //  user_profile.dart — HalalCalorie v1.0
 //  Complete user profile with body metrics engine
@@ -267,26 +266,6 @@ class UserProfile {
       return (1.20 * bmi) + (0.23 * age) - 5.4;
     }
   }
-
-  // Body Fat via Navy Method (more accurate if waist known)
-  double? get bodyFatPercentNavy {
-    if (waistCm == null) return null;
-    if (isMale) {
-      // Men: 495 / (1.0324 – 0.19077 × log10(waist – neck) + 0.15456 × log10(height)) – 450
-      // Simplified without neck measurement:
-      final w = waistCm!;
-      final h = heightCm;
-      final val = 495.0 / (1.0324 - 0.19077 * _log10(w - 0) + 0.15456 * _log10(h)) - 450;
-      return val.clamp(3.0, 50.0);
-    } else {
-      final w = waistCm!;
-      final h = heightCm;
-      final val = 495.0 / (1.29579 - 0.35004 * _log10(w) + 0.22100 * _log10(h)) - 450;
-      return val.clamp(10.0, 60.0);
-    }
-  }
-
-  static double _log10(double x) => x > 0 ? log(x) / ln10 : 0;
 
   String get bodyFatCategory {
     final bf = bodyFatPercent;

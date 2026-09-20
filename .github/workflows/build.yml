@@ -6,6 +6,11 @@ on:
 permissions:
   contents: write
 
+# A newer push supersedes an in-flight build (v41 and v42 were pushed minutes apart).
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,8 +26,17 @@ jobs:
         with:
           flutter-version: '3.44.7'
           channel: 'stable'
+          cache: true
 
       - run: flutter pub get
+
+      # Informational: reports analyzer errors and test failures early, but never
+      # blocks the build (tests existed but were never run in CI).
+      - name: Analyze & test
+        continue-on-error: true
+        run: |
+          flutter analyze --no-fatal-infos --no-fatal-warnings lib test
+          flutter test
 
       - run: flutter create --platforms=android --project-name=halalcalorie .
 
@@ -78,7 +92,7 @@ jobs:
           retention-days: 30
 
       - name: Release APK & AAB
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           tag_name: latest
           name: HalalCalorie Latest

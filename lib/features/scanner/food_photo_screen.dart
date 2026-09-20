@@ -131,13 +131,58 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         if (mounted) setState(() { _error = '__API_KEY_MISSING__'; _state = AnalysisState.error; });
         return;
       }
-      final msg = errStr.contains('GROQ_API_KEY') || errStr.contains('401')
-        ? (lang == 'ar' ? 'مفتاح API غير مُعدّ — أضفه في GitHub Secrets' : 'API key not configured — add it to GitHub Secrets')
-        : errStr.contains('timeout') || errStr.contains('TimeoutException')
-        ? (lang == 'ar' ? 'انتهت مهلة الاتصال، حاول مجدداً' : 'Connection timed out, try again')
-        : (lang == 'ar' ? 'تعذّر التحليل: $errStr' : 'Analysis failed: $errStr');
+      final msg = _friendlyAiError(errStr, lang);
       if (mounted) setState(() { _error = msg; _state = AnalysisState.error; });
     }
+  }
+
+  /// Maps an AIService failure to something a person can act on. The raw text
+  /// (the provider's JSON body, developer hints like "add it to GitHub Secrets")
+  /// goes to the log, not the screen.
+  String _friendlyAiError(String raw, String lang) {
+    debugPrint('food analysis failed: $raw');
+    final status = RegExp(r'API (\d{3})').firstMatch(raw)?.group(1);
+    final lower = raw.toLowerCase();
+    if (lower.contains('timeout') || lower.contains('timed out')) {
+      return tLang(lang, 'انتهت مهلة الاتصال، حاول مجدداً',
+          'Connection timed out, try again');
+    }
+    if (lower.contains('socketexception') ||
+        lower.contains('failed host lookup') ||
+        lower.contains('clientexception')) {
+      return tLang(lang, '⚠️ لا يوجد اتصال بالإنترنت', '⚠️ No internet connection');
+    }
+    if (status == '401' || status == '403' || raw.contains('GROQ_API_KEY')) {
+      return tLang(
+          lang,
+          'تحليل الصور غير متاح حالياً. حاول لاحقاً.',
+          'Photo analysis is unavailable right now. Please try again later.',
+          'L’analyse photo est indisponible pour le moment. Réessayez plus tard.',
+          'Fotoğraf analizi şu anda kullanılamıyor. Lütfen daha sonra tekrar deneyin.',
+          'Analisis foto tidak tersedia buat masa ini. Sila cuba lagi nanti.',
+          'Analisis foto sedang tidak tersedia. Silakan coba lagi nanti.',
+          'فوٹو تجزیہ اس وقت دستیاب نہیں۔ براہ کرم بعد میں کوشش کریں۔');
+    }
+    if (status == '429') {
+      return tLang(
+          lang,
+          'الطلبات كثيرة الآن — انتظر دقيقة ثم حاول مجدداً.',
+          'Too many requests right now — wait a minute and try again.',
+          'Trop de requêtes en ce moment — patientez une minute puis réessayez.',
+          'Şu anda çok fazla istek var — bir dakika bekleyip tekrar deneyin.',
+          'Terlalu banyak permintaan — tunggu seminit dan cuba lagi.',
+          'Terlalu banyak permintaan — tunggu semenit lalu coba lagi.',
+          'اس وقت بہت زیادہ درخواستیں ہیں — ایک منٹ رکیں اور دوبارہ کوشش کریں۔');
+    }
+    return tLang(
+        lang,
+        'تعذّر تحليل الصورة. جرّب صورة أوضح.',
+        'Couldn’t analyze this photo. Try a clearer one.',
+        'Impossible d’analyser cette photo. Essayez-en une plus nette.',
+        'Bu fotoğraf analiz edilemedi. Daha net bir fotoğraf deneyin.',
+        'Tidak dapat menganalisis foto ini. Cuba foto yang lebih jelas.',
+        'Foto ini tidak dapat dianalisis. Coba foto yang lebih jelas.',
+        'یہ تصویر تجزیہ نہیں ہو سکی۔ زیادہ واضح تصویر آزمائیں۔');
   }
 
   // ── Add single result to tracker ──────────────

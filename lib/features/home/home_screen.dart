@@ -94,7 +94,12 @@ final d = t - cur;
 return d >= 60 ? '${d ~/ 60}h ${(d % 60).toString().padLeft(2,'0')}m' : '${d}m';
 }
 }
-return '--';
+// Past the last prayer of the day: count down to tomorrow's first one. It used
+// to return "--" from Isha until midnight, while the card already named Fajr
+// as the next prayer.
+final first = list[0];
+final d = (first['h'] as int) * 60 + (first['m'] as int) + 24 * 60 - cur;
+return d >= 60 ? '${d ~/ 60}h ${(d % 60).toString().padLeft(2,'0')}m' : '${d}m';
 }
 
 String _fmtPrayerTime(int h, int m) {

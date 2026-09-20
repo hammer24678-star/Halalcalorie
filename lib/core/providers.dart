@@ -266,6 +266,36 @@ class HealthPermNotifier extends StateNotifier<bool> {
   Future<bool> request() async { try { final granted = await HealthService.requestPermissions(); state = granted; return granted; } catch (_) { return false; } }
 }
 
+/// Owns the pedometer subscription for the whole app session. Tracking used to
+/// start in HealthScreen.initState and stop in its dispose, so Home's steps and
+/// the Ascent "Move" quest stayed at 0 unless the Health tab was open.
+class StepTracker {
+  StepTracker(this._ref);
+  final Ref _ref;
+  bool _starting = false;
+
+  /// [askPermissions] false = start only if the permission is already granted
+  /// (used at launch, so there are no new prompts); the Health tab asks.
+  Future<void> ensureStarted({bool askPermissions = true}) async {
+    if (_starting || HealthService.isRunning) return;
+    _starting = true;
+    try {
+      if (!askPermissions && !await HealthService.hasActivityPermission()) return;
+      await HealthService.startStepTracking((steps) {
+        try {
+          // A late or zero reading must not wipe today's count.
+          if (steps < _ref.read(healthProvider).steps) return;
+          _ref.read(healthProvider.notifier).setSteps(steps);
+        } catch (_) {}
+      }, askPermissions: askPermissions);
+    } finally {
+      _starting = false;
+    }
+  }
+}
+
+final stepTrackerProvider = Provider<StepTracker>((ref) => StepTracker(ref));
+
 final workoutMinutesProvider = StateNotifierProvider<WorkoutMinutesNotifier, int>((ref) => WorkoutMinutesNotifier());
 class WorkoutMinutesNotifier extends StateNotifier<int> { WorkoutMinutesNotifier() : super(0) { _init(); }
   Future<void> _init() async { state = await AppDatabase.getTodayWorkoutMinutes(); }
@@ -373,7 +403,13 @@ class ZakatNotifier extends StateNotifier<double> { ZakatNotifier() : super(0) {
 
 final cityProvider = StateNotifierProvider<CityNotifier, String>((ref) => CityNotifier());
 class CityNotifier extends StateNotifier<String> { CityNotifier() : super('\u0627\u0644\u0642\u0627\u0647\u0631\u0629') { _load(); }
-  Future<void> _load() async { final p = await SharedPreferences.getInstance(); state = p.getString('city') ?? '\u0627\u0644\u0642\u0627\u0647\u0631\u0629'; }
+  Future<void> _load() async {
+    final p = await SharedPreferences.getInstance();
+    var c = p.getString('city') ?? '\u0627\u0644\u0642\u0627\u0647\u0631\u0629';
+    // The picker once listed "Aligarh" (a font-rename accident) in Cairo's place.
+    if (c == 'Aligarh') { c = 'Cairo'; await p.setString('city', c); }
+    state = c;
+  }
   Future<void> set(String city) async { state = city; final p = await SharedPreferences.getInstance(); await p.setString('city', city); }
 }
 
@@ -555,11 +591,14 @@ class AscentNotifier extends StateNotifier<AscentState> {
     final stillness = (row?['stillness'] as int? ?? 0).clamp(0, kQuestMax);
     final wholesome = (row?['wholesome'] as int? ?? 0).clamp(0, kQuestMax);
 
-    // Nourish: full marks inside 80-110% of the calorie goal.
+    // Nourish: full marks inside 80-110% of the calorie goal. Overshoot falls off
+    // (it used to score 80 at any intake above 110%, even 250%).
     final calPct = cals.goal > 0 ? cals.total / cals.goal : 0.0;
     final nourish = calPct >= 0.8 && calPct <= 1.1
         ? kQuestMax
-        : (calPct >= 0.6 ? 80 : (calPct > 0 ? 40 : 0));
+        : calPct > 1.1
+            ? (calPct <= 1.25 ? 75 : (calPct <= 1.5 ? 40 : 15))
+            : (calPct >= 0.6 ? 80 : (calPct > 0 ? 40 : 0));
 
     final hydrate = water.goal > 0
         ? ((water.cups / water.goal) * kQuestMax).clamp(0, kQuestMax).toInt() : 0;

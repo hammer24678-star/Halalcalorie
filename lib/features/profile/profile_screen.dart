@@ -432,18 +432,31 @@ class ProfileScreen extends ConsumerWidget {
     return AppColors.haramRed;
   }
 
+  // The default city is stored in Arabic while the picker lists English names.
+  static bool _sameCity(String stored, String c) {
+    if (stored.trim().toLowerCase() == c.toLowerCase()) return true;
+    return c == 'Cairo' && stored.trim() == '\u0627\u0644\u0642\u0627\u0647\u0631\u0629';
+  }
+
   void _showCityPicker(BuildContext context, WidgetRef ref, bool isAr) {
     final lang = ref.read(languageProvider);
-    const cities = ['Aligarh', 'Alexandria', 'Giza', 'Riyadh', 'Jeddah', 'Dubai', 'Abu Dhabi', 'Jakarta', 'Kuala Lumpur', 'Istanbul', 'London'];
+    // Every entry resolves in prayer_provider's city table.
+    const cities = [
+      'Cairo', 'Alexandria', 'Giza', 'Riyadh', 'Jeddah', 'Mecca', 'Medina',
+      'Dubai', 'Abu Dhabi', 'Doha', 'Kuwait City', 'Manama', 'Muscat', 'Amman',
+      'Beirut', 'Damascus', 'Baghdad', 'Istanbul', 'Ankara', 'Karachi', 'Lahore',
+      'Islamabad', 'Jakarta', 'Kuala Lumpur', 'Casablanca', 'Tunis', 'Algiers',
+      'Khartoum', 'London', 'Paris', 'Berlin', 'New York', 'Toronto', 'Sydney',
+    ];
     showModalBottomSheet(context: context, builder: (_) => ListView(padding: const EdgeInsets.all(16), children: [
       Text(tLang(lang, 'اختر مدينتك', 'Choose Your City', 'Choisissez votre ville', 'Şehrinizi Seçin', 'Pilih Bandar Anda', 'Pilih Kota Anda'),
           style: const TextStyle(fontFamily: 'Aligarh', fontSize: 20, fontWeight: FontWeight.w700)),
       const SizedBox(height: 12),
       ...cities.map((c) => ListTile(
         title: Text(c, style: TextStyle(fontFamily: 'Aligarh',
-          color: ref.read(cityProvider) == c ? AppColors.brandGreen : null,
-          fontWeight: ref.read(cityProvider) == c ? FontWeight.w700 : FontWeight.w400)),
-        trailing: ref.read(cityProvider) == c ? const Icon(Icons.check, color: AppColors.brandGreen) : null,
+          color: _sameCity(ref.read(cityProvider), c) ? AppColors.brandGreen : null,
+          fontWeight: _sameCity(ref.read(cityProvider), c) ? FontWeight.w700 : FontWeight.w400)),
+        trailing: _sameCity(ref.read(cityProvider), c) ? const Icon(Icons.check, color: AppColors.brandGreen) : null,
         onTap: () { ref.read(cityProvider.notifier).set(c); if (context.mounted) Navigator.pop(context); },
       )),
     ]));

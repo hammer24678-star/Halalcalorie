@@ -97,6 +97,18 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
     );
   }
 
+  // "Skip" on the intro slides means skip the slides — not skip setup. It used to
+  // call _finish(), which saved a default 25-year-old / 70 kg / 170 cm profile
+  // and never asked the questions the goals are computed from.
+  void _skipIntro() {
+    HapticFeedback.lightImpact();
+    _pageCtrl.animateToPage(
+      _kWelcomePages,
+      duration: const Duration(milliseconds: 380),
+      curve: Curves.easeInOutCubic,
+    );
+  }
+
   Future<void> _finish() async {
     // Save profile from answers
     final goals = FitnessGoal.values;
@@ -158,7 +170,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
               isDark: isDark,
               showBack: _page > 0,
               onBack: _back,
-              onSkip: _isQuestion ? null : _finish,
+              onSkip: _isQuestion ? null : _skipIntro,
             ),
 
             // Pages

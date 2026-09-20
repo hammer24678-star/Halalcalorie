@@ -85,6 +85,10 @@ class _HalalCalorieAppState extends ConsumerState<HalalCalorieApp>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _armMidnightTimer();
+    // Start counting steps at launch when the permission is already granted.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(stepTrackerProvider).ensureStarted(askPermissions: false).catchError((_) {});
+    });
   }
 
   @override
