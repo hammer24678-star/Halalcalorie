@@ -44,13 +44,12 @@ void main() {
     try { await AppDatabase.db.timeout(const Duration(seconds: 5)); } catch (e) { debugPrint('DB init: $e'); }
     try { await NotificationService.init(); } catch (e) { debugPrint('Notif init: $e'); }
     try {
+      // Re-applied on every launch (stable ids -> replaces, never duplicates):
+      // repairs installs whose lunch reminder was overwritten by a water id,
+      // and re-anchors the times to the current timezone.
       final _p = await SharedPreferences.getInstance();
-      if (!(_p.getBool('notifs_scheduled') ?? false)) {
-        await NotificationService.scheduleMealReminder();
-        await NotificationService.scheduleWaterReminder();
-        await NotificationService.scheduleAscentNudge();
-        await _p.setBool('notifs_scheduled', true);
-      }
+      await NotificationService.rescheduleAll(
+          isAr: (_p.getString('language') ?? 'ar') == 'ar');
     } catch (e) { debugPrint('Notif schedule: $e'); }
     try { await AuthService.init(); } catch (e) { debugPrint('Auth init: $e'); }
     try { await RCConfig.configure(); } catch (e) { debugPrint('RevenueCat init: $e'); }

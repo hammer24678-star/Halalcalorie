@@ -14,6 +14,8 @@ class _ScannerState extends ConsumerState<ScannerScreen>
   final _barcodeCtrl = TextEditingController();
   ScanResult? _result;
   bool _scanning = false; // true while hitting OFFapi
+  String? _lastBarcode;   // last code the camera handed us (see _onCameraBarcode)
+  bool _limitDialogOpen = false;
 
   @override
   void initState() {
@@ -25,16 +27,26 @@ class _ScannerState extends ConsumerState<ScannerScreen>
 
   // ── Halal ingredient check ─────────────────────────────
   HalalStatus _halalCheck(String ingredients) {
+    // No ingredient text means we don't know — never report that as Halal.
+    if (ingredients.trim().isEmpty) return HalalStatus.unknown;
     final lower = ingredients.toLowerCase();
-    const haram = ['alcohol', ' wine', 'pork', ' lard', 'bacon', ' ham,',
-      'porcine', 'carmine', 'cochineal', 'e120', 'gelatin porcine'];
+    // Whole-word matches for the short terms: ' ham,' missed "ham" at the end of
+    // a list, ' lard' missed it at the start, and 'e120' also hit E1200-E1209.
+    // "sugar alcohol", "fatty alcohol" and "alcohol-free" aren't drinks.
+    final haram = RegExp(
+      r'pork|porcine|bacon|carmine|cochineal|\bwine\b|\blard\b|\bham\b|\be120\b'
+      r'|(?<!sugar )(?<!fatty )(?<!non-)\balcohol(?!-free| free)');
     const doubtful = ['gelatin', 'e441', 'e471',
       'mono- and diglycerides', 'natural flavour', 'natural flavor',
       'rennet', 'whey powder'];
-    if (haram.any(lower.contains))    return HalalStatus.haram;
+    if (haram.hasMatch(lower))        return HalalStatus.haram;
     if (doubtful.any(lower.contains)) return HalalStatus.doubtful;
     return HalalStatus.halal;
   }
+
+  // Open Food Facts sends numbers, numeric strings or null depending on the product.
+  static num? _numOf(dynamic v) =>
+      v is num ? v : (v is String ? num.tryParse(v) : null);
 
   // ── Unknown product fallback ───────────────────────────
   void _unknownProduct(String barcode, bool isAr) {
@@ -49,9 +61,20 @@ class _ScannerState extends ConsumerState<ScannerScreen>
     if (mounted) setState(() { _result = r; _scanning = false; });
   }
 
+  // The camera reports the same barcode on every frame it stays in view. Each
+  // report used to count as a scan: one product burned the 3 free scans and
+  // stacked limit dialogs. Ignore repeats until a different code shows up or
+  // the person taps "Scan again". (_scan itself enforces the limit.)
+  void _onCameraBarcode(String barcode) {
+    if (_scanning || barcode == _lastBarcode) return;
+    _lastBarcode = barcode;
+    _scan(barcode);
+  }
+
   // ── Main scan: local DB → Open Food Facts API ──────────
   Future<void> _scan(String barcode) async {
     if (_scanning) return;
+    ref.read(scanProvider.notifier).refreshDay(); // app may have stayed open past midnight
     final scan      = ref.read(scanProvider);
     final isPremium = ref.read(premiumProvider);
     final isAr      = ref.read(languageProvider) == 'ar';
@@ -87,10 +110,12 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               ? p['product_name_ar'] as String
               : (p['product_name'] ?? barcode) as String;
           final brand  = (p['brands'] ?? '') as String;
-          final kcal   = ((n['energy-kcal_100g'] ?? n['energy_100g'] ?? 0) as num).toInt();
-          final prot   = ((n['proteins_100g']       ?? 0) as num).toDouble();
-          final carbs  = ((n['carbohydrates_100g']  ?? 0) as num).toDouble();
-          final fat    = ((n['fat_100g']            ?? 0) as num).toDouble();
+          // energy_100g is kilojoules, not kcal — only ever use it converted.
+          final kcal   = (_numOf(n['energy-kcal_100g']) ??
+                          ((_numOf(n['energy_100g']) ?? 0) / 4.184)).round();
+          final prot   = (_numOf(n['proteins_100g'])      ?? 0).toDouble();
+          final carbs  = (_numOf(n['carbohydrates_100g']) ?? 0).toDouble();
+          final fat    = (_numOf(n['fat_100g'])           ?? 0).toDouble();
           final status = _halalCheck(ing);
           final r = ScanResult(
             barcode:  barcode,
@@ -101,7 +126,9 @@ class _ScannerState extends ConsumerState<ScannerScreen>
             proteinG: prot > 0 ? prot : null,
             carbsG:   carbs > 0 ? carbs : null,
             fatG:     fat > 0 ? fat : null,
-            notes:    '📡 Open Food Facts',
+            notes:    ing.trim().isEmpty
+                ? '📡 Open Food Facts · ' + tLang(lang, 'لا توجد بيانات مكونات — راجع الملصق', 'No ingredient data — check the label')
+                : '📡 Open Food Facts',
           );
           ref.read(scanProvider.notifier).addScan(r);
           if (mounted) setState(() { _result = r; _scanning = false; });
@@ -115,11 +142,13 @@ class _ScannerState extends ConsumerState<ScannerScreen>
   }
 
   void _showLimitDialog(bool isAr) {
-    showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'وصلت الحد اليومي', 'Daily Limit Reached', 'Limite journalière atteinte', 'Günlük Limit Aşıldı', 'Had Harian Dicapai', 'Batas Harian Tercapai'), style: const TextStyle(fontFamily:'Aligarh')), content: Text(tLang(lang, 'استخدمت ٣ ماسحات اليوم.\nترقّ للبريميوم للمزيد.', 'You have used 3 scans today.\nUpgrade for unlimited.', 'Vous avez utilisé 3 scans aujourd\'hui.\nPassez à Premium.', 'Bugün 3 tarama kullandınız.\nSınırsız için yükseltin.', 'Anda telah menggunakan 3 imbasan.\nNaik taraf untuk tanpa had.', 'Anda telah menggunakan 3 pemindaian.\nUpgrade untuk tak terbatas.'), style: const TextStyle(fontFamily:'Aligarh')),
+    if (_limitDialogOpen) return;
+    _limitDialogOpen = true;
+    showDialog(context: context, builder: (dialogCtx) => AlertDialog( title: Text(tLang(lang, 'وصلت الحد اليومي', 'Daily Limit Reached', 'Limite journalière atteinte', 'Günlük Limit Aşıldı', 'Had Harian Dicapai', 'Batas Harian Tercapai'), style: const TextStyle(fontFamily:'Aligarh')), content: Text(tLang(lang, 'استخدمت ٣ ماسحات اليوم.\nترقّ للبريميوم للمزيد.', 'You have used 3 scans today.\nUpgrade for unlimited.', 'Vous avez utilisé 3 scans aujourd\'hui.\nPassez à Premium.', 'Bugün 3 tarama kullandınız.\nSınırsız için yükseltin.', 'Anda telah menggunakan 3 imbasan.\nNaik taraf untuk tanpa had.', 'Anda telah menggunakan 3 pemindaian.\nUpgrade untuk tak terbatas.'), style: const TextStyle(fontFamily:'Aligarh')),
       actions: [
-        TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إغلاق', 'Close', 'Fermer', 'Kapat', 'Tutup', 'Tutup'), style: const TextStyle(fontFamily: 'Aligarh'))), ElevatedButton(onPressed: () { if (context.mounted) Navigator.pop(context); context.push('/paywall'); }, child: Text(tLang(lang, '⭐ ترقية', '⭐ Upgrade', '⭐ Mettre à niveau', '⭐ Yükselt', '⭐ Naik Taraf', '⭐ Upgrade'), style: const TextStyle(fontFamily: 'Aligarh'))),
+        TextButton(onPressed: () => Navigator.pop(dialogCtx), child: Text(tLang(lang, 'إغلاق', 'Close', 'Fermer', 'Kapat', 'Tutup', 'Tutup'), style: const TextStyle(fontFamily: 'Aligarh'))), ElevatedButton(onPressed: () { Navigator.pop(dialogCtx); if (context.mounted) context.push('/paywall'); }, child: Text(tLang(lang, '⭐ ترقية', '⭐ Upgrade', '⭐ Mettre à niveau', '⭐ Yükselt', '⭐ Naik Taraf', '⭐ Upgrade'), style: const TextStyle(fontFamily: 'Aligarh'))),
       ],
-    ));
+    )).whenComplete(() { _limitDialogOpen = false; });
   }
 
   @override
@@ -224,13 +253,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
               borderRadius: BorderRadius.circular(16),
               child: BarcodeScannerWidget(
                 isActive: true,
-                onDetected: (barcode) {
-                  if (!isPremium && scan.todayCount >= 3) {
-                    _showLimitDialog(isAr);
-                    return;
-                  }
-                  _scan(barcode);
-                },
+                onDetected: _onCameraBarcode,
               ),
             ),
             // Scan counter badge
@@ -412,7 +435,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
           const SizedBox(height: 12),
           Row(children: [
             Expanded(child: OutlinedButton.icon(
-              onPressed: () => setState(() { _result = null; _barcodeCtrl.clear(); }),
+              onPressed: () => setState(() { _result = null; _barcodeCtrl.clear(); _lastBarcode = null; }),
               icon: const Icon(Icons.refresh, size: 16),
               label: Text(t('مسح آخر', 'Scan Again'),
                 style: const TextStyle(fontFamily: 'Aligarh')),

@@ -220,7 +220,7 @@ Rules:
           tipNoteEn:          m['tipNoteEn'] as String? ?? '',
           confidence:   _safeDouble(m['confidence'], 0.75),
           portionSize:  m['portionSize'] as String? ?? '',
-          ingredients:  (m['ingredients'] as List<dynamic>?)?.cast<String>() ?? const [],
+          ingredients:  (m['ingredients'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const <String>[],
         );
       }).toList();
     } on FormatException {
@@ -283,24 +283,18 @@ Rules:
       : 'Analyze this meal and give nutritional values for each item: $description';
 
     try {
-      final _url  = Uri.parse('\$_geminiBase/\$_model:generateContent?key=\$_apiKey');
-      final body  = jsonEncode({
-        'contents': [{'parts': [{'text': '\$system\n\n\$prompt'}]}],
-      });
-      final resp = await http.post(_url,
-        headers: {'Content-Type': 'application/json'},
-        body: body,
-      ).timeout(const Duration(seconds: 20));
-      if (resp.statusCode != 200) throw Exception('${resp.statusCode}');
-      final data = jsonDecode(resp.body) as Map<String, dynamic>;
-      final raw  = (data['candidates'] as List?)
-          ?.firstOrNull?['content']?['parts']
-          ?.firstOrNull?['text']?.toString() ?? '[]';
+      // Same Groq text path as the rest of the service. (This used to be
+      // leftover Gemini code whose URL was escaped, so it was never a URL.)
+      final raw = await _callText(
+          systemPrompt: system, userPrompt: prompt, maxTokens: 1200);
       final clean = raw.replaceAll(RegExp(r'```json|```'), '').trim();
       final arrMatch = RegExp(r'\[[\s\S]*\]').firstMatch(clean);
-      final decoded = jsonDecode(arrMatch?.group(0) ?? '[]');
+      final objMatch = RegExp(r'\{[\s\S]*\}').firstMatch(clean);
+      final decoded =
+          jsonDecode(arrMatch?.group(0) ?? objMatch?.group(0) ?? '[]');
       final List<dynamic> items = decoded is List ? decoded : [decoded];
-      if (items.isEmpty) return [_fallbackFoodResult(language)];
+      items.removeWhere((e) => e is! Map || e.isEmpty);
+      if (items.isEmpty) throw const FormatException('no food items in reply');
       return items.map((j) {
         final m = j as Map<String, dynamic>;
         return FoodPhotoResult(
@@ -317,11 +311,14 @@ Rules:
           tipNoteEn:          m['tipNoteEn'] as String? ?? '',
           confidence:   _safeDouble(m['confidence'], 0.80),
           portionSize:  m['portionSize'] as String? ?? '',
-          ingredients:  (m['ingredients'] as List<dynamic>?)?.cast<String>() ?? const [],
+          ingredients:  (m['ingredients'] as List<dynamic>?)?.map((e) => e.toString()).toList() ?? const <String>[],
         );
       }).toList();
-    } catch (_) {
-      return [_fallbackFoodResult(language)];
+    } on FormatException {
+      // The model answered with something that isn't a JSON meal list. Let the
+      // screen show its "try again" state — the old catch-all turned this (and
+      // every network error) into an invented 350 kcal "Mixed Meal".
+      throw Exception('Could not read the AI reply — please try again');
     }
   }
 

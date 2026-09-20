@@ -15,11 +15,13 @@ class HealthService {
   static void Function(int)? _onStep;
 
   static Future<bool> requestPermissions() async {
+    var granted = true;
     try {
-      await Permission.activityRecognition.request();
+      final ar = await Permission.activityRecognition.request();
+      granted = ar.isGranted || ar.isLimited;
       await Permission.notification.request();
     } catch (_) {}
-    return true;
+    return granted;
   }
   static Future<bool> isAuthorized() async => true;
 

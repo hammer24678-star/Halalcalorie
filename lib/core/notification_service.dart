@@ -1,6 +1,7 @@
 // notification_service.dart — HalalCalorie v2.0
 // Real local-notification implementation
 // Packages: flutter_local_notifications ^17.2.0 | timezone ^0.9.4
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/timezone.dart' as tz;
@@ -11,7 +12,9 @@ class NotificationService {
   static bool _initialized = false;
 
   // ── IDs ────────────────────────────────────────────────────
-  static const int kWater     = 1;   // +h for hourly water (1..23)
+  // +h for hourly water -> 108..122. Was 1+h, which put h=10 on id 11 == kLunch
+  // and let the water reminder overwrite the lunch reminder.
+  static const int kWater     = 100;
   static const int kBreakfast = 10;
   static const int kLunch     = 11;
   static const int kDinner    = 12;
@@ -32,12 +35,7 @@ class NotificationService {
     if (_initialized) return;
 
     tz_data.initializeTimeZones();
-    try {
-      final tzName = DateTime.now().timeZoneName;
-      tz.setLocalLocation(tz.getLocation(tzName));
-    } catch (_) {
-      tz.setLocalLocation(tz.getLocation('Asia/Riyadh'));
-    }
+    tz.setLocalLocation(_deviceLocation());
 
     const android = AndroidInitializationSettings('@mipmap/ic_launcher');
     const ios     = DarwinInitializationSettings(
@@ -117,7 +115,10 @@ class NotificationService {
         ),
         iOS: const DarwinNotificationDetails(),
       ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      // Inexact on purpose: exact alarms need SCHEDULE_EXACT_ALARM (not in the
+      // manifest, denied by default on Android 13+) and zonedSchedule throws
+      // without it. A reminder a few minutes late beats none at all.
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
@@ -200,5 +201,76 @@ class NotificationService {
   static Future<void> cancelAll() async {
     await init();
     await _plugin.cancelAll();
+  }
+
+  // ── Timezone ───────────────────────────────────────────────
+  /// `DateTime.timeZoneName` is an abbreviation ("EET", "+03"), never an IANA
+  /// id, so `tz.getLocation(name)` threw for nearly everyone and every reminder
+  /// was scheduled on Asia/Riyadh time. Match the device instead: a zone whose
+  /// UTC offset agrees at four points across the year (so DST shape matches
+  /// too), preferring one whose abbreviation also agrees.
+  static tz.Location _deviceLocation() {
+    final now = DateTime.now();
+    final probes = [
+      for (final d in const [0, 91, 182, 273]) now.add(Duration(days: d)),
+    ];
+    tz.Location? best;
+    var bestScore = -1;
+    for (final loc in tz.timeZoneDatabase.locations.values) {
+      var matches = true;
+      for (final p in probes) {
+        if (tz.TZDateTime.from(p, loc).timeZoneOffset != p.timeZoneOffset) {
+          matches = false;
+          break;
+        }
+      }
+      if (!matches) continue;
+      final score =
+          tz.TZDateTime.from(now, loc).timeZoneName == now.timeZoneName ? 1 : 0;
+      if (score > bestScore) {
+        best = loc;
+        bestScore = score;
+        if (score == 1) break;
+      }
+    }
+    return best ?? tz.getLocation('UTC');
+  }
+
+  // ── Re-apply everything from the stored prefs ──────────────
+  /// Water used to sit on ids 1+h (9..23), which collided with the meal ids
+  /// (lunch = 11). Clear the old slots once so nothing stale lingers.
+  static Future<void> _cancelLegacyWaterIds() async {
+    for (int h = 8; h <= 22; h += 2) {
+      await _plugin.cancel(1 + h);
+    }
+  }
+
+  /// Idempotent: ids are stable, so this replaces rather than duplicates, and it
+  /// re-anchors the times to the device's current timezone. Honours the master
+  /// toggle, and each job is isolated so one failure can't block the others.
+  static Future<void> rescheduleAll({bool isAr = true}) async {
+    await init();
+    final prefs = await SharedPreferences.getInstance();
+    if (!(prefs.getBool('notifications_on') ?? true)) {
+      await _plugin.cancelAll();
+      return;
+    }
+    if (!(prefs.getBool('notif_ids_v2') ?? false)) {
+      await _cancelLegacyWaterIds();
+      await prefs.setBool('notif_ids_v2', true);
+    }
+    final jobs = <Future<void> Function()>[
+      () => scheduleMealReminder(isAr: isAr),
+      () => scheduleWaterReminder(isAr: isAr),
+      () => scheduleWorkoutReminder(isAr: isAr),
+      () => scheduleAscentNudge(isAr: isAr),
+    ];
+    for (final job in jobs) {
+      try {
+        await job();
+      } catch (e) {
+        debugPrint('Notif schedule: $e');
+      }
+    }
   }
 }

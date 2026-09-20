@@ -4,6 +4,7 @@
 //           RC_GOOGLE_KEY dart-define in CI (secrets.RC_GOOGLE_KEY)
 //           RC_APPLE_KEY dart-define in CI (secrets.RC_APPLE_KEY)
 
+import 'package:flutter/services.dart' show PlatformException;
 import 'package:purchases_flutter/purchases_flutter.dart';
 
 class RCProducts {
@@ -72,16 +73,20 @@ class RCOffering {
 
 class RevenueCatService {
   // ── isPremium ─────────────────────────────────────────────────────
-  static Future<bool> isPremium() async {
-    if (!RCConfig.isConfigured) return false;
+  /// null = couldn't tell (no key, offline, SDK error). Anything that caches the
+  /// entitlement must keep its cached value on null rather than revoke it.
+  static Future<bool?> isPremiumOrNull() async {
+    if (!RCConfig.isConfigured) return null;
     try {
       final info = await Purchases.getCustomerInfo();
       return info.entitlements.active
           .containsKey(RCConfig.entitlementId);
     } catch (_) {
-      return false;
+      return null;
     }
   }
+
+  static Future<bool> isPremium() async => (await isPremiumOrNull()) ?? false;
 
   // ── getOfferings ──────────────────────────────────────────────────
   static Future<List<RCOffering>> getOfferings() async {
@@ -134,11 +139,18 @@ class RevenueCatService {
       final active = info.customerInfo.entitlements.active
           .containsKey(RCConfig.entitlementId);
       return PurchaseResult(success: active);
-    } on PurchasesErrorCode catch (e) {
-      if (e == PurchasesErrorCode.purchaseCancelledError) {
+    } on PlatformException catch (e) {
+      // purchases_flutter reports every failure as a PlatformException; the old
+      // `on PurchasesErrorCode` clause could never match.
+      final details = e.details;
+      final msg = e.toString();
+      final cancelled = (details is Map && details['userCancelled'] == true) ||
+          msg.contains('PurchaseCancelledError') ||
+          msg.contains('USER_CANCELED');
+      if (cancelled) {
         return const PurchaseResult(success: false, cancelled: true);
       }
-      return PurchaseResult(success: false, error: e.toString());
+      return PurchaseResult(success: false, error: e.message ?? e.code);
     } catch (e) {
       final msg = e.toString();
       if (msg.contains('userCancelled') ||

@@ -1237,7 +1237,7 @@ void _showStreakDialog(BuildContext context, int streak, bool isAr, String lang,
     : streak < 30
     ? (isAr ? 'أنت على المسار الصحيح! 🔥' : "You're on fire! 🔥")
     : (tLang(lang, 'مبارك! تتابع رائع جداً 🏆', 'Masha Allah! Incredible streak 🏆', 'Masha Allah ! Série incroyable 🏆', 'Maşaallah! İnanılmaz seri 🏆', 'Masha Allah! Streak yang luar biasa 🏆', 'Masha Allah! Streak yang luar biasa 🏆'));
-  showDialog(context: context, builder: (_) => Dialog(
+  showDialog(context: context, builder: (dialogCtx) => Dialog(
     backgroundColor: card,
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20),
       side: BorderSide(color: border)),
@@ -1266,7 +1266,7 @@ void _showStreakDialog(BuildContext context, int streak, bool isAr, String lang,
             style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10,
               color: AppColors.haramRed))),
         const SizedBox(height: 16),
-        TextButton(onPressed: () => Navigator.pop(context),
+        TextButton(onPressed: () => Navigator.pop(dialogCtx),
           child: Text(tLang(lang, 'حسناً 👍', 'Got it 👍', 'Compris 👍', 'Anlaşıldı 👍', 'Faham 👍', 'Mengerti 👍'),
             style: const TextStyle(fontFamily: 'Aligarh',
               color: AppColors.brandGreen, fontWeight: FontWeight.w700))),

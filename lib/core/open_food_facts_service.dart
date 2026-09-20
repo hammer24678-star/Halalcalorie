@@ -40,7 +40,8 @@ class OpenFoodFactsService {
         'name_ar':      nameAr.isEmpty ? barcode : nameAr,
         'name_en':      nameEn.isEmpty ? barcode : nameEn,
         'brand':        brand,
-        'kcal':         (_num(n, 'energy-kcal_100g') ?? _num(n, 'energy_100g') ?? 0).round(),
+        'kcal':         (_num(n, 'energy-kcal_100g') ??
+                         ((_num(n, 'energy_100g') ?? 0) / 4.184)).round(), // energy_100g is kJ
         'protein_g':    (_num(n, 'proteins_100g')      ?? 0.0).toDouble(),
         'carbs_g':      (_num(n, 'carbohydrates_100g') ?? 0.0).toDouble(),
         'fat_g':        (_num(n, 'fat_100g')           ?? 0.0).toDouble(),

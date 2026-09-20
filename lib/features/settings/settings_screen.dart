@@ -22,7 +22,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
   Future<void> _loadNotifPrefs() async {
     final p = await SharedPreferences.getInstance();
     if (!mounted) return;
-    setState(() { _notifWater   = p.getBool('notif_water')   ?? true; _notifWorkout = p.getBool('notif_workout')  ?? true; _notifMeal    = p.getBool('notif_meal')     ?? true;
+    setState(() { _notifWater   = p.getBool('notif_water')   ?? true; _notifWorkout = p.getBool('notif_workout')  ?? false; _notifMeal    = p.getBool('notif_meals') ?? p.getBool('notif_meal') ?? true;
     });
   }
 
@@ -162,28 +162,41 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             // ── NOTIFICATIONS ──────────────────────────────── section(t('الإشعارات 🔔', 'NOTIFICATIONS 🔔')),
             tog( emoji:'🔔', title: t('تفعيل الإشعارات', 'Enable Notifications'), subtitle: t('ذكريات الماء والتمرين والوجبات', 'Water, workout & meal reminders'),
               value: notifsOn,
-              onChanged: (v) {
-                ref.watch(notificationsEnabledProvider.notifier).toggle();
-                if (v) NotificationService.requestPermissions();
+              onChanged: (v) async {
+                await ref.read(notificationsEnabledProvider.notifier).toggle();
+                try {
+                  if (v) {
+                    await NotificationService.requestPermissions();
+                    await NotificationService.rescheduleAll(isAr: isAr);
+                  } else {
+                    await NotificationService.cancelAll();
+                  }
+                } catch (_) {}
               },
             ),
             if (notifsOn) ...[
               tog( emoji:'💧', title: t('تذكير الماء', 'Water Reminder'), subtitle: t('كل ساعتين', 'Every 2 hours'),
                 value: _notifWater,
-                onChanged: (v) {
-                  setState(() => _notifWater = v); _saveNotifPref('notif_water', v);
+                onChanged: (v) async {
+                  setState(() => _notifWater = v);
+                  await _saveNotifPref('notif_water', v);
+                  try { await NotificationService.scheduleWaterReminder(isAr: isAr); } catch (_) {}
                 },
               ),
-              tog( emoji:'🏃', title: t('تذكير التمرين', 'Workout Reminder'), subtitle: t('يومياً في الصباح', 'Daily morning'),
+              tog( emoji:'🏃', title: t('تذكير التمرين', 'Workout Reminder'), subtitle: t('يومياً ٥:٣٠ م', 'Daily at 5:30 PM'),
                 value: _notifWorkout,
-                onChanged: (v) {
-                  setState(() => _notifWorkout = v); _saveNotifPref('notif_workout', v);
+                onChanged: (v) async {
+                  setState(() => _notifWorkout = v);
+                  await _saveNotifPref('notif_workout', v);
+                  try { await NotificationService.scheduleWorkoutReminder(isAr: isAr); } catch (_) {}
                 },
               ),
               tog( emoji:'🌿', title: t('تذكير الوجبة', 'Meal Reminder'), subtitle: t('ثلاث مرات يومياً', 'Three times daily'),
                 value: _notifMeal,
-                onChanged: (v) {
-                  setState(() => _notifMeal = v); _saveNotifPref('notif_meal', v);
+                onChanged: (v) async {
+                  setState(() => _notifMeal = v);
+                  await _saveNotifPref('notif_meals', v);
+                  try { await NotificationService.scheduleMealReminder(isAr: isAr); } catch (_) {}
                 },
               ),
             ],
@@ -500,7 +513,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
         TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Annuler', 'İptal', 'Batal', 'Batal'), style: const TextStyle(fontFamily:'Aligarh'))),
         ElevatedButton(
           onPressed: () { final h = double.tryParse(ctrl.text.trim().replaceAll(',', '.')) ?? 8.0;
-            ref.read(sleepProvider.notifier).set(h.clamp(4.0, 12.0));
+            ref.read(sleepProvider.notifier).setGoal(h.clamp(4.0, 12.0));
             if (context.mounted) Navigator.pop(context);
           }, child: Text(tLang(lang, 'حفظ', 'Save', 'Enregistrer', 'Kaydet', 'Simpan', 'Simpan'), style: const TextStyle(fontFamily:'Aligarh')),
         ),

@@ -40,10 +40,12 @@ final premiumProvider = StateNotifierProvider<PremiumNotifier, bool>((ref) => Pr
 class PremiumNotifier extends StateNotifier<bool> { PremiumNotifier() : super(false) { _load(); }
   Future<void> _load() async {
     final p = await SharedPreferences.getInstance(); state = p.getBool('is_premium') ?? false;
-    try { final live = await RevenueCatService.isPremium(); if (live != state) { state = live; await p.setBool('is_premium', live); } } catch (_) {}
+    // null = RevenueCat couldn't answer (offline, SDK error): keep the cached
+    // entitlement instead of revoking a paying user.
+    try { final live = await RevenueCatService.isPremiumOrNull(); if (live != null && live != state) { state = live; await p.setBool('is_premium', live); } } catch (_) {}
   }
   Future<void> onPurchaseSuccess() async { state = true; final p = await SharedPreferences.getInstance(); await p.setBool('is_premium', true); }
-  Future<void> refresh() async { try { final live = await RevenueCatService.isPremium(); state = live; final p = await SharedPreferences.getInstance(); await p.setBool('is_premium', live); } catch (_) {} }
+  Future<void> refresh() async { try { final live = await RevenueCatService.isPremiumOrNull(); if (live == null) return; state = live; final p = await SharedPreferences.getInstance(); await p.setBool('is_premium', live); } catch (_) {} }
   Future<void> unlock() async { state = true; final p = await SharedPreferences.getInstance(); await p.setBool('is_premium', true); }
   Future<void> revoke() async { state = false; final p = await SharedPreferences.getInstance(); await p.setBool('is_premium', false); }
 }
@@ -87,10 +89,12 @@ class CaloriesNotifier extends StateNotifier<CaloriesState> {
     _ref.listen(userProfileProvider, (_, profile) { if (profile != null) syncWithProfile(profile); });
   }
   Future<void> _init() async {
-    final p = _ref.read(userProfileProvider); final goal = p?.calorieGoalKcal.toInt() ?? 2000;
     final rows = await AppDatabase.getTodayMeals();
     final entries = rows.map((e) => MealEntry(id: e['id'] as int, name: e['name'] as String, kcal: e['kcal'] as int, proteinG: (e['protein_g'] as num?)?.toDouble() ?? 0, carbsG: (e['carbs_g'] as num?)?.toDouble() ?? 0, fatG: (e['fat_g'] as num?)?.toDouble() ?? 0, time: DateTime.tryParse(e['created'] as String? ?? '') ?? DateTime.now())).toList();
-    state = CaloriesState(goal: goal, entries: entries);
+    // The profile can finish loading while the DB query is in flight; its sync
+    // already set the goal, so read it now instead of clobbering it with a stale value.
+    final profile = _ref.read(userProfileProvider);
+    state = CaloriesState(goal: profile?.calorieGoalKcal.toInt() ?? state.goal, entries: entries);
   }
   void syncWithProfile(UserProfile p) => state = CaloriesState(goal: p.calorieGoalKcal.toInt(), entries: state.entries);
   void setGoal(int g) => state = CaloriesState(goal: g.clamp(500, 9999), entries: state.entries);
@@ -177,15 +181,33 @@ final waterProvider = StateNotifierProvider<WaterNotifier, WaterState>((ref) => 
 class WaterState { final int cups, goal; WaterState({required this.cups, required this.goal}); double get percent => goal > 0 ? (cups / goal).clamp(0, 1) : 0; }
 class WaterNotifier extends StateNotifier<WaterState> {
   final Ref _ref;
-  WaterNotifier(this._ref) : super(WaterState(cups: 0, goal: 8)) { _init(); }
+  static const _kGoalPref = 'water_goal_override';
+  int? _override; // goal typed in Settings; wins over the profile's
+  WaterNotifier(this._ref) : super(WaterState(cups: 0, goal: 8)) {
+    // The profile loads asynchronously, so a one-off read in _init() saw null
+    // and left the goal stuck at 8. Follow it as it arrives instead.
+    _ref.listen(userProfileProvider, (_, profile) {
+      if (profile != null && _override == null) {
+        state = WaterState(cups: state.cups, goal: profile.waterCupsGoal);
+      }
+    });
+    _init();
+  }
   Future<void> _init() async {
-    final p = _ref.read(userProfileProvider); final goal = p?.waterCupsGoal ?? 8;
+    final sp = await SharedPreferences.getInstance();
+    _override = sp.getInt(_kGoalPref);
     final row = await AppDatabase.getTodaySummary(); final cups = (row?['water_cups'] as int?) ?? 0;
+    final goal = _override ?? _ref.read(userProfileProvider)?.waterCupsGoal ?? state.goal;
     state = WaterState(cups: cups, goal: goal);
   }
   Future<void> add() async { final cups = (state.cups + 1).clamp(0, 20); state = WaterState(cups: cups, goal: state.goal); await AppDatabase.upsertSummary(waterCups: cups); }
   Future<void> remove() async { final cups = (state.cups - 1).clamp(0, 20); state = WaterState(cups: cups, goal: state.goal); await AppDatabase.upsertSummary(waterCups: cups); }
-  void setGoal(int g) => state = WaterState(cups: state.cups, goal: g);
+  Future<void> setGoal(int g) async {
+    _override = g;
+    state = WaterState(cups: state.cups, goal: g);
+    final sp = await SharedPreferences.getInstance();
+    await sp.setInt(_kGoalPref, g);
+  }
   Future<void> set(int cups) async { final c = cups.clamp(0, 20); state = WaterState(cups: c, goal: state.goal); await AppDatabase.upsertSummary(waterCups: c); }
 }
 
@@ -193,11 +215,32 @@ final sleepProvider = StateNotifierProvider<SleepNotifier, SleepState>((ref) => 
 class SleepState { final double hours, goal; SleepState({required this.hours, required this.goal}); double get percent => goal > 0 ? (hours / goal).clamp(0, 1) : 0; String qualityAr() { if (hours >= 8) return 'ممتاز'; if (hours >= 6) return 'كافٍ'; return 'غير كافٍ'; } String qualityEn() { if (hours >= 8) return 'Ideal'; if (hours >= 6) return 'Adequate'; return 'Insufficient'; } }
 class SleepNotifier extends StateNotifier<SleepState> {
   final Ref _ref;
-  SleepNotifier(this._ref) : super(SleepState(hours: 7, goal: 8)) { _init(); }
+  static const _kGoalPref = 'sleep_goal_override';
+  double? _override; // goal typed in Settings; wins over the profile's
+  SleepNotifier(this._ref) : super(SleepState(hours: 7, goal: 8)) {
+    _ref.listen(userProfileProvider, (_, profile) {
+      if (profile != null && _override == null) {
+        state = SleepState(hours: state.hours, goal: profile.sleepHours);
+      }
+    });
+    _init();
+  }
   Future<void> _init() async {
-    final row = await AppDatabase.getTodaySummary(); final hrs = (row?['sleep_hrs'] as num?)?.toDouble() ?? 7.0;
-    final p = _ref.read(userProfileProvider);
-    state = SleepState(hours: hrs, goal: p?.sleepHours ?? 8);
+    final sp = await SharedPreferences.getInstance();
+    _override = sp.getDouble(_kGoalPref);
+    final row = await AppDatabase.getTodaySummary();
+    final logged = (row?['sleep_hrs'] as num?)?.toDouble() ?? 0.0;
+    // Any other write (a water tap, steps) creates today's row with sleep_hrs = 0,
+    // so 0 means "nothing logged", not "slept 0 hours".
+    final hrs = logged > 0 ? logged : 7.0;
+    final goal = _override ?? _ref.read(userProfileProvider)?.sleepHours ?? state.goal;
+    state = SleepState(hours: hrs, goal: goal);
+  }
+  Future<void> setGoal(double g) async {
+    _override = g;
+    state = SleepState(hours: state.hours, goal: g);
+    final sp = await SharedPreferences.getInstance();
+    await sp.setDouble(_kGoalPref, g);
   }
   Future<void> set(double h) async { state = SleepState(hours: h.clamp(0, 24), goal: state.goal); await AppDatabase.upsertSummary(sleepHrs: h.clamp(0, 24)); }
 }
@@ -299,7 +342,19 @@ class ScanNotifier extends StateNotifier<ScanState> {
     } catch (_) {}
   }
 
+  // Day the in-memory counter belongs to; the app can stay open past midnight.
+  String _day = _dateKey();
+
+  /// Resets the free-tier counter when the calendar day has rolled over.
+  void refreshDay() {
+    final today = _dateKey();
+    if (today == _day) return;
+    _day = today;
+    state = ScanState(history: state.history, todayCount: 0);
+  }
+
   void addScan(ScanResult r) {
+    refreshDay();
     final newCount = state.todayCount + 1;
     state = ScanState(history: [r, ...state.history.take(49)], todayCount: newCount);
     // Persist asynchronously — fire-and-forget
@@ -906,9 +961,13 @@ class ScanCountNotifier extends StateNotifier<int> {
     }
   }
 
-  bool get canScan => state < 3;
+  // Day the in-memory count belongs to; the app can stay open past midnight.
+  String _day = _today();
+
+  bool get canScan => _day != _today() || state < 3;
 
   Future<void> increment() async {
+    if (_day != _today()) { _day = _today(); state = 0; }
     state++;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_kScanCountKey, state);

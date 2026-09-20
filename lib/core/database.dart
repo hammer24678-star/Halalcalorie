@@ -167,7 +167,10 @@ class AppDatabase {
 
   static Future<List<Map<String,dynamic>>> getWeightLog({int limit=30}) async {
     final d = await db;
-    return d.query('weight_log', orderBy:'created ASC', limit:limit);
+    // Newest N rows, returned oldest-first for charting. (ASC + LIMIT used to
+    // return the *oldest* N once the log outgrew the limit.)
+    final rows = await d.query('weight_log', orderBy:'created DESC', limit:limit);
+    return rows.reversed.toList();
   }
 
   static Future<int> insertWeight(double kg, {String? note}) async {
@@ -189,17 +192,16 @@ class AppDatabase {
   static Future<void> upsertSummary({int? waterCups, double? sleepHrs, int? steps, String? mood}) async {
     final d = await db;
     final key = _today();
-    final existing = await getTodaySummary();
-    if (existing == null) {
-      await d.insert('daily_summary', {'date_key':key,'water_cups':waterCups??0,'sleep_hrs':sleepHrs??0,'steps':steps??0,'mood':mood});
-    } else {
-      final u = <String,dynamic>{};
-      if (waterCups!=null) u['water_cups']=waterCups;
-      if (sleepHrs!=null)  u['sleep_hrs']=sleepHrs;
-      if (steps!=null)     u['steps']=steps;
-      if (mood!=null)      u['mood']=mood;
-      if (u.isNotEmpty) await d.update('daily_summary', u, where:'date_key=?', whereArgs:[key]);
-    }
+    // Insert-or-ignore, then update. The old read-then-insert let two writers
+    // racing on a fresh day both see "no row"; the loser hit the PRIMARY KEY.
+    await d.insert('daily_summary', {'date_key': key},
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+    final u = <String,dynamic>{};
+    if (waterCups!=null) u['water_cups']=waterCups;
+    if (sleepHrs!=null)  u['sleep_hrs']=sleepHrs;
+    if (steps!=null)     u['steps']=steps;
+    if (mood!=null)      u['mood']=mood;
+    if (u.isNotEmpty) await d.update('daily_summary', u, where:'date_key=?', whereArgs:[key]);
   }
 
   static Future<void> logWorkout(String workoutId, int minutes) async {
@@ -245,13 +247,11 @@ class AppDatabase {
     if (values.isEmpty) return;
     final d = await db;
     final key = _today();
-    final existing = await getTodayAscent();
-    if (existing == null) {
-      await d.insert('ascent_log', {'date_key': key, ...values});
-    } else {
-      await d.update('ascent_log', values,
-          where:'date_key=?', whereArgs:[key]);
-    }
+    // Insert-or-ignore, then update (see upsertSummary).
+    await d.insert('ascent_log', {'date_key': key},
+        conflictAlgorithm: ConflictAlgorithm.ignore);
+    await d.update('ascent_log', values,
+        where:'date_key=?', whereArgs:[key]);
   }
 
   static Future<List<Map<String,dynamic>>> getWeeklyAscent() async {
@@ -301,7 +301,7 @@ class AppDatabase {
         'created': DateTime.now().toIso8601String(),
       });
     } catch (e) {
-      debugPrint('insertLiftSet: \$e');
+      debugPrint('insertLiftSet: $e');
       return -1;
     }
   }
