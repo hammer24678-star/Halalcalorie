@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../core/l10n.dart';
+import '../../core/num_input.dart';
 import '../../data/models/models.dart';
 import '../../core/health_service.dart';
 import '../../data/icon_assets.dart';
@@ -726,8 +727,8 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         const SizedBox(height: 12),
         SizedBox(width: double.infinity, child: ElevatedButton(
           onPressed: () {
-            final w = double.tryParse(_weightCtrl.text);
-            final h = double.tryParse(_heightCtrl.text);
+            final w = parseDouble(_weightCtrl.text);
+            final h = parseDouble(_heightCtrl.text);
             if (w != null && h != null && w > 0 && h > 0) {
               ref.read(healthProvider.notifier).setBMI(w, h);
             }

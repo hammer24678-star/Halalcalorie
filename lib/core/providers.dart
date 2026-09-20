@@ -398,7 +398,10 @@ class FastingNotifier extends StateNotifier<FastingState> {
     final today = _today();
     final fastedToday = dates.contains(today);
     int streak = 0;
-    DateTime d = DateTime.now();
+    // Still a live streak if today isn't logged yet — count back from yesterday.
+    DateTime d = fastedToday
+        ? DateTime.now()
+        : DateTime.now().subtract(const Duration(days: 1));
     while (true) {
       final key = '${d.year}-${d.month.toString().padLeft(2,'0')}-${d.day.toString().padLeft(2,'0')}';
       if (!dates.contains(key)) break;
@@ -516,7 +519,30 @@ class AscentNotifier extends StateNotifier<AscentState> {
 
   /// Recomputes every quest from live tracker data, persists the day and
   /// refreshes level/chain. Safe to call as often as you like.
+  bool _syncing = false;
+  bool _syncAgain = false;
+
+  /// One recompute at a time. Seven providers trigger this, and overlapping runs
+  /// interleaved their awaits, so a stale run could finish last and leave the
+  /// quest board (and the DB row) behind the data. A trigger that lands
+  /// mid-run just schedules one more pass.
   Future<void> _sync() async {
+    if (_syncing) {
+      _syncAgain = true;
+      return;
+    }
+    _syncing = true;
+    try {
+      do {
+        _syncAgain = false;
+        await _syncOnce();
+      } while (_syncAgain);
+    } finally {
+      _syncing = false;
+    }
+  }
+
+  Future<void> _syncOnce() async {
     final cals   = _ref.read(caloriesProvider);
     final water  = _ref.read(waterProvider);
     final sleep  = _ref.read(sleepProvider);

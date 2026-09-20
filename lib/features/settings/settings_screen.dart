@@ -1,6 +1,7 @@
 // settings_screen.dart — HalalCalorie settings
 import 'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'package:shared_preferences/shared_preferences.dart'; import'../../core/theme.dart'; import'../../core/providers.dart';
 import '../../core/l10n.dart'; import'../../core/notifications.dart';
+import '../../core/num_input.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -489,7 +490,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
         TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Annuler', 'İptal', 'Batal', 'Batal'), style: const TextStyle(fontFamily:'Aligarh'))),
         ElevatedButton(
           onPressed: () {
-            final n = int.tryParse(ctrl.text.trim()) ?? 8;
+            final n = parseInt(ctrl.text.trim()) ?? 8;
             ref.read(waterProvider.notifier).setGoal(n.clamp(4, 20));
             if (context.mounted) Navigator.pop(context);
           }, child: Text(tLang(lang, 'حفظ', 'Save', 'Enregistrer', 'Kaydet', 'Simpan', 'Simpan'), style: const TextStyle(fontFamily:'Aligarh')),
@@ -512,7 +513,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
       actions: [
         TextButton(onPressed: () { if (context.mounted) Navigator.pop(context); }, child: Text(tLang(lang, 'إلغاء', 'Cancel', 'Annuler', 'İptal', 'Batal', 'Batal'), style: const TextStyle(fontFamily:'Aligarh'))),
         ElevatedButton(
-          onPressed: () { final h = double.tryParse(ctrl.text.trim().replaceAll(',', '.')) ?? 8.0;
+          onPressed: () { final h = parseDouble(ctrl.text.trim().replaceAll(',', '.')) ?? 8.0;
             ref.read(sleepProvider.notifier).setGoal(h.clamp(4.0, 12.0));
             if (context.mounted) Navigator.pop(context);
           }, child: Text(tLang(lang, 'حفظ', 'Save', 'Enregistrer', 'Kaydet', 'Simpan', 'Simpan'), style: const TextStyle(fontFamily:'Aligarh')),

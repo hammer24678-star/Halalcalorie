@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
 import '../../core/providers.dart';
 import '../../core/l10n.dart';
+import '../../core/num_input.dart';
 import '../../core/food_emoji.dart';
 import '../../data/models/models.dart';
 import 'widgets/leaf_progress_ring.dart';
@@ -2344,7 +2345,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                   child: ElevatedButton.icon(
                     onPressed: _adding ? null : () {
                       final name = _nameCtrl.text.trim();
-                      final kcal = int.tryParse(
+                      final kcal = parseInt(
                           _kcalCtrl.text.trim()) ?? 0;
                       if (name.isEmpty || kcal <= 0) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -2364,9 +2365,9 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                       }
                       _doAdd(
                         name, kcal,
-                        double.tryParse(_proteinCtrl.text) ?? 0,
-                        double.tryParse(_carbsCtrl.text) ?? 0,
-                        double.tryParse(_fatCtrl.text) ?? 0,
+                        parseDouble(_proteinCtrl.text) ?? 0,
+                        parseDouble(_carbsCtrl.text) ?? 0,
+                        parseDouble(_fatCtrl.text) ?? 0,
                       );
                     },
                     icon: _adding
@@ -2481,7 +2482,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
           }
 
           // ── Live macro calculation ─────────────────────────────
-          final raw   = double.tryParse(amtCtrl.text) ?? unitDefaults[unitIdx];
+          final raw   = parseDouble(amtCtrl.text) ?? unitDefaults[unitIdx];
           final grams = toGrams(unitIdx, raw).clamp(0.1, 10000.0);
           final scale = grams / 100.0;
           final kcal  = (kcal100    * scale).round();
@@ -2579,7 +2580,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                 // ── Amount row: minus / field / plus ──────────────
                 Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   _gramBtn(Icons.remove_rounded, () {
-                    final v  = double.tryParse(amtCtrl.text)
+                    final v  = parseDouble(amtCtrl.text)
                         ?? unitDefaults[unitIdx];
                     final nv = (v - step).clamp(minV, 9999.0);
                     amtCtrl.text = nv % 1 == 0
@@ -2620,7 +2621,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                   )),
                   const SizedBox(width: 14),
                   _gramBtn(Icons.add_rounded, () {
-                    final v  = double.tryParse(amtCtrl.text)
+                    final v  = parseDouble(amtCtrl.text)
                         ?? unitDefaults[unitIdx];
                     final nv = (v + step).clamp(minV, 9999.0);
                     amtCtrl.text = nv % 1 == 0
@@ -2635,7 +2636,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                 Wrap(spacing: 6, runSpacing: 6,
                   children: chipSets[unitIdx].map((chip) {
                     final cv    = (chip as num).toDouble();
-                    final curV  = double.tryParse(amtCtrl.text) ?? 0;
+                    final curV  = parseDouble(amtCtrl.text) ?? 0;
                     final active = (curV - cv).abs() < 0.001;
                     final lbl   = cv % 1 == 0
                         ? '${cv.toInt()} ${unitLabels[unitIdx]}'

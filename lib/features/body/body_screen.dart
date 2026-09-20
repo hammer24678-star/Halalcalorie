@@ -5,6 +5,7 @@
 // ============================================================
 import 'package:flutter/material.dart';
 import '../../core/l10n.dart';
+import '../../core/num_input.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:go_router/go_router.dart';
@@ -419,13 +420,22 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
   }
 
   Future<void> _saveEdits(UserProfile p) async {
-    final w = double.tryParse(_wCtrl.text) ?? p.weightKg;
-    final h = double.tryParse(_hCtrl.text) ?? p.heightCm;
-    final waist = double.tryParse(_waistCtrl.text);
+    // Unreadable or out-of-range input keeps the previous value instead of
+    // silently saving 0 (which sent BMI to infinity and pinned the calorie goal).
+    double pick(double? v, double lo, double hi, double fallback) =>
+        (v != null && v >= lo && v <= hi) ? v : fallback;
+    final w = pick(parseDouble(_wCtrl.text), 20, 300, p.weightKg);
+    final h = pick(parseDouble(_hCtrl.text), 100, 250, p.heightCm);
+    final rawWaist = parseDouble(_waistCtrl.text);
+    final waist =
+        (rawWaist != null && rawWaist >= 30 && rawWaist <= 250) ? rawWaist : p.waistCm;
     final updated = p.copyWith(weightKg: w, heightCm: h, waistCm: waist);
     await ref.read(userProfileProvider.notifier).save(updated);
     ref.read(caloriesProvider.notifier).syncWithProfile(updated);
-    ref.read(weightLogProvider.notifier).add(w);
+    // Only a changed weight is a new data point — every save used to append one.
+    if ((w - p.weightKg).abs() >= 0.05) {
+      ref.read(weightLogProvider.notifier).add(w);
+    }
     if (mounted) setState(() => _editing = false);
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -715,6 +725,16 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
     );
   }
 
+  // The trend card and the profile (BMI, calorie goal, water goal) must agree on
+  // the current weight; logging from the card used to leave the profile stale.
+  Future<void> _syncProfileWeight(double kg) async {
+    final p = ref.read(userProfileProvider);
+    if (p == null || (p.weightKg - kg).abs() < 0.05) return;
+    final updated = p.copyWith(weightKg: kg);
+    await ref.read(userProfileProvider.notifier).save(updated);
+    ref.read(caloriesProvider.notifier).syncWithProfile(updated);
+  }
+
   void _showAddWeightDialog(bool isAr) {
     final ctrl = TextEditingController();
     showDialog(context: context, builder: (dialogCtx) => AlertDialog(
@@ -737,11 +757,12 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         ),
         ElevatedButton(
           onPressed: () {
-            final kg = double.tryParse(
+            final kg = parseDouble(
                 ctrl.text.trim().replaceAll(',', '.'));
             if (kg == null || kg < 20 || kg > 300) return;
             Navigator.of(dialogCtx).pop();
             ref.read(weightLogProvider.notifier).add(kg);
+            _syncProfileWeight(kg);
           },
           child: Text(tLang(lang, 'حفظ', 'Save', 'Enregistrer', 'Kaydet', 'Simpan', 'Simpan'),
               style: const TextStyle(fontFamily: 'Aligarh')),

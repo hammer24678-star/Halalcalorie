@@ -290,7 +290,7 @@ class AppDatabase {
   }) async {
     try {
       final d = await db;
-      return d.insert('lift_sets', {
+      return await d.insert('lift_sets', {
         'exercise_id': exerciseId,
         'weight_kg': weightKg,
         'reps': reps,

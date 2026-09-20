@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,7 +21,9 @@ void main() {
       FlutterError.presentError(details);
     };
 
-    ErrorWidget.builder = (FlutterErrorDetails details) {
+    // Debug only: in release a build error should fall back to Flutter's neutral
+    // error widget, not a red screen dumping the raw exception at the user.
+    if (kDebugMode) ErrorWidget.builder = (FlutterErrorDetails details) {
       return Material(
         child: Container(
           color: const Color(0xFF8B0000),
@@ -61,10 +64,73 @@ void main() {
   });
 }
 
-class HalalCalorieApp extends ConsumerWidget {
+class HalalCalorieApp extends ConsumerStatefulWidget {
   const HalalCalorieApp({super.key});
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HalalCalorieApp> createState() => _HalalCalorieAppState();
+}
+
+class _HalalCalorieAppState extends ConsumerState<HalalCalorieApp>
+    with WidgetsBindingObserver {
+  String _day = _dayKey();
+  Timer? _midnight;
+
+  static String _dayKey() {
+    final n = DateTime.now();
+    return '${n.year}-${n.month}-${n.day}';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _armMidnightTimer();
+  }
+
+  @override
+  void dispose() {
+    _midnight?.cancel();
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) _rollDayIfNeeded();
+  }
+
+  void _armMidnightTimer() {
+    _midnight?.cancel();
+    final now = DateTime.now();
+    final next = DateTime(now.year, now.month, now.day + 1, 0, 0, 5);
+    _midnight = Timer(next.difference(now), () {
+      _rollDayIfNeeded();
+      _armMidnightTimer();
+    });
+  }
+
+  /// Everything "today"-scoped is loaded once per provider lifetime, so an app
+  /// left open (or resumed) after midnight kept yesterday's meals, water, steps,
+  /// workout minutes and fasting flag — the next water tap then wrote yesterday's
+  /// cups into the new day's row, and Ascent scored yesterday's quests as today's.
+  /// On a date change, rebuild those providers from the database.
+  void _rollDayIfNeeded() {
+    final today = _dayKey();
+    if (today == _day) return;
+    _day = today;
+    ref.invalidate(caloriesProvider);
+    ref.invalidate(waterProvider);
+    ref.invalidate(sleepProvider);
+    ref.invalidate(healthProvider);
+    ref.invalidate(workoutMinutesProvider);
+    ref.invalidate(caloriesBurnedTodayProvider);
+    ref.invalidate(fastingProvider);
+    ref.read(scanProvider.notifier).refreshDay();
+    ref.read(ascentProvider.notifier).refresh();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router    = ref.watch(routerProvider);
     final isDark    = ref.watch(themeProvider);
     final isRamadan = ref.watch(ramadanModeProvider);
