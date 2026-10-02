@@ -10,6 +10,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
+import '../../core/fx.dart';
+import '../../core/fx2.dart';
+import '../../core/motion.dart';
 import '../../core/providers.dart';
 import '../../data/models/user_profile.dart';
 
@@ -509,66 +512,90 @@ class _WelcomePage extends StatelessWidget {
   final String lang;
   const _WelcomePage({required this.step, required this.isDark, required this.lang});
 
+  int get _kind =>
+      step.titleEn == 'HalalCalorie' ? 0 : (step.titleEn == 'AI-Powered' ? 1 : 2);
+
   @override
   Widget build(BuildContext context) {
+    final text = isDark ? Colors.white : const Color(0xFF1F2A1F);
+    final sub = isDark ? const Color(0xFFA9B4BF) : const Color(0xFF5B6B7D);
+    final chips = lang == 'ar' ? step.chips : step.chipsEn;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Big icon
           TweenAnimationBuilder<double>(
-            tween: Tween(begin: 0.6, end: 1.0),
-            duration: const Duration(milliseconds: 600),
-            curve: Curves.elasticOut,
-            builder: (_, v, child) => Transform.scale(scale: v, child: child),
-            child: Container(
-              width: 140, height: 140,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: RadialGradient(colors: [
-                  step.color.withOpacity(0.2),
-                  step.color.withOpacity(0.05),
-                ]),
-                border: Border.all(color: step.color.withOpacity(0.35), width: 2),
+            tween: Tween<double>(begin: 0.7, end: 1.0),
+            duration: const Duration(milliseconds: 750),
+            curve: Curves.easeOutBack,
+            builder: (_, v, child) => Opacity(
+              opacity: v.clamp(0.0, 1.0),
+              child: Transform.scale(scale: v, child: child),
+            ),
+            child: OnboardScene(kind: _kind, color: step.color, size: 236),
+          ),
+          const SizedBox(height: 26),
+          Reveal(
+            index: 1,
+            child: ShaderMask(
+              blendMode: BlendMode.srcIn,
+              shaderCallback: (r) =>
+                  LinearGradient(colors: [text, step.color]).createShader(r),
+              child: Text(
+                lang == 'ar' ? step.title : step.titleEn,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontFamily: 'Aligarh', fontSize: 32,
+                  fontWeight: FontWeight.w900, color: Colors.white, height: 1.15,
+                ),
               ),
-              child: Center(child: Text(step.emoji,
-                style: const TextStyle(fontSize: 64))),
             ),
           ),
-
-          const SizedBox(height: 36),
-
-          Text(lang == 'ar' ? step.title : step.titleEn, textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Aligarh', fontSize: 30, fontWeight: FontWeight.w900,
-              color: isDark ? Colors.white : const Color(0xFF1F2A1F),
-            )),
-
           const SizedBox(height: 12),
-
-          Text(lang == 'ar' ? step.subtitle : step.subtitleEn, textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Aligarh', fontSize: 16, height: 1.7,
-              color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D),
-            )),
-
-          const SizedBox(height: 28),
-
-          Wrap(spacing: 8, runSpacing: 8,
-            alignment: WrapAlignment.center,
-            children: (lang == 'ar' ? step.chips : step.chipsEn).map((c) => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-              decoration: BoxDecoration(
-                color: step.color.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: step.color.withOpacity(0.3)),
+          Reveal(
+            index: 2,
+            child: Text(
+              lang == 'ar' ? step.subtitle : step.subtitleEn,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Aligarh', fontSize: 16, height: 1.7, color: sub,
               ),
-              child: Text(c, style: TextStyle(
-                fontFamily: 'Aligarh', fontSize: 13,
-                fontWeight: FontWeight.w700, color: step.color,
-              )),
-            )).toList(),
+            ),
+          ),
+          const SizedBox(height: 24),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            alignment: WrapAlignment.center,
+            children: [
+              for (var i = 0; i < chips.length; i++)
+                Reveal(
+                  index: 3 + i,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          step.color.withOpacity(0.22),
+                          step.color.withOpacity(0.06),
+                        ],
+                      ),
+                      border: Border.all(color: step.color.withOpacity(0.38), width: 0.8),
+                    ),
+                    child: Text(
+                      chips[i],
+                      style: TextStyle(
+                        fontFamily: 'Aligarh', fontSize: 13,
+                        fontWeight: FontWeight.w700, color: step.color,
+                      ),
+                    ),
+                  ),
+                ),
+            ],
           ),
         ],
       ),
@@ -596,7 +623,29 @@ class _QuestionShell extends ConsumerWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(emoji, style: const TextStyle(fontSize: 40)),
+          TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0.7, end: 1.0),
+            duration: const Duration(milliseconds: 520),
+            curve: Curves.easeOutBack,
+            builder: (_, v, c) => Transform.scale(scale: v, child: c),
+            child: Container(
+              width: 64, height: 64,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft, end: Alignment.bottomRight,
+                  colors: [
+                    AppColors.halalGreen.withOpacity(0.28),
+                    AppColors.halalGreen.withOpacity(0.06),
+                  ],
+                ),
+                border: Border.all(
+                    color: AppColors.halalGreen.withOpacity(0.4), width: 0.8),
+              ),
+              child: Center(
+                  child: Text(emoji, style: const TextStyle(fontSize: 32))),
+            ),
+          ),
           const SizedBox(height: 10),
           Text(isAr ? title : titleEn, style: TextStyle(
             fontFamily: 'Aligarh', fontSize: 28, fontWeight: FontWeight.w900,
@@ -1174,15 +1223,7 @@ class _TopBar extends ConsumerWidget {
             const SizedBox(width: 36),
         ]),
         const SizedBox(height: 10),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: LinearProgressIndicator(
-            value: pct,
-            minHeight: 4,
-            backgroundColor: isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF),
-            valueColor: const AlwaysStoppedAnimation(AppColors.halalGreen),
-          ),
-        ),
+        _GlowBar(value: pct, isDark: isDark),
       ]),
     );
   }
@@ -1202,39 +1243,23 @@ class _BottomBar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lang  = ref.watch(languageProvider);
-    final isAr  = lang == 'ar' || lang == 'ur';
     final label = isLast
       ? (tLang(lang, 'ابدأ رحلتك 🌿', 'Start your journey 🌿', 'Commencez votre voyage 🌿', 'Yolculuğuna başla 🌿', 'Mulakan perjalanan anda 🌿', 'Mulailah perjalanan Anda 🌿'))
       : (tLang(lang, 'التالي →', 'Next →', 'Suivant →', 'İleri →', 'Seterusnya →', 'Berikutnya →'));
     return Padding(
       padding: EdgeInsets.fromLTRB(
         24, 12, 24, MediaQuery.of(context).padding.bottom + 20),
-      child: SizedBox(
-        width: double.infinity, height: 56,
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: isLast
-              ? const LinearGradient(
-                  colors: [Color(0xFFD4A017), Color(0xFFFFB300)],
-                  begin: Alignment.topLeft, end: Alignment.bottomRight)
-              : const LinearGradient(
-                  colors: [Color(0xFF0A6B4A), Color(0xFF00A86B)],
-                  begin: Alignment.topLeft, end: Alignment.bottomRight),
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: [BoxShadow(
-              color: (isLast ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.35),
-              blurRadius: 16, offset: const Offset(0, 6))],
-          ),
-          child: ElevatedButton(
-            onPressed: onNext,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.transparent,
-              shadowColor: Colors.transparent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
-            child: Text(label, style: const TextStyle(
-              fontFamily: 'Aligarh', fontSize: 17,
-              fontWeight: FontWeight.w800, color: Colors.white)),
-          ),
+      child: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 300),
+        child: ShineButton(
+          key: ValueKey(isLast),
+          label: label,
+          onPressed: onNext,
+          height: 58,
+          colors: isLast
+              ? const [Color(0xFFF0CF98), Color(0xFFDBA75D)]
+              : const [Color(0xFF1E9E52), Color(0xFF0A6B4A)],
+          textColor: isLast ? const Color(0xFF1A0F00) : Colors.white,
         ),
       ),
     );
@@ -1249,21 +1274,74 @@ class _OrbPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final orb1 = Paint()..color = const Color(0xFF0A6B4A)
-      .withOpacity(isDark ? 0.08 : 0.06);
-    final orb2 = Paint()..color = const Color(0xFFD4A017)
-      .withOpacity(isDark ? 0.06 : 0.04);
+    final w = size.width, h = size.height;
+    void blob(Offset c, double r, Color col, double a) {
+      canvas.drawCircle(
+        c, r,
+        Paint()..shader = RadialGradient(colors: [
+          col.withOpacity(a), col.withOpacity(0),
+        ]).createShader(Rect.fromCircle(center: c, radius: r)),
+      );
+    }
 
-    final x1 = size.width * (0.15 + 0.1 * sin(progress * pi));
-    final y1 = size.height * (0.2 + 0.05 * cos(progress * pi));
-    canvas.drawCircle(Offset(x1, y1), 200, orb1);
-
-    final x2 = size.width * (0.85 - 0.1 * cos(progress * pi));
-    final y2 = size.height * (0.75 + 0.05 * sin(progress * pi));
-    canvas.drawCircle(Offset(x2, y2), 160, orb2);
+    final g = Color.lerp(
+        const Color(0xFF1E9E52), const Color(0xFF0E6B8A), pageProgress)!;
+    const gold = Color(0xFFDBA75D);
+    blob(Offset(w * (0.15 + 0.12 * sin(progress * pi)),
+        h * (0.18 + 0.05 * cos(progress * pi))), w * 0.85, g,
+        isDark ? 0.30 : 0.18);
+    blob(Offset(w * (0.88 - 0.12 * cos(progress * pi)),
+        h * (0.80 + 0.05 * sin(progress * pi))), w * 0.75, gold,
+        isDark ? 0.20 : 0.13);
+    blob(Offset(w * 0.5, h * (0.5 + 0.04 * sin(progress * pi))), w * 0.55, g,
+        isDark ? 0.10 : 0.06);
   }
 
   @override
   bool shouldRepaint(_OrbPainter old) =>
-    old.progress != progress || old.pageProgress != pageProgress;
+    old.progress != progress || old.pageProgress != pageProgress ||
+    old.isDark != isDark;
+}
+
+class _GlowBar extends StatelessWidget {
+  final double value;
+  final bool isDark;
+  const _GlowBar({required this.value, required this.isDark});
+
+  @override
+  Widget build(BuildContext context) {
+    final track = isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF);
+    return SizedBox(
+      height: 8,
+      child: LayoutBuilder(builder: (_, c) {
+        return TweenAnimationBuilder<double>(
+          tween: Tween<double>(end: value),
+          duration: const Duration(milliseconds: 520),
+          curve: Curves.easeOutCubic,
+          builder: (_, v, __) => Stack(clipBehavior: Clip.none, children: [
+            Container(
+              height: 6,
+              margin: const EdgeInsets.only(top: 1),
+              decoration: BoxDecoration(
+                color: track, borderRadius: BorderRadius.circular(3)),
+            ),
+            Container(
+              height: 6,
+              margin: const EdgeInsets.only(top: 1),
+              width: c.maxWidth * v.clamp(0.0, 1.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(3),
+                gradient: const LinearGradient(colors: [
+                  Color(0xFF0A6B4A), Color(0xFF3FB950), Color(0xFFDBA75D),
+                ]),
+                boxShadow: [BoxShadow(
+                  color: const Color(0xFF3FB950).withOpacity(0.5),
+                  blurRadius: 10)],
+              ),
+            ),
+          ]),
+        );
+      }),
+    );
+  }
 }

@@ -14,6 +14,7 @@ import '../../core/l10n.dart';
 import '../ramadan/ramadan_ui.dart';
 import '../../core/motion.dart';
 import '../../core/fx.dart';
+import '../../core/fx2.dart';
 import '../../core/prayer_provider.dart';
 import '../../data/models/models.dart';
 import '../../data/models/user_profile.dart';
@@ -853,36 +854,14 @@ const SizedBox(height: 18),
 
 Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
 // ── Animated ring ──
-AnimatedBuilder(
-animation: ringAnim,
-builder: (_, __) => CustomPaint(
-size: const Size(120, 120),
-painter: _RingPainter(
-pct: pct * ringAnim.value,
+HeroRing(
+pct: pct,
+ringAnim: ringAnim,
 color: calCol,
+eaten: eaten,
 isDark: isDark,
-),
-child: SizedBox(
-width: 120, height: 120,
-child: Column(
-mainAxisAlignment: MainAxisAlignment.center,
-children: [
-TweenAnimationBuilder<int>(
-tween: IntTween(begin: 0, end: eaten),
-duration: const Duration(milliseconds: 800),
-curve: Curves.easeOutCubic,
-builder: (_, v, __) => Text('`$v',
-style: TextStyle(
-fontFamily: 'Aligarh', fontSize: 26,
-fontWeight: FontWeight.w900, color: calCol, height: 1,
-)),
-),
-Text(t('مأكول', 'eaten'), style: TextStyle(
-fontFamily: 'Aligarh', fontSize: 9, color: muted)),
- ],
-),
-),
-),
+muted: muted,
+label: t('\u0645\u0623\u0643\u0648\u0644', 'kcal eaten'),
 ),
 
 const SizedBox(width: 20),
