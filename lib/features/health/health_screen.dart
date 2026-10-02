@@ -539,7 +539,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: color.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: color.withOpacity(0.2))),
         child: Column(children: [
           statusGlyphForEmoji(emoji) != null
@@ -585,7 +585,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                       ? AppColors.brandGreen
                       : Colors.transparent,
                   width: 2),
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(20),
               boxShadow: health.mood == m[1]
                   ? [BoxShadow(
                       color: AppColors.brandGreen.withOpacity(0.25),
@@ -807,7 +807,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                     width: 48, height: 48,
                     decoration: BoxDecoration(
                       color: artColor.withOpacity(0.18),
-                      borderRadius: BorderRadius.circular(14),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     // PATCH_V35_ICON_FALLBACKS: emoji fallback dimmed + shrunk to match
                     // the 28px illustrated badges instead of popping as a

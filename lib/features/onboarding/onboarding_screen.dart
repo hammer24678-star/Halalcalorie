@@ -429,7 +429,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
                   decoration: BoxDecoration(
                     color: selected ? color.withOpacity(0.15) :
                       (isDark ? const Color(0xFF1E2D1E) : Colors.white),
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(20),
                     border: Border.all(
                       color: selected ? color : (isDark ? const Color(0xFF2D3D2D) : const Color(0xFFE0E0E0)),
                       width: selected ? 2 : 1,
@@ -761,7 +761,7 @@ class _SelectTile extends ConsumerWidget {
           color: selected
             ? AppColors.halalGreen.withOpacity(0.1)
             : (isDark ? AppColors.darkCard : Colors.white),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: selected
               ? AppColors.halalGreen
@@ -913,7 +913,7 @@ class _AdjustBtn extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
         decoration: BoxDecoration(
           color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: color.withOpacity(0.3)),
         ),
         child: Text(label, style: TextStyle(
@@ -1062,8 +1062,9 @@ class _SummaryPage extends ConsumerWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: card,
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(22),
             border: Border.all(color: border, width: 0.5),
+            boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 22, offset: Offset(0, 8))],
           ),
           child: Row(children: [
             Text(goal.emoji(), style: const TextStyle(fontSize: 28)),
@@ -1097,8 +1098,9 @@ class _SummaryTile extends StatelessWidget {
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: card,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(color: border, width: 0.5),
+        boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 22, offset: Offset(0, 8))],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Text(emoji, style: const TextStyle(fontSize: 22)),

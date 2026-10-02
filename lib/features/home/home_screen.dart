@@ -13,6 +13,7 @@ import '../../core/providers.dart';
 import '../../core/l10n.dart';
 import '../ramadan/ramadan_ui.dart';
 import '../../core/motion.dart';
+import '../../core/fx.dart';
 import '../../core/prayer_provider.dart';
 import '../../data/models/models.dart';
 import '../../data/models/user_profile.dart';
@@ -129,7 +130,17 @@ curve: Interval(i * 0.1, i * 0.1 + 0.55, curve: Curves.easeOutCubic),
 
 Widget _anim(int i, Widget child) => FadeTransition(
 opacity: _fade(i),
-child: SlideTransition(position: _slide(i), child: child),
+child: SlideTransition(
+position: _slide(i),
+child: ScaleTransition(
+scale: Tween<double>(begin: 0.94, end: 1.0).animate(CurvedAnimation(
+parent: _stagger,
+curve: Interval(i * 0.08, (i * 0.08 + 0.6).clamp(0.0, 1.0),
+curve: Curves.easeOutBack),
+)),
+child: child,
+),
+),
 );
 
 @override
@@ -233,7 +244,7 @@ begin: Alignment.topLeft, end: Alignment.bottomRight,
 borderRadius: BorderRadius.circular(20),
 ),
 child: Row(mainAxisSize: MainAxisSize.min, children: [
-Text(isRamadan ? '🌙' : '🌿', style: const TextStyle(fontSize: 12)),
+BrandMark(size: 17, color: Colors.white),
 const SizedBox(width: 5),
 const Text('HalalCalorie', style: TextStyle(
 fontFamily: 'Alyamama', fontSize: 13,
@@ -548,8 +559,9 @@ class _WholesomeFoodStrip extends StatelessWidget {
       margin: const EdgeInsets.only(top: 12),
       decoration: BoxDecoration(
         color: card,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(22),
         border: Border.all(color: border, width: 0.5),
+        boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 22, offset: Offset(0, 8))],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
@@ -672,8 +684,9 @@ return Container(
 padding: const EdgeInsets.all(16),
 decoration: BoxDecoration(
 color: card,
-borderRadius: BorderRadius.circular(14),
+borderRadius: BorderRadius.circular(22),
 border: Border.all(color: border, width: 0.5),
+boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 22, offset: Offset(0, 8))],
 ),
 child: Column(children: [
 Row(children: [
@@ -687,7 +700,7 @@ gradient: const LinearGradient(
 colors: [Color(0xFF238636), Color(0xFF3FB950)],
 begin: Alignment.topLeft, end: Alignment.bottomRight,
 ),
-borderRadius: BorderRadius.circular(12),
+borderRadius: BorderRadius.circular(16),
 boxShadow: [BoxShadow(
 color: AppColors.brandGreen.withOpacity(0.4),
 blurRadius: 12, spreadRadius: 0,
@@ -807,8 +820,9 @@ return Container(
 padding: const EdgeInsets.all(18),
 decoration: BoxDecoration(
 color: card,
-borderRadius: BorderRadius.circular(14),
+borderRadius: BorderRadius.circular(22),
 border: Border.all(color: border, width: 0.5),
+boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 22, offset: Offset(0, 8))],
 ),
 child: Column(children: [
 // Header
@@ -1193,7 +1207,7 @@ child: Container(
 padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
 decoration: BoxDecoration(
 color: widget.card,
-borderRadius: BorderRadius.circular(12),
+borderRadius: BorderRadius.circular(16),
 border: Border.all(color: widget.border, width: 0.5),
 ),
 child: Column(children: [
@@ -1300,8 +1314,9 @@ return Container(
 padding: const EdgeInsets.all(16),
 decoration: BoxDecoration(
 color: card,
-borderRadius: BorderRadius.circular(14),
+borderRadius: BorderRadius.circular(22),
 border: Border.all(color: border, width: 0.5),
+boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 22, offset: Offset(0, 8))],
 ),
 child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
 // Green left bar
@@ -1540,7 +1555,7 @@ child: Container(
 padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 10),
 decoration: BoxDecoration(
 color: widget.card,
-borderRadius: BorderRadius.circular(12),
+borderRadius: BorderRadius.circular(16),
 border: Border.all(color: widget.border, width: 0.5),
 ),
 child: Column(children: [
@@ -1579,34 +1594,78 @@ maxLines: 1),
 // ICON BUTTON
 // ════════════════════════════════════════════════════════════
 class _IconBtn extends StatelessWidget {
-final String icon;
-final bool isDark;
-final bool isText;
-final VoidCallback onTap;
-const _IconBtn({required this.icon, required this.isDark,
-this.isText = false, required this.onTap});
+  final String icon;
+  final bool isDark;
+  final bool isText;
+  final VoidCallback onTap;
+  const _IconBtn({
+    required this.icon,
+    required this.isDark,
+    this.isText = false,
+    required this.onTap,
+  });
 
-@override
-Widget build(BuildContext context) {
-return GestureDetector(
-onTap: onTap,
-child: Container(
-margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 3),
-width: 34, height: 34,
-decoration: BoxDecoration(
-color: isDark ? AppColors.darkCardAlt : AppColors.lightCard,
-borderRadius: BorderRadius.circular(8),
-border: Border.all(
-color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
-width: 0.5),
-),
-child: Center(child: Text(icon, style: TextStyle(
-fontFamily: isText ? 'Aligarh' : null,
-fontSize: isText ? 11 : 15,
-fontWeight: isText ? FontWeight.w800 : null,
-color: isDark ? AppColors.darkText : AppColors.lightText,
-))),
-),
-);
-}
+  IconData? get _data {
+    switch (icon) {
+      case '☀':
+        return Icons.light_mode_rounded;
+      case '☾':
+        return Icons.dark_mode_rounded;
+      case '⚙':
+        return Icons.settings_rounded;
+      default:
+        return null;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final fg = isDark ? AppColors.darkText : AppColors.lightText;
+    final data = _data;
+    return PressFx(
+      onTap: onTap,
+      scale: 0.88,
+      haptics: false,
+      child: Container(
+        margin: const EdgeInsets.symmetric(vertical: 9, horizontal: 3),
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: isDark
+                ? const [Color(0xFF1B3327), Color(0xFF0F1E18)]
+                : const [Color(0xFFFFFFFF), Color(0xFFEAF2EC)],
+          ),
+          border: Border.all(
+            color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+            width: 0.6,
+          ),
+        ),
+        child: Center(
+          child: AnimatedSwitcher(
+            duration: const Duration(milliseconds: 320),
+            transitionBuilder: (c, a) => RotationTransition(
+              turns: Tween<double>(begin: 0.75, end: 1.0).animate(a),
+              child: FadeTransition(opacity: a, child: c),
+            ),
+            child: data != null
+                ? Icon(data, key: ValueKey(icon), size: 18, color: fg)
+                : Text(
+                    icon,
+                    key: ValueKey(icon),
+                    style: TextStyle(
+                      fontFamily: isText ? 'Aligarh' : null,
+                      fontSize: isText ? 11.5 : 15,
+                      fontWeight: isText ? FontWeight.w800 : null,
+                      color: fg,
+                    ),
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
 }

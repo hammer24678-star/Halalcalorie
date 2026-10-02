@@ -151,7 +151,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: AppColors.accentGold.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColors.accentGold.withOpacity(0.4)),
                 ),
                 child: Text( t('وضع رمضان فعّال — تمارين خفيفة أولاً • وصفات مناسبة للصائم • لافتة رمضان في الرئيسية', 'Ramadan mode active — light workouts first • fasting-friendly recipes • Ramadan banner on home'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 11,
@@ -347,7 +347,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.brandGreen,
                     shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12))),
+                        borderRadius: BorderRadius.circular(16))),
                   child: Text(tLang(lang, 'حفظ', 'Save', 'Enregistrer', 'Kaydet', 'Simpan', 'Simpan'),
                     style: const TextStyle(fontFamily: 'Aligarh',
                         color: Colors.white, fontWeight: FontWeight.w700)),

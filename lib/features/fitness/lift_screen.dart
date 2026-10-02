@@ -481,7 +481,7 @@ class _NeedsBodyweight extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppColors.doubtOrange.withOpacity(0.10),
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(color: AppColors.doubtOrange.withOpacity(0.4)),
         ),
         child: Row(children: [
@@ -536,7 +536,7 @@ class _ExerciseRow extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: card,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(20),
           border: Border.all(
             color: logged ? rank.color.withOpacity(0.30) : border,
             width: logged ? 1.1 : 0.8,
@@ -548,7 +548,7 @@ class _ExerciseRow extends StatelessWidget {
             height: 42,
             decoration: BoxDecoration(
               color: (logged ? rank.color : muted).withOpacity(0.10),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Center(
                 // PATCH_V30_DARKSAFE_PLATE_COLOR: plate matched to this row's own tinted
@@ -690,7 +690,7 @@ class _PromotionDialog extends StatelessWidget {
                 backgroundColor: to.color,
                 foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(16)),
               ),
               child: Text(l.continueLabel,
                   style: const TextStyle(
@@ -811,7 +811,7 @@ class _LiftDetailScreenState extends ConsumerState<LiftDetailScreen> {
       behavior: SnackBarBehavior.floating,
       duration: Duration(seconds: isPr ? 3 : 2),
       shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
     ));
   }
 
@@ -1271,7 +1271,7 @@ class _EntryCard extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
           decoration: BoxDecoration(
             color: preview.color.withOpacity(0.09),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(color: preview.color.withOpacity(0.35)),
           ),
           child: Row(children: [
@@ -1338,7 +1338,7 @@ class _EntryCard extends StatelessWidget {
                   onLog == null ? muted : AppColors.brandGreen,
               padding: const EdgeInsets.symmetric(vertical: 15),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14)),
+                  borderRadius: BorderRadius.circular(20)),
             ),
           ),
         ),

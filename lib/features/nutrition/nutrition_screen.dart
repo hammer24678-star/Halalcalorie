@@ -288,7 +288,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                 : (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen),
               behavior: SnackBarBehavior.floating,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                  borderRadius: BorderRadius.circular(16)),
               duration: Duration(seconds: wholesome != null ? 4 : 2),
             ));
         },
@@ -549,7 +549,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                       side: const BorderSide(color: AppColors.haramRed),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14))),
+                          borderRadius: BorderRadius.circular(20))),
                 )),
                 const SizedBox(width: 10),
                 Expanded(child: ElevatedButton.icon(
@@ -571,7 +571,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                       backgroundColor: (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(14))),
+                          borderRadius: BorderRadius.circular(20))),
                 )),
               ]),
             ],
@@ -588,7 +588,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: bg,
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(20),
         boxShadow: [BoxShadow(
             color: color.withOpacity(0.08), blurRadius: 10)],
         border: Border.all(color: color.withOpacity(0.15))),
@@ -1358,7 +1358,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                               behavior: SnackBarBehavior.floating,
                               shape: RoundedRectangleBorder(
                                   borderRadius:
-                                      BorderRadius.circular(12)),
+                                      BorderRadius.circular(16)),
                               duration:
                                   const Duration(seconds: 2),
                             ),
@@ -1412,7 +1412,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
             width: 40, height: 40,
             decoration: BoxDecoration(
               color: color.withOpacity(0.20),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
             child: Center(child: Text(emoji,
                 style: const TextStyle(fontSize: 20))),
@@ -1516,7 +1516,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
             gradient: LinearGradient(colors: [
               AppColors.accentGold.withOpacity(0.13),
               AppColors.accentGold.withOpacity(0.04)]),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
                 color: AppColors.accentGold.withOpacity(0.45))),
           child: Row(children: [
@@ -1694,7 +1694,7 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
-                  borderRadius: BorderRadius.circular(14),
+                  borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: accentCol.withOpacity(0.35)),
                 ),
                 child: Center(child: Text(widget.emoji,
@@ -1785,7 +1785,7 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                 padding: const EdgeInsets.only(right: 20),
                 decoration: BoxDecoration(
                   color: AppColors.haramRed,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                 ),
                 child: const Icon(Icons.delete_rounded,
                     color: Colors.white),
@@ -1809,7 +1809,7 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                       ),
                       child: Center(child: FoodThumb(name: e.name, size: 38, radius: 9,
                           background: Colors.transparent)),
@@ -2062,7 +2062,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             controller: _tab,
             indicator: BoxDecoration(
               color: AppColors.brandGreen,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
             ),
             indicatorSize: TabBarIndicatorSize.tab,
             labelStyle: const TextStyle(fontFamily: 'Aligarh',
@@ -2227,10 +2227,10 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     filled: true,
                     fillColor: AppColors.brandGreen.withOpacity(0.05),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide.none),
                     focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(16),
                         borderSide: const BorderSide(
                             color: AppColors.brandGreen)),
                     isDense: true,
@@ -2358,7 +2358,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(
                                 borderRadius:
-                                    BorderRadius.circular(12)),
+                                    BorderRadius.circular(16)),
                           ),
                         );
                         return;
@@ -2545,7 +2545,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                 Container(
                   decoration: BoxDecoration(
                     color: AppColors.brandGreen.withOpacity(0.07),
-                    borderRadius: BorderRadius.circular(14)),
+                    borderRadius: BorderRadius.circular(20)),
                   padding: const EdgeInsets.all(4),
                   child: Row(children: List.generate(
                     unitLabels.length, (i) => Expanded(
@@ -2832,7 +2832,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
           padding: const EdgeInsets.all(10),
           decoration: BoxDecoration(
             color: AppColors.brandGreen.withOpacity(0.04),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(
                 color: AppColors.brandGreen.withOpacity(0.16)),
           ),
@@ -3112,7 +3112,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             gradient: LinearGradient(colors: [
               AppColors.accentGold.withOpacity(0.13),
               AppColors.accentGold.withOpacity(0.04)]),
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.accentGold.withOpacity(0.45))),
           child: Row(children: [
             const Text('📊', style: TextStyle(fontSize: 26)),
@@ -3269,7 +3269,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
           color: color.withOpacity(0.08),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
           Text(emoji, style: const TextStyle(fontSize: 18)),
@@ -3310,15 +3310,15 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
               ? Colors.white.withOpacity(0.05)
               : Colors.grey.shade50,
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(
                   color: Colors.grey.shade200)),
           enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide(
                   color: Colors.grey.shade200)),
           focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(16),
               borderSide: const BorderSide(
                   color: AppColors.brandGreen, width: 2)),
         ),
@@ -3523,10 +3523,10 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                 filled: true,
                 fillColor: AppColors.brandGreen.withOpacity(0.04),
                 border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                     borderSide: BorderSide.none),
                 focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                     borderSide: const BorderSide(
                         color: AppColors.brandGreen, width: 2)),
               ),
@@ -3539,7 +3539,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                   padding: const EdgeInsets.symmetric(vertical: 13),
                   elevation: 2,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12))),
+                      borderRadius: BorderRadius.circular(16))),
               child: _loading
                   ? Row(mainAxisAlignment: MainAxisAlignment.center,
                       children: [

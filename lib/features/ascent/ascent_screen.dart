@@ -981,7 +981,7 @@ class _TitleShelf extends StatelessWidget {
                     color: done
                         ? AppColors.accentGold.withOpacity(0.1)
                         : palette.panelAlt,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(16),
                     border: Border.all(
                         color: done
                             ? AppColors.accentGold.withOpacity(0.5)
@@ -1081,7 +1081,7 @@ class _LevelUpDialog extends StatelessWidget {
                 backgroundColor: rank.color,
                 foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
+                    borderRadius: BorderRadius.circular(16)),
               ),
               child: Text(l.continueLabel,
                   style: const TextStyle(
@@ -1164,7 +1164,7 @@ class _AscentLocked extends StatelessWidget {
                   foregroundColor: Colors.black,
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
+                      borderRadius: BorderRadius.circular(20)),
                 ),
                 child: Text(l.upgradeCta,
                     style: const TextStyle(

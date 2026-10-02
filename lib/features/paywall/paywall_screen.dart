@@ -1,40 +1,48 @@
 // ============================================================
-//  paywall_screen.dart — HalalCalorie v1.0
-//  Full RevenueCat paywall with real Apple Pay / Google Pay
+//  paywall_screen.dart — HalalCalorie v44 premium redesign
+//  Purchase / restore logic is unchanged from v43; this file only
+//  replaces the presentation: aurora hero, staggered benefits,
+//  animated plan cards and a pinned call-to-action.
 // ============================================================
 import 'package:flutter/material.dart';
 import 'package:confetti/confetti.dart';
+import 'package:flutter/services.dart';
 import '../../core/l10n.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
+import '../../core/motion.dart';
+import '../../core/fx.dart';
 import '../../core/providers.dart';
 import '../../core/regional_pricing.dart';
 import '../../core/revenuecat_service.dart';
 
+const _gold = Color(0xFFDBA75D);
+const _goldLight = Color(0xFFF0CF98);
+
 class PaywallScreen extends ConsumerStatefulWidget {
   const PaywallScreen({super.key});
-  @override ConsumerState<PaywallScreen> createState() => _PaywallState();
+  @override
+  ConsumerState<PaywallScreen> createState() => _PaywallState();
 }
 
-class _PaywallState extends ConsumerState<PaywallScreen>
-    with SingleTickerProviderStateMixin {
-  String get lang => ref.watch(languageProvider);
-  int     _selected  = 1;
-  bool    _loading   = false;
-  bool    _restoring = false;
+class _PaywallState extends ConsumerState<PaywallScreen> {
+  int _selected = 1;
+  bool _loading = false;
+  bool _restoring = false;
   String? _errorMsg;
-  late AnimationController _pulse;
-  late ConfettiController _confetti;
+  late final ConfettiController _confetti;
 
   @override
   void initState() {
     super.initState();
-    _pulse = AnimationController(vsync: this, duration: const Duration(milliseconds: 1100))
-      ..repeat(reverse: true);
     _confetti = ConfettiController(duration: const Duration(seconds: 4));
   }
-  @override void dispose() { _pulse.dispose(); _confetti.dispose(); super.dispose(); }
+
+  @override
+  void dispose() {
+    _confetti.dispose();
+    super.dispose();
+  }
 
   bool get _isAr => ref.read(languageProvider) == 'ar';
 
@@ -42,14 +50,17 @@ class _PaywallState extends ConsumerState<PaywallScreen>
     if (_loading || offerings.isEmpty) return;
     if (mounted) setState(() { _loading = true; _errorMsg = null; });
     final offering = offerings[_selected.clamp(0, offerings.length - 1)];
-    final result   = await RevenueCatService.purchase(offering);
+    final result = await RevenueCatService.purchase(offering);
     if (!mounted) return;
-    if (mounted) setState(() => _loading = false);
+    setState(() => _loading = false);
     if (result.success) {
       await ref.read(premiumProvider.notifier).onPurchaseSuccess();
       _showSuccess();
     } else if (!result.cancelled) {
-      if (mounted) setState(() => _errorMsg = result.error ?? 'Purchase failed. Please try again.');
+      if (mounted) {
+        setState(() => _errorMsg =
+            result.error ?? 'Purchase failed. Please try again.');
+      }
     }
   }
 
@@ -57,20 +68,26 @@ class _PaywallState extends ConsumerState<PaywallScreen>
     if (mounted) setState(() { _restoring = true; _errorMsg = null; });
     final result = await RevenueCatService.restore();
     if (!mounted) return;
-    if (mounted) setState(() => _restoring = false);
+    setState(() => _restoring = false);
     if (result.success) {
       await ref.read(premiumProvider.notifier).onPurchaseSuccess();
       _showSuccess();
     } else {
-      if (mounted) setState(() => _errorMsg = 'No previous purchases found for this account.');
+      if (mounted) {
+        setState(() =>
+            _errorMsg = 'No previous purchases found for this account.');
+      }
     }
   }
 
   void _showSuccess() {
     final isAr = _isAr;
+    HapticFeedback.heavyImpact();
     _confetti.play();
-    showDialog(context: context, barrierDismissible: false,
-      builder: (_) => Stack(
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogCtx) => Stack(
         alignment: Alignment.topCenter,
         children: [
           ConfettiWidget(
@@ -85,43 +102,62 @@ class _PaywallState extends ConsumerState<PaywallScreen>
             ],
           ),
           AlertDialog(
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-            backgroundColor: const Color(0xFF1A2A1A),
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(28)),
+            backgroundColor: const Color(0xFF0F1E18),
             content: Column(mainAxisSize: MainAxisSize.min, children: [
               TweenAnimationBuilder<double>(
                 tween: Tween(begin: 0.0, end: 1.0),
-                duration: const Duration(milliseconds: 600),
+                duration: const Duration(milliseconds: 900),
                 curve: Curves.elasticOut,
-                builder: (_, v, child) => Transform.scale(scale: v, child: child),
-                child: const Text('🏆', style: TextStyle(fontSize: 72)),
+                builder: (_, v, child) =>
+                    Transform.scale(scale: v, child: child),
+                child: Container(
+                  width: 96,
+                  height: 96,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    gradient: const LinearGradient(
+                        colors: [_goldLight, _gold],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight),
+                    boxShadow: [
+                      BoxShadow(
+                          color: _gold.withOpacity(0.5), blurRadius: 30),
+                    ],
+                  ),
+                  child: const Icon(Icons.workspace_premium_rounded,
+                      size: 56, color: Color(0xFF1A0F00)),
+                ),
               ),
-              const SizedBox(height: 12),
-              Text(isAr ? 'تهانيّ! أصبحت عضواً بريميوم 🌟' : 'Congratulations! You are Premium 🌟',
+              const SizedBox(height: 18),
+              Text(
+                isAr ? 'تهانينا! أصبحت عضواً بريميوم'
+                     : 'Welcome to Premium',
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 18,
-                  fontWeight: FontWeight.w900, color: AppColors.accentGold)),
+                style: const TextStyle(
+                    fontFamily: 'Aligarh', fontSize: 20,
+                    fontWeight: FontWeight.w900, color: _goldLight),
+              ),
               const SizedBox(height: 8),
-              Text(isAr
-                ? 'تم فتح جميع الميزات المميزة — شكراً لدعمك 🌙'
-                : 'All premium features unlocked — thanks for your support 🌙',
+              Text(
+                isAr
+                    ? 'تم فتح جميع الميزات المميزة — شكراً لدعمك'
+                    : 'Every premium feature is unlocked — thank you for your support',
                 textAlign: TextAlign.center,
-                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13,
-                  color: Colors.white70, height: 1.5)),
-              const SizedBox(height: 24),
-              SizedBox(width: double.infinity, child: ElevatedButton(
+                style: const TextStyle(
+                    fontFamily: 'Aligarh', fontSize: 13,
+                    color: Colors.white70, height: 1.5),
+              ),
+              const SizedBox(height: 22),
+              ShineButton(
+                label: isAr ? 'لنبدأ' : "Let's go",
+                height: 52,
                 onPressed: () {
                   _confetti.stop();
-                  if (context.mounted) Navigator.pop(context);
+                  Navigator.of(dialogCtx).pop();
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.accentGold,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                ),
-                child: Text(isAr ? '🌟 رائع! لنبدأ' : '🌟 Let\'s go!',
-                  style: const TextStyle(fontFamily: 'Aligarh', fontSize: 16,
-                    color: Colors.white, fontWeight: FontWeight.w800)),
-              )),
+              ),
             ]),
           ),
         ],
@@ -131,227 +167,463 @@ class _PaywallState extends ConsumerState<PaywallScreen>
 
   @override
   Widget build(BuildContext context) {
-    final lang      = ref.watch(languageProvider);
-    final isAr      = lang == 'ar' || lang == 'ur';
-    final isDark    = ref.watch(themeProvider);
+    final lang = ref.watch(languageProvider);
+    final isAr = lang == 'ar' || lang == 'ur';
     final offerings = ref.watch(rcOfferingsProvider);
-    final bg        = isDark ? AppColors.darkCard : Colors.white;
     String t(String ar, String en) => isAr ? ar : en;
 
     return Directionality(
       textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
-        backgroundColor: isDark ? AppColors.darkBg : AppColors.lightBg,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent, elevation: 0,
-          leading: IconButton(
-            icon: Icon(Icons.close, color: isDark ? AppColors.darkText : AppColors.lightText),
-            onPressed: () { if (context.mounted) Navigator.pop(context); },
-          ),
-          actions: [
-            TextButton(
-              onPressed: _restoring ? null : _restore,
-              child: _restoring
-                ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.lightMuted))
-                : Text(t('استعادة', 'Restore'), style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: AppColors.lightMuted)),
+        backgroundColor: const Color(0xFF050E0A),
+        body: Stack(children: [
+          const Positioned.fill(
+            child: AuroraBackground(
+              base: Color(0xFF050E0A),
+              colors: [Color(0xFF1E9E52), _gold, Color(0xFF0E6B6B)],
+              intensity: 0.9,
             ),
-          ],
-        ),
-        body: offerings.when(
-          loading: () => Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const CircularProgressIndicator(color: AppColors.brandGreen, strokeWidth: 3),
-            const SizedBox(height: 12),
-            Text(t('جاري تحميل العروض...', 'Loading offers...'), style: const TextStyle(fontFamily: 'Aligarh', color: AppColors.lightMuted)),
-          ])),
-          error: (_, __) => _buildContent([], isAr, isDark, bg, t),
-          data:  (list) => _buildContent(list, isAr, isDark, bg, t),
-        ),
+          ),
+          SafeArea(
+            child: Column(children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(6, 2, 6, 0),
+                child: Row(children: [
+                  IconButton(
+                    icon: const Icon(Icons.close_rounded,
+                        color: Colors.white70),
+                    onPressed: () => Navigator.of(context).maybePop(),
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: _restoring ? null : _restore,
+                    child: _restoring
+                        ? const SizedBox(
+                            width: 16, height: 16,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: Colors.white54))
+                        : Text(t('استعادة', 'Restore'),
+                            style: const TextStyle(
+                                fontFamily: 'Aligarh', fontSize: 13,
+                                color: Colors.white60)),
+                  ),
+                ]),
+              ),
+              Expanded(
+                child: offerings.when(
+                  loading: () => const Center(
+                    child: CircularProgressIndicator(
+                        color: _gold, strokeWidth: 3),
+                  ),
+                  error: (_, __) => _page(const [], lang, isAr, t),
+                  data: (list) => _page(list, lang, isAr, t),
+                ),
+              ),
+            ]),
+          ),
+        ]),
       ),
     );
   }
 
-  Widget _buildContent(List<RCOffering> offerings, bool isAr, bool isDark, Color bg, String Function(String,String) t) {
-    return ListView(padding: const EdgeInsets.fromLTRB(18, 0, 18, 32), children: [
-      // Hero
-      Container(
-        padding: const EdgeInsets.all(24),
-        decoration: BoxDecoration(
-          gradient: const LinearGradient(colors: [AppColors.brandGreen, AppColors.darkGreen]),
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [BoxShadow(color: AppColors.brandGreen.withOpacity(0.3), blurRadius: 20, offset: const Offset(0,8))],
+  Widget _page(List<RCOffering> offerings, String lang, bool isAr,
+      String Function(String, String) t) {
+    final feats = _features(isAr);
+    return Column(children: [
+      Expanded(
+        child: ListView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+          children: [
+            Reveal(index: 0, child: _hero(t)),
+            const SizedBox(height: 26),
+            for (var i = 0; i < feats.length; i++)
+              Reveal(index: 2 + i, child: _featureRow(feats[i])),
+            const SizedBox(height: 22),
+            Reveal(
+              index: 2 + feats.length,
+              child: Text(
+                t('اختر خطتك', 'Choose your plan'),
+                style: const TextStyle(
+                    fontFamily: 'Aligarh', fontSize: 16,
+                    fontWeight: FontWeight.w800, color: Colors.white),
+              ),
+            ),
+            const SizedBox(height: 14),
+            Reveal(
+              index: 3 + feats.length,
+              child: _plansList(offerings, isAr, lang),
+            ),
+          ],
         ),
-        child: Column(children: [
-          const Text('🌟', style: TextStyle(fontSize: 72)),
-          const SizedBox(height: 10),
-          Text(t('HalalCalorie بريميوم', 'HalalCalorie Premium'),
-            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 22, fontWeight: FontWeight.w900, color: Colors.white)),
+      ),
+      // Pinned: the price and the button never scroll out of reach.
+      Container(
+        padding: const EdgeInsets.fromLTRB(20, 14, 20, 12),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              const Color(0xFF050E0A).withOpacity(0),
+              const Color(0xFF050E0A),
+            ],
+          ),
+        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          AnimatedSize(
+            duration: Motion.quick,
+            curve: Motion.curve,
+            child: _errorMsg == null
+                ? const SizedBox(width: double.infinity)
+                : Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.haramRed.withOpacity(0.10),
+                      border: Border.all(
+                          color: AppColors.haramRed.withOpacity(0.35)),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Text(_errorMsg!,
+                        style: const TextStyle(
+                            fontFamily: 'Aligarh', fontSize: 12,
+                            color: AppColors.haramRed)),
+                  ),
+          ),
+          PulseGlow(
+            color: _gold,
+            minOpacity: 0.10,
+            maxOpacity: 0.34,
+            blur: 26,
+            borderRadius: BorderRadius.circular(22),
+            child: ShineButton(
+              label: t('ابدأ بريميوم', 'Unlock Premium'),
+              icon: Icons.workspace_premium_rounded,
+              loading: _loading,
+              onPressed: () => _purchase(offerings),
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            _badge(Icons.verified_rounded, t('١٠٠٪ حلال', '100% Halal')),
+            const SizedBox(width: 18),
+            _badge(Icons.lock_rounded, t('خصوصية', 'Private')),
+            const SizedBox(width: 18),
+            _badge(Icons.block_rounded, t('بلا ربا', 'No Riba')),
+          ]),
           const SizedBox(height: 6),
-          Text(t('حلال في كل لقمة • خطوة كل يوم', 'Halal in every bite • a step every day'),
+          Text(
+            t('مدفوعات آمنة • يمكن الإلغاء في أي وقت • لا رسوم خفية',
+              'Secure payment • Cancel anytime • No hidden fees'),
             textAlign: TextAlign.center,
-            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: Colors.white70)),
+            style: const TextStyle(
+                fontFamily: 'Aligarh', fontSize: 10.5,
+                color: Colors.white38),
+          ),
         ]),
       ),
-      const SizedBox(height: 22),
-      // Features
-      Text(t('ما ستحصل عليه:', 'What you get:'),
-        style: TextStyle(fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w700,
-          color: isDark ? AppColors.darkText : AppColors.lightText)),
-      const SizedBox(height: 12),
-      ...(isAr ? [
-        ['💪', 'نسبة الدهون الدقيقة ٪ + كتلة العضلات + LBM'],
-        ['📸', 'تحليل الجسم والطعام بالصورة — AI بلا حدود'],
-        ['📷', 'ماسحات حلال غير محدودة (مقابل ٣ مجانية/يوم)'],
-        ['🏃', '١٨٠ خطة تمرين + رمضان + ما بعد الولادة'],
-        ['🌿', 'مخطط وجبات AI مخصص لجسمك'],
-        ['🧬', 'تحليل تركيبة الجسم الكامل'],
-        ['📥', 'يعمل بدون إنترنت + تاريخ كامل'],
-      ] : [
-        ['💪', 'Exact body fat % + Muscle mass + Lean Body Mass'],
-        ['📸', 'Unlimited AI food & body photo analysis (vs 3 free/day)'],
-        ['📷', 'Unlimited halal scans (vs 3 free/day)'],
-        ['🏃', '180 workouts + Ramadan + Postnatal plans'],
-        ['🌿', 'AI meal planner personalized to your body'],
-        ['🧬', 'Full body composition analysis'],
-        ['✨', 'Ascent progression, quests + weekly review'],
-      ]).map((f) => Padding(padding: const EdgeInsets.only(bottom: 10),
-        child: Row(children: [
-          Container(width: 36, height: 36,
-            decoration: BoxDecoration(color: AppColors.brandGreen.withOpacity(0.1), borderRadius: BorderRadius.circular(10)),
-            child: Center(child: Text(f[0], style: const TextStyle(fontSize: 18)))),
-          const SizedBox(width: 12),
-          Expanded(child: Text(f[1], style: TextStyle(fontFamily: 'Aligarh', fontSize: 13,
-            color: isDark ? AppColors.darkText : AppColors.lightText))),
-          const Icon(Icons.check_circle, color: AppColors.halalGreen, size: 18),
-        ]))),
-      const SizedBox(height: 22),
-      // Plans
-      Text(t('اختر خطتك:', 'Choose your plan:'),
-        style: TextStyle(fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w700,
-          color: isDark ? AppColors.darkText : AppColors.lightText)),
-      const SizedBox(height: 12),
-      _plansList(offerings, isAr, isDark, bg),
-      const SizedBox(height: 18),
-      if (_errorMsg != null) Container(
-        margin: const EdgeInsets.only(bottom: 14),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(color: AppColors.haramRed.withOpacity(0.08),
-          border: Border.all(color: AppColors.haramRed.withOpacity(0.3)),
-          borderRadius: BorderRadius.circular(10)),
-        child: Text(_errorMsg!, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: AppColors.haramRed))),
-      // CTA
-      SizedBox(width: double.infinity, child: ElevatedButton(
-        onPressed: _loading ? null : () => _purchase(offerings),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.accentGold,
-          padding: const EdgeInsets.symmetric(vertical: 18),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          elevation: 4, shadowColor: AppColors.accentGold.withOpacity(0.4),
-        ),
-        child: _loading
-          ? Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2.5)),
-              const SizedBox(width: 12),
-              Text(tLang(lang, 'جاري المعالجة...', 'Processing...', 'Traitement...', 'İşleniyor...', 'Memproses...', 'Memproses...'), style: const TextStyle(fontFamily: 'Aligarh', fontSize: 16, color: Colors.white)),
-            ])
-          : Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const Text('⭐', style: TextStyle(fontSize: 20)),
-              const SizedBox(width: 8),
-              Text(t('اشترك الآن', 'Subscribe Now'),
-                style: const TextStyle(fontFamily: 'Aligarh', fontSize: 18, color: Colors.white, fontWeight: FontWeight.w800)),
-            ]),
-      )),
-      const SizedBox(height: 14),
-      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        _badge('✅', t('١٠٠٪ حلال', '100% Halal')),
-        const SizedBox(width: 16),
-        _badge('🔒', t('خصوصية', 'Private')),
-        const SizedBox(width: 16),
-        _badge('🚫', t('بلا ربا', 'No Riba')),
-      ]),
-      const SizedBox(height: 8),
-      Text(t('Apple Pay وGoogle Pay متاحان تلقائياً عند الاشتراك', 'Apple Pay & Google Pay available automatically at checkout'),
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: AppColors.brandGreen, fontWeight: FontWeight.w600)),
-      const SizedBox(height: 4),
-      Text(t('مدفوعات آمنة • يمكن الإلغاء في أي وقت • لا رسوم خفية',
-              'Secure payment • Cancel anytime • No hidden fees'),
-        textAlign: TextAlign.center,
-        style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: AppColors.lightMuted)),
     ]);
   }
 
-  Widget _plansList(List<RCOffering> offerings, bool isAr, bool isDark, Color bg) {
-    // Use RC offerings if available, otherwise fallback
-    final plans = offerings.isNotEmpty ? offerings : _fallback(isAr, lang);
-    return Column(
-      children: plans.asMap().entries.map((e) {
-        final idx   = e.key;
-        final isSel = _selected == idx;
-        final rcOff = offerings.isNotEmpty ? offerings[idx] : null;
-        final title = rcOff != null ? (isAr ? rcOff.titleAr : rcOff.titleEn) : (e.value as _FP).title;
-        final price = rcOff?.priceString ?? (e.value as _FP).price;
-        final per   = rcOff != null ? (isAr ? rcOff.periodAr : rcOff.periodEn) : (e.value as _FP).per;
-        final pop   = rcOff?.isPopular ?? (e.value as _FP).popular;
-        final save  = rcOff != null ? (isAr ? rcOff.savingsBadgeAr : rcOff.savingsBadgeEn) : (e.value as _FP).save;
-        return GestureDetector(
-          onTap: () => setState(() { _selected = idx; _errorMsg = null; }),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            margin: const EdgeInsets.only(bottom: 10),
-            padding: const EdgeInsets.all(15),
+  Widget _hero(String Function(String, String) t) {
+    return Column(children: [
+      const SizedBox(height: 4),
+      PulseGlow(
+        color: _gold,
+        minOpacity: 0.16,
+        maxOpacity: 0.46,
+        blur: 40,
+        child: Container(
+          width: 112,
+          height: 112,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: RadialGradient(colors: [
+              Colors.white.withOpacity(0.10),
+              Colors.white.withOpacity(0.02),
+            ]),
+            border: Border.all(color: _gold.withOpacity(0.5), width: 1),
+          ),
+          child: const Center(child: BrandMark(size: 70)),
+        ),
+      ),
+      const SizedBox(height: 18),
+      Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: _gold.withOpacity(0.55), width: 0.8),
+          color: _gold.withOpacity(0.12),
+        ),
+        child: Text('PREMIUM',
+            style: TextStyle(
+                fontFamily: 'Aligarh', fontSize: 11,
+                fontWeight: FontWeight.w800, letterSpacing: 2.4,
+                color: _goldLight.withOpacity(0.95))),
+      ),
+      const SizedBox(height: 12),
+      Text(t('كل ما تحتاجه لصحتك، حلالاً',
+             'Everything for your health, halal'),
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+              fontFamily: 'Bravoon', fontSize: 26, height: 1.2,
+              fontWeight: FontWeight.w700, color: Colors.white)),
+      const SizedBox(height: 8),
+      Text(t('حلال في كل لقمة • خطوة كل يوم',
+             'Halal in every bite • a step every day'),
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+              fontFamily: 'Aligarh', fontSize: 13,
+              color: Colors.white60)),
+    ]);
+  }
+
+  List<_Feat> _features(bool isAr) => isAr
+      ? const [
+          _Feat(Icons.monitor_weight_rounded,
+              'نسبة الدهون الدقيقة ٪ + كتلة العضلات + LBM'),
+          _Feat(Icons.photo_camera_rounded,
+              'تحليل الجسم والطعام بالصورة — AI بلا حدود'),
+          _Feat(Icons.qr_code_scanner_rounded,
+              'ماسحات حلال غير محدودة (مقابل ٣ مجانية/يوم)'),
+          _Feat(Icons.fitness_center_rounded,
+              '١٨٠ خطة تمرين + رمضان + ما بعد الولادة'),
+          _Feat(Icons.restaurant_menu_rounded,
+              'مخطط وجبات AI مخصص لجسمك'),
+          _Feat(Icons.biotech_rounded, 'تحليل تركيبة الجسم الكامل'),
+          _Feat(Icons.cloud_off_rounded, 'يعمل بدون إنترنت + تاريخ كامل'),
+        ]
+      : const [
+          _Feat(Icons.monitor_weight_rounded,
+              'Exact body fat % + muscle mass + lean body mass'),
+          _Feat(Icons.photo_camera_rounded,
+              'Unlimited AI food & body photo analysis (vs 3 free/day)'),
+          _Feat(Icons.qr_code_scanner_rounded,
+              'Unlimited halal scans (vs 3 free/day)'),
+          _Feat(Icons.fitness_center_rounded,
+              '180 workouts + Ramadan + postnatal plans'),
+          _Feat(Icons.restaurant_menu_rounded,
+              'AI meal planner personalised to your body'),
+          _Feat(Icons.biotech_rounded, 'Full body composition analysis'),
+          _Feat(Icons.terrain_rounded,
+              'Ascent progression, quests + weekly review'),
+        ];
+
+  Widget _featureRow(_Feat f) => Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Row(children: [
+          Container(
+            width: 40,
+            height: 40,
             decoration: BoxDecoration(
-              color: isSel ? AppColors.brandGreen.withOpacity(0.08) : bg,
-              border: Border.all(color: isSel ? AppColors.brandGreen : Colors.grey.withOpacity(0.25), width: isSel ? 2.5 : 0.8),
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: isSel ? [BoxShadow(color: AppColors.brandGreen.withOpacity(0.12), blurRadius: 12)] : null,
+              borderRadius: BorderRadius.circular(13),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  _gold.withOpacity(0.28),
+                  _gold.withOpacity(0.08),
+                ],
+              ),
+              border: Border.all(color: _gold.withOpacity(0.35), width: 0.6),
+            ),
+            child: Icon(f.icon, size: 21, color: _goldLight),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(f.text,
+                style: const TextStyle(
+                    fontFamily: 'Aligarh', fontSize: 13.5, height: 1.35,
+                    color: Colors.white)),
+          ),
+          const SizedBox(width: 8),
+          const Icon(Icons.check_circle_rounded,
+              color: AppColors.halalGreen, size: 19),
+        ]),
+      );
+
+  Widget _plansList(List<RCOffering> offerings, bool isAr, String lang) {
+    final fallback = _fallback(isAr, lang);
+    final count = offerings.isNotEmpty ? offerings.length : fallback.length;
+    return Column(children: [
+      for (var idx = 0; idx < count; idx++)
+        Builder(builder: (_) {
+          final rc = offerings.isNotEmpty ? offerings[idx] : null;
+          final fp = rc == null ? fallback[idx] : null;
+          final title = rc != null ? (isAr ? rc.titleAr : rc.titleEn) : fp!.title;
+          final price = rc?.priceString ?? fp!.price;
+          final per = rc != null ? (isAr ? rc.periodAr : rc.periodEn) : fp!.per;
+          final pop = rc?.isPopular ?? fp!.popular;
+          final save = rc != null
+              ? (isAr ? rc.savingsBadgeAr : rc.savingsBadgeEn)
+              : fp!.save;
+          return _planCard(
+            idx: idx,
+            title: title,
+            price: price,
+            per: per,
+            popular: pop,
+            save: save,
+            lang: lang,
+          );
+        }),
+    ]);
+  }
+
+  Widget _planCard({
+    required int idx,
+    required String title,
+    required String price,
+    required String per,
+    required bool popular,
+    required String? save,
+    required String lang,
+  }) {
+    final sel = _selected == idx;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: PressFx(
+        scale: 0.985,
+        onTap: () => setState(() { _selected = idx; _errorMsg = null; }),
+        child: Stack(clipBehavior: Clip.none, children: [
+          AnimatedContainer(
+            duration: Motion.base,
+            curve: Motion.curve,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(20),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: sel
+                    ? [_gold.withOpacity(0.22), _gold.withOpacity(0.06)]
+                    : [Colors.white.withOpacity(0.06),
+                       Colors.white.withOpacity(0.02)],
+              ),
+              border: Border.all(
+                color: sel ? _gold : Colors.white.withOpacity(0.12),
+                width: sel ? 1.8 : 0.8,
+              ),
+              boxShadow: sel
+                  ? [BoxShadow(color: _gold.withOpacity(0.25), blurRadius: 22)]
+                  : const [],
             ),
             child: Row(children: [
-              AnimatedContainer(duration: const Duration(milliseconds: 200), width: 22, height: 22,
-                decoration: BoxDecoration(shape: BoxShape.circle,
-                  color: isSel ? AppColors.brandGreen : Colors.transparent,
-                  border: Border.all(color: isSel ? AppColors.brandGreen : Colors.grey.shade400)),
-                child: isSel ? const Icon(Icons.check, size: 14, color: Colors.white) : null),
-              const SizedBox(width: 12),
-              Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                Row(children: [
-                  Text(title, style: TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 15, color: isSel ? AppColors.brandGreen : null)),
-                  if (pop) ...[
-                    const SizedBox(width: 8),
-                    Container(padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(color: AppColors.accentGold, borderRadius: BorderRadius.circular(20)),
-                      child: Text(tLang(lang, 'الأكثر شعبية', 'Most Popular', 'Le plus populaire', 'En Popüler', 'Paling Popular', 'Paling Populer'),
-                        style: const TextStyle(fontFamily: 'Aligarh', fontSize: 9, fontWeight: FontWeight.w700, color: Colors.white))),
-                  ],
+              AnimatedContainer(
+                duration: Motion.quick,
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: sel ? _gold : Colors.transparent,
+                  border: Border.all(
+                      color: sel ? _gold : Colors.white38, width: 1.5),
+                ),
+                child: AnimatedScale(
+                  duration: Motion.quick,
+                  curve: Curves.easeOutBack,
+                  scale: sel ? 1 : 0,
+                  child: const Icon(Icons.check_rounded,
+                      size: 16, color: Color(0xFF1A0F00)),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                  Text(title,
+                      style: TextStyle(
+                          fontFamily: 'Aligarh', fontSize: 16,
+                          fontWeight: FontWeight.w800,
+                          color: sel ? _goldLight : Colors.white)),
+                  if (save != null && save.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(save,
+                          style: const TextStyle(
+                              fontFamily: 'Aligarh', fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.accentBright)),
+                    ),
                 ]),
-                if (save != null && save.isNotEmpty)
-                  Text(save, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: AppColors.halalGreen, fontWeight: FontWeight.w600)),
-              ])),
+              ),
               Column(crossAxisAlignment: CrossAxisAlignment.end, children: [
-                Text(price, style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w900, fontSize: 15)),
-                Text(per, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: AppColors.lightMuted)),
+                Text(price,
+                    style: const TextStyle(
+                        fontFamily: 'Aligarh', fontSize: 17,
+                        fontWeight: FontWeight.w900, color: Colors.white)),
+                Text(per,
+                    style: const TextStyle(
+                        fontFamily: 'Aligarh', fontSize: 11,
+                        color: Colors.white54)),
               ]),
             ]),
           ),
-        );
-      }).toList(),
+          if (popular)
+            PositionedDirectional(
+              top: -10,
+              end: 16,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  gradient: const LinearGradient(
+                      colors: [_goldLight, _gold]),
+                ),
+                child: Text(
+                  tLang(lang, 'الأكثر شعبية', 'Most Popular',
+                      'Le plus populaire', 'En Popüler',
+                      'Paling Popular', 'Paling Populer'),
+                  style: const TextStyle(
+                      fontFamily: 'Aligarh', fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF1A0F00)),
+                ),
+              ),
+            ),
+        ]),
+      ),
     );
   }
 
   List<_FP> _fallback(bool isAr, String lang) => [
-    _FP(tLang(lang, 'شهري', 'Monthly', 'Mensuel', 'Aylık', 'Bulanan', 'Bulanan'),        tLang(lang, '٢.٩٩ \$', '\$2.99', '\$2.99', '\$2.99', '\$2.99', '\$2.99'),  tLang(lang, '/ شهر', '/ month', '/ mois', '/ ay', '/ bulan', '/ bulan'),   false, null),
-    _FP(tLang(lang, 'سنوي', 'Yearly', 'Annuel', 'Yıllık', 'Tahunan', 'Tahunan'),         tLang(lang, '١٩.٩٩ \$', '\$19.99', '\$19.99', '\$19.99', '\$19.99', '\$19.99'), tLang(lang, '/ سنة', '/ year', '/ an', '/ yıl', '/ tahun', '/ tahun'),    true,  tLang(lang, 'وفّر ٤٤٪', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%')),
-  ];
+        _FP(
+          tLang(lang, 'شهري', 'Monthly', 'Mensuel', 'Aylık', 'Bulanan', 'Bulanan'),
+          tLang(lang, '٢.٩٩ \$', '\$2.99', '\$2.99', '\$2.99', '\$2.99', '\$2.99'),
+          tLang(lang, '/ شهر', '/ month', '/ mois', '/ ay', '/ bulan', '/ bulan'),
+          false, null),
+        _FP(
+          tLang(lang, 'سنوي', 'Yearly', 'Annuel', 'Yıllık', 'Tahunan', 'Tahunan'),
+          tLang(lang, '١٩.٩٩ \$', '\$19.99', '\$19.99', '\$19.99', '\$19.99', '\$19.99'),
+          tLang(lang, '/ سنة', '/ year', '/ an', '/ yıl', '/ tahun', '/ tahun'),
+          true,
+          tLang(lang, 'وفّر ٤٤٪', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%', 'Save 44%')),
+      ];
 
-  Widget _badge(String emoji, String label) => Row(mainAxisSize: MainAxisSize.min, children: [
-    Text(emoji, style: const TextStyle(fontSize: 14)),
-    const SizedBox(width: 4),
-    Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: AppColors.lightMuted)),
-  ]);
+  Widget _badge(IconData icon, String label) =>
+      Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(icon, size: 14, color: AppColors.accentBright),
+        const SizedBox(width: 5),
+        Text(label,
+            style: const TextStyle(
+                fontFamily: 'Aligarh', fontSize: 11.5,
+                color: Colors.white60)),
+      ]);
+}
+
+class _Feat {
+  final IconData icon;
+  final String text;
+  const _Feat(this.icon, this.text);
 }
 
 class _FP {
   final String title, price, per;
-  final bool   popular;
+  final bool popular;
   final String? save;
   const _FP(this.title, this.price, this.per, this.popular, this.save);
 }

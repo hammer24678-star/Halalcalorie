@@ -522,7 +522,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
       decoration: BoxDecoration(
         color: color.withOpacity(0.08),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: color.withOpacity(0.25)),
       ),
       child: Column(children: [

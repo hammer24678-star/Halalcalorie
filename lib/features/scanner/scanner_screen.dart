@@ -283,7 +283,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
             controller: _barcodeCtrl,
             textDirection: TextDirection.ltr,
             decoration: InputDecoration( hintText: t('أدخل الباركود يدوياً...', 'Enter barcode manually...'), hintStyle: const TextStyle(fontFamily:'Aligarh', fontSize: 12),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
               prefixIcon: const Icon(Icons.qr_code),
               contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             ),
@@ -356,7 +356,7 @@ class _ScannerState extends ConsumerState<ScannerScreen>
             padding: const EdgeInsets.all(18),
             decoration: BoxDecoration(
               color: bg,
-              borderRadius: BorderRadius.circular(14),
+              borderRadius: BorderRadius.circular(20),
               border: Border.all(color: AppColors.brandGreen.withOpacity(0.3)),
             ),
             child: Column(children: [

@@ -108,6 +108,7 @@ class AppFonts {
 class AppTheme {
   static ThemeData get dark => ThemeData(
     useMaterial3: true,
+    splashFactory: InkSparkle.splashFactory,
     brightness: Brightness.dark,
     fontFamily: 'Aligarh',
     scaffoldBackgroundColor: AppColors.darkBg,
@@ -129,7 +130,7 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.brandGreen,
         foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         padding: const EdgeInsets.symmetric(vertical: 14),
         textStyle: const TextStyle(fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w700),
         elevation: 0,
@@ -139,7 +140,7 @@ class AppTheme {
       elevation: 0,
       color: AppColors.darkCard,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         side: const BorderSide(color: AppColors.darkBorder2, width: 0.5),
       ),
     ),
@@ -147,11 +148,11 @@ class AppTheme {
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
       fillColor: AppColors.darkCard,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: AppColors.darkBorder, width: 0.5)),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: AppColors.darkBorder, width: 0.5)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: AppColors.brandGreen, width: 1.5)),
       hintStyle: const TextStyle(fontFamily: 'Aligarh', color: AppColors.darkMuted),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -167,6 +168,7 @@ class AppTheme {
 
   static ThemeData get light => ThemeData(
     useMaterial3: true,
+    splashFactory: InkSparkle.splashFactory,
     brightness: Brightness.light,
     fontFamily: 'Aligarh',
     scaffoldBackgroundColor: AppColors.lightBg,
@@ -188,7 +190,7 @@ class AppTheme {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColors.brandGreen,
         foregroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         padding: const EdgeInsets.symmetric(vertical: 14),
         textStyle: const TextStyle(fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w700),
         elevation: 0,
@@ -198,18 +200,18 @@ class AppTheme {
       elevation: 0,
       color: AppColors.lightCard,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(20),
         side: const BorderSide(color: AppColors.lightBorder, width: 0.5),
       ),
     ),
     dividerColor: AppColors.lightBorder,
     inputDecorationTheme: InputDecorationTheme(
       filled: true, fillColor: AppColors.lightCard,
-      border: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: AppColors.lightBorder, width: 0.5)),
-      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+      enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: AppColors.lightBorder, width: 0.5)),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(8),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14),
         borderSide: const BorderSide(color: AppColors.brandGreen, width: 1.5)),
       hintStyle: const TextStyle(fontFamily: 'Aligarh', color: AppColors.lightMuted),
       contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
@@ -228,6 +230,7 @@ class AppTheme {
   static ThemeData get darkRamadan => ThemeData(
     // ── Night Sky over Mecca ────────────────────────────────────────
     useMaterial3: true,
+    splashFactory: InkSparkle.splashFactory,
     brightness: Brightness.dark,
     fontFamily: 'Aligarh',
     scaffoldBackgroundColor: AppColors.ramadanNight,
@@ -325,6 +328,7 @@ class AppTheme {
   static ThemeData get lightRamadan => ThemeData(
     // ── Desert Sunrise ──────────────────────────────────────────────
     useMaterial3: true,
+    splashFactory: InkSparkle.splashFactory,
     brightness: Brightness.light,
     fontFamily: 'Aligarh',
     scaffoldBackgroundColor: AppColors.ramadanDay,

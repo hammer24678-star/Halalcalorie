@@ -323,7 +323,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.brandGreen,
                       padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
                   )),
                 ),
             ],
@@ -451,7 +451,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: const Color(0xFF1A0A00),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.doubtOrange.withOpacity(0.6), width: 1.2)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
@@ -504,7 +504,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: AppColors.accentGold.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: AppColors.accentGold.withOpacity(0.4))),
       child: Column(children: [
         Text(
@@ -621,7 +621,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.brandGreen,
               padding: const EdgeInsets.symmetric(vertical: 12),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ), child: Text(tLang(lang, '+ أضف للعداد', '+ Add to Tracker', '+ Ajouter au suivi', '+ Takibe Ekle', '+ Tambah ke Penjejak', '+ Tambah ke Pelacak'), style: const TextStyle(fontFamily:'Aligarh', color: Colors.white, fontWeight: FontWeight.w700)),
           )),
           const SizedBox(width: 10),
@@ -630,7 +630,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
               side: const BorderSide(color: AppColors.brandGreen),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             ), child: Text(tLang(lang, '↺ جديد', '↺ New', '↺ Nouveau', '↺ Yeni', '↺ Baru', '↺ Baru'), style: const TextStyle(fontFamily: 'Aligarh', color: AppColors.brandGreen)),
           ),
         ]),
@@ -828,7 +828,7 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
                     filled: true, fillColor: surf,
                     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                        borderRadius: BorderRadius.circular(20), borderSide: BorderSide.none),
                   ),
                   style: TextStyle(fontFamily: 'Aligarh', color: textC, fontSize: 13),
                 )),
@@ -838,7 +838,7 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.accentGold,
                     padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                     minimumSize: Size.zero,
                   ),
                   child: _loading
@@ -868,7 +868,7 @@ class _QuickEntrySheetState extends ConsumerState<_QuickEntrySheet> {
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
                       color: surf,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: AppColors.accentGold.withOpacity(0.3)),
                     ),
                     child: Row(children: [

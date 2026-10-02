@@ -579,21 +579,25 @@ class _LeafPainter extends CustomPainter {
 // ROUTES
 // ════════════════════════════════════════════════════════════════════
 
-/// Fade-through page transition, matching the shell's tab motion.
+/// Fade-through page transition: fade, a hair of scale and a short rise.
 Widget fadeThrough(
   BuildContext context,
   Animation<double> animation,
   Animation<double> secondary,
   Widget child,
 ) {
+  final curved = CurvedAnimation(parent: animation, curve: Motion.curve);
   return FadeTransition(
-    opacity: CurvedAnimation(parent: animation, curve: Motion.curve),
-    child: SlideTransition(
-      position: Tween<Offset>(
-        begin: const Offset(0, 0.02),
-        end: Offset.zero,
-      ).animate(CurvedAnimation(parent: animation, curve: Motion.curve)),
-      child: child,
+    opacity: curved,
+    child: ScaleTransition(
+      scale: Tween<double>(begin: 0.985, end: 1.0).animate(curved),
+      child: SlideTransition(
+        position: Tween<Offset>(
+          begin: const Offset(0, 0.025),
+          end: Offset.zero,
+        ).animate(curved),
+        child: child,
+      ),
     ),
   );
 }

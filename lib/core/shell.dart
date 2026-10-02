@@ -1,39 +1,41 @@
-// shell.dart — HalalCalorie — Premium animated shell
+// shell.dart — HalalCalorie — floating glass navigation (v44)
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'theme.dart';
 import 'l10n.dart';
+import 'fx.dart';
+import 'motion.dart';
 import 'providers.dart';
 
 class AppShell extends ConsumerStatefulWidget {
   final Widget child;
   const AppShell({super.key, required this.child});
-  @override ConsumerState<AppShell> createState() => _AppShellState();
+  @override
+  ConsumerState<AppShell> createState() => _AppShellState();
 }
 
 class _AppShellState extends ConsumerState<AppShell>
     with SingleTickerProviderStateMixin {
-  late AnimationController _slideIn;
+  late final AnimationController _slideIn = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 520),
+  )..forward();
 
   @override
-  void initState() {
-    super.initState();
-    _slideIn = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 420));
-    _slideIn.forward();
+  void dispose() {
+    _slideIn.dispose();
+    super.dispose();
   }
 
-  @override void dispose() { _slideIn.dispose(); super.dispose(); }
-
   static const _tabs = [
-    _T('/home',      '⌂',  'Home',      'الرئيسية'),
-    _T('/nutrition', '◈',  'Nutrition', 'تغذية'),
-    _T('/fitness',   '◉',  'Fitness',   'لياقة'),
-    _T('/ascent',    '▲',  'Ascent',    'صعود'),
-    _T('/health',    '♡',  'Health',    'صحة'),
-    _T('/profile',   '◯',  'Profile',   'ملفي'),
+    _T('/home', Glyph.home),
+    _T('/nutrition', Glyph.nutrition),
+    _T('/fitness', Glyph.fitness),
+    _T('/ascent', Glyph.ascent),
+    _T('/health', Glyph.health),
+    _T('/profile', Glyph.profile),
   ];
 
   int _idx(String loc) {
@@ -48,11 +50,10 @@ class _AppShellState extends ConsumerState<AppShell>
 
   @override
   Widget build(BuildContext context) {
-    final loc    = GoRouterState.of(context).matchedLocation;
-    final idx    = _idx(loc);
+    final loc = GoRouterState.of(context).matchedLocation;
+    final idx = _idx(loc);
     final isDark = ref.watch(themeProvider);
-    final lang   = ref.watch(languageProvider);
-    final isAr      = isRtlLang(lang);
+    final lang = ref.watch(languageProvider);
     final isRamadan = ref.watch(ramadanModeProvider);
 
     return Scaffold(
@@ -60,18 +61,21 @@ class _AppShellState extends ConsumerState<AppShell>
         opacity: CurvedAnimation(parent: _slideIn, curve: Curves.easeOut),
         child: SlideTransition(
           position: Tween<Offset>(
-            begin: const Offset(0, 0.015), end: Offset.zero,
-          ).animate(CurvedAnimation(parent: _slideIn, curve: Curves.easeOutCubic)),
+            begin: const Offset(0, 0.015),
+            end: Offset.zero,
+          ).animate(CurvedAnimation(parent: _slideIn, curve: Motion.curve)),
           child: widget.child,
         ),
       ),
-      bottomNavigationBar: _PremiumNav(
-        tabs: _tabs, activeIdx: idx,
-        isDark: isDark, isAr: isAr, isRamadan: isRamadan,
+      bottomNavigationBar: _FloatingNav(
+        tabs: _tabs,
+        activeIdx: idx,
+        isDark: isDark,
+        isRamadan: isRamadan,
+        l: L.fromLang(lang),
         onTap: (path) {
-          HapticFeedback.lightImpact();
-          if (path == '/ascent' &&
-              !ref.read(premiumProvider)) {
+          HapticFeedback.selectionClick();
+          if (path == '/ascent' && !ref.read(premiumProvider)) {
             context.push('/paywall');
             return;
           }
@@ -82,158 +86,181 @@ class _AppShellState extends ConsumerState<AppShell>
   }
 }
 
-class _PremiumNav extends ConsumerStatefulWidget {
+class _FloatingNav extends StatelessWidget {
   final List<_T> tabs;
   final int activeIdx;
-  final bool isDark, isAr, isRamadan;
+  final bool isDark, isRamadan;
+  final L l;
   final void Function(String) onTap;
-  const _PremiumNav({required this.tabs, required this.activeIdx,
-    required this.isDark, required this.isAr,
-    required this.isRamadan, required this.onTap});
-  @override ConsumerState<_PremiumNav> createState() => _PremiumNavState();
-}
+  const _FloatingNav({
+    required this.tabs,
+    required this.activeIdx,
+    required this.isDark,
+    required this.isRamadan,
+    required this.l,
+    required this.onTap,
+  });
 
-class _PremiumNavState extends ConsumerState<_PremiumNav>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _ctrl;
-  late Animation<double> _spring;
-  int _prev = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _prev = widget.activeIdx;
-    _ctrl = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 350));
-    _spring = CurvedAnimation(parent: _ctrl, curve: Curves.easeOutBack);
-    _ctrl.forward();
-  }
-
-  @override
-  void didUpdateWidget(_PremiumNav old) {
-    super.didUpdateWidget(old);
-    if (old.activeIdx != widget.activeIdx) {
-      _prev = old.activeIdx;
-      _ctrl.forward(from: 0);
+  String _label(String path) {
+    switch (path) {
+      case '/home':
+        return l.navHome;
+      case '/nutrition':
+        return l.navNutrition;
+      case '/fitness':
+        return l.navFitness;
+      case '/health':
+        return l.navHealth;
+      case '/ascent':
+        return l.ascentNavLabel;
+      default:
+        return l.navProfile;
     }
   }
 
-  @override void dispose() { _ctrl.dispose(); super.dispose(); }
-
   @override
   Widget build(BuildContext context) {
-    final bg         = widget.isDark ? AppColors.darkCard : Colors.white;
-    final border     = widget.isDark ? AppColors.darkBorder : AppColors.lightBorder;
-    // Ramadan mode: swap all greens to gold
-    final activeColor = widget.isRamadan ? AppColors.accentGold : AppColors.halalGreen;
-    final activeBg    = widget.isRamadan
-        ? AppColors.accentGold.withOpacity(0.15)
-        : AppColors.brandGreen.withOpacity(0.15);
+    final n = tabs.length;
+    final accent = isRamadan ? AppColors.ramadanGold : AppColors.halalGreen;
+    final inactive = isDark ? AppColors.darkMuted : AppColors.lightMuted;
+    final bar = isDark ? const Color(0xFF0F1E18) : Colors.white;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: bg,
-        border: Border(top: BorderSide(color: border, width: 0.5)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: SizedBox(
-          height: 58,
-          child: Row(
-            children: widget.tabs.asMap().entries.map((e) {
-              final i      = e.key;
-              final tab    = e.value;
-              final active = i == widget.activeIdx;
-              return Expanded(
-                child: GestureDetector(
-                  onTap: () => widget.onTap(tab.path),
-                  behavior: HitTestBehavior.opaque,
-                  child: AnimatedBuilder(
-                    animation: _spring,
-                    builder: (_, __) {
-                      final scale = active ? (0.88 + 0.12 * _spring.value) : 1.0;
-                      return Transform.scale(
-                        scale: scale,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            // Pill bg
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 280),
-                              curve: Curves.easeOutCubic,
-                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 6),
-                              decoration: BoxDecoration(
-                                color: active ? activeBg : Colors.transparent,
-                                borderRadius: BorderRadius.circular(24),
-                                boxShadow: active && widget.isRamadan
-                                    ? [BoxShadow(
-                                        color: AppColors.accentGold.withOpacity(0.55),
-                                        blurRadius: 16,
-                                        spreadRadius: 2,
-                                      )]
-                                    : null,
-                              ),
-                              child: Text(tab.icon, style: TextStyle(
-                                fontSize: active ? 20 : 18,
-                                color: active
-                                  ? activeColor
-                                  : (widget.isDark ? AppColors.darkDimmed : AppColors.lightMuted),
-                              )),
-                            ),
-                            const SizedBox(height: 1),
-                            // Label
-                            AnimatedDefaultTextStyle(
-                              duration: const Duration(milliseconds: 200),
-                              style: TextStyle(
-                                fontFamily: 'Aligarh',
-                                fontSize: 9,
-                                fontWeight: active ? FontWeight.w800 : FontWeight.w400,
-                                color: active
-                                  ? activeColor
-                                  : (widget.isDark ? AppColors.darkDimmed : AppColors.lightMuted),
-                              ),
-                              child: Builder(builder: (ctx) {
-                                final _lang = ref.watch(languageProvider);
-                                final _l = L.fromLang(_lang);
-                                switch (tab.path) {
-                                  case '/home':      return Text(_l.navHome);
-                                  case '/nutrition': return Text(_l.navNutrition);
-                                  case '/fitness':   return Text(_l.navFitness);
-                                  case '/health':    return Text(_l.navHealth);
-                                  case '/ascent':    return Text(_l.ascentNavLabel);
-                                  case '/profile':   return Text(_l.navProfile);
-                                  default: return Text(widget.isAr ? tab.ar : tab.en);
-                                }
-                              }),
-                            ),
-                            // Active bar
-                            AnimatedContainer(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeOutBack,
-                              margin: const EdgeInsets.only(top: 3),
-                              width: active ? 20 : 0,
-                              height: 2.5,
-                              decoration: BoxDecoration(
-                                color: activeColor,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+    return SafeArea(
+      top: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 4, 14, 10),
+        child: Container(
+          height: 68,
+          decoration: BoxDecoration(
+            color: bar,
+            borderRadius: BorderRadius.circular(28),
+            border: Border.all(
+              color: isDark ? AppColors.darkBorder : AppColors.lightBorder,
+              width: 0.6,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(isDark ? 0.55 : 0.12),
+                blurRadius: 28,
+                offset: const Offset(0, 10),
+              ),
+              if (isRamadan)
+                BoxShadow(
+                  color: accent.withOpacity(0.18),
+                  blurRadius: 24,
+                ),
+            ],
+          ),
+          child: Stack(children: [
+            // One pill that slides between tabs instead of one per tab.
+            AnimatedAlign(
+              duration: const Duration(milliseconds: 460),
+              curve: Curves.easeOutBack,
+              alignment: AlignmentDirectional(-1 + 2 * activeIdx / (n - 1), 0),
+              child: FractionallySizedBox(
+                widthFactor: 1 / n,
+                heightFactor: 1,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 7),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(21),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          accent.withOpacity(isDark ? 0.24 : 0.20),
+                          accent.withOpacity(isDark ? 0.10 : 0.08),
+                        ],
+                      ),
+                      border: Border.all(
+                          color: accent.withOpacity(0.28), width: 0.6),
+                    ),
                   ),
                 ),
-              );
-            }).toList(),
-          ),
+              ),
+            ),
+            Row(
+              children: [
+                for (var i = 0; i < n; i++)
+                  Expanded(
+                    child: _NavItem(
+                      glyph: tabs[i].glyph,
+                      label: _label(tabs[i].path),
+                      active: i == activeIdx,
+                      activeColor: accent,
+                      inactiveColor: inactive,
+                      onTap: () => onTap(tabs[i].path),
+                    ),
+                  ),
+              ],
+            ),
+          ]),
         ),
       ),
     );
   }
 }
 
+class _NavItem extends StatelessWidget {
+  final Glyph glyph;
+  final String label;
+  final bool active;
+  final Color activeColor, inactiveColor;
+  final VoidCallback onTap;
+  const _NavItem({
+    required this.glyph,
+    required this.label,
+    required this.active,
+    required this.activeColor,
+    required this.inactiveColor,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: TweenAnimationBuilder<double>(
+        tween: Tween<double>(end: active ? 1.0 : 0.0),
+        duration: const Duration(milliseconds: 420),
+        curve: Curves.easeOutBack,
+        builder: (_, v, __) {
+          final c = Color.lerp(inactiveColor, activeColor, v.clamp(0.0, 1.0))!;
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Transform.translate(
+                offset: Offset(0, -2.5 * v),
+                child: Transform.scale(
+                  scale: 1 + 0.14 * v,
+                  child: AppGlyph(glyph: glyph, color: c, t: v, size: 24),
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  fontFamily: 'Aligarh',
+                  fontSize: 10,
+                  height: 1.1,
+                  fontWeight: active ? FontWeight.w800 : FontWeight.w500,
+                  color: c,
+                ),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+}
+
 class _T {
-  final String path, icon, en, ar;
-  const _T(this.path, this.icon, this.en, this.ar);
+  final String path;
+  final Glyph glyph;
+  const _T(this.path, this.glyph);
 }

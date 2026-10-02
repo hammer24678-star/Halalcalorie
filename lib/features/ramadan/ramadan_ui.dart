@@ -296,7 +296,7 @@ class RamadanHero extends ConsumerWidget {
                     const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.05),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(16),
                   border:
                       Border.all(color: theme.accent.withOpacity(0.18)),
                 ),
@@ -484,7 +484,7 @@ class _DayChip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
       decoration: BoxDecoration(
         color: accent.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: accent.withOpacity(0.5), width: 1.1),
       ),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
@@ -687,7 +687,7 @@ class _WindowTile extends StatelessWidget {
         color: highlight
             ? accent.withOpacity(0.14)
             : Colors.white.withOpacity(0.04),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(
             color: highlight
                 ? accent.withOpacity(0.55)
@@ -738,7 +738,7 @@ class _ActionChip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 11),
         decoration: BoxDecoration(
           color: accent.withOpacity(0.10),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(color: accent.withOpacity(0.30)),
         ),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -823,7 +823,7 @@ class RamadanStrip extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: theme.accent.withOpacity(0.10),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(20),
         border: Border.all(color: theme.accent.withOpacity(0.32)),
       ),
       child: Row(children: [

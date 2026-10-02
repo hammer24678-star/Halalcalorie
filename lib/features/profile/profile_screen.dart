@@ -75,7 +75,7 @@ class ProfileScreen extends ConsumerWidget {
             child: Container(
               margin: const EdgeInsets.symmetric(vertical: 10),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(16)),
               child: Text(_langLabel(lang), style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
             ),
           ),
@@ -363,7 +363,7 @@ class ProfileScreen extends ConsumerWidget {
           color: earned
             ? AppColors.accentGold.withOpacity(0.1)
             : const Color(0xFF1A1F26),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: earned
               ? AppColors.accentGold.withOpacity(0.45)
