@@ -16,6 +16,7 @@ import '../../core/motion.dart';
 import '../../core/fx.dart';
 import '../../core/fx2.dart';
 import '../../core/fx3.dart';
+import '../../core/fx4.dart';
 import '../../core/prayer_provider.dart';
 import '../../data/models/models.dart';
 import '../../data/models/user_profile.dart';
@@ -1201,86 +1202,93 @@ onTap: onWorkout,
  ]);
 }
 
-class _Stat extends StatefulWidget {
-final String emoji, value, total, label;
-final Color color, card, border, muted;
-final double pct;
-final bool isDark;
-final VoidCallback onTap;
-final VoidCallback? onLongPress;
-const _Stat({
-required this.emoji, required this.value, required this.total,
-required this.label, required this.color, required this.pct,
-required this.isDark, required this.card, required this.border,
-required this.muted, required this.onTap, this.onLongPress,
-});
-@override State<_Stat> createState() => _StatState();
-}
+class _Stat extends StatelessWidget {
+  final String emoji, value, total, label;
+  final Color color, card, border, muted;
+  final double pct;
+  final bool isDark;
+  final VoidCallback onTap;
+  final VoidCallback? onLongPress;
+  const _Stat({
+    required this.emoji, required this.value, required this.total,
+    required this.label, required this.color, required this.pct,
+    required this.isDark, required this.card, required this.border,
+    required this.muted, required this.onTap, this.onLongPress,
+  });
 
-class _StatState extends State<_Stat> with SingleTickerProviderStateMixin {
-late AnimationController _press;
-@override
-void initState() {
-super.initState();
-_press = AnimationController(vsync: this,
-duration: const Duration(milliseconds: 110),
-lowerBound: 0.93, upperBound: 1.0, value: 1.0);
-}
-@override void dispose() { _press.dispose(); super.dispose(); }
+  VitalKind? get _kind {
+    switch (emoji) {
+      case '💧': return VitalKind.water;
+      case '😴': return VitalKind.sleep;
+      case '🔥': return VitalKind.flame;
+      case '🏃': return VitalKind.pulse;
+      default: return null;
+    }
+  }
 
-@override
-Widget build(BuildContext context) {
-return Expanded(child: GestureDetector(
-onTapDown: (_) => _press.reverse(),
-onTapUp: (_) { _press.forward(); widget.onTap(); },
-onTapCancel: () => _press.forward(),
-onLongPress: widget.onLongPress != null ? () {
-  HapticFeedback.mediumImpact();
-  widget.onLongPress!();
-} : null,
-child: AnimatedBuilder(
-animation: _press,
-builder: (_, child) => Transform.scale(scale: _press.value, child: child),
-child: Container(
-padding: const EdgeInsets.fromLTRB(10, 12, 10, 10),
-decoration: BoxDecoration(
-color: widget.card,
-borderRadius: BorderRadius.circular(16),
-border: Border.all(color: widget.border, width: 0.5),
-),
-child: Column(children: [
-statusGlyphForEmoji(widget.emoji) != null
-    ? darkSafeAsset(statusGlyphForEmoji(widget.emoji)!, width: 18, height: 18, isDark: Theme.of(context).brightness == Brightness.dark,
-        errorChild:
-            Text(widget.emoji, style: const TextStyle(fontSize: 18)))
-    : Text(widget.emoji, style: const TextStyle(fontSize: 18)),
-const SizedBox(height: 5),
-RichText(text: TextSpan(children: [
-TextSpan(text: widget.value, style: TextStyle(
-fontFamily: 'Aligarh', fontSize: 15,
-fontWeight: FontWeight.w900, color: widget.color,
-)),
-TextSpan(text: widget.total, style: TextStyle(
-fontFamily: 'Aligarh', fontSize: 10, color: widget.muted,
-)),
- ])),
-const SizedBox(height: 4),
-ClipRRect(
-borderRadius: BorderRadius.circular(3),
-child: LinearProgressIndicator(
-value: widget.pct, minHeight: 3,
-color: widget.color,
-backgroundColor: widget.color.withOpacity(0.1),
-),
-),
-const SizedBox(height: 4),
-Text(widget.label, style: TextStyle(
-fontFamily: 'Aligarh', fontSize: 9, color: widget.muted)),
-]),
-),
-),
-));
-}
+  @override
+  Widget build(BuildContext context) {
+    final kind = _kind;
+    return Expanded(
+      child: PressFx(
+        onTap: onTap,
+        onLongPress: onLongPress == null
+            ? null
+            : () {
+                HapticFeedback.mediumImpact();
+                onLongPress!();
+              },
+        scale: 0.94,
+        haptics: false,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(6, 12, 6, 10),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [card, Color.lerp(card, color, isDark ? 0.10 : 0.07)!],
+            ),
+            border: Border.all(
+                color: Color.lerp(border, color, 0.35)!, width: 0.8),
+            boxShadow: [
+              BoxShadow(
+                color: color.withOpacity(isDark ? 0.14 : 0.10),
+                blurRadius: 18,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            kind != null
+                ? VitalGlyph(kind: kind, pct: pct, color: color, size: 46)
+                : Text(emoji, style: const TextStyle(fontSize: 30)),
+            const SizedBox(height: 8),
+            RichText(
+              text: TextSpan(children: [
+                TextSpan(
+                  text: value,
+                  style: TextStyle(
+                    fontFamily: 'Aligarh', fontSize: 17,
+                    fontWeight: FontWeight.w900, color: color,
+                  ),
+                ),
+                TextSpan(
+                  text: total,
+                  style: TextStyle(
+                      fontFamily: 'Aligarh', fontSize: 10, color: muted),
+                ),
+              ]),
+            ),
+            const SizedBox(height: 2),
+            Text(label,
+                style: TextStyle(
+                    fontFamily: 'Aligarh', fontSize: 10, color: muted)),
+          ]),
+        ),
+      ),
+    );
+  }
 }
 
 // ════════════════════════════════════════════════════════════
