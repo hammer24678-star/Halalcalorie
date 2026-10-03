@@ -15,6 +15,7 @@ import '../ramadan/ramadan_ui.dart';
 import '../../core/motion.dart';
 import '../../core/fx.dart';
 import '../../core/fx2.dart';
+import '../../core/fx3.dart';
 import '../../core/prayer_provider.dart';
 import '../../data/models/models.dart';
 import '../../data/models/user_profile.dart';
@@ -434,7 +435,7 @@ _MedDisclaimer(isAr: isAr),
 // (e.g. 'My Body Metrics') instead of LemonBrush, which rendered as a
 // plain fallback next to it. Streak badge + today's date unchanged.
 // ════════════════════════════════════════════════════════════
-class _HomeHero extends StatelessWidget {
+class _HomeHero extends ConsumerWidget {
   final bool isAr, isDark;
   final String lang;
   final int streak;
@@ -462,67 +463,125 @@ class _HomeHero extends StatelessWidget {
     return isAr ? '$wk، ${now.day} $mo' : '$wk, $mo ${now.day}';
   }
 
+  Widget _glass(Widget child) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.30),
+          border: Border.all(color: Colors.white.withOpacity(0.22), width: 0.7),
+          borderRadius: BorderRadius.circular(100),
+        ),
+        child: child,
+      );
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final now = DateTime.now();
+    final times = ref.watch(prayerTimesProvider)
+        .maybeWhen(data: (t) => t, orElse: () => null);
+
+    String? nextChip;
+    if (times != null) {
+      final list = [
+        ('الفجر', 'Fajr', times.fajr),
+        ('الظهر', 'Dhuhr', times.dhuhr),
+        ('العصر', 'Asr', times.asr),
+        ('المغرب', 'Maghrib', times.maghrib),
+        ('العشاء', 'Isha', times.isha),
+      ];
+      DateTime? nx;
+      var nAr = 'الفجر';
+      var nEn = 'Fajr';
+      for (final e in list) {
+        if (e.$3.isAfter(now)) {
+          nx = e.$3;
+          nAr = e.$1;
+          nEn = e.$2;
+          break;
+        }
+      }
+      nx ??= times.fajr.add(const Duration(days: 1));
+      final d = nx.difference(now);
+      final hs = d.inHours > 0 ? '${d.inHours}h ' : '';
+      nextChip = '${isAr ? nAr : nEn} · $hs${d.inMinutes % 60}m';
+    }
+
+    const shadow = [Shadow(color: Color(0x99000000), blurRadius: 12)];
+
     return Padding(
-      padding: const EdgeInsets.fromLTRB(4, 18, 4, 6),
-      child: Stack(clipBehavior: Clip.none, children: [
-        if (streak > 0)
-          Positioned(
-            top: 0, left: 0,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 7),
-              decoration: BoxDecoration(
-                color: card,
-                border: Border.all(color: border),
-                borderRadius: BorderRadius.circular(100),
-              ),
-              child: Row(mainAxisSize: MainAxisSize.min, children: [
+      padding: const EdgeInsets.only(top: 6, bottom: 8),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(28),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(isDark ? 0.5 : 0.18),
+              blurRadius: 30,
+              offset: const Offset(0, 12),
+            ),
+          ],
+        ),
+        child: Stack(children: [
+          LivingSky(times: times, height: 236, radius: 28),
+          PositionedDirectional(
+            top: 16, start: 20,
+            child: Text(_dateStr(now), style: const TextStyle(
+                fontFamily: 'Aligarh', fontSize: 12.5,
+                color: Colors.white70, shadows: shadow)),
+          ),
+          if (streak > 0)
+            PositionedDirectional(
+              top: 10, end: 12,
+              child: _glass(Row(mainAxisSize: MainAxisSize.min, children: [
                 const Text('🔥', style: TextStyle(fontSize: 13)),
                 const SizedBox(width: 5),
                 Text(
                   tLang(lang, '$streak يوم تتابع', '$streak day streak',
                       '$streak jours de suite', '$streak gün seri',
                       '$streak hari berturut', '$streak hari berturut'),
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontFamily: 'Aligarh', fontSize: 12.5,
-                    fontWeight: FontWeight.w800,
-                    color: isDark ? AppColors.greetGold : AppColors.greetGoldLight,
+                    fontWeight: FontWeight.w800, color: Color(0xFFF0CF98),
                   ),
                 ),
-              ]),
+              ])),
             ),
-          ),
-        Padding(
-          padding: EdgeInsets.only(top: streak > 0 ? 40 : 0),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            // PATCH_V26_DARK_OUTLINE_AR_TITLES: LemonBrush Arabic only
-            Transform.rotate(
+          PositionedDirectional(
+            top: 38, start: 20, end: 20,
+            child: Transform.rotate(
               angle: -0.035,
               alignment: Alignment.centerLeft,
               child: Text(
                 _greeting(now),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   fontFamily: lang == 'ar' ? 'LemonBrush' : 'Bravoon',
                   fontWeight: FontWeight.w700,
-                  fontSize: 42,
+                  fontSize: 40,
                   height: 1.0,
-                  color: isDark ? AppColors.greetGold : AppColors.greetGoldLight,
+                  color: Colors.white,
+                  shadows: shadow,
                 ),
               ),
             ),
-            const SizedBox(height: 6),
-            Text(_dateStr(now), style: TextStyle(
-                fontFamily: 'Aligarh', fontSize: 12,
-                color: isDark ? AppColors.darkMuted : AppColors.lightMuted)),
-          ]),
-        ),
-      ]),
+          ),
+          if (nextChip != null)
+            PositionedDirectional(
+              bottom: 12, start: 14,
+              child: _glass(Row(mainAxisSize: MainAxisSize.min, children: [
+                const Icon(Icons.access_time_rounded,
+                    size: 13, color: Colors.white70),
+                const SizedBox(width: 6),
+                Text(nextChip, style: const TextStyle(
+                    fontFamily: 'Aligarh', fontSize: 12.5,
+                    fontWeight: FontWeight.w800, color: Colors.white)),
+              ])),
+            ),
+        ]),
+      ),
     );
   }
 }
-
 
 // ════════════════════════════════════════════════════════════
 // WHOLESOME FOODS STRIP — PATCH_V10_HOME_REMASTER

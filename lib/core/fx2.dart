@@ -9,6 +9,7 @@
 
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'theme.dart';
 import 'fx.dart';
 
@@ -43,15 +44,35 @@ class HeroRing extends StatefulWidget {
 }
 
 class _HeroRingState extends State<HeroRing>
-    with SingleTickerProviderStateMixin {
+    with TickerProviderStateMixin {
   late final AnimationController _breath = AnimationController(
     vsync: this,
     duration: const Duration(milliseconds: 3600),
   )..repeat(reverse: true);
 
+  late final AnimationController _burst = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 1600),
+  );
+
+  final DateTime _born = DateTime.now();
+
+  @override
+  void didUpdateWidget(HeroRing old) {
+    super.didUpdateWidget(old);
+    // Goal reached: shockwave, sparks and a firm tap. Ignored during the
+    // first moments so loading saved data never fires it on app open.
+    final settled = DateTime.now().difference(_born).inMilliseconds > 2500;
+    if (settled && old.pct < 1.0 && widget.pct >= 1.0) {
+      HapticFeedback.mediumImpact();
+      _burst.forward(from: 0);
+    }
+  }
+
   @override
   void dispose() {
     _breath.dispose();
+    _burst.dispose();
     super.dispose();
   }
 
@@ -59,7 +80,7 @@ class _HeroRingState extends State<HeroRing>
   Widget build(BuildContext context) {
     return RepaintBoundary(
       child: AnimatedBuilder(
-        animation: Listenable.merge([widget.ringAnim, _breath]),
+        animation: Listenable.merge([widget.ringAnim, _breath, _burst]),
         builder: (_, __) {
           return SizedBox(
             width: widget.size,
@@ -70,6 +91,7 @@ class _HeroRingState extends State<HeroRing>
                 color: widget.color,
                 isDark: widget.isDark,
                 breath: Curves.easeInOut.transform(_breath.value),
+                burst: _burst.value,
               ),
               child: Center(
                 child: Column(
@@ -112,7 +134,7 @@ class _HeroRingState extends State<HeroRing>
 }
 
 class _HeroRingPainter extends CustomPainter {
-  final double pct, breath;
+  final double pct, breath, burst;
   final Color color;
   final bool isDark;
   const _HeroRingPainter({
@@ -120,6 +142,7 @@ class _HeroRingPainter extends CustomPainter {
     required this.color,
     required this.isDark,
     required this.breath,
+    required this.burst,
   });
 
   @override
@@ -255,11 +278,42 @@ class _HeroRingPainter extends CustomPainter {
           ..color = AppColors.haramRed,
       );
     }
+
+    _burstFx(canvas, c, rArc);
+  }
+
+  void _burstFx(Canvas canvas, Offset c, double rArc) {
+    if (burst <= 0 || burst >= 1) return;
+    final e = Curves.easeOutCubic.transform(burst);
+    final fade = 1 - burst;
+    canvas.drawCircle(
+      c,
+      rArc + 56 * e,
+      Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3.2 * fade + 0.4
+        ..color = color.withOpacity(0.65 * fade),
+    );
+    const n = 36;
+    for (var i = 0; i < n; i++) {
+      final jitter = ((i * 37) % 11) / 11.0;
+      final a = 2 * math.pi * i / n + jitter * 0.3;
+      final speed = 0.55 + 0.9 * jitter;
+      final dist = rArc * 0.9 + 60 * speed * e;
+      final pos = c +
+          Offset(math.cos(a) * dist, math.sin(a) * dist + 26 * burst * burst);
+      final col = i % 3 == 0
+          ? const Color(0xFFF0CF98)
+          : (i % 3 == 1 ? color : Colors.white);
+      canvas.drawCircle(pos, (2.6 + 2.2 * jitter) * fade,
+          Paint()..color = col.withOpacity(fade));
+    }
   }
 
   @override
   bool shouldRepaint(_HeroRingPainter old) =>
       old.pct != pct ||
+      old.burst != burst ||
       old.breath != breath ||
       old.color != color ||
       old.isDark != isDark;
