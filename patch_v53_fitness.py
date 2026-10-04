@@ -1,59 +1,96 @@
-// fitness_screen.dart
-// PATCH_V25_PLAYER_HEALTH — HalalCalorie v1.0
-// 23 workouts, category tabs, Ramadan mode, step-by-step player
-import 'dart:async'; import'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'../../core/theme.dart'; import'../../core/providers.dart';
-import '../../core/l10n.dart';
-import '../../core/motion.dart';
-import 'lift_screen.dart'; import'../../data/models/models.dart'; import '../../data/muscle_assets.dart'; import '../../data/icon_assets.dart';
-import '../../core/fx6.dart';
-import 'dart:math' as math;
-import '../../core/fx.dart' show AuroraBackground;
-import '../../core/fx7.dart' show EmptyState;
+#!/usr/bin/env python3
+"""
+patch_v53_fitness.py
+====================
+HalalCalorie v53 - the Fitness (اللياقة) screen rebuilt. Run from the repo
+root (v52 recommended first, but not required):
 
-// ══════════════════════════════════════════════════
-//  FitnessScreen
-// ══════════════════════════════════════════════════
-class FitnessScreen extends ConsumerStatefulWidget {
-  const FitnessScreen({super.key});
-  @override ConsumerState<FitnessScreen> createState() => _FitnessState();
-}
+    python3 patch_v53_fitness.py
 
-class _FitnessState extends ConsumerState<FitnessScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tab; String _filter ='all';
-  late AnimationController _stagger;
-  Animation<double> _fade(int i) => CurvedAnimation(
-      parent: _stagger,
-      curve: Interval(i * 0.09, (i * 0.09 + 0.5).clamp(0,1), curve: Curves.easeOutQuart));
-  Animation<Offset> _slide(int i) => Tween<Offset>(
-      begin: const Offset(0, 0.15), end: Offset.zero).animate(CurvedAnimation(
-      parent: _stagger,
-      curve: Interval(i * 0.09, (i * 0.09 + 0.5).clamp(0,1), curve: Curves.easeOutQuart)));
-  Widget _anim(int i, Widget child) => FadeTransition(
-      opacity: _fade(i), child: SlideTransition(position: _slide(i), child: child));
- static const _cats = ['all','walking','strength','cardio','gentle','ramadan','breathing','family','postnatal'];
+Safe to run twice. No new dependencies; all logic and providers unchanged.
+Only lib/features/fitness/fitness_screen.dart is edited (the workout player
+at the bottom of that file is untouched).
 
-  @override void initState() {
-    super.initState();
-    _tab = TabController(length: _cats.length, vsync: this);
-    _tab.addListener(() => setState(() => _filter = _cats[_tab.index]));
-    _stagger = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 650))
-      ..forward();
-  }
-  @override void dispose() { _tab.dispose(); _stagger.dispose(); super.dispose(); }
+CHROME      living aurora behind the screen, big title, streak chip and a
+            trophy button; the stock green app bar is gone
+TODAY       new activity card: glowing progress ring toward a 30 min goal,
+            kcal burned, streak, and a 7-day strip showing which days you
+            trained (all from providers that already existed)
+STRENGTH    ranked-lifting card kept, restyled, chevron follows RTL/LTR
+HERO        'Recommended now' always shows one pick (it used to vanish
+            outside a few hours of the day), chosen from YOUR gender pool.
+            Illustration sits in a solid disc (no fringe), play badge no
+            longer covers it, taps open the same /workout/:id route as the
+            grid (it used a separate Navigator push before)
+FILTERS     pinned, scrollable chips with icons and counts instead of the
+            stock TabBar; empty categories hide themselves. Cardio and
+            Postnatal workouts now have a chip (they were only reachable
+            under 'All')
+CARDS       fixed-height cards: level pill on the art, PRO tag when locked,
+            duration + step count in the footer, no dead gap
+FIXES       * Ramadan-first ordering is now stable (List.sort shuffled the
+              other workouts)
+            * last row no longer hides behind the floating nav bar
+            * Ramadan light/dark and Sisters palettes handled properly
+pubspec     -> 1.11.0+25
+"""
+import os, re, sys
 
-  List<Workout> _filtered(String gender, bool isRamadan, bool isPremium) { var list = kWorkouts.where((w) => w.gender =='both'|| w.gender == gender).toList();
-    if (isRamadan) {
-      // Put Ramadan workouts first
-      list.sort((a, b) { final aR = a.category =='ramadan'? 0 : 1; final bR = b.category =='ramadan'? 0 : 1;
-        return aR.compareTo(bR);
-      });
-    } if (_filter !='all') list = list.where((w) => w.category == _filter).toList();
-    return list;
-  }
+ROOT = os.getcwd()
+if not os.path.exists(os.path.join(ROOT, 'pubspec.yaml')):
+    sys.exit('Run this from the repo root (pubspec.yaml not found).')
 
-  // PATCH_V53_FITNESS
+ok = skip = 0
+
+def path(p): return os.path.join(ROOT, p)
+
+def edit(p, fn, label):
+    """fn(text) -> new text, or None when the anchor is missing."""
+    global ok, skip
+    if not os.path.exists(path(p)):
+        skip += 1; print('  SKIP   ', p, '(missing)', label); return
+    with open(path(p), encoding='utf-8') as f:
+        s = f.read()
+    n = fn(s)
+    if n is None:
+        skip += 1; print('  SKIP   ', p, '-', label, '(anchor not found)'); return
+    if n == s:
+        ok += 1; print('  OK     ', p, '-', label, '(already applied)'); return
+    with open(path(p), 'w', encoding='utf-8') as f:
+        f.write(n)
+    ok += 1
+    print('  PATCHED', p, '-', label)
+
+def add_import(p, line):
+    """Insert an import line after the last existing import line (idempotent)."""
+    def f(s):
+        if line in s: return s
+        idx = [m.end() for m in re.finditer(r"^import [^\n]*\n", s, re.M)]
+        if not idx: return None
+        i = idx[-1]
+        return s[:i] + line + "\n" + s[i:]
+    edit(p, f, 'import ' + line.split('/')[-1].rstrip("';"))
+
+def balance_check(paths):
+    bad = 0
+    for p in paths:
+        if not os.path.exists(path(p)): continue
+        t = open(path(p), encoding='utf-8').read()
+        t = re.sub(r"//[^\n]*", '', t)
+        t = re.sub(r"'(?:\\.|[^'\\\n])*'", "''", t)
+        t = re.sub(r'"(?:\\.|[^"\\\n])*"', '""', t)
+        for a, b in ('{}', '()', '[]'):
+            if t.count(a) != t.count(b):
+                bad += 1
+                print('  UNBALANCED', p, a, t.count(a), b, t.count(b))
+    print('  all balanced' if not bad else '  !! fix the files above before building')
+
+print('== v53 fitness ==')
+FIT = 'lib/features/fitness/fitness_screen.dart'
+MARK = 'PATCH_V53_FITNESS'
+
+
+NEW_BUILD = r'''  // PATCH_V53_FITNESS
   @override
   Widget build(BuildContext context) {
     final gender     = ref.watch(genderProvider);
@@ -331,11 +368,8 @@ class _FitnessState extends ConsumerState<FitnessScreen>
     );
   }
 
-  Color _hexColor(String hex) { final h = hex.replaceAll('#', ''); return Color(int.tryParse('FF$h', radix: 16) ?? 0xFF00A86B);
-  }
-}
-
-// ══════════════════════════════════════════════════
+'''
+NEW_WIDGETS = r'''// ══════════════════════════════════════════════════
 //  PATCH_V53_FITNESS — building blocks for the Fitness screen
 // ══════════════════════════════════════════════════
 const int _kFitGoalMin = 30;
@@ -1399,351 +1433,47 @@ class _FitUpsell extends StatelessWidget {
   }
 }
 
+'''
 
-// ══════════════════════════════════════════════════
-//  WorkoutPlayerScreen — Step-by-step exercise timer
-// ══════════════════════════════════════════════════
-class WorkoutPlayerScreen extends ConsumerStatefulWidget {
-  final String workoutId;
-  const WorkoutPlayerScreen({super.key, required this.workoutId});
-  @override ConsumerState<WorkoutPlayerScreen> createState() => _WorkoutPlayerState();
-}
+BUILD_START = ("  @override\n  Widget build(BuildContext context) {\n"
+               "    final gender    = ref.watch(genderProvider);")
+BUILD_END = "  Color _hexColor(String hex)"
 
-class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
-    with SingleTickerProviderStateMixin {
-  Timer?  _timer;
-  int     _elapsed   = 0;
-  int     _stepIndex = 0;
-  bool    _running   = false;
-  bool    _done      = false;
-  late AnimationController _pulse;
+def fit(s):
+    if MARK in s:
+        return s
+    i = s.find(BUILD_START)
+    j = s.find(BUILD_END, i + 1) if i >= 0 else -1
+    if i < 0 or j < 0:
+        return None
+    s = s[:i] + NEW_BUILD + s[j:]
+    # category list: add cardio + postnatal
+    s = re.sub(r"static const _cats = \[[^\]]*\];",
+               "static const _cats = ['all','walking','strength','cardio','gentle',"
+               "'ramadan','breathing','family','postnatal'];", s, count=1)
+    # helper widgets go right before the workout player section
+    k = s.find('//  WorkoutPlayerScreen')
+    if k >= 0:
+        k = s.rfind('// \u2550', 0, k)
+        if k < 0: k = s.find('class WorkoutPlayerScreen')
+        s = s[:k] + NEW_WIDGETS + '\n' + s[k:]
+    else:
+        s = s + '\n' + NEW_WIDGETS
+    return s
 
-  Workout? get _workout =>
-      kWorkouts.firstWhere((w) => w.id == widget.workoutId, orElse: () => kWorkouts.first);
+edit(FIT, fit, 'Fitness screen rebuilt')
+for line in ("import 'dart:math' as math;",
+             "import '../../core/fx.dart' show AuroraBackground;",
+             "import '../../core/fx7.dart' show EmptyState;"):
+    add_import(FIT, line)
 
-  bool get _hasSteps => (_workout?.steps.isNotEmpty) ?? false;
+def ver(s):
+    if 'version: 1.11.0+25' in s: return s
+    n = re.sub(r"^version: \d+\.\d+\.\d+\+\d+", 'version: 1.11.0+25', s, count=1, flags=re.M)
+    return n if n != s else None
+edit('pubspec.yaml', ver, 'version 1.11.0+25')
 
-  List<WorkoutStep> get _steps => _workout?.steps ?? [];
-  WorkoutStep?      get _currentStep =>
-      _hasSteps && _stepIndex < _steps.length ? _steps[_stepIndex] : null;
-
-  int get _stepDuration => _currentStep?.durationSec ?? 30;
-  int get _totalSeconds  => (_workout?.durationMin ?? 10) * 60;
-
-  int get _overallElapsed {
-    if (!_hasSteps) return _elapsed;
-    int total = 0;
-    for (int i = 0; i < _stepIndex && i < _steps.length; i++) {
-      total += _steps[i].durationSec > 0 ? _steps[i].durationSec : 30;
-    }
-    return total + _elapsed;
-  }
-
-  double get _overallProgress =>
-      _totalSeconds > 0 ? (_overallElapsed / _totalSeconds).clamp(0.0, 1.0) : 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _pulse = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 900), lowerBound: 0.95, upperBound: 1.0)
-      ..repeat(reverse: true);
-  }
-
-  @override
-  void dispose() {
-    _timer?.cancel();
-    _pulse.dispose();
-    super.dispose();
-  }
-
-  void _toggle() {
-    if (_done) return;
-    setState(() => _running = !_running);
-    if (_running) {
-      _timer?.cancel();
-      _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-        if (!mounted) return;
-        setState(() {
-          _elapsed++;
-          // Step-based progression
-          if (_hasSteps && _currentStep != null) {
-            if (_currentStep!.durationSec > 0 && _elapsed >= _currentStep!.durationSec) {
-              _nextStep();
-            }
-          } else if (_elapsed >= _totalSeconds) {
-            _finish();
-          }
-        });
-      });
-    } else {
-      _timer?.cancel();
-    }
-  }
-
-  void _nextStep() {
-    if (_stepIndex < _steps.length - 1) {
-      _stepIndex++;
-      _elapsed = 0;
-    } else {
-      _finish();
-    }
-  }
-
-  void _finish() {
-    _timer?.cancel();
-    _running = false;
-    _done    = true;
-    final w = _workout;
-    if (w != null) {
-      ref.read(streakProvider.notifier).increment();
-      ref.read(workoutMinutesProvider.notifier).add(w.id, w.durationMin);
-    }
-  }
-
-  String _fmt(int secs) { final m = (secs ~/ 60).toString().padLeft(2,'0'); final s = (secs % 60).toString().padLeft(2,'0'); return'$m:$s';
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final w     = _workout;
-    final lang      = ref.watch(languageProvider);
-    final isAr      = lang == 'ar' || lang == 'ur';
-    final isDark    = ref.watch(themeProvider); if (w == null) return const Scaffold(body: Center(child: Text('Not found')));
-            final isSis = ref.watch(genderProvider) == 'sisters';
-    final isRamadan = ref.watch(ramadanModeProvider);
-
-    final bg   = isDark ? AppColors.darkBg   : AppColors.lightBg;
-    final card = isDark ? AppColors.darkCard : Colors.white;
-    final text = isDark ? AppColors.darkText : AppColors.lightText;
-    final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
-
-    String t(String ar, String en) => tLang(lang, ar, en);
-
-    final step = _currentStep;
-    final rem  = _hasSteps
-        ? (step?.durationSec ?? 30) - _elapsed
-        : (_totalSeconds - _elapsed);
-
-    return Directionality(
-      textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
-      child: Scaffold(
-        backgroundColor: bg,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.close, color: Colors.white),
-            onPressed: () => context.pop(),
-          ),
-          title: Text(isAr ? w.titleAr : w.titleEn, style: const TextStyle(fontFamily:'Aligarh', fontSize: 14,
-                  fontWeight: FontWeight.w700)),
-          backgroundColor: isRamadan ? AppColors.ramadanCard : AppColors.brandGreen,
-        ),
-        body: SingleChildScrollView(padding: const EdgeInsets.all(20), child: Column(children: [
-
-          // ── Overall progress bar ──────────────────────────
-          Container(
-            margin: const EdgeInsets.only(bottom: 20),
-            child: Column(children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [ Text(t('التقدم الكلي', 'Overall Progress'), style: TextStyle(fontFamily:'Aligarh', fontSize: 11, color: muted)), Text('${(_overallProgress * 100).toInt()}%', style: TextStyle(fontFamily:'Aligarh', fontSize: 11,
-                        fontWeight: FontWeight.w700, color: AppColors.brandGreen)),
-              ]),
-              const SizedBox(height: 6),
-              ClipRRect(borderRadius: BorderRadius.circular(4), child: LinearProgressIndicator(
-                value: _overallProgress, minHeight: 7,
-                backgroundColor: AppColors.brandGreen.withOpacity(0.15),
-                valueColor: const AlwaysStoppedAnimation(AppColors.brandGreen),
-              )),
-            ]),
-          ),
-
-          // ── Illustration (PATCH_V25: solid plate, no checkerboard)
-          Builder(builder: (_) {
-            final iconPath = workoutIconAsset(w.id, isSis);
-            return Container(
-              width: 140, height: 140,
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: isDark
-                    ? const Color(0xFF1A2E22)
-                    : const Color(0xFFE8F5EC),
-                borderRadius: BorderRadius.circular(28),
-                border: Border.all(
-                  color: (isRamadan ? AppColors.ramadanGold : AppColors.brandGreen)
-                      .withOpacity(0.25),
-                ),
-              ),
-              child: Center(
-                // PATCH_V30_DARKSAFE_PLATE_COLOR: plate matches this container's own
-                // flat 0xFF1A2E22 fill exactly, so it truly disappears.
-                child: iconPath != null
-                    ? darkSafeAsset(iconPath,
-                        width: 100, height: 100, fit: BoxFit.contain,
-                        isDark: isDark,
-                        plateColor: const Color(0xFF1A2E22),
-                        errorChild: EmojiIcon(w.emoji, size: 56))
-                    : EmojiIcon(w.emoji, size: 56),
-              ),
-            );
-          }),
-
-          // Step name
-          if (_hasSteps && step != null && !_done)
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 300),
-              child: Text(
-                key: ValueKey(_stepIndex),
-                isAr ? step.nameAr : step.nameEn,
-                textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 18,
-                    fontWeight: FontWeight.w800, color: text, height: 1.3),
-              ),
-            ),
-          if (!_hasSteps)
-            Text(isAr ? w.titleAr : w.titleEn, textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 16,
-                    fontWeight: FontWeight.w700, color: text)),
-
-          // Step instruction
-          if (_hasSteps && step?.instructionAr != null && !_done) ...[
-            const SizedBox(height: 8),
-            Text(isAr ? step!.instructionAr! : (step!.instructionEn ?? step.instructionAr!),
-                textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 13,
-                    color: muted, height: 1.5)),
-          ],
-
-          const SizedBox(height: 24),
-
-          // ── Circle timer ──────────────────────────────────
-          SizedBox(width: 200, height: 200, child: Stack(alignment: Alignment.center, children: [
-            SizedBox.expand(child: CircularProgressIndicator(
-              value: _done ? 1.0 : _overallProgress,
-              strokeWidth: 10,
-              backgroundColor: Colors.grey.withOpacity(0.2),
-              valueColor: AlwaysStoppedAnimation(
-                  _done ? AppColors.accentGold : AppColors.brandGreen),
-              strokeCap: StrokeCap.round,
-            )),
-            if (_hasSteps && step != null && !_done)
-              SizedBox.expand(child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: CircularProgressIndicator(
-                  value: step.durationSec > 0
-                      ? (_elapsed / step.durationSec).clamp(0.0, 1.0)
-                      : 0,
-                  strokeWidth: 4,
-                  backgroundColor: Colors.transparent,
-                  valueColor: const AlwaysStoppedAnimation(AppColors.accentGold),
-                  strokeCap: StrokeCap.round,
-                ),
-              )),
-            Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              if (_done) const EmojiIcon('🎉', size: 44)
-              else ...[
-                AnimatedBuilder(
-                  animation: _pulse,
-                  builder: (_, __) => Transform.scale(
-                    scale: _running ? _pulse.value : 1.0,
-                    child: Text(
-                      _hasSteps && step?.durationSec == 0 ?'${step?.reps ?? 0}\n${t("مرة","reps")}': _fmt(rem.clamp(0, 9999)),
-                      textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 36,
-                          fontWeight: FontWeight.w900, color: text, height: 1.1),
-                    ),
-                  ),
-                ), Text(_hasSteps ? t('للخطوة','for step') : t('متبقي','remaining'), style: TextStyle(fontFamily:'Aligarh', fontSize: 12, color: muted)),
-              ],
-            ]),
-          ])),
-
-          const SizedBox(height: 24),
-
-          // ── Step progress dots ────────────────────────────
-          if (_hasSteps && !_done)
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-              for (int i = 0; i < _steps.length; i++) ...[
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: i == _stepIndex ? 24 : 8, height: 8,
-                  decoration: BoxDecoration(
-                    color: i < _stepIndex
-                        ? AppColors.halalGreen
-                        : i == _stepIndex
-                            ? AppColors.brandGreen
-                            : Colors.grey.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                if (i < _steps.length - 1) const SizedBox(width: 4),
-              ],
-            ]),
-
-          const SizedBox(height: 24),
-
-          // ── Coaching note ─────────────────────────────────
-          if (w.note != null)
-            Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColors.accentGold.withOpacity(isDark ? 0.1 : 0.08),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.accentGold.withOpacity(0.3)),
-              ),
-              child: Text( '💡 ${isAr ? w.note! : (w.noteEn ?? w.note!)}',
-                textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 12,
-                    color: AppColors.accentGold, fontStyle: FontStyle.italic, height: 1.6),
-              ),
-            ),
-
-          const SizedBox(height: 20),
-
-          // ── Done screen ───────────────────────────────────
-          if (_done) ...[
-            Container(
-              width: double.infinity, padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                color: AppColors.brandGreen.withOpacity(0.08),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppColors.brandGreen.withOpacity(0.3)),
-              ),
-              child: Column(children: [ const EmojiIcon('🌟', size: 52),
-                const SizedBox(height: 12), Text(t('أحسنت!', 'Well done!'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 22,
-                        fontWeight: FontWeight.w900, color: AppColors.brandGreen)),
-                const SizedBox(height: 6), Text(t('أتممت ${w.durationMin} دقيقة من ${isAr ? w.titleAr : w.titleEn}', 'Completed ${w.durationMin} min of ${isAr ? w.titleAr : w.titleEn}'),
-                    textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 13, color: muted, height: 1.5)),
-                const SizedBox(height: 20),
-                SizedBox(width: double.infinity, child: ElevatedButton(
-                  onPressed: () => context.pop(), child: Text(t('رجوع للتمارين', 'Back to Workouts'), style: const TextStyle(fontFamily:'Aligarh', fontWeight: FontWeight.w700)),
-                )),
-              ]),
-            ),
-          ] else ...[
-            // ── Controls ──────────────────────────────────
-            Row(children: [
-              Expanded(child: ElevatedButton(
-                onPressed: _toggle,
-                style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14)),
-                child: Text( _running ? t('⏸ إيقاف', '⏸ Pause') : t('▶ ابدأ', '▶ Start'), style: const TextStyle(fontFamily:'Aligarh',
-                      fontSize: 16, fontWeight: FontWeight.w700),
-                ),
-              )),
-              const SizedBox(width: 12),
-              if (_hasSteps && _stepIndex < _steps.length - 1)
-                Expanded(child: OutlinedButton(
-                  onPressed: () => setState(() { _nextStep(); }),
-                  style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14)), child: Text(t('⏭ التالي', '⏭ Next'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 14)),
-                ))
-              else
-                Expanded(child: OutlinedButton(
-                  onPressed: () { _timer?.cancel(); _finish(); setState(() {}); },
-                  style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(vertical: 14)), child: Text(t('✓ أكملت', '✓ Done'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 14)),
-                )),
-            ]),
-          ],
-
-          const SizedBox(height: 20),
-        ])),
-      ),
-    );
-  }
-}
-
+print('\n== sanity ==')
+balance_check([FIT])
+print(f'\nDone: {ok} applied, {skip} skipped.')
+print('Next:  git add -A && git commit -m "v53: fitness" && git push')
