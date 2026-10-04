@@ -1,82 +1,113 @@
-// health_screen.dart — HalalCalorie v1.0 — Bilingual
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/theme.dart';
-import '../../core/providers.dart';
-import '../../core/l10n.dart';
-import '../../core/num_input.dart';
-import '../../data/models/models.dart';
-import '../../core/health_service.dart';
-import '../../data/icon_assets.dart';
-import '../../core/fx6.dart';
-import '../../core/motion.dart';
-import '../../core/fx.dart';
-import '../../core/fx2.dart';
-import '../../core/fx4.dart';
-import '../../core/fx7.dart';
+#!/usr/bin/env python3
+"""
+patch_v51_health.py
+===================
+HalalCalorie v51 - the Health tab rebuilt. Run from the repo root
+(needs v49 and v50 applied):
 
-class HealthScreen extends ConsumerStatefulWidget {
-  const HealthScreen({super.key});
-  @override ConsumerState<HealthScreen> createState() => _HealthScreenState();
-}
+    python3 patch_v51_health.py
 
-class _HealthScreenState extends ConsumerState<HealthScreen>
-    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
-  String get lang => ref.read(languageProvider);
-  late TabController _tab;
-  String? _expandedArticle;
-  bool _stepServiceRunning = false;
-  final _weightCtrl = TextEditingController();
-  final _heightCtrl = TextEditingController();
-  late AnimationController _stagger;
-  Animation<double> _fade(int i) => CurvedAnimation(
-      parent: _stagger,
-      curve: Interval(i * 0.1, (i * 0.1 + 0.5).clamp(0,1), curve: Curves.easeOutQuart));
-  Animation<Offset> _slide(int i) => Tween<Offset>(
-      begin: const Offset(0, 0.12), end: Offset.zero).animate(CurvedAnimation(
-      parent: _stagger,
-      curve: Interval(i * 0.1, (i * 0.1 + 0.5).clamp(0,1), curve: Curves.easeOutQuart)));
-  Widget _anim(int i, Widget child) => FadeTransition(
-      opacity: _fade(i), child: SlideTransition(position: _slide(i), child: child));
+Safe to run twice. No new dependencies; all logic and providers unchanged.
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _tab = TabController(length: 3, vsync: this);
-    _tab.addListener(() {
-      setState(() {});
-      _stagger.forward(from: 0);
-    });
-    _startStepService();
-    _stagger = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 650))
-      ..forward();
-  }
+CHROME     living aurora behind the screen, large title, sliding gradient
+           tabs instead of the stock green app bar
+TRACKING   * daily score: big glowing ring (celebrates at 100) with four
+             animated sub-bars
+           * water: living glass icon, count-up, tappable cup tiles that
+             pop, minus / plus buttons
+           * sleep: moon that fills with light, glowing hour selector
+           * steps: ring with glowing head and burst at goal, live badge,
+             distance and kcal tiles, quick-add chips
+           * mood: selected face scales up inside a glowing card
+           * heart rate: scrolling heartbeat line in a progress ring
+CALCULATORS  gradient BMI scale with a marker that glides to your result,
+             count-up number, painted activity icons with proportional bars
+ARTICLES   tinted gradient cards that glow when opened, staggered entrance
+pubspec    1.9.0+22 -> 1.10.0+23
+"""
+import os, re, sys, glob
 
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    HealthService.onAppStateChange(state);
-  }
+ROOT = os.getcwd()
+if not os.path.exists(os.path.join(ROOT, 'pubspec.yaml')):
+    sys.exit('Run this from the repo root (pubspec.yaml not found).')
 
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    _tab.dispose();
-    _stagger.dispose();
-    _weightCtrl.dispose();
-    _heightCtrl.dispose();
-    super.dispose();
-  }
+ok = skip = 0
 
-  Future<void> _startStepService() async {
-    // The tracker outlives this screen; here it may ask for the permission.
-    await ref.read(stepTrackerProvider).ensureStarted();
-    if (mounted) setState(() => _stepServiceRunning = true);
-  }
+def path(p): return os.path.join(ROOT, p)
 
+def write(p, content):
+    global ok
+    os.makedirs(os.path.dirname(path(p)), exist_ok=True)
+    with open(path(p), 'w', encoding='utf-8') as f:
+        f.write(content)
+    ok += 1
+    print('  WROTE  ', p)
 
-  @override
+def edit(p, fn, label):
+    """fn(text) -> new text, or None when the anchor is missing."""
+    global ok, skip
+    if not os.path.exists(path(p)):
+        skip += 1; print('  SKIP   ', p, '(missing)', label); return
+    with open(path(p), encoding='utf-8') as f:
+        s = f.read()
+    n = fn(s)
+    if n is None:
+        skip += 1; print('  SKIP   ', p, '-', label, '(anchor not found)'); return
+    if n == s:
+        ok += 1; print('  OK     ', p, '-', label, '(already applied)'); return
+    with open(path(p), 'w', encoding='utf-8') as f:
+        f.write(n)
+    ok += 1
+    print('  PATCHED', p, '-', label)
+
+def sub_once(old, new):
+    def f(s):
+        if new in s: return s
+        return s.replace(old, new, 1) if old in s else None
+    return f
+
+def add_import(p, line):
+    """Insert an import line after the last existing import (idempotent)."""
+    def f(s):
+        if line in s: return s
+        idx = [m.end() for m in re.finditer(r"^import [^\n]*\n", s, re.M)]
+        if not idx: return None
+        i = idx[-1]
+        return s[:i] + line + "\n" + s[i:]
+    edit(p, f, 'import ' + line.split('/')[-1].rstrip("';"))
+
+def rel_core(p, name):
+    d = os.path.dirname(p)
+    r = os.path.relpath('lib/core/' + name, d).replace(os.sep, '/')
+    return "import '%s';" % r
+
+def replace_region(s, start_marker, end_marker, new, start_back=None):
+    i = s.find(start_marker)
+    if i < 0: return None
+    if start_back:
+        j = s.rfind(start_back, 0, i)
+        if j >= 0: i = j
+    j = s.find(end_marker, i + len(start_marker))
+    if j < 0: return None
+    return s[:i] + new + s[j:]
+
+def balance_check(paths):
+    bad = 0
+    for p in paths:
+        if not os.path.exists(path(p)): continue
+        t = open(path(p), encoding='utf-8').read()
+        t = re.sub(r"//[^\n]*", '', t)
+        t = re.sub(r"'(?:\\.|[^'\\\n])*'", "''", t)
+        t = re.sub(r'"(?:\\.|[^"\\\n])*"', '""', t)
+        for a, b in ('{}', '()', '[]'):
+            if t.count(a) != t.count(b):
+                bad += 1
+                print('  UNBALANCED', p, a, t.count(a), b, t.count(b))
+    print('  all balanced' if not bad else '  !! fix the files above before building')
+
+print('== v51 health ==')
+HEA = 'lib/features/health/health_screen.dart'
+HEALTH_BUILD = r'''  @override
   Widget build(BuildContext context) {
     final isDark = ref.watch(themeProvider);
     final lang   = ref.watch(languageProvider);
@@ -1219,3 +1250,24 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
     }
   }
 }
+'''
+def hea(s):
+    if 'SegTabs(' in s: return s
+    anchor = "  @override\n  Widget build(BuildContext context) {\n    final isDark = ref.watch(themeProvider);\n    final lang   = ref.watch(languageProvider);"
+    i = s.find(anchor)
+    if i < 0: return None
+    return s[:i] + HEALTH_BUILD
+edit(HEA, hea, 'Health screen rebuilt')
+for n in ('motion.dart', 'fx.dart', 'fx2.dart', 'fx4.dart', 'fx6.dart', 'fx7.dart'):
+    add_import(HEA, rel_core(HEA, n))
+def fx6_icons(s):
+    n = s.replace('Icons.balance_rounded', 'Icons.scale_rounded')
+    n = n.replace('Icons.diamond_rounded', 'Icons.auto_awesome_rounded')
+    n = n.replace('Icons.lightbulb_rounded', 'Icons.lightbulb_outline_rounded')
+    return n
+edit('lib/core/fx6.dart', fx6_icons, 'swap three icons for universally available ones')
+edit('pubspec.yaml', sub_once('version: 1.9.0+22', 'version: 1.10.0+23'), 'version 1.10.0+23')
+print('\n== sanity ==')
+balance_check([HEA])
+print(f'\nDone: {ok} applied, {skip} skipped.')
+print('Next:  git add -A && git commit -m "v51: health" && git push')
