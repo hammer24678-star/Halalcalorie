@@ -5,6 +5,7 @@ import 'dart:async'; import'package:flutter/material.dart'; import'package:flutt
 import '../../core/l10n.dart';
 import '../../core/motion.dart';
 import 'lift_screen.dart'; import'../../data/models/models.dart'; import '../../data/muscle_assets.dart'; import '../../data/icon_assets.dart';
+import '../../core/fx6.dart';
 
 // ══════════════════════════════════════════════════
 //  FitnessScreen
@@ -107,7 +108,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                     border: Border.all(color: Colors.white.withOpacity(0.25)),
                   ),
                   child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    const Text('🔥', style: TextStyle(fontSize: 13)),
+                    const EmojiIcon('🔥', size: 13),
                     const SizedBox(width: 5),
                     Text('$workoutMin ${t("د","min")}',
                         style: const TextStyle(fontFamily: 'Aligarh',
@@ -341,7 +342,7 @@ class _FitnessState extends ConsumerState<FitnessScreen>
               if (list.isEmpty) {
                 return Center(child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: [ const Text('🔍', style: TextStyle(fontSize: 42)),
+                  children: [ const EmojiIcon('🔍', size: 42),
                     const SizedBox(height: 12), Text(t('لا تمارين في هذه الفئة', 'No workouts in this category'), style: TextStyle(fontFamily:'Aligarh', color: muted)),
                   ],
                 ));
@@ -409,8 +410,8 @@ class _FitnessState extends ConsumerState<FitnessScreen>
                                           isDark: isDark,
                                           plateColor: Color.alphaBlend(
                                               barCol.withOpacity(0.08), card),
-                                          errorChild: Text(w.emoji, style: const TextStyle(fontSize: 48)))
-                                      : Text(w.emoji, style: const TextStyle(fontSize: 48)),
+                                          errorChild: EmojiIcon(w.emoji, size: 48))
+                                      : EmojiIcon(w.emoji, size: 48),
                                 ),
                                 if (locked)
                                   Positioned(
@@ -700,8 +701,8 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
                         width: 100, height: 100, fit: BoxFit.contain,
                         isDark: isDark,
                         plateColor: const Color(0xFF1A2E22),
-                        errorChild: Text(w.emoji, style: const TextStyle(fontSize: 56)))
-                    : Text(w.emoji, style: const TextStyle(fontSize: 56)),
+                        errorChild: EmojiIcon(w.emoji, size: 56))
+                    : EmojiIcon(w.emoji, size: 56),
               ),
             );
           }),
@@ -755,7 +756,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
                 ),
               )),
             Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              if (_done) const Text('🎉', style: TextStyle(fontSize: 44))
+              if (_done) const EmojiIcon('🎉', size: 44)
               else ...[
                 AnimatedBuilder(
                   animation: _pulse,
@@ -822,7 +823,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(color: AppColors.brandGreen.withOpacity(0.3)),
               ),
-              child: Column(children: [ const Text('🌟', style: TextStyle(fontSize: 52)),
+              child: Column(children: [ const EmojiIcon('🌟', size: 52),
                 const SizedBox(height: 12), Text(t('أحسنت!', 'Well done!'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 22,
                         fontWeight: FontWeight.w900, color: AppColors.brandGreen)),
                 const SizedBox(height: 6), Text(t('أتممت ${w.durationMin} دقيقة من ${isAr ? w.titleAr : w.titleEn}', 'Completed ${w.durationMin} min of ${isAr ? w.titleAr : w.titleEn}'),

@@ -9,6 +9,7 @@ import '../../core/prayer_provider.dart';
 import '../../core/providers.dart';
 import '../../core/l10n.dart';
 import '../../core/prayer_service.dart';
+import '../../core/fx6.dart';
 
 class PrayerTimesCard extends ConsumerStatefulWidget {
   final bool isAr;
@@ -75,7 +76,7 @@ class _PrayerTimesCardState extends ConsumerState<PrayerTimesCard> {
                 Image.asset('assets/icons/mosque_mark/mosque_small.png',
                     width: 22, height: 22,
                     errorBuilder: (_, __, ___) =>
-                        const Text('🕌', style: TextStyle(fontSize: 22))),
+                        const EmojiIcon('🕌', size: 22)),
                 const SizedBox(width: 10),
                 Expanded(child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

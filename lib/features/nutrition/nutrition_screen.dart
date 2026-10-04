@@ -16,6 +16,10 @@ import 'widgets/leaf_progress_ring.dart';
 import '../../data/icon_assets.dart';
 
 import '../../core/ai_service.dart';
+import '../../core/fx6.dart';
+import '../../core/motion.dart';
+import '../../core/fx.dart';
+import '../../core/fx7.dart';
 
 enum MealType { breakfast, lunch, dinner, snack }
 
@@ -155,62 +159,30 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     super.dispose();
   }
 
-  // v19: فاتح/داكن/رمضان preview switcher — local to this screen only.
+  // v50: Light / Dark / Ramadan preview switcher (local to this screen).
   Widget _themeSwitcherPills(
       bool isAr, String Function(String, String) tl, Color textC) {
-    Widget pill(_NutriTheme mode, {IconData? icon, String? emoji,
-        required String labelAr, required String labelEn,
-        required Color fillColor, Color selTextColor = Colors.white}) {
-      final sel = _previewTheme == mode;
-      final unselFg = textC.withOpacity(0.65);
-      return GestureDetector(
-        onTap: () => setState(() => _previewTheme = mode),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          margin: const EdgeInsets.symmetric(horizontal: 4),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-          decoration: BoxDecoration(
-            color: sel ? fillColor : textC.withOpacity(0.06),
-            borderRadius: BorderRadius.circular(22),
-            border: sel ? null : Border.all(color: textC.withOpacity(0.15)),
-          ),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            if (icon != null)
-              Icon(icon, size: 15, color: sel ? selTextColor : unselFg)
-            else
-              Text(emoji!, style: const TextStyle(fontSize: 13)),
-            const SizedBox(width: 6),
-            Text(tl(labelAr, labelEn), style: TextStyle(
-                fontFamily: 'Aligarh', fontSize: 12,
-                fontWeight: sel ? FontWeight.w800 : FontWeight.w600,
-                color: sel ? selTextColor : unselFg)),
-          ]),
-        ),
-      );
-    }
-
+    const modes = [_NutriTheme.light, _NutriTheme.dark, _NutriTheme.ramadan];
+    final idx = modes.indexOf(_previewTheme);
+    final isRam = _previewTheme == _NutriTheme.ramadan;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(children: [
-          pill(_NutriTheme.light, emoji: '☀️',
-              labelAr: 'فاتح', labelEn: 'Light',
-              fillColor: AppColors.brandGreen),
-          pill(_NutriTheme.dark, icon: Icons.nightlight_round,
-              labelAr: 'داكن', labelEn: 'Dark',
-              fillColor: AppColors.darkCardAlt),
-          pill(_NutriTheme.ramadan, emoji: '🌙',
-              labelAr: 'رمضان', labelEn: 'Ramadan',
-              fillColor: AppColors.ramadanGold,
-              selTextColor: AppColors.ramadanInk),
-        ]),
+      padding: const EdgeInsets.fromLTRB(16, 2, 16, 2),
+      child: SegPick(
+        index: idx < 0 ? 0 : idx,
+        labels: [tl('فاتح', 'Light'), tl('داكن', 'Dark'), tl('رمضان', 'Ramadan')],
+        icons: const [
+          Icons.light_mode_rounded,
+          Icons.dark_mode_rounded,
+          Icons.nights_stay_rounded,
+        ],
+        accent: isRam ? AppColors.ramadanGold : AppColors.brandGreen,
+        onAccent: isRam ? AppColors.ramadanInk : Colors.white,
+        textColor: textC,
+        height: 36,
+        onChanged: (i) => setState(() => _previewTheme = modes[i]),
       ),
     );
   }
-
-
-
 
   MealType _mealType(DateTime t) {
     final h = t.hour;
@@ -522,7 +494,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   border: Border.all(
                       color: (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.2))),
                 child: Row(children: [
-                  const Text('📖', style: TextStyle(fontSize: 22)),
+                  const EmojiIcon('📖', size: 22),
                   const SizedBox(width: 10),
                   Expanded(child: Text(foodNote(),
                       style: const TextStyle(fontFamily: 'Aligarh',
@@ -639,7 +611,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
       String val, Color muted) =>
       SizedBox(width: 80, child: Column(
           mainAxisSize: MainAxisSize.min, children: [
-        Text(emoji, style: const TextStyle(fontSize: 22)),
+        EmojiIcon(emoji, size: 22),
         const SizedBox(height: 2),
         Text(val, style: const TextStyle(fontFamily: 'Aligarh',
             fontSize: 12, fontWeight: FontWeight.w800,
@@ -658,7 +630,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
           border: Border.all(color: color.withOpacity(0.2)),
         ),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(emoji, style: const TextStyle(fontSize: 22)),
+          EmojiIcon(emoji, size: 22),
           const SizedBox(height: 4),
           Text(val, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 14, fontWeight: FontWeight.w900, color: color)),
@@ -669,7 +641,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
 
   Widget _microItem(String emoji, String label, String val) =>
       Column(mainAxisSize: MainAxisSize.min, children: [
-        Text(emoji, style: const TextStyle(fontSize: 18)),
+        EmojiIcon(emoji, size: 18),
         Text(val, style: const TextStyle(fontFamily: 'Aligarh',
             fontSize: 12, fontWeight: FontWeight.w800,
             color: AppColors.accentGold)),
@@ -719,15 +691,40 @@ class _NutritionState extends ConsumerState<NutritionScreen>
       textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         backgroundColor: bg,
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => _openAdd(context, isAr, isDark, isPremium),
-          backgroundColor: accent,
-          elevation: 4,
-          icon: const Icon(Icons.add_rounded, color: Colors.white, size: 26),
-          label: Text(tl('أضف طعام', 'Add Food'),
-              style: const TextStyle(fontFamily: 'Aligarh',
-                  color: Colors.white, fontWeight: FontWeight.w800,
-                  fontSize: 14)),
+        floatingActionButton: PressFx(
+          onTap: () => _openAdd(context, isAr, isDark, isPremium),
+          scale: 0.94,
+          child: Container(
+            height: 56,
+            padding: const EdgeInsets.symmetric(horizontal: 22),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(28),
+              gradient: LinearGradient(
+                colors: isRamadan
+                    ? const [Color(0xFFFFD97A), Color(0xFFE8B84B)]
+                    : const [Color(0xFF3FB950), Color(0xFF1E9E52)],
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: accent.withOpacity(0.45),
+                  blurRadius: 22,
+                  offset: const Offset(0, 8),
+                ),
+              ],
+            ),
+            child: Row(mainAxisSize: MainAxisSize.min, children: [
+              Icon(Icons.add_rounded,
+                  color: isRamadan ? AppColors.ramadanInk : Colors.white,
+                  size: 26),
+              const SizedBox(width: 8),
+              Text(tl('أضف طعام', 'Add Food'),
+                  style: TextStyle(
+                      fontFamily: 'Aligarh',
+                      color: isRamadan ? AppColors.ramadanInk : Colors.white,
+                      fontWeight: FontWeight.w800,
+                      fontSize: 15)),
+            ]),
+          ),
         ),
         appBar: AppBar(
           // v19: flat bar in the screen's own bg/text colors, matching
@@ -755,30 +752,35 @@ class _NutritionState extends ConsumerState<NutritionScreen>
             ),
           ],
           bottom: PreferredSize(
-            preferredSize: const Size.fromHeight(92),
+            preferredSize: const Size.fromHeight(104),
             child: Column(children: [
               _themeSwitcherPills(isAr, tl, textC),
-              TabBar(
+              SegTabs(
                 controller: _tab,
-                indicatorColor: accent,
-                indicatorWeight: 3,
-                indicatorSize: TabBarIndicatorSize.label,
-                labelStyle: const TextStyle(fontFamily: 'Aligarh',
-                    fontWeight: FontWeight.w700, fontSize: 14),
-                unselectedLabelStyle: const TextStyle(
-                    fontFamily: 'Aligarh', fontSize: 14),
-                labelColor: textC,
-                unselectedLabelColor: muted,
-                tabs: [
-                  Tab(text: tl('اليوم', 'Today')),
-                  Tab(text: tl('الوصفات', 'Recipes')),
-                  Tab(text: tl('مخطط AI', 'AI Plan')),
+                accent: accent,
+                onAccent: isRamadan ? AppColors.ramadanInk : Colors.white,
+                textColor: textC,
+                mutedColor: muted,
+                labels: [
+                  tl('اليوم', 'Today'),
+                  tl('الوصفات', 'Recipes'),
+                  tl('مخطط AI', 'AI Plan'),
                 ],
               ),
             ]),
           ),
         ),
-        body: TabBarView(
+        body: Stack(children: [
+          Positioned.fill(
+            child: SoftAurora(
+              base: bg,
+              colors: isRamadan
+                  ? const [Color(0xFFE8B84B), Color(0xFF5B3FD0), Color(0xFF2B1B6B)]
+                  : const [Color(0xFF1E9E52), Color(0xFFDBA75D), Color(0xFF0E6B6B)],
+              intensity: isDark ? 0.50 : 0.26,
+            ),
+          ),
+          TabBarView(
           controller: _tab,
           children: [
             // ══ TODAY TAB ══════════════════════════════════
@@ -854,8 +856,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                             color: AppColors.brandGreen.withOpacity(0.3)),
                       ),
                       child: Row(children: [
-                        const Text('🌱',
-                            style: TextStyle(fontSize: 22)),
+                        const EmojiIcon('🌱', size: 22),
                         const SizedBox(width: 10),
                         Expanded(child: Text(
                           tl('ابدأ يومك بوجبة غنية بالبروتين',
@@ -872,11 +873,20 @@ class _NutritionState extends ConsumerState<NutritionScreen>
         // ── Calorie Summary Card ────────────────
                   _anim(0, Container(
                     decoration: BoxDecoration(
-                      color: cardBg,
-                      borderRadius: BorderRadius.circular(24),
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                          cardBg,
+                          Color.lerp(cardBg, calCol, isDark ? 0.10 : 0.06)!,
+                        ],
+                      ),
+                      border: Border.all(
+                          color: calCol.withOpacity(0.28), width: 0.8),
+                      borderRadius: BorderRadius.circular(28),
                       boxShadow: [
                         BoxShadow(
-                          color: calCol.withOpacity(0.18),
+                          color: calCol.withOpacity(0.22),
                           blurRadius: 24,
                           offset: const Offset(0, 8),
                         ),
@@ -1001,7 +1011,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                   : Border.all(color: muted.withOpacity(0.35)),
                             ),
                             child: Row(mainAxisSize: MainAxisSize.min, children: [
-                              Text(p.emoji(), style: const TextStyle(fontSize: 15)),
+                              EmojiIcon(p.emoji(), size: 15),
                               const SizedBox(width: 6),
                               Text(isAr ? p.nameAr() : p.nameEn(),
                                 style: TextStyle(
@@ -1039,50 +1049,14 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         (goal * plan.fatPct / 100) / 9,
                         AppColors.accentGold),
                     const SizedBox(height: 18),
-                    Row(children: [
-                      const Text('💧', style: TextStyle(fontSize: 14)),
-                      const SizedBox(width: 8),
-                      Expanded(child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(tl('الماء', 'Water'),
-                                style: TextStyle(fontFamily: 'Aligarh',
-                                  fontSize: 12, fontWeight: FontWeight.w600,
-                                  color: AppColors.waterBlue)),
-                              Text('${ref.watch(waterProvider).cups} / ${ref.watch(waterProvider).goal}  •  ${(ref.watch(waterProvider).percent * 100).toInt()}%',
-                                style: TextStyle(fontFamily: 'Aligarh',
-                                  fontSize: 10,
-                                  color: AppColors.waterBlue.withOpacity(0.75))),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: LinearProgressIndicator(
-                              value: ref.watch(waterProvider).percent,
-                              backgroundColor: AppColors.waterBlue.withOpacity(0.12),
-                              valueColor: const AlwaysStoppedAnimation(
-                                  AppColors.waterBlue),
-                              minHeight: 10,
-                            ),
-                          ),
-                        ],
-                      )),
-                      const SizedBox(width: 8),
-                      GestureDetector(
-                        onTap: () => ref.read(waterProvider.notifier).add(),
-                        child: Container(
-                          width: 32, height: 32,
-                          decoration: BoxDecoration(
-                            color: AppColors.waterBlue.withOpacity(0.15),
-                            shape: BoxShape.circle),
-                          child: const Icon(Icons.add,
-                              color: AppColors.waterBlue, size: 18)),
-                      ),
-                    ]),
+                    WaterTile(
+                      cups: ref.watch(waterProvider).cups,
+                      goal: ref.watch(waterProvider).goal,
+                      label: tl('الماء', 'Water'),
+                      isDark: isDark,
+                      onAdd: () => ref.read(waterProvider.notifier).add(),
+                      onRemove: () => ref.read(waterProvider.notifier).remove(),
+                    ),
                   ])),
 
                   const SizedBox(height: 16),
@@ -1178,8 +1152,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                       Row(children: [
-                        const Text('📊',
-                            style: TextStyle(fontSize: 18)),
+                        const EmojiIcon('📊', size: 18),
                         const SizedBox(width: 8),
                         Text(tl('السعرات الأسبوعية',
                                 'Weekly Calories'),
@@ -1222,11 +1195,22 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                                   barRods: [
                                 BarChartRodData(
                                   toY: kcal,
-                                  color: isToday
-                                      ? AppColors.brandGreen
-                                      : AppColors.brandGreen
-                                          .withOpacity(0.4),
-                                  width: 14,
+                                  gradient: LinearGradient(
+                                    begin: Alignment.bottomCenter,
+                                    end: Alignment.topCenter,
+                                    colors: isToday
+                                        ? const [Color(0xFF1E9E52), Color(0xFF78E08E)]
+                                        : [
+                                            AppColors.brandGreen.withOpacity(0.25),
+                                            AppColors.brandGreen.withOpacity(0.55),
+                                          ],
+                                  ),
+                                  backDrawRodData: BackgroundBarChartRodData(
+                                    show: true,
+                                    toY: goal > 0 ? goal.toDouble() : 2000.0,
+                                    color: muted.withOpacity(0.08),
+                                  ),
+                                  width: 16,
                                   borderRadius:
                                       BorderRadius.circular(6),
                                 ),
@@ -1271,13 +1255,14 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                 ],
               ),
             ),
+        ]),
 
             // ══ RECIPES TAB ════════════════════════════════
             ListView(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
               children: [
                 Row(children: [
-                  const Text('🌿', style: TextStyle(fontSize: 24)),
+                  const EmojiIcon('🌿', size: 24),
                   const SizedBox(width: 10),
                   Column(crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -1294,7 +1279,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                 ...kRecipes.map((r) {
                   final emojis = ['🥘','🫒','🥚','🫓','🌿','🍗','🥗','🫙'];
                   final em = emojis[r.id % emojis.length];
-                  return Container(
+                  return Reveal(index: r.id % 8, child: Container(
                     margin: const EdgeInsets.only(bottom: 10),
                     decoration: BoxDecoration(
                       color: cardBg,
@@ -1319,8 +1304,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           ),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: Center(child: Text(em,
-                            style: const TextStyle(fontSize: 26))),
+                        child: Center(child: EmojiIcon(em, size: 26)),
                       ),
                       title: Text(r.nameAr,
                           style: const TextStyle(fontFamily: 'Aligarh',
@@ -1380,7 +1364,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                         ),
                       ),
                     ),
-                  );
+                  ));
                 }),
               ],
             ),
@@ -1397,41 +1381,51 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     );
   }
 
-  // PATCH_V22_REMASTER: horizontal stat tiles under the hero ring
   Widget _summaryBox(String emoji, String label, String val,
-      Color color, bool isDark) =>
-      Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-        decoration: BoxDecoration(
-          color: color.withOpacity(isDark ? 0.12 : 0.08),
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: color.withOpacity(0.28), width: 1),
+      Color color, bool isDark) {
+    final n = num.tryParse(val);
+    final big = TextStyle(
+        fontFamily: 'Aligarh', fontSize: 26, fontWeight: FontWeight.w900,
+        height: 1.0, color: color);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(22),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            color.withOpacity(isDark ? 0.20 : 0.12),
+            color.withOpacity(isDark ? 0.06 : 0.04),
+          ],
         ),
-        child: Row(children: [
-          Container(
-            width: 40, height: 40,
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.20),
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Center(child: Text(emoji,
-                style: const TextStyle(fontSize: 20))),
+        border: Border.all(color: color.withOpacity(0.32), width: 0.8),
+      ),
+      child: Row(children: [
+        Container(
+          width: 42, height: 42,
+          decoration: BoxDecoration(
+            color: color.withOpacity(0.18),
+            borderRadius: BorderRadius.circular(14),
           ),
-          const SizedBox(width: 12),
-          Expanded(child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(val, style: TextStyle(fontFamily: 'Aligarh',
-                  fontSize: 24, fontWeight: FontWeight.w900,
-                  height: 1.0, color: color)),
-              const SizedBox(height: 2),
-              Text(label, style: TextStyle(fontFamily: 'Aligarh',
-                  fontSize: 11, color: color.withOpacity(0.9),
-                  fontWeight: FontWeight.w700)),
-            ],
-          )),
-        ]),
-      );
+          child: Center(child: EmojiIcon(emoji, size: 22, color: color)),
+        ),
+        const SizedBox(width: 12),
+        Expanded(child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            n != null
+                ? CountUp(value: n, style: big)
+                : Text(val, style: big),
+            const SizedBox(height: 3),
+            Text(label, style: TextStyle(
+                fontFamily: 'Aligarh', fontSize: 11.5,
+                color: color.withOpacity(0.9), fontWeight: FontWeight.w700)),
+          ],
+        )),
+      ]),
+    );
+  }
 
   Widget _macroRow(String emoji, String label, double current,
       double target, Color color) {
@@ -1447,8 +1441,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
         decoration: BoxDecoration(
             color: color.withOpacity(0.15),
             borderRadius: BorderRadius.circular(10)),
-        child: Center(child: Text(emoji,
-            style: const TextStyle(fontSize: 16))),
+        child: Center(child: EmojiIcon(emoji, size: 16)),
       ),
       Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -1470,12 +1463,14 @@ class _NutritionState extends ConsumerState<NutritionScreen>
               borderRadius: BorderRadius.circular(8),
             ),
           ),
-          LayoutBuilder(builder: (_, constraints) => AnimatedContainer(
-            duration: const Duration(milliseconds: 600),
-            curve: Curves.easeOut,
-            height: 10,
-            width: constraints.maxWidth * pct,
-            decoration: BoxDecoration(
+          LayoutBuilder(builder: (_, constraints) => TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0.0, end: pct),
+            duration: const Duration(milliseconds: 900),
+            curve: Curves.easeOutCubic,
+            builder: (_, pv, __) => Container(
+              height: 10,
+              width: constraints.maxWidth * pv,
+              decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: [color.withOpacity(0.7), color],
                 begin: Alignment.centerLeft, end: Alignment.centerRight,
@@ -1485,6 +1480,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                 color: color.withOpacity(0.3),
                 blurRadius: 4, offset: const Offset(0, 1),
               )],
+            ),
             ),
           )),
         ]),
@@ -1520,7 +1516,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
             border: Border.all(
                 color: AppColors.accentGold.withOpacity(0.45))),
           child: Row(children: [
-            const Text('📊', style: TextStyle(fontSize: 26)),
+            const EmojiIcon('📊', size: 26),
             const SizedBox(width: 12),
             Expanded(child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1604,7 +1600,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
   Widget _weekStat(String emoji, String val, String label,
       Color col, bool isDark) =>
     Column(children: [
-      Text(emoji, style: const TextStyle(fontSize: 16)),
+      EmojiIcon(emoji, size: 16),
       Text(val, style: TextStyle(fontFamily: 'Aligarh',
         fontWeight: FontWeight.w800, fontSize: 13, color: col)),
       Text(label, style: TextStyle(fontFamily: 'Aligarh',
@@ -1697,8 +1693,7 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(color: accentCol.withOpacity(0.35)),
                 ),
-                child: Center(child: Text(widget.emoji,
-                    style: const TextStyle(fontSize: 22))),
+                child: Center(child: EmojiIcon(widget.emoji, size: 22)),
               ),
               const SizedBox(width: 12),
               Expanded(child: Column(
@@ -2012,7 +2007,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                 color: AppColors.brandGreen.withOpacity(0.2)),
           ),
           child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Text('🤲', style: TextStyle(fontSize: 13)),
+            const EmojiIcon('🤲', size: 13),
             const SizedBox(width: 8),
             Text(
               L.fromLang(lang).mindfulEatingTip,
@@ -2924,7 +2919,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
     return Padding(
       padding: const EdgeInsets.only(top: 26),
       child: Column(children: [
-        const Text('🔍', style: TextStyle(fontSize: 34)),
+        const EmojiIcon('🔍', size: 34),
         const SizedBox(height: 10),
         Text(tl('لا نتائج لهذا البحث', 'No matches for that search'),
             style: TextStyle(fontFamily: 'Aligarh', fontSize: 13,
@@ -3115,7 +3110,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             borderRadius: BorderRadius.circular(20),
             border: Border.all(color: AppColors.accentGold.withOpacity(0.45))),
           child: Row(children: [
-            const Text('📊', style: TextStyle(fontSize: 26)),
+            const EmojiIcon('📊', size: 26),
             const SizedBox(width: 12),
             Expanded(child: Column(
               crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -3168,7 +3163,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           Row(children: [
-            const Text('📊', style: TextStyle(fontSize: 20)),
+            const EmojiIcon('📊', size: 20),
             const SizedBox(width: 8),
             Text(t('تقرير الأسبوع ⭐', 'Weekly Report ⭐'),
               style: const TextStyle(fontFamily: 'Aligarh',
@@ -3256,7 +3251,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
 
   Widget _weekStat(String emoji, String val, String label, Color col, bool isDark) =>
     Column(children: [
-      Text(emoji, style: const TextStyle(fontSize: 16)),
+      EmojiIcon(emoji, size: 16),
       Text(val, style: TextStyle(fontFamily: 'Aligarh',
         fontWeight: FontWeight.w800, fontSize: 13, color: col)),
       Text(label, style: TextStyle(fontFamily: 'Aligarh',
@@ -3272,7 +3267,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
           borderRadius: BorderRadius.circular(16),
         ),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(emoji, style: const TextStyle(fontSize: 18)),
+          EmojiIcon(emoji, size: 18),
           const SizedBox(height: 2),
           Text(val, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 13, fontWeight: FontWeight.w900,
@@ -3424,8 +3419,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
               borderRadius: BorderRadius.circular(25),
             ),
             child: const Center(
-                child: Text('🤖',
-                    style: TextStyle(fontSize: 52))),
+                child: const EmojiIcon('🤖', size: 52)),
           ),
           const SizedBox(height: 20),
           Text(tl('مخطط الوجبات الذكي', 'Smart Meal Planner'),
@@ -3489,8 +3483,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
             Row(children: [
-              const Text('🤖',
-                  style: TextStyle(fontSize: 24)),
+              const EmojiIcon('🤖', size: 24),
               const SizedBox(width: 10),
               Expanded(child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -3569,7 +3562,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
               border: Border.all(color: AppColors.haramRed.withOpacity(0.3)),
             ),
             child: Column(children: [
-              const Text('⚠️', style: TextStyle(fontSize: 28)),
+              const EmojiIcon('⚠️', size: 28),
               const SizedBox(height: 8),
               Text(
                 _genError!.contains('API_KEY') || _genError!.contains('401')
@@ -3596,8 +3589,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
             ),
             child: _result == 'error'
                 ? Center(child: Column(children: [
-                    const Text('😔',
-                        style: TextStyle(fontSize: 40)),
+                    const EmojiIcon('😔', size: 40),
                     const SizedBox(height: 8),
                     Text(
                         tLang(lang, 'حدث خطأ، حاول مجدداً', 'An error occurred, try again', 'An error occurred, try again', 'An error occurred, try again', 'An error occurred, try again', 'An error occurred, try again'),
@@ -3615,8 +3607,7 @@ class _AIPlanTabState extends ConsumerState<_AIPlanTab> {
                             .withOpacity(0.1),
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: const Text('✨',
-                          style: TextStyle(fontSize: 16)),
+                      child: const EmojiIcon('✨', size: 16),
                     ),
                     const SizedBox(width: 10),
                     Text(tl('خطتك الشخصية', 'Your Personal Plan'),

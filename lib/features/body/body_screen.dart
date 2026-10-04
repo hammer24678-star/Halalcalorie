@@ -14,6 +14,7 @@ import '../../core/providers.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/models/models.dart';
 import '../../data/icon_assets.dart'; // PATCH_V31_BODY_OVERVIEW_REMASTER
+import '../../core/fx6.dart';
 
 class BodyScreen extends ConsumerStatefulWidget {
   const BodyScreen({super.key});
@@ -54,7 +55,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         appBar: AppBar(title: Text(tLang(lang, 'تحليل الجسم 💪', 'Body Analysis 💪', 'Analyse corporelle 💪', 'Vücut Analizi 💪', 'Analisis Badan 💪', 'Analisis Tubuh 💪'))),
         body: Center(child: Padding(padding: const EdgeInsets.all(32), child: Column(
           mainAxisAlignment: MainAxisAlignment.center, children: [
-          const Text('💪', style: TextStyle(fontSize: 64)),
+          const EmojiIcon('💪', size: 64),
           const SizedBox(height: 20),
           Text(
             tLang(lang, 'أكمل إعداد ملفك الشخصي أولاً', 'Complete your profile setup first', 'Complétez d\'abord votre profil', 'Önce profilinizi tamamlayın', 'Lengkapkan profil anda dahulu', 'Lengkapi profil Anda terlebih dahulu'),
@@ -330,7 +331,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
               Text('≈ ${p.waterCupsGoal} ${isAr ? "كوب" : "cups"} (250 ml)',
                   style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted)),
             ]),
-            const Text('💧', style: TextStyle(fontSize: 40)),
+            const EmojiIcon('💧', size: 40),
           ]),
           const SizedBox(height: 10),
           Text(tLang(lang, 'الحساب: ${p.weightKg.toStringAsFixed(0)} كجم × 0.033 = ${p.waterLiters} لتر/يوم\n${p.activityLevel == ActivityLevel.veryActive || p.activityLevel == ActivityLevel.extraActive ? "مع إضافة ٠.٥ لتر للنشاط العالي" : ""}', 'Calculation: ${p.weightKg.toStringAsFixed(0)} kg × 0.033 = ${p.waterLiters} L/day\n${p.activityLevel == ActivityLevel.veryActive || p.activityLevel == ActivityLevel.extraActive ? "With +0.5L for high activity" : ""}', 'Calculation: ${p.weightKg.toStringAsFixed(0)} kg × 0.033 = ${p.waterLiters} L/day\n${p.activityLevel == ActivityLevel.veryActive || p.activityLevel == ActivityLevel.extraActive ? "With +0.5L for high activity" : ""}', 'Calculation: ${p.weightKg.toStringAsFixed(0)} kg × 0.033 = ${p.waterLiters} L/day\n${p.activityLevel == ActivityLevel.veryActive || p.activityLevel == ActivityLevel.extraActive ? "With +0.5L for high activity" : ""}', 'Calculation: ${p.weightKg.toStringAsFixed(0)} kg × 0.033 = ${p.waterLiters} L/day\n${p.activityLevel == ActivityLevel.veryActive || p.activityLevel == ActivityLevel.extraActive ? "With +0.5L for high activity" : ""}', 'Calculation: ${p.weightKg.toStringAsFixed(0)} kg × 0.033 = ${p.waterLiters} L/day\n${p.activityLevel == ActivityLevel.veryActive || p.activityLevel == ActivityLevel.extraActive ? "With +0.5L for high activity" : ""}'),
@@ -472,7 +473,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         Container(
           width: 34, height: 34,
           decoration: BoxDecoration(color: color.withOpacity(isDark ? 0.16 : 0.12), shape: BoxShape.circle),
-          child: Center(child: Text(emoji, style: const TextStyle(fontSize: 17))),
+          child: Center(child: EmojiIcon(emoji, size: 17)),
         ),
         const SizedBox(height: 8),
         Text(value, style: TextStyle(fontFamily: 'Aligarh', fontSize: 16, fontWeight: FontWeight.w900, color: color)),
@@ -796,7 +797,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
               color: (isPremium ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.12),
               borderRadius: BorderRadius.circular(13),
             ),
-            child: const Center(child: Text('📸', style: TextStyle(fontSize: 26))),
+            child: const Center(child: const EmojiIcon('📸', size: 26)),
           ),
           const SizedBox(width: 13),
           Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -857,7 +858,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         ),
         child: Column(children: [
           Row(children: [
-            const Text('⭐', style: TextStyle(fontSize: 26)),
+            const EmojiIcon('⭐', size: 26),
             const SizedBox(width: 12),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(tLang(lang, 'افتح بريميوم', 'Unlock Premium', 'Débloquer Premium', 'Premium\'u Aç', 'Buka Kunci Premium', 'Buka Premium'),
@@ -882,7 +883,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
         border: Border.all(color: AppColors.accentGold.withOpacity(0.4)),
       ),
       child: Row(children: [
-        const Text('🔒', style: TextStyle(fontSize: 18)),
+        const EmojiIcon('🔒', size: 18),
         const SizedBox(width: 10),
         Expanded(child: Text(
           tLang(lang, 'بعض المقاييس تتطلب بريميوم — اضغط ⭐ لفتحها', 'Some metrics require Premium — Tap ⭐ to unlock', 'Certaines métriques nécessitent Premium — Appuyez sur ⭐', 'Bazı metrikler Premium gerektirir — ⭐\'ya dokunun', 'Sesetengah metrik perlu Premium — Ketuk ⭐', 'Beberapa metrik perlu Premium — Ketuk ⭐'),

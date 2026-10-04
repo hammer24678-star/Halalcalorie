@@ -23,6 +23,7 @@ import '../../core/providers.dart';
 import '../../data/muscle_assets.dart';
 import '../../data/icon_assets.dart';
 import '../../core/l10n.dart';
+import '../../core/fx6.dart';
 
 // ════════════════════════════════════════════════════════════════════
 // SHARED PIECES
@@ -485,7 +486,7 @@ class _NeedsBodyweight extends StatelessWidget {
           border: Border.all(color: AppColors.doubtOrange.withOpacity(0.4)),
         ),
         child: Row(children: [
-          const Text('⚖️', style: TextStyle(fontSize: 20)),
+          const EmojiIcon('⚖️', size: 20),
           const SizedBox(width: 10),
           Expanded(
             child: Text(l.needBodyweight,
@@ -1038,7 +1039,7 @@ class _StandingCard extends StatelessWidget {
           Container(height: 1, color: border),
           const SizedBox(height: 12),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const Text('🏆', style: TextStyle(fontSize: 14)),
+            const EmojiIcon('🏆', size: 14),
             const SizedBox(width: 8),
             Text(_bestText(l),
                 style: TextStyle(
@@ -1303,7 +1304,7 @@ class _EntryCard extends StatelessWidget {
               const Padding(
                 padding: EdgeInsets.only(left: 6),
                 child: PopIn(
-                  child: Text('🏆', style: TextStyle(fontSize: 22)),
+                  child: const EmojiIcon('🏆', size: 22),
                 ),
               ),
           ]),
@@ -1660,7 +1661,7 @@ class _HistoryCard extends StatelessWidget {
               padding: const EdgeInsets.symmetric(vertical: 7),
               child: Row(children: [
                 if (isBest)
-                  const Text('🏆', style: TextStyle(fontSize: 12))
+                  const EmojiIcon('🏆', size: 12)
                 else
                   Container(
                     width: 6,

@@ -2,6 +2,9 @@
 import 'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'package:shared_preferences/shared_preferences.dart'; import'../../core/theme.dart'; import'../../core/providers.dart';
 import '../../core/l10n.dart'; import'../../core/notifications.dart';
 import '../../core/num_input.dart';
+import '../../core/motion.dart';
+import '../../core/fx.dart';
+import '../../core/fx6.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -33,236 +36,413 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
   }
 
   @override
-  Widget build(BuildContext context) { final isAr    = ref.watch(languageProvider) =='ar';
+  Widget build(BuildContext context) {
+    final lang    = ref.watch(languageProvider);
+    final isAr    = lang == 'ar';
     final isDark  = ref.watch(themeProvider);
     final isPrem  = ref.watch(premiumProvider);
     final ramadan = ref.watch(ramadanModeProvider);
     final notifsOn = ref.watch(notificationsEnabledProvider);
 
     final bg     = isDark ? AppColors.darkBg    : AppColors.lightBg;
-    final card   = isDark ? AppColors.darkCard  : Colors.white;
+    final card   = isDark ? const Color(0xFF0F1E18) : Colors.white;
     final text   = isDark ? AppColors.darkText  : AppColors.lightText;
     final muted  = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
-    final lang   = ref.watch(languageProvider);
+    final accent = ramadan ? AppColors.accentGold : AppColors.brandGreen;
 
     String t(String ar, String en) => tLang(lang, ar, en);
 
     Widget section(String label) => Padding(
-      padding: const EdgeInsets.fromLTRB(4, 20, 4, 8),
-      child: Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, fontWeight: FontWeight.w800, color: AppColors.brandGreen, letterSpacing: 1.4)),
+      padding: const EdgeInsets.fromLTRB(6, 22, 6, 10),
+      child: Row(children: [
+        Container(
+          width: 4, height: 14,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(2),
+            gradient: LinearGradient(
+              begin: Alignment.topCenter, end: Alignment.bottomCenter,
+              colors: [AppColors.halalGreen, accent]),
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(label, style: TextStyle(
+            fontFamily: 'Aligarh', fontSize: 12, fontWeight: FontWeight.w800,
+            letterSpacing: 1.3, color: muted)),
+      ]),
     );
 
-    Widget tile({
-      required String emoji, required String title, String? subtitle,
-      Widget? trailing, VoidCallback? onTap, Color? titleColor,
-    }) => Container(
-      margin: const EdgeInsets.only(bottom: 1),
-      decoration: BoxDecoration(color: card,
-          border: Border(bottom: BorderSide(color: border, width: 0.5))),
-      child: ListTile(
-        leading: Text(emoji, style: const TextStyle(fontSize: 22)), title: Text(title, style: TextStyle(fontFamily:'Aligarh',
-            fontWeight: FontWeight.w600, fontSize: 14,
-            color: titleColor ?? text)),
-        subtitle: subtitle != null ? Text(subtitle, style: TextStyle(fontFamily:'Aligarh', fontSize: 11, color: muted))
-            : null,
-        trailing: trailing,
+    Widget row({
+      required IconData icon, required Color color, required String title,
+      String? subtitle, Widget? trailing, VoidCallback? onTap,
+      Color? titleColor, bool last = false,
+    }) => Column(children: [
+      InkWell(
         onTap: onTap,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+          child: Row(children: [
+            IconBadge(icon: icon, color: color),
+            const SizedBox(width: 12),
+            Expanded(child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(title, style: TextStyle(
+                  fontFamily: 'Aligarh', fontWeight: FontWeight.w700,
+                  fontSize: 14, color: titleColor ?? text)),
+              if (subtitle != null && subtitle.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(subtitle, style: TextStyle(
+                      fontFamily: 'Aligarh', fontSize: 11.5, color: muted)),
+                ),
+            ])),
+            if (trailing != null) ...[const SizedBox(width: 8), trailing],
+          ]),
+        ),
       ),
-    );
+      if (!last)
+        Divider(height: 1, indent: 64, endIndent: 14, color: border),
+    ]);
 
     Widget tog({
-      required String emoji, required String title, String? subtitle,
-      required bool value, required void Function(bool) onChanged,
-    }) => tile(
-      emoji: emoji, title: title, subtitle: subtitle,
-      trailing: Switch(
-        value: value, onChanged: onChanged,
-        activeColor: ramadan ? AppColors.accentGold : AppColors.brandGreen,
-      ),
+      required IconData icon, required Color color, required String title,
+      String? subtitle, required bool value,
+      required void Function(bool) onChanged, bool last = false,
+    }) => row(
+      icon: icon, color: color, title: title, subtitle: subtitle, last: last,
+      trailing: PillSwitch(value: value, onChanged: onChanged, color: accent),
       onTap: () => onChanged(!value),
     );
+
+    Widget chev() => Icon(Icons.chevron_right_rounded, size: 22, color: muted);
+    Widget ext()  => Icon(Icons.open_in_new_rounded, size: 16, color: muted);
+
+    int gi = 2;
+    Widget group(List<Widget> rows) => Reveal(
+      index: gi++,
+      child: Container(
+        decoration: BoxDecoration(
+          color: card,
+          borderRadius: BorderRadius.circular(22),
+          border: Border.all(color: border, width: 0.6),
+          boxShadow: [BoxShadow(
+            color: Colors.black.withOpacity(isDark ? 0.35 : 0.06),
+            blurRadius: 22, offset: const Offset(0, 8))],
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(22),
+          child: Material(
+            type: MaterialType.transparency,
+            child: Column(children: rows),
+          ),
+        ),
+      ),
+    );
+
+    final macro = ref.watch(macroPlanProvider);
 
     return Directionality(
       textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
       child: Scaffold(
         backgroundColor: bg,
-        appBar: AppBar( title: Text(t('الإعدادات ⚙️', 'Settings ⚙️'), style: const TextStyle(fontFamily:'Aligarh', fontWeight: FontWeight.w800)),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-            onPressed: () => context.pop(),
+        body: Stack(children: [
+          Positioned.fill(
+            child: AuroraBackground(
+              base: bg,
+              colors: [accent, AppColors.accentGold, const Color(0xFF0E6B6B)],
+              intensity: isDark ? 0.55 : 0.32,
+              seconds: 22,
+            ),
           ),
-        ),
-        body: ListView(padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          children: [
-
-            // ── APPEARANCE ─────────────────────────────────── section(t('المظهر', 'APPEARANCE')),
-            tog( emoji: isDark ?'☀️' : '🌙', title: isDark ? t('الوضع النهاري', 'Light Mode') : t('الوضع الليلي', 'Dark Mode'), subtitle: isDark ? t('تبديل للضوء', 'Switch to light') : t('تبديل للظلام', 'Switch to dark'),
-              value: isDark,
-              onChanged: (_) => ref.read(themeProvider.notifier).toggle(),
-            ),
-            tile(
-              emoji: '🔔',
-              title: t('الإشعارات', 'Notifications'),
-              subtitle: t('وجبات • ماء • رياضة', 'Meals • Water • Workout'),
-              trailing: const Icon(Icons.arrow_forward_ios, size: 14),
-              onTap: () => _showNotifSettings(context),
-            ),
-            const Divider(height: 1, indent: 56),
-            ListTile(
-              title: Text(t('اللغة', 'Language'),
-                  style: TextStyle(fontFamily: 'Aligarh',
-                      fontWeight: FontWeight.w600, fontSize: 14,
-                      color: text)),
-              subtitle: Text(_langLabel(ref.watch(languageProvider)),
-                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 11,
-                      color: muted)),
-              trailing: const Icon(Icons.expand_more, size: 20),
-              onTap: () => _showLangPicker(context),
-            ),
-
-            const Divider(height: 1, indent: 56),
-            ListTile(
-              leading: Text(
-                ref.watch(macroPlanProvider).emoji(),
-                style: const TextStyle(fontSize: 22)),
-              title: Text(t('خطة الماكرو', 'Macro Plan'),
-                  style: TextStyle(fontFamily: 'Aligarh',
-                      fontWeight: FontWeight.w600, fontSize: 14,
-                      color: text)),
-              subtitle: Text(
-                isAr ? ref.watch(macroPlanProvider).nameAr()
-                     : ref.watch(macroPlanProvider).nameEn(),
-                style: TextStyle(fontFamily: 'Aligarh', fontSize: 11,
-                    color: AppColors.brandGreen)),
-              trailing: const Icon(Icons.expand_more, size: 20),
-              onTap: () => _showMacroPicker(context),
-            ),
-
-            // ── RAMADAN ────────────────────────────────────── section(t('رمضان المبارك 🌙', 'RAMADAN 🌙')),
-            tog( emoji:'🌙', title: t('وضع رمضان', 'Ramadan Mode'), subtitle: t('يُعدّل التمارين والتغذية للصائم', 'Adjusts workouts & nutrition for fasting'),
-              value: ramadan,
-              onChanged: (_) => ref.read(ramadanModeProvider.notifier).toggle(),
-            ),
-            if (ramadan)
-              Container(
-                margin: const EdgeInsets.only(bottom: 8),
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: AppColors.accentGold.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColors.accentGold.withOpacity(0.4)),
+          SafeArea(
+            child: ListView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 32),
+              children: [
+                Reveal(
+                  index: 0,
+                  child: Row(children: [
+                    GlassIconBtn(
+                      icon: Icons.arrow_back_ios_new_rounded,
+                      isDark: isDark,
+                      onTap: () => context.pop(),
+                    ),
+                    const SizedBox(width: 14),
+                    Text(t('الإعدادات', 'Settings'), style: TextStyle(
+                        fontFamily: 'Aligarh', fontSize: 26,
+                        fontWeight: FontWeight.w900, color: text)),
+                  ]),
                 ),
-                child: Text( t('وضع رمضان فعّال — تمارين خفيفة أولاً • وصفات مناسبة للصائم • لافتة رمضان في الرئيسية', 'Ramadan mode active — light workouts first • fasting-friendly recipes • Ramadan banner on home'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 11,
-                      color: AppColors.accentGold, height: 1.5),
-                  textAlign: TextAlign.center,
+                const SizedBox(height: 16),
+
+                // ── Premium banner ─────────────────────────────
+                Reveal(
+                  index: 1,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft, end: Alignment.bottomRight,
+                        colors: isPrem
+                            ? const [Color(0xFF3A2A0A), Color(0xFF1B1405)]
+                            : const [Color(0xFF0E3B26), Color(0xFF07160F)],
+                      ),
+                      border: Border.all(
+                          color: AppColors.accentGold.withOpacity(0.45),
+                          width: 0.9),
+                      boxShadow: [BoxShadow(
+                          color: AppColors.accentGold.withOpacity(0.18),
+                          blurRadius: 26, offset: const Offset(0, 10))],
+                    ),
+                    child: Column(children: [
+                      Row(children: [
+                        const BrandMark(size: 46),
+                        const SizedBox(width: 14),
+                        Expanded(child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                          Text(
+                            isPrem
+                                ? t('عضو بريميوم', 'Premium member')
+                                : t('افتح كل شيء', 'Unlock everything'),
+                            style: const TextStyle(
+                                fontFamily: 'Aligarh', fontSize: 17,
+                                fontWeight: FontWeight.w900,
+                                color: Color(0xFFF0CF98))),
+                          const SizedBox(height: 3),
+                          Text(
+                            isPrem
+                                ? t('شكراً لدعمك — كل الميزات مفتوحة',
+                                    'Thank you — every feature is unlocked')
+                                : t('ماسحات غير محدودة • ١٨٠ تمرين • مخطط AI',
+                                    'Unlimited scans • 180 workouts • AI planner'),
+                            style: const TextStyle(
+                                fontFamily: 'Aligarh', fontSize: 12,
+                                height: 1.4, color: Colors.white70)),
+                        ])),
+                        if (isPrem)
+                          const Icon(Icons.verified_rounded,
+                              color: AppColors.halalGreen, size: 26),
+                      ]),
+                      if (!isPrem) ...[
+                        const SizedBox(height: 14),
+                        ShineButton(
+                          label: t('ترقية الآن', 'Upgrade now'),
+                          icon: Icons.workspace_premium_rounded,
+                          height: 50,
+                          onPressed: () => context.push('/paywall'),
+                        ),
+                      ],
+                    ]),
+                  ),
                 ),
-              ),
 
-            // ── NOTIFICATIONS ──────────────────────────────── section(t('الإشعارات 🔔', 'NOTIFICATIONS 🔔')),
-            tog( emoji:'🔔', title: t('تفعيل الإشعارات', 'Enable Notifications'), subtitle: t('ذكريات الماء والتمرين والوجبات', 'Water, workout & meal reminders'),
-              value: notifsOn,
-              onChanged: (v) async {
-                await ref.read(notificationsEnabledProvider.notifier).toggle();
-                try {
-                  if (v) {
-                    await NotificationService.requestPermissions();
-                    await NotificationService.rescheduleAll(isAr: isAr);
-                  } else {
-                    await NotificationService.cancelAll();
-                  }
-                } catch (_) {}
-              },
-            ),
-            if (notifsOn) ...[
-              tog( emoji:'💧', title: t('تذكير الماء', 'Water Reminder'), subtitle: t('كل ساعتين', 'Every 2 hours'),
-                value: _notifWater,
-                onChanged: (v) async {
-                  setState(() => _notifWater = v);
-                  await _saveNotifPref('notif_water', v);
-                  try { await NotificationService.scheduleWaterReminder(isAr: isAr); } catch (_) {}
-                },
-              ),
-              tog( emoji:'🏃', title: t('تذكير التمرين', 'Workout Reminder'), subtitle: t('يومياً ٥:٣٠ م', 'Daily at 5:30 PM'),
-                value: _notifWorkout,
-                onChanged: (v) async {
-                  setState(() => _notifWorkout = v);
-                  await _saveNotifPref('notif_workout', v);
-                  try { await NotificationService.scheduleWorkoutReminder(isAr: isAr); } catch (_) {}
-                },
-              ),
-              tog( emoji:'🌿', title: t('تذكير الوجبة', 'Meal Reminder'), subtitle: t('ثلاث مرات يومياً', 'Three times daily'),
-                value: _notifMeal,
-                onChanged: (v) async {
-                  setState(() => _notifMeal = v);
-                  await _saveNotifPref('notif_meals', v);
-                  try { await NotificationService.scheduleMealReminder(isAr: isAr); } catch (_) {}
-                },
-              ),
-            ],
+                // ── APPEARANCE ─────────────────────────────────
+                section(t('المظهر', 'APPEARANCE')),
+                group([
+                  tog(
+                    icon: isDark ? Icons.dark_mode_rounded : Icons.light_mode_rounded,
+                    color: isDark ? const Color(0xFF7F8CFF) : AppColors.accentGold,
+                    title: isDark ? t('الوضع الليلي', 'Dark mode')
+                                  : t('الوضع النهاري', 'Light mode'),
+                    subtitle: isDark ? t('تبديل للضوء', 'Switch to light')
+                                     : t('تبديل للظلام', 'Switch to dark'),
+                    value: isDark,
+                    onChanged: (_) => ref.read(themeProvider.notifier).toggle(),
+                  ),
+                  row(
+                    icon: Icons.translate_rounded, color: AppColors.waterBlue,
+                    title: t('اللغة', 'Language'),
+                    subtitle: _langLabel(lang),
+                    trailing: Icon(Icons.expand_more_rounded, size: 22, color: muted),
+                    onTap: () => _showLangPicker(context),
+                  ),
+                  row(
+                    icon: Icons.donut_large_rounded, color: AppColors.halalGreen,
+                    title: t('خطة الماكرو', 'Macro plan'),
+                    subtitle: isAr ? macro.nameAr() : macro.nameEn(),
+                    trailing: Icon(Icons.expand_more_rounded, size: 22, color: muted),
+                    onTap: () => _showMacroPicker(context),
+                    last: true,
+                  ),
+                ]),
 
-            // ── HEALTH GOALS ────────────────────────────────── section(t('الأهداف الصحية 🎯', 'HEALTH GOALS 🎯')),
-            tile( emoji:'💧', title: t('هدف الماء اليومي', 'Daily Water Goal'), subtitle:'${ref.watch(waterProvider).goal} ${t("كوب", "cups")}',
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _editWaterGoal(context, isAr),
-            ),
-            tile( emoji:'😴', title: t('هدف النوم', 'Sleep Goal'), subtitle:'${ref.watch(sleepProvider).goal.toStringAsFixed(1)} ${t("ساعة", "hrs")}',
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _editSleepGoal(context, isAr),
-            ),
+                // ── RAMADAN ────────────────────────────────────
+                section(t('رمضان المبارك', 'RAMADAN')),
+                group([
+                  tog(
+                    icon: Icons.nights_stay_rounded, color: AppColors.accentGold,
+                    title: t('وضع رمضان', 'Ramadan mode'),
+                    subtitle: t('يُعدّل التمارين والتغذية للصائم',
+                                'Adjusts workouts & nutrition for fasting'),
+                    value: ramadan, last: !ramadan,
+                    onChanged: (_) => ref.read(ramadanModeProvider.notifier).toggle(),
+                  ),
+                  if (ramadan)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 0, 14, 14),
+                      child: Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.accentGold.withOpacity(0.10),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                              color: AppColors.accentGold.withOpacity(0.4)),
+                        ),
+                        child: Text(
+                          t('وضع رمضان فعّال — تمارين خفيفة أولاً • وصفات مناسبة للصائم • لافتة رمضان في الرئيسية',
+                            'Ramadan mode active — light workouts first • fasting-friendly recipes • Ramadan banner on home'),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11.5,
+                              color: AppColors.accentGold, height: 1.5),
+                        ),
+                      ),
+                    ),
+                ]),
 
-            // ── SUBSCRIPTION ────────────────────────────────── section(t('الاشتراك ⭐', 'SUBSCRIPTION ⭐')),
-            if (!isPrem)
-              tile( emoji:'🔓', title: t('ترقية للبريميوم', 'Upgrade to Premium'), subtitle: t('افتح 10+ تمارين متقدمة وتحليل AI بلا حدود', 'Unlock 10+ advanced workouts & unlimited AI analysis'),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: AppColors.accentGold,
-                    borderRadius: BorderRadius.circular(20),
-                  ), child: Text(t('ترقية', 'Upgrade'), style: const TextStyle(fontFamily:'Aligarh',
-                          fontSize: 12, color: Colors.white, fontWeight: FontWeight.w700)),
-                ), onTap: () => context.push('/paywall'),
-              )
-            else
-              tile( emoji:'⭐', title: t('عضو بريميوم', 'Premium Member'), subtitle: t('شكراً لدعمك! — كل الميزات مفتوحة', 'Thank you! — All features unlocked'),
-                titleColor: AppColors.accentGold,
-                trailing: const Icon(Icons.check_circle, color: AppColors.halalGreen),
-              ),
+                // ── NOTIFICATIONS ──────────────────────────────
+                section(t('الإشعارات', 'NOTIFICATIONS')),
+                group([
+                  tog(
+                    icon: Icons.notifications_rounded, color: AppColors.doubtOrange,
+                    title: t('تفعيل الإشعارات', 'Enable notifications'),
+                    subtitle: t('ذكريات الماء والتمرين والوجبات',
+                                'Water, workout & meal reminders'),
+                    value: notifsOn, last: !notifsOn,
+                    onChanged: (v) async {
+                      await ref.read(notificationsEnabledProvider.notifier).toggle();
+                      try {
+                        if (v) {
+                          await NotificationService.requestPermissions();
+                          await NotificationService.rescheduleAll(isAr: isAr);
+                        } else {
+                          await NotificationService.cancelAll();
+                        }
+                      } catch (_) {}
+                    },
+                  ),
+                  if (notifsOn) ...[
+                    tog(
+                      icon: Icons.water_drop_rounded, color: AppColors.waterBlue,
+                      title: t('تذكير الماء', 'Water reminder'),
+                      subtitle: t('كل ساعتين', 'Every 2 hours'),
+                      value: _notifWater,
+                      onChanged: (v) async {
+                        setState(() => _notifWater = v);
+                        await _saveNotifPref('notif_water', v);
+                        try { await NotificationService.scheduleWaterReminder(isAr: isAr); } catch (_) {}
+                      },
+                    ),
+                    tog(
+                      icon: Icons.fitness_center_rounded, color: AppColors.halalGreen,
+                      title: t('تذكير التمرين', 'Workout reminder'),
+                      subtitle: t('يومياً ٥:٣٠ م', 'Daily at 5:30 PM'),
+                      value: _notifWorkout,
+                      onChanged: (v) async {
+                        setState(() => _notifWorkout = v);
+                        await _saveNotifPref('notif_workout', v);
+                        try { await NotificationService.scheduleWorkoutReminder(isAr: isAr); } catch (_) {}
+                      },
+                    ),
+                    tog(
+                      icon: Icons.restaurant_rounded, color: AppColors.accentGold,
+                      title: t('تذكير الوجبة', 'Meal reminder'),
+                      subtitle: t('ثلاث مرات يومياً', 'Three times daily'),
+                      value: _notifMeal, last: false,
+                      onChanged: (v) async {
+                        setState(() => _notifMeal = v);
+                        await _saveNotifPref('notif_meals', v);
+                        try { await NotificationService.scheduleMealReminder(isAr: isAr); } catch (_) {}
+                      },
+                    ),
+                    row(
+                      icon: Icons.tune_rounded, color: muted,
+                      title: t('إعدادات متقدمة', 'More options'),
+                      trailing: chev(), last: true,
+                      onTap: () => _showNotifSettings(context),
+                    ),
+                  ],
+                ]),
 
-            // ── DATA ────────────────────────────────────────── section(t('البيانات 🗂️', 'DATA 🗂️')),
-            tile( emoji:'✏️', title: t('تعديل ملفي الشخصي', 'Edit My Profile'), subtitle: t('الطول، الوزن، العمر، الهدف', 'Height, weight, age, goal'),
-              trailing: const Icon(Icons.chevron_right), onTap: () { context.pop(); context.go('/body'); },
-            ),
-            tile( emoji:'🗑️', title: t('مسح سجل اليوم', 'Clear Todays Data'), subtitle: t('الوجبات والخطوات والماء', 'Meals, steps, water'),
-              trailing: const Icon(Icons.chevron_right),
-              titleColor: AppColors.haramRed,
-              onTap: () => _confirmClearDay(context, isAr),
-            ),
+                // ── HEALTH GOALS ───────────────────────────────
+                section(t('الأهداف الصحية', 'HEALTH GOALS')),
+                group([
+                  row(
+                    icon: Icons.water_drop_rounded, color: AppColors.waterBlue,
+                    title: t('هدف الماء اليومي', 'Daily water goal'),
+                    subtitle: '${ref.watch(waterProvider).goal} ${t("كوب", "cups")}',
+                    trailing: chev(),
+                    onTap: () => _editWaterGoal(context, isAr),
+                  ),
+                  row(
+                    icon: Icons.bedtime_rounded, color: AppColors.sleepPurple,
+                    title: t('هدف النوم', 'Sleep goal'),
+                    subtitle: '${ref.watch(sleepProvider).goal.toStringAsFixed(1)} ${t("ساعة", "hrs")}',
+                    trailing: chev(), last: true,
+                    onTap: () => _editSleepGoal(context, isAr),
+                  ),
+                ]),
 
-            // ── ABOUT ───────────────────────────────────────── section(t('حول التطبيق', 'ABOUT')),
-            tile( emoji:'ℹ️', title: t('إصدار التطبيق', 'App Version'),
-              subtitle: 'HalalCalorie ${ref.watch(appVersionProvider).maybeWhen(
-                  data: (v) => v, orElse: () => '')}'.trim(),
-            ),
-            tile( emoji:'🔒', title: t('سياسة الخصوصية', 'Privacy Policy'), subtitle: t('بياناتك خاصة — لا نبيعها أبداً', 'Your data is private — we never sell it'),
-              trailing: const Icon(Icons.open_in_new, size: 16),
-            ),
-            tile( emoji:'⭐', title: t('تقييم التطبيق', 'Rate the App'), subtitle: t('يساعدنا تقييم 5 نجوم كثيراً ❤️', 'A 5-star review helps us a lot ❤️'),
-              trailing: const Icon(Icons.open_in_new, size: 16),
-            ),
+                // ── DATA ───────────────────────────────────────
+                section(t('البيانات', 'DATA')),
+                group([
+                  row(
+                    icon: Icons.edit_rounded, color: AppColors.halalGreen,
+                    title: t('تعديل ملفي الشخصي', 'Edit my profile'),
+                    subtitle: t('الطول، الوزن، العمر، الهدف', 'Height, weight, age, goal'),
+                    trailing: chev(),
+                    onTap: () { context.pop(); context.go('/body'); },
+                  ),
+                  row(
+                    icon: Icons.delete_outline_rounded, color: AppColors.haramRed,
+                    title: t('مسح سجل اليوم', "Clear today's data"),
+                    subtitle: t('الوجبات والخطوات والماء', 'Meals, steps, water'),
+                    titleColor: AppColors.haramRed, trailing: chev(), last: true,
+                    onTap: () => _confirmClearDay(context, isAr),
+                  ),
+                ]),
 
-            const SizedBox(height: 32),
-            Center(child: Column(children: [ const Text('🌙', style: TextStyle(fontSize: 28)),
-              const SizedBox(height: 8),
-              Text( t('صُنع بعناية — بياناتك تبقى على جهازك ❤️', 'Made with care — your data stays on your device ❤️'),
-                textAlign: TextAlign.center, style: TextStyle(fontFamily:'Aligarh', fontSize: 12,
-                    color: muted, height: 1.8),
-              ),
-            ])),
-            const SizedBox(height: 30),
-          ],
-        ),
+                // ── ABOUT ──────────────────────────────────────
+                section(t('حول التطبيق', 'ABOUT')),
+                group([
+                  row(
+                    icon: Icons.info_outline_rounded, color: AppColors.waterBlue,
+                    title: t('إصدار التطبيق', 'App version'),
+                    subtitle: 'HalalCalorie ${ref.watch(appVersionProvider).maybeWhen(
+                        data: (v) => v, orElse: () => '')}'.trim(),
+                  ),
+                  row(
+                    icon: Icons.lock_outline_rounded, color: AppColors.halalGreen,
+                    title: t('سياسة الخصوصية', 'Privacy policy'),
+                    subtitle: t('بياناتك خاصة — لا نبيعها أبداً',
+                                'Your data is private — we never sell it'),
+                    trailing: ext(),
+                  ),
+                  row(
+                    icon: Icons.star_rounded, color: AppColors.accentGold,
+                    title: t('تقييم التطبيق', 'Rate the app'),
+                    subtitle: t('يساعدنا تقييم 5 نجوم كثيراً', 'A 5-star review helps us a lot'),
+                    trailing: ext(), last: true,
+                  ),
+                ]),
+
+                const SizedBox(height: 30),
+                Center(child: Column(children: [
+                  BrandMark(size: 36, color: muted.withOpacity(0.7)),
+                  const SizedBox(height: 10),
+                  Text(
+                    t('صُنع بعناية — بياناتك تبقى على جهازك',
+                      'Made with care — your data stays on your device'),
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
+                        color: muted, height: 1.8),
+                  ),
+                ])),
+              ],
+            ),
+          ),
+        ]),
       ),
     );
   }
@@ -387,7 +567,7 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
             ...MacroPlan.values.map((p) {
               final sel = p == current;
               return ListTile(
-                leading: Text(p.emoji(), style: const TextStyle(fontSize: 24)),
+                leading: EmojiIcon(p.emoji(), size: 24),
                 title: Text(isAr ? p.nameAr() : p.nameEn(),
                   style: TextStyle(fontFamily: 'Aligarh',
                     fontWeight: sel ? FontWeight.w800 : FontWeight.w500,

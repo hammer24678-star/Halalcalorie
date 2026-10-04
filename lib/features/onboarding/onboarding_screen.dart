@@ -15,6 +15,7 @@ import '../../core/fx2.dart';
 import '../../core/motion.dart';
 import '../../core/providers.dart';
 import '../../data/models/user_profile.dart';
+import '../../core/fx6.dart';
 
 // ─── TOTAL PAGES: 3 welcome + 6 questions = 9 ──────────────
 const int _kWelcomePages = 4; // lang(1) + 3 welcome before questions
@@ -398,7 +399,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
             duration: const Duration(milliseconds: 700),
             curve: Curves.elasticOut,
             builder: (_, v, child) => Transform.scale(scale: v, child: child),
-            child: const Text('🌐', style: TextStyle(fontSize: 72)),
+            child: const EmojiIcon('🌐', size: 72),
           ),
           const SizedBox(height: 20),
           Text('اختر لغتك', style: TextStyle(
@@ -643,7 +644,7 @@ class _QuestionShell extends ConsumerWidget {
                     color: AppColors.halalGreen.withOpacity(0.4), width: 0.8),
               ),
               child: Center(
-                  child: Text(emoji, style: const TextStyle(fontSize: 32))),
+                  child: EmojiIcon(emoji, size: 32)),
             ),
           ),
           const SizedBox(height: 10),
@@ -819,7 +820,7 @@ class _SelectTile extends ConsumerWidget {
           ),
         ),
         child: Row(children: [
-          Text(emoji, style: const TextStyle(fontSize: 22)),
+          EmojiIcon(emoji, size: 22),
           const SizedBox(width: 12),
           Expanded(child: Text((!isAr && titleEn != null) ? titleEn! : title, style: TextStyle(
             fontFamily: 'Aligarh', fontSize: 14,
@@ -1036,7 +1037,7 @@ class _SummaryPage extends ConsumerWidget {
           builder: (_, v, child) => Opacity(opacity: v,
             child: Transform.translate(offset: Offset(0, 20 * (1 - v)), child: child)),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const Text('🎉', style: TextStyle(fontSize: 44)),
+            const EmojiIcon('🎉', size: 44),
             const SizedBox(height: 8),
             Text(t('كل شيء جاهز!', 'All Set!'), style: TextStyle(
               fontFamily: 'Aligarh', fontSize: 28, fontWeight: FontWeight.w900,
@@ -1087,7 +1088,7 @@ class _SummaryPage extends ConsumerWidget {
             )],
           ),
           child: Row(children: [
-            const Text('🔥', style: TextStyle(fontSize: 36)),
+            const EmojiIcon('🔥', size: 36),
             const SizedBox(width: 14),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(t('هدف السعرات اليومي',
@@ -1152,7 +1153,7 @@ class _SummaryTile extends StatelessWidget {
         boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 22, offset: Offset(0, 8))],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(emoji, style: const TextStyle(fontSize: 22)),
+        EmojiIcon(emoji, size: 22),
         const Spacer(),
         Text(value, style: TextStyle(
           fontFamily: 'Aligarh', fontSize: 18,

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 
 import 'dart:io'; import'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:image_picker/image_picker.dart'; import'../../core/theme.dart'; import'../../core/providers.dart'; import'../../core/ai_service.dart'; import'../../data/models/models.dart';
 import '../../core/l10n.dart';
+import '../../core/fx6.dart';
 import'../../core/l10n.dart';
 
 // ── Analysis state ─────────────────────────────
@@ -281,7 +282,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
             // ── Analyze button ────────────────────────────
             if (_image != null && _state != AnalysisState.analyzing)
               SizedBox(width: double.infinity, child: ElevatedButton.icon(
-                onPressed: _analyze, icon: const Text('🤖', style: TextStyle(fontSize: 18)), label: Text(t('تحليل الآن 🔍', 'Analyze Now 🔍'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
+                onPressed: _analyze, icon: const EmojiIcon('🤖', size: 18), label: Text(t('تحليل الآن 🔍', 'Analyze Now 🔍'), style: const TextStyle(fontFamily:'Aligarh', fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.accentGold,
                   padding: const EdgeInsets.symmetric(vertical: 14),
@@ -351,7 +352,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         borderRadius: BorderRadius.circular(18),
         boxShadow: [BoxShadow(color: AppColors.brandGreen.withOpacity(0.3), blurRadius: 16, offset: const Offset(0, 6))],
       ),
-      child: Column(children: [ const Text('📸', style: TextStyle(fontSize: 52)),
+      child: Column(children: [ const EmojiIcon('📸', size: 52),
         const SizedBox(height: 10),
         Text(
           tLang(lang, 'التقط صورة لطعامك\nوسأحلله فوراً', 'Take a photo of your food\nand I\'ll analyze it instantly', 'Prenez une photo de votre repas\net analysez-la instantanément', 'Yemeğinizin fotoğrafını çekin\nve anında analiz edeceğim', 'Ambil foto makanan anda\ndan saya akan menganalisisnya', 'Ambil foto makanan Anda\ndan saya akan menganalisisnya'),
@@ -385,7 +386,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
               color: Colors.black45,
               child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
                 const CircularProgressIndicator(color: AppColors.accentGold, strokeWidth: 3),
-                const SizedBox(height: 10), const Text('🤖', style: TextStyle(fontSize: 28)),
+                const SizedBox(height: 10), const EmojiIcon('🤖', size: 28),
               ])),
             ),
         ]),
@@ -424,7 +425,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         AnimatedBuilder(
           animation: _shimmerAnim,
           builder: (_, __) => Opacity(
-            opacity: _shimmerAnim.value, child: const Text('🤖', style: TextStyle(fontSize: 40)),
+            opacity: _shimmerAnim.value, child: const EmojiIcon('🤖', size: 40),
           ),
         ),
         const SizedBox(height: 10),
@@ -455,7 +456,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         border: Border.all(color: AppColors.doubtOrange.withOpacity(0.6), width: 1.2)),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          const Text('⚠️', style: TextStyle(fontSize: 20)),
+          const EmojiIcon('⚠️', size: 20),
           const SizedBox(width: 8),
           Expanded(child: Text(
             tLang(lang, 'مفتاح AI غير مُعدّ', 'AI Key Not Configured', 'Clé AI non configurée', 'AI Anahtarı Yapılandırılmamış', 'Kunci AI Tidak Dikonfigurasi', 'Kunci AI Belum Dikonfigurasi'),
@@ -485,7 +486,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         border: Border.all(color: AppColors.haramRed.withOpacity(0.3)),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(children: [ const Text('⚠️', style: TextStyle(fontSize: 22)),
+      child: Row(children: [ const EmojiIcon('⚠️', size: 22),
         const SizedBox(width: 12),
         Expanded(child: Text(error, style: const TextStyle(fontFamily:'Aligarh', fontSize: 12, color: AppColors.haramRed, height: 1.5))),
       ]),
@@ -589,7 +590,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
               borderRadius: BorderRadius.circular(10),
               border: Border.all(color: AppColors.accentGold.withOpacity(0.3)),
             ),
-            child: Row(children: [ const Text('📖', style: TextStyle(fontSize: 16)),
+            child: Row(children: [ const EmojiIcon('📖', size: 16),
               const SizedBox(width: 8),
               Expanded(child: Text((isAr ? r.tipNote : r.tipNoteEn) ?? '', style: const TextStyle(fontFamily:'Aligarh', fontSize: 11, height: 1.5, color: AppColors.lightMuted))),
             ]),

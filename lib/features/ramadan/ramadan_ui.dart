@@ -20,6 +20,7 @@ import '../../core/l10n.dart';
 import '../../core/hijri.dart';
 import '../../core/providers.dart';
 import '../../core/prayer_provider.dart';
+import '../../core/fx6.dart';
 
 // ════════════════════════════════════════════════════════════════════
 // SCHEDULE
@@ -695,7 +696,7 @@ class _WindowTile extends StatelessWidget {
             width: highlight ? 1.4 : 1),
       ),
       child: Row(children: [
-        Text(glyph, style: const TextStyle(fontSize: 18)),
+        EmojiIcon(glyph, size: 18),
         const SizedBox(width: 9),
         Expanded(
           child:
@@ -742,7 +743,7 @@ class _ActionChip extends StatelessWidget {
           border: Border.all(color: accent.withOpacity(0.30)),
         ),
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(glyph, style: const TextStyle(fontSize: 14)),
+          EmojiIcon(glyph, size: 14),
           const SizedBox(width: 7),
           Flexible(
             child: Text(label,

@@ -8,6 +8,7 @@ import '../../core/num_input.dart';
 import '../../data/models/models.dart';
 import '../../core/health_service.dart';
 import '../../data/icon_assets.dart';
+import '../../core/fx6.dart';
 
 class HealthScreen extends ConsumerStatefulWidget {
   const HealthScreen({super.key});
@@ -547,8 +548,8 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                   darkSafeAsset(statusGlyphForEmoji(emoji)!, width: 20, height: 20,
                       isDark: Theme.of(context).brightness == Brightness.dark,
                   errorChild:
-                      Text(emoji, style: const TextStyle(fontSize: 20)))
-              : Text(emoji, style: const TextStyle(fontSize: 20)),
+                      EmojiIcon(emoji, size: 20))
+              : EmojiIcon(emoji, size: 20),
           Text(val, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 13, fontWeight: FontWeight.w800, color: color)),
           Text(label, style: TextStyle(fontFamily: 'Aligarh',
@@ -595,7 +596,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
             // PATCH_V26_DARK_OUTLINE_AR_TITLES: kill PNG fringe + dark labels
             child: Column(children: [
               darkSafeAsset(m[0], width: 28, height: 28, isDark: isDark,
-                  errorChild: const Text('🙂', style: TextStyle(fontSize: 28))),
+                  errorChild: const EmojiIcon('🙂', size: 28)),
               Text(m[1],
                   style: TextStyle(fontFamily: 'Aligarh', fontSize: 9,
                       color: isDark ? AppColors.darkMuted : AppColors.lightMuted)),
@@ -818,10 +819,8 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                             isDark: isDark,
                             plateColor: Color.alphaBlend(
                                 artColor.withOpacity(0.18), bg),
-                            errorChild: Opacity(opacity: 0.55, child: Text(a.icon,
-                                style: const TextStyle(fontSize: 18))))
-                        : Opacity(opacity: 0.55, child: Text(a.icon,
-                            style: const TextStyle(fontSize: 18)))),
+                            errorChild: Opacity(opacity: 0.55, child: EmojiIcon(a.icon, size: 18)))
+                        : Opacity(opacity: 0.55, child: EmojiIcon(a.icon, size: 18))),
                   ),
                   const SizedBox(width: 10),
                   Expanded(child: Column(

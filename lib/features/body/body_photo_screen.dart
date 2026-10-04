@@ -14,6 +14,7 @@ import '../../core/providers.dart';
 import '../../core/ai_service.dart';
 import '../../data/models/models.dart';
 import '../../data/models/user_profile.dart';
+import '../../core/fx6.dart';
 
 enum BodyAnalysisState { idle, analyzing, done, error }
 
@@ -113,7 +114,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         body: Center(child: Padding(padding: const EdgeInsets.all(28), child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('🔒', style: TextStyle(fontSize: 60)),
+            const EmojiIcon('🔒', size: 60),
             const SizedBox(height: 14),
             Text(t('ميزة بريميوم حصرية', 'Premium Exclusive Feature'),
                 style: const TextStyle(fontFamily: 'Aligarh', fontSize: 22, fontWeight: FontWeight.w800)),
@@ -171,7 +172,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
               if (_image != null && _state != BodyAnalysisState.analyzing)
                 SizedBox(width: double.infinity, child: ElevatedButton.icon(
                   onPressed: _analyze,
-                  icon: const Text('🤖', style: TextStyle(fontSize: 18)),
+                  icon: const EmojiIcon('🤖', size: 18),
                   label: Text(t('تحليل الجسم 🔍', 'Analyze Body 🔍'),
                       style: const TextStyle(fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w700, color: Colors.white)),
                   style: ElevatedButton.styleFrom(
@@ -217,7 +218,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
       decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(18),
         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 14)]),
       child: Column(children: [
-        const Text('🔒', style: TextStyle(fontSize: 44)),
+        const EmojiIcon('🔒', size: 44),
         const SizedBox(height: 12),
         Text(
           tLang(lang, 'قبل المتابعة — موافقة الخصوصية', 'Before continuing — Privacy Consent', 'Avant de continuer — Consentement confidentialité', 'Devam etmeden — Gizlilik Onayı', 'Sebelum teruskan — Persetujuan Privasi', 'Sebelum melanjutkan — Persetujuan Privasi'),
@@ -273,7 +274,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
         borderRadius: BorderRadius.circular(18),
       ),
       child: Column(children: [
-        const Text('💪', style: TextStyle(fontSize: 44)),
+        const EmojiIcon('💪', size: 44),
         const SizedBox(height: 8),
         Text(
           tLang(lang, 'كيف تحصل على نتائج دقيقة؟', 'How to get accurate results?', 'Comment obtenir des résultats précis ?', 'Doğru sonuçlar nasıl elde edilir?', 'Bagaimana mendapat hasil tepat?', 'Cara mendapat hasil akurat?'),
@@ -320,7 +321,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
           if (_state == BodyAnalysisState.analyzing)
             Container(color: Colors.black54, child: Center(child: Column(mainAxisSize: MainAxisSize.min, children: [
               AnimatedBuilder(animation: _pulse, builder: (_, __) =>
-                Opacity(opacity: _pulse.value, child: const Text('🤖', style: TextStyle(fontSize: 42)))),
+                Opacity(opacity: _pulse.value, child: const EmojiIcon('🤖', size: 42))),
               const SizedBox(height: 8),
               const CircularProgressIndicator(color: AppColors.accentGold, strokeWidth: 3),
             ]))),
@@ -340,7 +341,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
           borderRadius: BorderRadius.circular(13),
         ),
         child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text(emoji, style: const TextStyle(fontSize: 22)),
+          EmojiIcon(emoji, size: 22),
           const SizedBox(height: 4),
           Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, fontWeight: FontWeight.w700, color: color)),
         ]),
@@ -359,7 +360,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
       ),
       child: Column(children: [
         AnimatedBuilder(animation: _pulse, builder: (_, __) =>
-          Opacity(opacity: _pulse.value, child: const Text('🧬', style: TextStyle(fontSize: 42)))),
+          Opacity(opacity: _pulse.value, child: const EmojiIcon('🧬', size: 42))),
         const SizedBox(height: 10),
         Text(tLang(lang, 'يجري تحليل صورتك…', 'Analyzing your photo…'),
             style: const TextStyle(fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w700)),

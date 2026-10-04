@@ -11,6 +11,10 @@ import '../../core/l10n.dart';
 import '../../core/revenuecat_service.dart';
 import '../../data/models/user_profile.dart';
 import 'package:halalcalorie/data/icon_assets.dart';
+import '../../core/motion.dart';
+import '../../core/fx.dart';
+import '../../core/fx4.dart';
+import '../../core/fx6.dart';
 
 // ══════════════════════════════════════════════════
 //  ProfileScreen
@@ -57,235 +61,372 @@ class ProfileScreen extends ConsumerWidget {
     final isSis     = gender == 'sisters' || profile?.gender == 'sisters';
     final workoutMin = ref.watch(workoutMinutesProvider);
 
-    final bg    = isDark ? AppColors.darkCard  : Colors.white;
-    final textC = isDark ? AppColors.darkText  : AppColors.lightText;
-    final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
+    final bg     = isDark ? AppColors.darkBg : AppColors.lightBg;
+    final card   = isDark ? const Color(0xFF0F1E18) : Colors.white;
+    final textC  = isDark ? AppColors.darkText  : AppColors.lightText;
+    final muted  = isDark ? AppColors.darkMuted : AppColors.lightMuted;
+    final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
+    final accent = isSis ? AppColors.accentGold : AppColors.halalGreen;
 
     final plan = ref.watch(macroPlanProvider);
     final l = L.fromLang(lang);
     String t(String ar, String en) => l.t(ar, en);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l.myProfile),
-        actions: [
-          // Language toggle
-          GestureDetector(
-            onTap: () => ref.read(languageProvider.notifier).set(_nextLang(lang)),
-            child: Container(
-              margin: const EdgeInsets.symmetric(vertical: 10),
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(16)),
-              child: Text(_langLabel(lang), style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13, fontWeight: FontWeight.w700, color: Colors.white)),
-            ),
-          ),
-          // Dark toggle
-          GestureDetector(
-            onTap: () => ref.read(themeProvider.notifier).toggle(),
-            child: Padding(padding: const EdgeInsets.symmetric(horizontal: 14),
-              child: Icon(isDark ? Icons.wb_sunny : Icons.nightlight_round, color: Colors.white)),
-          ),
-        ],
+    BoxDecoration cardDeco([Color? edge]) => BoxDecoration(
+      color: card,
+      borderRadius: BorderRadius.circular(24),
+      border: Border.all(color: edge ?? border, width: edge == null ? 0.6 : 0.9),
+      boxShadow: [BoxShadow(
+        color: (edge ?? Colors.black).withOpacity(isDark ? 0.30 : 0.07),
+        blurRadius: 24, offset: const Offset(0, 8))],
+    );
+
+    final planLabel = isAr
+        ? (planName == 'lifetime' ? 'بريميوم مدى الحياة'
+           : planName == 'yearly'  ? 'بريميوم سنوي'
+           : planName == 'monthly' ? 'بريميوم شهري' : 'بريميوم')
+        : (planName == 'lifetime' ? 'Lifetime Premium'
+           : planName == 'yearly'  ? 'Yearly Premium'
+           : planName == 'monthly' ? 'Monthly Premium' : 'Premium');
+
+    Widget infoChip(IconData icon, String label) => Container(
+      padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 6),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: accent.withOpacity(0.10),
+        border: Border.all(color: accent.withOpacity(0.30), width: 0.7),
       ),
-      body: ListView(padding: const EdgeInsets.all(14), children: [
-        // ── Avatar hero card ─────────────────────────────
-        Container(
-          padding: const EdgeInsets.all(22),
-          decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 14, offset: const Offset(0, 3))]),
-          child: Column(children: [
-            Container(width: 96, height: 96,
-              decoration: BoxDecoration(shape: BoxShape.circle,
-                color: isSis ? AppColors.accentGold.withOpacity(0.15) : AppColors.brandGreen.withOpacity(0.12)),
-              child: ClipOval(child: Image.asset(
-                isSis ? kAvatarSisters : kAvatarBrothers,
-                width: 96, height: 96, fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Center(
-                    child: Text(isSis ? '🧕' : '🧔', style: const TextStyle(fontSize: 44)))))),
-            const SizedBox(height: 11),
-            Text(isSis ? l.womanLabel : l.manLabel,
-                style: TextStyle(fontFamily: 'Aligarh', fontSize: 17, fontWeight: FontWeight.w800, color: textC)),
-            const SizedBox(height: 3),
-            Text(isSis ? l.sistersMode : l.menMode,
-                style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted)),
-            if (profile != null) ...[
-              const SizedBox(height: 6),
-              Text('${profile.age} ${l.yrsLabel} • ${profile.heightCm.toInt()} cm • ${profile.weightKg.toStringAsFixed(1)} kg',
-                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: muted)),
-              Text(isAr ? profile.primaryGoal.nameAr() : profile.primaryGoal.nameEn(),
-                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 12, color: AppColors.brandGreen, fontWeight: FontWeight.w700)),
-            ],
-            if (isPremium) ...[
-              const SizedBox(height: 10),
-              GestureDetector(
-                onTap: () => ref.read(premiumProvider.notifier).refresh(),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: AppColors.accentGold.withOpacity(0.15),
-                    border: Border.all(color: AppColors.accentGold),
-                    borderRadius: BorderRadius.circular(20),
+      child: Row(mainAxisSize: MainAxisSize.min, children: [
+        Icon(icon, size: 14, color: accent),
+        const SizedBox(width: 5),
+        Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
+            fontWeight: FontWeight.w700, color: textC)),
+      ]),
+    );
+
+    Widget vital(VitalKind kind, double pct, Color color, String value, String label) =>
+      Expanded(child: Container(
+        padding: const EdgeInsets.fromLTRB(6, 14, 6, 12),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(22),
+          gradient: LinearGradient(
+            begin: Alignment.topCenter, end: Alignment.bottomCenter,
+            colors: [card, Color.lerp(card, color, isDark ? 0.10 : 0.07)!]),
+          border: Border.all(color: Color.lerp(border, color, 0.35)!, width: 0.8),
+          boxShadow: [BoxShadow(color: color.withOpacity(isDark ? 0.14 : 0.10),
+              blurRadius: 18, offset: const Offset(0, 6))],
+        ),
+        child: Column(mainAxisSize: MainAxisSize.min, children: [
+          VitalGlyph(kind: kind, pct: pct, color: color, size: 48),
+          const SizedBox(height: 8),
+          Text(value, style: TextStyle(fontFamily: 'Aligarh', fontSize: 17,
+              fontWeight: FontWeight.w900, color: color)),
+          const SizedBox(height: 2),
+          Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 10.5,
+              color: muted)),
+        ]),
+      ));
+
+    return Scaffold(
+      backgroundColor: bg,
+      body: Stack(children: [
+        Positioned.fill(
+          child: AuroraBackground(
+            base: bg,
+            colors: [accent, AppColors.accentGold, const Color(0xFF0E6B6B)],
+            intensity: isDark ? 0.55 : 0.30,
+            seconds: 22,
+          ),
+        ),
+        SafeArea(
+          child: ListView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+            children: [
+              // ── Top bar ───────────────────────────────────
+              Reveal(index: 0, child: Row(children: [
+                Expanded(child: Text(l.myProfile, style: TextStyle(
+                    fontFamily: 'Aligarh', fontSize: 26,
+                    fontWeight: FontWeight.w900, color: textC))),
+                GlassIconBtn(
+                  isDark: isDark,
+                  onTap: () => ref.read(languageProvider.notifier).set(_nextLang(lang)),
+                  child: Text(_langLabel(lang), style: TextStyle(
+                      fontFamily: 'Aligarh', fontSize: 13,
+                      fontWeight: FontWeight.w800, color: textC)),
+                ),
+                const SizedBox(width: 8),
+                GlassIconBtn(
+                  isDark: isDark,
+                  icon: isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                  onTap: () => ref.read(themeProvider.notifier).toggle(),
+                ),
+              ])),
+              const SizedBox(height: 18),
+
+              // ── Hero ──────────────────────────────────────
+              Reveal(index: 1, child: Column(children: [
+                AvatarRing(
+                  size: 124,
+                  gap: bg,
+                  colors: [accent, AppColors.accentGold, AppColors.waterBlue],
+                  child: Container(
+                    color: accent.withOpacity(0.14),
+                    child: Image.asset(
+                      isSis ? kAvatarSisters : kAvatarBrothers,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) => Icon(
+                        Icons.person_rounded, size: 56, color: accent),
+                    ),
                   ),
-                  child: Row(mainAxisSize: MainAxisSize.min, children: [
-                    const Text('⭐', style: TextStyle(fontSize: 13)),
-                    const SizedBox(width: 5),
-                    Text(
-                      isAr
-                        ? (planName == 'lifetime' ? 'بريميوم مدى الحياة'
-                           : planName == 'yearly'  ? 'بريميوم سنوي'
-                           : planName == 'monthly' ? 'بريميوم شهري'
-                           : 'بريميوم')
-                        : (planName == 'lifetime' ? 'Lifetime Premium'
-                           : planName == 'yearly'  ? 'Yearly Premium'
-                           : planName == 'monthly' ? 'Monthly Premium'
-                           : 'Premium'),
-                      style: const TextStyle(fontFamily: 'Aligarh', fontSize: 12,
-                          fontWeight: FontWeight.w700, color: AppColors.accentGold),
+                ),
+                const SizedBox(height: 14),
+                Text(isSis ? l.womanLabel : l.manLabel, style: TextStyle(
+                    fontFamily: 'Aligarh', fontSize: 22,
+                    fontWeight: FontWeight.w900, color: textC)),
+                const SizedBox(height: 2),
+                Text(isSis ? l.sistersMode : l.menMode, style: TextStyle(
+                    fontFamily: 'Aligarh', fontSize: 12.5, color: muted)),
+                if (profile != null) ...[
+                  const SizedBox(height: 12),
+                  Wrap(spacing: 8, runSpacing: 8, alignment: WrapAlignment.center, children: [
+                    infoChip(Icons.cake_rounded, '${profile.age} ${l.yrsLabel}'),
+                    infoChip(Icons.height_rounded, '${profile.heightCm.toInt()} cm'),
+                    infoChip(Icons.monitor_weight_rounded,
+                        '${profile.weightKg.toStringAsFixed(1)} kg'),
+                  ]),
+                  const SizedBox(height: 10),
+                  Text(isAr ? profile.primaryGoal.nameAr() : profile.primaryGoal.nameEn(),
+                      style: TextStyle(fontFamily: 'Aligarh', fontSize: 13,
+                          color: accent, fontWeight: FontWeight.w800)),
+                ],
+                if (isPremium) ...[
+                  const SizedBox(height: 12),
+                  PressFx(
+                    onTap: () => ref.read(premiumProvider.notifier).refresh(),
+                    scale: 0.95,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(22),
+                        gradient: const LinearGradient(
+                            colors: [Color(0xFFF0CF98), Color(0xFFDBA75D)]),
+                        boxShadow: [BoxShadow(
+                            color: AppColors.accentGold.withOpacity(0.4),
+                            blurRadius: 18)],
+                      ),
+                      child: Row(mainAxisSize: MainAxisSize.min, children: [
+                        const Icon(Icons.workspace_premium_rounded,
+                            size: 16, color: Color(0xFF1A0F00)),
+                        const SizedBox(width: 6),
+                        Text(planLabel, style: const TextStyle(
+                            fontFamily: 'Aligarh', fontSize: 12.5,
+                            fontWeight: FontWeight.w900, color: Color(0xFF1A0F00))),
+                      ]),
+                    ),
+                  ),
+                ],
+              ])),
+              const SizedBox(height: 20),
+
+              // ── Vitals ────────────────────────────────────
+              Reveal(index: 2, child: Row(children: [
+                vital(VitalKind.flame, (streak / 30).clamp(0.0, 1.0),
+                    AppColors.haramRed, '$streak', t('تتابع', 'Streak')),
+                const SizedBox(width: 10),
+                vital(VitalKind.water, water.percent, AppColors.waterBlue,
+                    '${water.cups}/${water.goal}', t('الماء', 'Water')),
+                const SizedBox(width: 10),
+                vital(VitalKind.sleep, sleep.percent, AppColors.sleepPurple,
+                    '${sleep.hours.toInt()}h', t('النوم', 'Sleep')),
+              ])),
+              const SizedBox(height: 14),
+
+              // ── Lifetime stats ────────────────────────────
+              Reveal(index: 3, child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: cardDeco(),
+                child: Column(children: [
+                  Row(children: [
+                    const IconBadge(icon: Icons.emoji_events_rounded,
+                        color: AppColors.accentGold, size: 34),
+                    const SizedBox(width: 10),
+                    Text(t('إحصائياتك الكلية', 'Lifetime stats'), style: TextStyle(
+                        fontFamily: 'Aligarh', fontWeight: FontWeight.w800,
+                        fontSize: 14.5, color: textC)),
+                  ]),
+                  const SizedBox(height: 14),
+                  Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                    _lifeStat(Icons.local_fire_department_rounded, '$streak',
+                        t('أيام تتابع', 'Streak'), AppColors.haramRed, muted),
+                    _lifeStat(Icons.directions_run_rounded,
+                        workoutMin > 0 ? '${workoutMin}m' : '—',
+                        t('اليوم', 'Today'), AppColors.halalGreen, muted),
+                    _lifeStat(Icons.water_drop_rounded, '${water.cups}/${water.goal}',
+                        t('ماء اليوم', 'Water'), AppColors.waterBlue, muted),
+                    _lifeStat(Icons.bedtime_rounded, '${sleep.hours.toInt()}h',
+                        t('نوم اليوم', 'Sleep'), AppColors.sleepPurple, muted),
+                  ]),
+                ]),
+              )),
+              const SizedBox(height: 14),
+
+              // ── Body metrics ──────────────────────────────
+              if (profile != null) ...[
+                Reveal(index: 4, child: PressFx(
+                  onTap: () => context.go('/body'),
+                  scale: 0.985,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: cardDeco(),
+                    child: Column(children: [
+                      Row(children: [
+                        const IconBadge(icon: Icons.accessibility_new_rounded,
+                            color: AppColors.halalGreen, size: 34),
+                        const SizedBox(width: 10),
+                        Expanded(child: Text(t('مقاييس جسمك', 'Body metrics'),
+                            style: TextStyle(fontFamily: 'Aligarh',
+                                fontWeight: FontWeight.w800, fontSize: 14.5,
+                                color: textC))),
+                        Text(t('عرض الكل', 'View all'), style: const TextStyle(
+                            fontFamily: 'Aligarh', fontSize: 12,
+                            fontWeight: FontWeight.w700, color: AppColors.halalGreen)),
+                        const Icon(Icons.chevron_right_rounded,
+                            size: 18, color: AppColors.halalGreen),
+                      ]),
+                      const SizedBox(height: 14),
+                      Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
+                        _bodyMini('BMI', profile.bmi.toStringAsFixed(1),
+                            _bmiColor(profile.bmi), muted),
+                        _bodyMini(t('السعرات', 'Cals'),
+                            '${profile.calorieGoalKcal.toInt()}', AppColors.haramRed, muted),
+                        _bodyMini(isAr ? plan.nameAr() : plan.nameEn(),
+                            'P:${(profile.calorieGoalKcal * plan.proteinPct / 400).toInt()}g',
+                            AppColors.halalGreen, muted),
+                        _bodyMini(t('الماء', 'Water'), '${profile.waterLiters}L',
+                            AppColors.waterBlue, muted),
+                      ]),
+                    ]),
+                  ),
+                )),
+                const SizedBox(height: 14),
+              ],
+
+              // ── Achievements ──────────────────────────────
+              Reveal(index: 5,
+                child: _achievementsCard(isPremium, isAr, isDark, ref, context)),
+              const SizedBox(height: 14),
+
+              // ── Premium upsell ────────────────────────────
+              if (!isPremium) ...[
+                Reveal(index: 6, child: Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(24),
+                    gradient: const LinearGradient(
+                      begin: Alignment.topLeft, end: Alignment.bottomRight,
+                      colors: [Color(0xFF0E3B26), Color(0xFF07160F)]),
+                    border: Border.all(
+                        color: AppColors.accentGold.withOpacity(0.45), width: 0.9),
+                    boxShadow: [BoxShadow(
+                        color: AppColors.accentGold.withOpacity(0.18),
+                        blurRadius: 26, offset: const Offset(0, 10))],
+                  ),
+                  child: Column(children: [
+                    Row(children: [
+                      const BrandMark(size: 42),
+                      const SizedBox(width: 12),
+                      Expanded(child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start, children: [
+                        Text(t('ترقية إلى بريميوم', 'Upgrade to Premium'),
+                            style: const TextStyle(fontFamily: 'Aligarh',
+                                fontWeight: FontWeight.w900, fontSize: 15.5,
+                                color: Color(0xFFF0CF98))),
+                        const SizedBox(height: 3),
+                        Text(t('ماسحات غير محدودة + ١٨٠ تمرين + مخطط AI + مقاييس دقيقة',
+                               'Unlimited scans + 180 workouts + AI planner + precise body metrics'),
+                            style: const TextStyle(fontFamily: 'Aligarh',
+                                fontSize: 11.5, height: 1.4, color: Colors.white70)),
+                      ])),
+                    ]),
+                    const SizedBox(height: 14),
+                    ShineButton(
+                      label: t('افتح بريميوم', 'Unlock Premium'),
+                      icon: Icons.workspace_premium_rounded,
+                      height: 50,
+                      onPressed: () => context.push('/paywall'),
                     ),
                   ]),
+                )),
+                const SizedBox(height: 14),
+              ],
+
+              // ── Account list ──────────────────────────────
+              Reveal(index: 7, child: Container(
+                decoration: cardDeco(),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Material(
+                    type: MaterialType.transparency,
+                    child: Column(children: [
+                      _tileRow(Icons.location_on_rounded, AppColors.haramRed,
+                          t('المدينة', 'City'), city, textC, muted, border,
+                          () => _showCityPicker(context, ref, isAr)),
+                      _tileRow(Icons.translate_rounded, AppColors.waterBlue,
+                          t('اللغة', 'Language'),
+                          tLang(lang, 'العربية', 'English', 'Français', 'Türkçe', 'Melayu', 'Indonesia'),
+                          textC, muted, border,
+                          () => ref.read(languageProvider.notifier).set(_nextLang(lang))),
+                      _tileRow(isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
+                          isDark ? AppColors.accentGold : const Color(0xFF7F8CFF),
+                          isDark ? t('الوضع النهاري', 'Day mode') : t('الوضع الليلي', 'Night mode'),
+                          isDark ? t('مفعّل', 'Active') : t('معطّل', 'Off'),
+                          textC, muted, border,
+                          () => ref.read(themeProvider.notifier).toggle()),
+                      if (profile != null)
+                        _tileRow(Icons.edit_rounded, AppColors.halalGreen,
+                            t('تعديل معلوماتي', 'Edit my info'), '',
+                            textC, muted, border, () => context.go('/body')),
+                      if (isPremium)
+                        _tileRow(Icons.workspace_premium_rounded, AppColors.accentGold,
+                            t('إدارة الاشتراك', 'Manage subscription'),
+                            isAr
+                              ? (planName == 'lifetime' ? 'مدى الحياة' : planName == 'yearly' ? 'سنوي نشط' : 'شهري نشط')
+                              : (planName == 'lifetime' ? 'Lifetime' : planName == 'yearly' ? 'Yearly active' : 'Monthly active'),
+                            textC, muted, border,
+                            () async {
+                              await ref.read(premiumProvider.notifier).refresh();
+                              if (context.mounted) _showManageSubSheet(context, ref, isAr, planName);
+                            }),
+                      if (!isPremium)
+                        _tileRow(Icons.lock_open_rounded, AppColors.accentGold,
+                            t('ترقية إلى بريميوم', 'Upgrade to Premium'),
+                            t('افتح كل الميزات', 'Unlock all features'),
+                            textC, muted, border,
+                            () { if (context.mounted) context.push('/paywall'); }),
+                      _tileRow(Icons.lock_outline_rounded, AppColors.halalGreen,
+                          t('سياسة الخصوصية', 'Privacy policy'), '',
+                          textC, muted, border, () {}),
+                      _tileRow(Icons.info_outline_rounded, AppColors.waterBlue,
+                          t('حول التطبيق', 'About app'), 'v1.6',
+                          textC, muted, border,
+                          () => showAboutDialog(
+                            context: context, applicationName: 'HalalCalorie',
+                            applicationVersion: '1.6.0',
+                            children: [const Text('© 2026 HalalCalorie — Halal • Private • Ad-free',
+                                style: TextStyle(fontFamily: 'Aligarh'))])),
+                      _tileRow(Icons.logout_rounded, AppColors.haramRed,
+                          t('تسجيل الخروج', 'Sign out'), '',
+                          textC, muted, border,
+                          () => _signOut(context, ref, isAr),
+                          danger: true, last: true),
+                    ]),
+                  ),
                 ),
-              ),
+              )),
             ],
-          ]),
-        ),
-        const SizedBox(height: 13),
-
-        // ── Stats row ─────────────────────────────────────
-        Row(children: [
-          _statCard('🔥', '$streak', t('تتابع', 'Streak'), bg),
-          const SizedBox(width: 9),
-          _statCard('💧', '${water.cups}/${water.goal}', t('الماء', 'Water'), bg),
-          const SizedBox(width: 9),
-          _statCard('😴', '${sleep.hours.toInt()}h', t('النوم', 'Sleep'), bg),
-        ]),
-        const SizedBox(height: 13),
-
-        // ── Lifetime stats ────────────────────────────────
-        Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 14, offset: const Offset(0, 3))]),
-          child: Column(children: [
-            Text(t('🏆 إحصائياتك الكلية', '🏆 Lifetime Stats'),
-                style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 14)),
-            const SizedBox(height: 12),
-            Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-              _lifeStat('🔥', '$streak', t('أيام تتابع', 'Streak'), AppColors.haramRed),
-              _lifeStat('🏃', workoutMin > 0 ? '${workoutMin}m' : '—',
-                  t('اليوم', 'Today'), AppColors.brandGreen),
-              _lifeStat('💧', '${water.cups}/${water.goal}',
-                  t('ماء اليوم', 'Today Water'), AppColors.waterBlue),
-              _lifeStat('😴', '${sleep.hours.toInt()}h',
-                  t('نوم اليوم', 'Tonight'), AppColors.sleepPurple),
-            ]),
-          ]),
-        ),
-        const SizedBox(height: 13),
-
-        // ── Body quick metrics ────────────────────────────
-        if (profile != null) ...[
-          GestureDetector(
-            onTap: () => context.go('/body'),
-            child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16),
-                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 14, offset: const Offset(0, 3))]),
-              child: Column(children: [
-                Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                  Text(t('💪 مقاييس جسمك', '💪 Body Metrics'),
-                      style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 13)),
-                  Text(t('مشاهدة الكل ←', '→ View All'),
-                      style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: AppColors.brandGreen)),
-                ]),
-                const SizedBox(height: 10),
-                Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                  _bodyMini('BMI', profile.bmi.toStringAsFixed(1), _bmiColor(profile.bmi)),
-                  _bodyMini(t('السعرات','Cals'), '${profile.calorieGoalKcal.toInt()}', AppColors.haramRed),
-                  _bodyMini(
-                    '${plan.emoji()} ${isAr ? plan.nameAr() : plan.nameEn()}',
-                    'P:${(profile.calorieGoalKcal * plan.proteinPct / 400).toInt()}g',
-                    AppColors.halalGreen),
-                  _bodyMini(t('الماء','Water'), '${profile.waterLiters}L', AppColors.waterBlue),
-                ]),
-              ]),
-            ),
           ),
-          const SizedBox(height: 13),
-        ],
-
-        // ── Achievement Badges ───────────────────────────────
-        _achievementsCard(isPremium, isAr, isDark, ref, context),
-        const SizedBox(height: 12),
-                // ── Premium upsell ────────────────────────────────
-        if (!isPremium) ...[
-          GestureDetector(
-            onTap: () => context.push('/paywall'),
-            child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppColors.brandGreen.withOpacity(0.06),
-                border: Border.all(color: AppColors.brandGreen.withOpacity(0.2)),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(children: [
-                const Text('⭐', style: TextStyle(fontSize: 26)),
-                const SizedBox(width: 11),
-                Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(t('ترقية إلى بريميوم', 'Upgrade to Premium'),
-                      style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 13, color: AppColors.brandGreen)),
-                  Text(t('ماسحات غير محدودة + ١٨٠ تمرين + مخطط AI + مقاييس دقيقة',
-                         'Unlimited scans + 180 workouts + AI planner + precise body metrics'),
-                      style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: AppColors.lightMuted)),
-                ])),
-                const Icon(Icons.arrow_back_ios, size: 14, color: AppColors.brandGreen),
-              ]),
-            ),
-          ),
-          const SizedBox(height: 13),
-        ],
-
-        // ── Settings list ─────────────────────────────────
-        Container(
-          decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16),
-            boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.06), blurRadius: 14, offset: const Offset(0, 3))]),
-          child: Column(children: [
-            _settingTile('📍', t('المدينة', 'City'), city, () => _showCityPicker(context, ref, isAr)),
-            _settingTile('🌐', t('اللغة', 'Language'), tLang(lang, 'العربية', 'English', 'Français', 'Türkçe', 'Melayu', 'Indonesia'),
-              () => ref.read(languageProvider.notifier).set(_nextLang(lang))),
-            _settingTile(isDark ? '☀️' : '🌙',
-              isDark ? t('الوضع النهاري','Day Mode') : t('الوضع الليلي','Night Mode'),
-              isDark ? t('مفعّل','Active') : t('معطّل','Off'),
-              () => ref.read(themeProvider.notifier).toggle()),
-            if (profile != null)
-              _settingTile('✏️', t('تعديل معلوماتي', 'Edit My Info'), '', () => context.go('/body')),
-            if (isPremium)
-              _settingTile('⭐', t('إدارة الاشتراك','Manage Subscription'),
-                isAr
-                  ? (planName == 'lifetime' ? 'مدى الحياة' : planName == 'yearly' ? 'سنوي نشط' : 'شهري نشط')
-                  : (planName == 'lifetime' ? 'Lifetime' : planName == 'yearly' ? 'Yearly active' : 'Monthly active'),
-                () async {
-                  // Refresh from RC then show management options
-                  await ref.watch(premiumProvider.notifier).refresh();
-                  if (context.mounted) _showManageSubSheet(context, ref, isAr, planName);
-                }),
-            if (!isPremium)
-              _settingTile('🔓', t('ترقية إلى بريميوم','Upgrade to Premium'), t('افتح كل الميزات','Unlock all features'),
-                () { if (context.mounted) context.push('/paywall'); }),
-            _settingTile('🔒', t('سياسة الخصوصية','Privacy Policy'), '', () {}),
-            _settingTile('ℹ️', t('حول التطبيق','About App'), 'v1.0', () => showAboutDialog(
-              context: context, applicationName: 'HalalCalorie / HalalCalorie',
-              applicationVersion: '0.6.0',
-              children: [const Text('© 2026 HalalCalorie — Halal • Private • Ad-free',
-                  style: TextStyle(fontFamily: 'Aligarh'))])),
-            ListTile(
-              leading: const Text('🚪', style: TextStyle(fontSize: 20)),
-              title: Text(t('تسجيل الخروج','Sign Out'),
-                  style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13, fontWeight: FontWeight.w600, color: AppColors.haramRed)),
-              onTap: () => _signOut(context, ref, isAr),
-            ),
-          ]),
         ),
-        const SizedBox(height: 16),
       ]),
     );
   }
@@ -294,135 +435,163 @@ class ProfileScreen extends ConsumerWidget {
   Widget _achievementsCard(bool isPremium, bool isAr, bool isDark, WidgetRef ref, BuildContext context) {
     final ach  = ref.watch(achievementProvider);
     final fast = ref.watch(fastingProvider);
-    final bg   = isDark ? AppColors.darkCard : Colors.white;
-    final muted= isDark ? AppColors.darkMuted : AppColors.lightMuted;
+    final card = isDark ? const Color(0xFF0F1E18) : Colors.white;
+    final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
+    final textC = isDark ? AppColors.darkText : AppColors.lightText;
+    final border = isDark ? AppColors.darkBorder : AppColors.lightBorder;
     String t(String ar, String en) => isAr ? ar : en;
 
-    final badges = <(String, String, bool)>[
-      ('🌱', t('البداية','Awakened'),            ach.totalDaysLogged >= 1),
-      ('🔗', t('أسبوع كامل','Chain of Seven'),    ach.totalDaysLogged >= 7),
-      ('🌘', t('أول إمساك','First Restraint'),    fast.lifetimeCount >= 1),
-      ('⛰️', t('الثابت','Unmoved'),               fast.lifetimeCount >= 7),
-      ('🌿', t('الطيّب','Wholesome'),             ach.wholeFoodsLogged >= 3),
-      ('✨', t('المتقن','Refined'),               ach.totalDaysLogged >= 30),
-      ('💎', t('المئة','Centurion'),              ach.totalDaysLogged >= 100),
-      ('📘', t('العزم','Resolve'),
+    final badges = <(IconData, String, bool)>[
+      (Icons.eco_rounded,           t('البداية','Awakened'),         ach.totalDaysLogged >= 1),
+      (Icons.link_rounded,          t('أسبوع كامل','Chain of Seven'), ach.totalDaysLogged >= 7),
+      (Icons.nights_stay_rounded,   t('أول إمساك','First Restraint'), fast.lifetimeCount >= 1),
+      (Icons.terrain_rounded,       t('الثابت','Unmoved'),           fast.lifetimeCount >= 7),
+      (Icons.spa_rounded,           t('الطيّب','Wholesome'),         ach.wholeFoodsLogged >= 3),
+      (Icons.auto_awesome_rounded,  t('المتقن','Refined'),           ach.totalDaysLogged >= 30),
+      (Icons.emoji_events_rounded,  t('المئة','Centurion'),          ach.totalDaysLogged >= 100),
+      (Icons.menu_book_rounded,     t('العزم','Resolve'),
         ach.totalDaysLogged >= 28 && fast.lifetimeCount >= 4),
     ];
     final earned = badges.where((b) => b.$3).length;
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 4),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: bg, borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF))),
+        color: card, borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: border, width: 0.6),
+        boxShadow: [BoxShadow(
+          color: Colors.black.withOpacity(isDark ? 0.30 : 0.07),
+          blurRadius: 24, offset: const Offset(0, 8))]),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          const Text('🏅', style: TextStyle(fontSize: 20)),
+          const IconBadge(icon: Icons.military_tech_rounded,
+              color: AppColors.accentGold, size: 34),
           const SizedBox(width: 10),
-          Expanded(child: Text(t('إنجازاتك','Your Achievements'),
-            style: TextStyle(fontFamily: 'Aligarh',
-              fontWeight: FontWeight.w800, fontSize: 14,
-              color: isDark ? Colors.white : const Color(0xFF1F2A1F)))),
+          Expanded(child: Text(t('إنجازاتك','Your achievements'),
+            style: TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w800,
+              fontSize: 14.5, color: textC))),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: AppColors.accentGold.withOpacity(0.15),
               borderRadius: BorderRadius.circular(20)),
             child: Text('$earned/${badges.length}',
-              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11,
-                fontWeight: FontWeight.w700, color: AppColors.accentGold)),
+              style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11.5,
+                fontWeight: FontWeight.w800, color: AppColors.accentGold)),
           ),
         ]),
         const SizedBox(height: 14),
-        Wrap(spacing: 8, runSpacing: 8,
-          children: badges.map((b) => _badge(b.$1, b.$2, b.$3, muted)).toList()),
+        Wrap(spacing: 8, runSpacing: 8, alignment: WrapAlignment.center,
+          children: badges.map((b) => _badge(b.$1, b.$2, b.$3, muted, isDark)).toList()),
         if (!isPremium) ...[
-          const SizedBox(height: 10),
+          const SizedBox(height: 12),
           GestureDetector(
             onTap: () => context.push('/paywall'),
             child: Center(child: Text(
-              t('⭐ ترقّ لفتح كل الإنجازات','⭐ Upgrade to unlock all badges'),
+              t('ترقّ لفتح كل الإنجازات','Upgrade to unlock all badges'),
               style: const TextStyle(fontFamily: 'Aligarh',
-                fontSize: 11, color: AppColors.accentGold))),
+                fontSize: 11.5, color: AppColors.accentGold))),
           ),
         ],
       ]),
     );
   }
 
-  Widget _badge(String emoji, String label, bool earned, Color muted) =>
-    AnimatedOpacity(
-      opacity: earned ? 1.0 : 0.3,
+  Widget _badge(IconData icon, String label, bool earned, Color muted, bool isDark) =>
+    AnimatedContainer(
       duration: const Duration(milliseconds: 400),
-      child: Container(
-        width: 74, padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-        decoration: BoxDecoration(
-          color: earned
-            ? AppColors.accentGold.withOpacity(0.1)
-            : const Color(0xFF1A1F26),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: earned
-              ? AppColors.accentGold.withOpacity(0.45)
-              : Colors.transparent)),
-        child: Column(children: [
-          Text(emoji, style: const TextStyle(fontSize: 22)),
-          const SizedBox(height: 3),
-          Text(label,
-            style: TextStyle(fontFamily: 'Aligarh', fontSize: 8,
-              fontWeight: FontWeight.w600,
-              color: earned ? AppColors.accentGold : muted),
-            textAlign: TextAlign.center, maxLines: 2,
-            overflow: TextOverflow.ellipsis),
-          if (earned) const Icon(Icons.check_circle_rounded,
-            color: AppColors.accentGold, size: 11),
-        ]),
+      width: 76,
+      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(18),
+        gradient: earned
+            ? LinearGradient(
+                begin: Alignment.topCenter, end: Alignment.bottomCenter,
+                colors: [AppColors.accentGold.withOpacity(0.20),
+                         AppColors.accentGold.withOpacity(0.05)])
+            : null,
+        color: earned ? null : (isDark ? const Color(0xFF16231C) : const Color(0xFFF1F3F2)),
+        border: Border.all(
+          color: earned ? AppColors.accentGold.withOpacity(0.5) : Colors.transparent),
+        boxShadow: earned
+            ? [BoxShadow(color: AppColors.accentGold.withOpacity(0.22), blurRadius: 14)]
+            : const [],
       ),
-    );
-
-  Widget _lifeStat(String emoji, String val, String label, Color col) {
-    return Column(children: [
-      Text(emoji, style: const TextStyle(fontSize: 20)),
-      const SizedBox(height: 3),
-      Text(val, style: TextStyle(fontFamily: 'Aligarh', fontSize: 14,
-          fontWeight: FontWeight.w900, color: col)),
-      Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 9,
-          color: AppColors.lightMuted)),
-    ]);
-  }
-
-  Widget _statCard(String emoji, String val, String label, Color bg) {
-    return Expanded(child: Container(
-      padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 6),
-      decoration: BoxDecoration(color: bg, borderRadius: BorderRadius.circular(16),
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 8)]),
       child: Column(children: [
-        Text(emoji, style: const TextStyle(fontSize: 28)),
-        const SizedBox(height: 2),
-        Text(val, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 20, fontWeight: FontWeight.w900)),
-        Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: AppColors.lightMuted)),
+        Container(
+          width: 38, height: 38,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: earned
+                ? const LinearGradient(
+                    begin: Alignment.topLeft, end: Alignment.bottomRight,
+                    colors: [Color(0xFFF0CF98), Color(0xFFDBA75D)])
+                : null,
+            color: earned ? null : muted.withOpacity(0.14),
+          ),
+          child: Icon(earned ? icon : Icons.lock_rounded,
+              size: earned ? 21 : 17,
+              color: earned ? const Color(0xFF1A0F00) : muted.withOpacity(0.7)),
+        ),
+        const SizedBox(height: 6),
+        Text(label,
+          style: TextStyle(fontFamily: 'Aligarh', fontSize: 9.5,
+            fontWeight: FontWeight.w700,
+            color: earned ? AppColors.accentGold : muted),
+          textAlign: TextAlign.center, maxLines: 2,
+          overflow: TextOverflow.ellipsis),
       ]),
-    ));
-  }
+    );
 
-  Widget _bodyMini(String label, String value, Color color) {
+  Widget _lifeStat(IconData icon, String val, String label, Color col, Color muted) {
     return Column(children: [
-      Text(value, style: TextStyle(fontFamily: 'Aligarh', fontSize: 15, fontWeight: FontWeight.w900, color: color)),
-      Text(label, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 9, color: AppColors.lightMuted)),
+      Icon(icon, size: 22, color: col),
+      const SizedBox(height: 4),
+      Text(val, style: TextStyle(fontFamily: 'Aligarh', fontSize: 15,
+          fontWeight: FontWeight.w900, color: col)),
+      Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: muted)),
     ]);
   }
 
-  Widget _settingTile(String emoji, String title, String sub, VoidCallback onTap) {
-    return ListTile(
-      leading: Text(emoji, style: const TextStyle(fontSize: 20)),
-      title: Text(title, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 13)),
-      subtitle: sub.isNotEmpty ? Text(sub, style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: AppColors.lightMuted)) : null,
-      trailing: const Icon(Icons.arrow_back_ios, size: 14, color: AppColors.lightMuted),
-      onTap: onTap,
-    );
+  Widget _bodyMini(String label, String value, Color color, Color muted) {
+    return Column(children: [
+      Text(value, style: TextStyle(fontFamily: 'Aligarh', fontSize: 16,
+          fontWeight: FontWeight.w900, color: color)),
+      const SizedBox(height: 2),
+      Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 10, color: muted)),
+    ]);
+  }
+
+  Widget _tileRow(IconData icon, Color color, String title, String sub,
+      Color textC, Color muted, Color border, VoidCallback onTap,
+      {bool danger = false, bool last = false}) {
+    return Column(children: [
+      InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
+          child: Row(children: [
+            IconBadge(icon: icon, color: color, size: 36),
+            const SizedBox(width: 12),
+            Expanded(child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start, children: [
+              Text(title, style: TextStyle(fontFamily: 'Aligarh', fontSize: 13.5,
+                  fontWeight: FontWeight.w700,
+                  color: danger ? AppColors.haramRed : textC)),
+              if (sub.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 2),
+                  child: Text(sub, style: TextStyle(
+                      fontFamily: 'Aligarh', fontSize: 11.5, color: muted)),
+                ),
+            ])),
+            Icon(Icons.chevron_right_rounded, size: 21, color: muted),
+          ]),
+        ),
+      ),
+      if (!last)
+        Divider(height: 1, indent: 62, endIndent: 14, color: border),
+    ]);
   }
 
   Color _bmiColor(double bmi) {
@@ -471,7 +640,7 @@ class ProfileScreen extends ConsumerWidget {
         mainAxisSize: MainAxisSize.min, children: [
           Container(width: 40, height: 4, decoration: BoxDecoration(color: Colors.grey.shade300, borderRadius: BorderRadius.circular(2))),
           const SizedBox(height: 16),
-          const Text('⭐', style: TextStyle(fontSize: 40)),
+          const EmojiIcon('⭐', size: 40),
           const SizedBox(height: 8),
           Text(tLang(lang, 'إدارة اشتراكك', 'Manage Your Subscription', 'Gérer votre abonnement', 'Aboneliğinizi Yönetin', 'Urus Langganan Anda', 'Kelola Langganan Anda'),
             style: const TextStyle(fontFamily: 'Aligarh', fontSize: 17, fontWeight: FontWeight.w800)),
@@ -489,7 +658,7 @@ class ProfileScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 20),
           if (planName != 'lifetime') ListTile(
-            leading: const Text('📱', style: TextStyle(fontSize: 22)),
+            leading: const EmojiIcon('📱', size: 22),
             title: Text(tLang(lang, 'إلغاء الاشتراك', 'Cancel Subscription', 'Annuler l\'abonnement', 'Aboneliği İptal Et', 'Batalkan Langganan', 'Batalkan Langganan'),
               style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w600, color: AppColors.haramRed)),
             subtitle: Text(tLang(lang, 'من خلال App Store أو Google Play', 'Via App Store or Google Play', 'Via App Store ou Google Play', 'App Store veya Google Play üzerinden', 'Melalui App Store atau Google Play', 'Melalui App Store atau Google Play'),
@@ -502,7 +671,7 @@ class ProfileScreen extends ConsumerWidget {
             },
           ),
           ListTile(
-            leading: const Text('🔄', style: TextStyle(fontSize: 22)),
+            leading: const EmojiIcon('🔄', size: 22),
             title: Text(tLang(lang, 'استعادة المشتريات', 'Restore Purchases', 'Restaurer les achats', 'Satın Almaları Geri Yükle', 'Pulihkan Pembelian', 'Pulihkan Pembelian'),
               style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w600)),
             onTap: () async {

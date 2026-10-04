@@ -21,6 +21,7 @@ import '../../core/prayer_provider.dart';
 import '../../data/models/models.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/icon_assets.dart';
+import '../../core/fx6.dart';
 
 
 // Cycle to next language in the supported list
@@ -533,7 +534,7 @@ class _HomeHero extends ConsumerWidget {
             PositionedDirectional(
               top: 10, end: 12,
               child: _glass(Row(mainAxisSize: MainAxisSize.min, children: [
-                const Text('🔥', style: TextStyle(fontSize: 13)),
+                const EmojiIcon('🔥', size: 13),
                 const SizedBox(width: 5),
                 Text(
                   tLang(lang, '$streak يوم تتابع', '$streak day streak',
@@ -772,7 +773,7 @@ child: ClipRRect(
     child: darkSafeAsset('assets/icons/mosque_mark/mosque_small.png',
         width: 26, height: 26, isDark: isDark,
         errorChild: const Center(
-            child: Text('🕌', style: TextStyle(fontSize: 22))))),
+            child: const EmojiIcon('🕌', size: 22)))),
 ),
 ),
 const SizedBox(width: 12),
@@ -1000,7 +1001,7 @@ class _FastingDayBanner extends ConsumerWidget {
             color: AppColors.accentGold.withOpacity(0.35), width: 1),
       ),
       child: Row(children: [
-        const Text('🌙', style: TextStyle(fontSize: 22)),
+        const EmojiIcon('🌙', size: 22),
         const SizedBox(width: 12),
         Expanded(child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1021,7 +1022,7 @@ class _FastingDayBanner extends ConsumerWidget {
               color: AppColors.accentGold, height: 1.4),
           ),
         ])),
-        const Text('✨', style: TextStyle(fontSize: 16)),
+        const EmojiIcon('✨', size: 16),
       ]),
     );
   }
@@ -1262,7 +1263,7 @@ class _Stat extends StatelessWidget {
           child: Column(mainAxisSize: MainAxisSize.min, children: [
             kind != null
                 ? VitalGlyph(kind: kind, pct: pct, color: color, size: 46)
-                : Text(emoji, style: const TextStyle(fontSize: 30)),
+                : EmojiIcon(emoji, size: 30),
             const SizedBox(height: 8),
             RichText(
               text: TextSpan(children: [
@@ -1308,7 +1309,7 @@ void _showStreakDialog(BuildContext context, int streak, bool isAr, String lang,
       side: BorderSide(color: border)),
     child: Padding(padding: const EdgeInsets.all(28), child: Column(
       mainAxisSize: MainAxisSize.min, children: [
-        const Text('🔥', style: TextStyle(fontSize: 56)),
+        const EmojiIcon('🔥', size: 56),
         const SizedBox(height: 12),
         Text('$streak', style: const TextStyle(
           fontFamily: 'Aligarh', fontSize: 48,
@@ -1614,8 +1615,8 @@ borderRadius: BorderRadius.circular(9),
 child: Center(child: statusGlyphForEmoji(item.emoji) != null
     ? darkSafeAsset(statusGlyphForEmoji(item.emoji)!, width: 20, height: 20, isDark: Theme.of(context).brightness == Brightness.dark,
         errorChild:
-            Text(item.emoji, style: const TextStyle(fontSize: 17)))
-    : Text(item.emoji, style: const TextStyle(fontSize: 17))),
+            EmojiIcon(item.emoji, size: 17))
+    : EmojiIcon(item.emoji, size: 17)),
 ),
 const SizedBox(height: 7),
 Text(item.title, style: TextStyle(
