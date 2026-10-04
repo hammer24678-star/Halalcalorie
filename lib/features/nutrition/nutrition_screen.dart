@@ -1255,7 +1255,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                 ],
               ),
             ),
-        ]),
+
 
             // ══ RECIPES TAB ════════════════════════════════
             ListView(
@@ -1376,7 +1376,8 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                 textC: textC, profile: profile,
                 isPremium: isPremium),
           ],
-        ),
+          ),
+        ]),
       ),
     );
   }
