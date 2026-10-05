@@ -349,11 +349,8 @@ class _NutritionState extends ConsumerState<NutritionScreen>
               Row(children: [
                 Container(
                   width: 68, height: 68,
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [
-                      (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.18),
-                      (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.04)]),
-                    borderRadius: BorderRadius.circular(20)),
+                  // PATCH_V54_THUMB: no tile behind the food icon
+                  decoration: const BoxDecoration(),
                   child: Center(child: FoodThumb(name: e.name, size: 56, radius: 16,
                       background: Colors.transparent))),
                 const SizedBox(width: 14),
@@ -417,7 +414,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   Expanded(child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                    Text('${(pctKcal*100).toInt()}%',
+                    Text('${(pctKcal*100).toInt()}％',
                         style: const TextStyle(fontFamily: 'Aligarh',
                             fontSize: 32, fontWeight: FontWeight.w900,
                             color: AppColors.brandGreen)),
@@ -581,7 +578,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
             decoration: BoxDecoration(
               color: color.withOpacity(0.12),
               borderRadius: BorderRadius.circular(10)),
-            child: Text('${(pct*100).toInt()}%',
+            child: Text('${(pct*100).toInt()}％',
                 style: TextStyle(fontFamily: 'Aligarh',
                     fontSize: 10, fontWeight: FontWeight.w800,
                     color: color))),
@@ -1450,7 +1447,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
           Text(label, style: TextStyle(fontFamily: 'Aligarh',
               fontSize: 13, fontWeight: FontWeight.w700, color: color)),
           // PATCH_V23: higher contrast secondary macro text
-          Text('${current.toInt()}/${target.toInt()}$gLabel  •  $pctInt%',
+          Text('${current.toInt()}/${target.toInt()}$gLabel  •  $pctInt％',
               style: TextStyle(fontFamily: 'Aligarh',
                   fontSize: 11, fontWeight: FontWeight.w700,
                   color: color.withOpacity(0.95))),
@@ -1587,7 +1584,7 @@ class _NutritionState extends ConsumerState<NutritionScreen>
             children: [
             _weekStat('🔥', '$avgKcal',
               t('متوسط', 'Avg'), AppColors.haramRed, isDark),
-            _weekStat('🎯', '$adherePct%',
+            _weekStat('🎯', '$adherePct％',
               t('التزام', 'Adhere'), AppColors.brandGreen, isDark),
             _weekStat('📅', bestKey,
               t('أفضل', 'Best'), AppColors.accentGold, isDark),
@@ -1796,17 +1793,8 @@ class _MealSectionState extends ConsumerState<_MealSection> {
                     // Food icon
                     Container(
                       width: 46, height: 46,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColors.brandGreen.withOpacity(0.15),
-                            AppColors.brandGreen.withOpacity(0.05),
-                          ],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
+                      // PATCH_V54_THUMB: no tile behind the food icon
+                      decoration: const BoxDecoration(),
                       child: Center(child: FoodThumb(name: e.name, size: 38, radius: 9,
                           background: Colors.transparent)),
                     ),
@@ -3206,7 +3194,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
         const SizedBox(height: 14),
         Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
           _weekStat('🔥', '$avgKcal', t('متوسط', 'Avg kcal'), AppColors.haramRed, isDark),
-          _weekStat('🎯', '$adherePct%', t('الالتزام', 'Adherence'), AppColors.brandGreen, isDark),
+          _weekStat('🎯', '$adherePct％', t('الالتزام', 'Adherence'), AppColors.brandGreen, isDark),
           _weekStat('📅', bestKey, t('أفضل يوم', 'Best day'), AppColors.accentGold, isDark),
           _weekStat('✅', '$goodDays/${vals.isEmpty?7:vals.length}',
             t('ملتزمة', 'On-target'), AppColors.waterBlue, isDark),

@@ -405,7 +405,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
-                tLang(lang, 'دقة: $confPct%', 'Conf: $confPct%', 'Conf: $confPct%', 'Conf: $confPct%', 'Conf: $confPct%', 'Conf: $confPct%'),
+                tLang(lang, 'دقة: $confPct％', 'Conf: $confPct％', 'Conf: $confPct％', 'Conf: $confPct％', 'Conf: $confPct％', 'Conf: $confPct％'),
                 style: TextStyle(fontFamily: 'Aligarh', fontSize: 11, fontWeight: FontWeight.w700,
                   color: confPct > 50 ? AppColors.halalGreen : AppColors.doubtOrange),
               ),
@@ -416,7 +416,7 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
           // ── Big metrics ──────────────────────────────────
           Row(children: [
             _bigMetric(
-              '${r.bodyFatPercent.toStringAsFixed(1)}%',
+              '${r.bodyFatPercent.toStringAsFixed(1)}％',
               tLang(lang, 'نسبة الدهون', 'Body Fat %', '% Graisse corporelle', 'Vücut Yağ %', '% Lemak Badan', '% Lemak Tubuh'),
               bfColor,
             ),
@@ -487,9 +487,9 @@ class _BodyPhotoState extends ConsumerState<BodyPhotoScreen>
                     style: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 12, color: AppColors.brandGreen)),
                 const SizedBox(height: 8),
                 Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
-                  _compareRow(tLang(lang, 'صورة', 'Photo', 'Photo', 'Fotoğraf', 'Foto', 'Foto'), '${r.bodyFatPercent.toStringAsFixed(1)}%', AppColors.accentGold),
+                  _compareRow(tLang(lang, 'صورة', 'Photo', 'Photo', 'Fotoğraf', 'Foto', 'Foto'), '${r.bodyFatPercent.toStringAsFixed(1)}％', AppColors.accentGold),
                   const Text('vs', style: TextStyle(fontFamily: 'Aligarh', color: AppColors.lightMuted, fontSize: 12)),
-                  _compareRow(tLang(lang, 'حساب', 'Calc.', 'Calc.', 'Hesapla.', 'Kira.', 'Hitung.'), '${profile.bodyFatPercent.toStringAsFixed(1)}%', AppColors.brandGreen),
+                  _compareRow(tLang(lang, 'حساب', 'Calc.', 'Calc.', 'Hesapla.', 'Kira.', 'Hitung.'), '${profile.bodyFatPercent.toStringAsFixed(1)}％', AppColors.brandGreen),
                 ]),
               ]),
             ),

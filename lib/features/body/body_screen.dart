@@ -15,6 +15,7 @@ import '../../data/models/user_profile.dart';
 import '../../data/models/models.dart';
 import '../../data/icon_assets.dart'; // PATCH_V31_BODY_OVERVIEW_REMASTER
 import '../../core/fx6.dart';
+import '../../core/fx.dart' show AuroraBackground;
 
 class BodyScreen extends ConsumerStatefulWidget {
   const BodyScreen({super.key});
@@ -82,41 +83,121 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
       );
     }
 
+    // PATCH_V54_BODY
+    final bg = isDark ? AppColors.darkBg : AppColors.lightBg;
+    final textC = isDark ? AppColors.darkText : AppColors.lightText;
+    final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
+    final tabLabels = [
+      tLang(lang, 'نظرة عامة', 'Overview', 'Aperçu', 'Genel Bakış', 'Gambaran Keseluruhan', 'Ikhtisar'),
+      tLang(lang, 'تفاصيل', 'Details', 'Détails', 'Detaylar', 'Butiran', 'Detail'),
+      tLang(lang, 'التغذية', 'Nutrition', 'Nutrition', 'Beslenme', 'Pemakanan', 'Nutrisi'),
+    ];
     return Scaffold(
-      appBar: AppBar(
-        title: Text(tLang(lang, 'مقاييس جسمي 💪', 'My Body Metrics 💪', 'Mes métriques corporelles 💪', 'Vücut Metriklerim 💪', 'Metrik Badan Saya 💪', 'Metrik Tubuh Saya 💪')),
-        actions: [
-          IconButton(
-            icon: Icon(_editing ? Icons.check : Icons.edit_outlined, color: Colors.white),
-            onPressed: _editing ? () => _saveEdits(profile) : () => setState(() => _editing = true),
+      backgroundColor: bg,
+      body: Stack(children: [
+        Positioned.fill(
+          child: AuroraBackground(
+            base: bg,
+            colors: const [Color(0xFF1E9E52), Color(0xFFDBA75D), Color(0xFF0E6B6B)],
+            intensity: isDark ? 0.45 : 0.22,
+            seconds: 24,
           ),
-          GestureDetector(
-            onTap: () => ref.read(themeProvider.notifier).toggle(),
-            child: Padding(padding: const EdgeInsets.only(left: 14, right: 14),
-              child: Icon(isDark ? Icons.wb_sunny : Icons.nightlight_round, color: Colors.white)),
-          ),
-        ],
-        bottom: TabBar(
-          controller: _tab,
-          indicatorColor: AppColors.accentGold,
-          labelStyle: const TextStyle(fontFamily: 'Aligarh', fontWeight: FontWeight.w700, fontSize: 12),
-          unselectedLabelStyle: const TextStyle(fontFamily: 'Aligarh', fontSize: 12),
-          labelColor: Colors.white, unselectedLabelColor: Colors.white70,
-          tabs: [
-            Tab(text: tLang(lang, 'نظرة عامة', 'Overview', 'Aperçu', 'Genel Bakış', 'Gambaran Keseluruhan', 'Ikhtisar')),
-            Tab(text: tLang(lang, 'تفاصيل', 'Details', 'Détails', 'Detaylar', 'Butiran', 'Detail')),
-            Tab(text: tLang(lang, 'التغذية', 'Nutrition', 'Nutrition', 'Beslenme', 'Pemakanan', 'Nutrisi')),
-          ],
         ),
-      ),
-      body: TabBarView(
-        controller: _tab,
-        children: [
-          _buildOverview(profile, isPremium, isAr, isDark),
-          _buildDetails(profile, isPremium, isAr, isDark),
-          _buildNutrition(profile, isPremium, isAr, isDark),
-        ],
-      ),
+        SafeArea(
+          bottom: false,
+          child: Column(children: [
+            Padding(
+              padding: const EdgeInsetsDirectional.fromSTEB(20, 10, 16, 6),
+              child: Row(children: [
+                Expanded(
+                  child: Text(
+                    tLang(lang, 'مقاييس جسمي', 'My Body Metrics', 'Mes métriques corporelles', 'Vücut Metriklerim', 'Metrik Badan Saya', 'Metrik Tubuh Saya'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                        fontFamily: lang == 'ar' ? 'LemonBrush' : 'Bravoon',
+                        fontSize: 30,
+                        height: 1.05,
+                        color: textC),
+                  ),
+                ),
+                GlassIconBtn(
+                  icon: _editing ? Icons.check_rounded : Icons.edit_outlined,
+                  isDark: isDark,
+                  onTap: _editing
+                      ? () => _saveEdits(profile)
+                      : () => setState(() => _editing = true),
+                ),
+                const SizedBox(width: 8),
+                GlassIconBtn(
+                  icon: isDark ? Icons.wb_sunny_rounded : Icons.nightlight_round,
+                  isDark: isDark,
+                  onTap: () => ref.read(themeProvider.notifier).toggle(),
+                ),
+              ]),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+              child: Container(
+                padding: const EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: textC.withOpacity(0.06),
+                  borderRadius: BorderRadius.circular(22),
+                  border: Border.all(color: textC.withOpacity(0.08), width: 0.8),
+                ),
+                child: Row(
+                  children: List.generate(3, (i) {
+                    final sel = _tab.index == i;
+                    return Expanded(
+                      child: GestureDetector(
+                        behavior: HitTestBehavior.opaque,
+                        onTap: () => _tab.animateTo(i),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 250),
+                          curve: Curves.easeOutCubic,
+                          padding: const EdgeInsets.symmetric(vertical: 10),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(18),
+                            gradient: sel
+                                ? const LinearGradient(
+                                    colors: [Color(0xFF2BB567), Color(0xFF1E9E52)])
+                                : null,
+                            boxShadow: sel
+                                ? [
+                                    BoxShadow(
+                                        color: const Color(0xFF1E9E52).withOpacity(0.35),
+                                        blurRadius: 12,
+                                        offset: const Offset(0, 4))
+                                  ]
+                                : const <BoxShadow>[],
+                          ),
+                          child: Text(tabLabels[i],
+                              style: TextStyle(
+                                  fontFamily: 'Aligarh',
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w800,
+                                  color: sel ? Colors.white : muted)),
+                        ),
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ),
+            Expanded(
+              child: TabBarView(
+                controller: _tab,
+                children: [
+                  _buildOverview(profile, isPremium, isAr, isDark),
+                  _buildDetails(profile, isPremium, isAr, isDark),
+                  _buildNutrition(profile, isPremium, isAr, isDark),
+                ],
+              ),
+            ),
+          ]),
+        ),
+      ]),
     );
   }
 
@@ -126,7 +207,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
     final muted  = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     final textC  = isDark ? AppColors.darkText  : AppColors.lightText;
 
-    return ListView(padding: const EdgeInsets.all(14), children: [
+    return ListView(padding: const EdgeInsets.fromLTRB(14, 6, 14, 130), children: [
       // Edit panel
       if (_editing) _editPanel(p, isAr, isDark),
 
@@ -157,8 +238,11 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
                   child: Text(p.isMale ? '🧔' : '🧕', style: const TextStyle(fontSize: 40))))),
           ),
           const SizedBox(height: 8),
-          Text('${p.weightKg.toStringAsFixed(1)} kg  •  ${p.heightCm.toInt()} cm  •  ${p.age} ${isAr ? "سنة" : "yrs"}',
-              style: const TextStyle(fontFamily: 'Aligarh', color: Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
+          Wrap(spacing: 8, runSpacing: 6, alignment: WrapAlignment.center, children: [
+            _heroChip('${p.weightKg.toStringAsFixed(1)} kg'),
+            _heroChip('${p.heightCm.toInt()} cm'),
+            _heroChip('${p.age} ${isAr ? "سنة" : "yrs"}'),
+          ]),
           const SizedBox(height: 12),
           Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [
             _heroStat(tLang(lang, 'BMI', 'BMI', 'IMC', 'VKİ', 'BMI', 'IMT'), p.bmi.toStringAsFixed(1), _bmiColor(p.bmi), subtitle: isAr ? p.bmiCategoryAr : p.bmiCategoryEn),
@@ -217,13 +301,13 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
     final muted  = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     final textC  = isDark ? AppColors.darkText  : AppColors.lightText;
 
-    return ListView(padding: const EdgeInsets.all(14), children: [
+    return ListView(padding: const EdgeInsets.fromLTRB(14, 6, 14, 130), children: [
       if (!isPremium) _premiumBanner(isAr),
 
       _sectionTitle(tLang(lang, '🧬 تركيب الجسم', '🧬 Body Composition', '🧬 Composition corporelle', '🧬 Vücut Kompozisyonu', '🧬 Komposisi Badan', '🧬 Komposisi Tubuh'), textC),
       _detailRow(
         tLang(lang, 'نسبة الدهون (Deurenberg)', 'Body Fat % (Deurenberg)', '% Graisse (Deurenberg)', 'Vücut Yağ % (Deurenberg)', '% Lemak Badan (Deurenberg)', '% Lemak Tubuh (Deurenberg)'),
-        isPremium ? '${p.bodyFatPercent.toStringAsFixed(1)}%' : '🔒 Premium',
+        isPremium ? '${p.bodyFatPercent.toStringAsFixed(1)}％' : '🔒 Premium',
         isPremium ? _bfColor(p.bodyFatPercent, p.isMale) : Colors.grey,
         isPremium ? p.bodyFatCategory : (tLang(lang, 'افتح بريميوم', 'Unlock Premium', 'Débloquer Premium', 'Premium\'u Aç', 'Buka Kunci Premium', 'Buka Premium')),
         cardBg, textC, muted,
@@ -292,7 +376,7 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
     final muted  = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     final textC  = isDark ? AppColors.darkText  : AppColors.lightText;
 
-    return ListView(padding: const EdgeInsets.all(14), children: [
+    return ListView(padding: const EdgeInsets.fromLTRB(14, 6, 14, 130), children: [
       // Calorie breakdown
       _sectionTitle(tLang(lang, '🔥 توزيع السعرات', '🔥 Calorie Distribution', '🔥 Distribution calorique', '🔥 Kalori Dağılımı', '🔥 Pengagihan Kalori', '🔥 Distribusi Kalori'), textC),
       Container(
@@ -448,6 +532,20 @@ class _BodyScreenState extends ConsumerState<BodyScreen> with SingleTickerProvid
   }
 
   // ── Reusable widgets ─────────────────────────────────────
+  Widget _heroChip(String s) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.16),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Text(s,
+            style: const TextStyle(
+                fontFamily: 'Aligarh',
+                color: Colors.white,
+                fontSize: 13,
+                fontWeight: FontWeight.w700)),
+      );
+
   Widget _heroStat(String label, String value, Color color, {String subtitle = ''}) {
     return Column(children: [
       Text(value, style: TextStyle(fontFamily: 'Aligarh', fontSize: 22, fontWeight: FontWeight.w900, color: color)),

@@ -308,7 +308,7 @@ class WaterTile extends StatelessWidget {
                           fontSize: 14,
                           fontWeight: FontWeight.w800,
                           color: c)),
-                  Text('$cups / $goal  •  ${(pct * 100).toInt()}%',
+                  Text('$cups / $goal  •  ${(pct * 100).toInt()}％',
                       style: TextStyle(
                           fontFamily: 'Aligarh',
                           fontSize: 11,

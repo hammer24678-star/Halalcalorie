@@ -1544,7 +1544,7 @@ class _WorkoutPlayerState extends ConsumerState<WorkoutPlayerScreen>
           Container(
             margin: const EdgeInsets.only(bottom: 20),
             child: Column(children: [
-              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [ Text(t('التقدم الكلي', 'Overall Progress'), style: TextStyle(fontFamily:'Aligarh', fontSize: 11, color: muted)), Text('${(_overallProgress * 100).toInt()}%', style: TextStyle(fontFamily:'Aligarh', fontSize: 11,
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [ Text(t('التقدم الكلي', 'Overall Progress'), style: TextStyle(fontFamily:'Aligarh', fontSize: 11, color: muted)), Text('${(_overallProgress * 100).toInt()}％', style: TextStyle(fontFamily:'Aligarh', fontSize: 11,
                         fontWeight: FontWeight.w700, color: AppColors.brandGreen)),
               ]),
               const SizedBox(height: 6),

@@ -553,7 +553,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
             if ((isAr ? r.halalExplanation : r.halalExplanationEn).isNotEmpty)
               Text(isAr ? r.halalExplanation : r.halalExplanationEn, style: TextStyle(fontFamily:'Aligarh', fontSize: 11, color: muted, height: 1.4)),
           ])),
-          Column(children: [ Text('$confPct%', style: TextStyle(fontFamily: 'Aligarh', fontSize: 13, fontWeight: FontWeight.w700, color: muted)), Text(tLang(lang, 'دقة', 'conf.', 'conf.', 'conf.', 'conf.', 'conf.'), style: TextStyle(fontFamily: 'Aligarh', fontSize: 9, color: muted)),
+          Column(children: [ Text('$confPct％', style: TextStyle(fontFamily: 'Aligarh', fontSize: 13, fontWeight: FontWeight.w700, color: muted)), Text(tLang(lang, 'دقة', 'conf.', 'conf.', 'conf.', 'conf.', 'conf.'), style: TextStyle(fontFamily: 'Aligarh', fontSize: 9, color: muted)),
           ]),
         ]),
       ),

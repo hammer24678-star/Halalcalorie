@@ -335,13 +335,20 @@ Widget darkSafeAsset(
       ? ClipRRect(borderRadius: radius, child: img)
       : img;
   if (!isDark) return clipped;
-  // Plate defaults to the old flat forest tone for existing callers that
-  // don't pass one (mood faces, FoodThumb, status glyphs -- unchanged).
-  // New callers should pass the *actual* local surface color (via
-  // Color.alphaBlend for a tinted overlay) -- a mismatched flat plate is
-  // exactly what drew a visible box instead of hiding the fringe.
-  return ColoredBox(
-    color: plateColor ?? const Color(0xFF0E1A14),
+  // PATCH_V54_NO_BLACK_BOX: the old default plate (0xFF0E1A14) was the dark
+  // square people saw around every icon. The art itself is clean; only the
+  // faint semi-transparent edge pixels needed hiding, which the alpha filter
+  // below does without painting any box. A plate is only drawn when a caller
+  // passes the exact surface colour behind the icon.
+  final cleaned = ColorFiltered(
+    colorFilter: const ColorFilter.matrix(<double>[
+      1, 0, 0, 0, 0,
+      0, 1, 0, 0, 0,
+      0, 0, 1, 0, 0,
+      0, 0, 0, 3, -330,
+    ]),
     child: clipped,
   );
+  if (plateColor == null) return cleaned;
+  return ColoredBox(color: plateColor, child: cleaned);
 }

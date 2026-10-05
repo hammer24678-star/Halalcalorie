@@ -15,6 +15,7 @@ import '../../core/motion.dart';
 import '../../core/fx.dart';
 import '../../core/fx4.dart';
 import '../../core/fx6.dart';
+import 'achievements_card.dart';
 
 // ══════════════════════════════════════════════════
 //  ProfileScreen
@@ -314,7 +315,7 @@ class ProfileScreen extends ConsumerWidget {
 
               // ── Achievements ──────────────────────────────
               Reveal(index: 5,
-                child: _achievementsCard(isPremium, isAr, isDark, ref, context)),
+                child: AchievementsCard(isPremium: isPremium, isAr: isAr, isDark: isDark)), // PATCH_V54_ACHIEVEMENTS
               const SizedBox(height: 14),
 
               // ── Premium upsell ────────────────────────────
@@ -343,8 +344,8 @@ class ProfileScreen extends ConsumerWidget {
                                 fontWeight: FontWeight.w900, fontSize: 15.5,
                                 color: Color(0xFFF0CF98))),
                         const SizedBox(height: 3),
-                        Text(t('ماسحات غير محدودة + ١٨٠ تمرين + مخطط AI + مقاييس دقيقة',
-                               'Unlimited scans + 180 workouts + AI planner + precise body metrics'),
+                        Text(t('ماسحات غير محدودة • ١٨٠ تمرين • مخطط AI • مقاييس دقيقة',
+                               'Unlimited scans • 180 workouts • AI planner • precise body metrics'),
                             style: const TextStyle(fontFamily: 'Aligarh',
                                 fontSize: 11.5, height: 1.4, color: Colors.white70)),
                       ])),

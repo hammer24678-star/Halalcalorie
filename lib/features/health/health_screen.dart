@@ -386,7 +386,7 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                     ]),
                 const SizedBox(height: 4),
                 Text(
-                    '${(water.cups * 0.25).toStringAsFixed(2)} ${isAr ? "لتر" : "L"}  •  ${(water.percent * 100).toInt()}%',
+                    '${(water.cups * 0.25).toStringAsFixed(2)} ${isAr ? "لتر" : "L"}  •  ${(water.percent * 100).toInt()}％',
                     style: TextStyle(
                         fontFamily: 'Aligarh',
                         fontSize: 12.5,

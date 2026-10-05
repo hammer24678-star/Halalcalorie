@@ -579,8 +579,11 @@ class _FoodThumbState extends State<FoodThumb> {
 
   @override
   Widget build(BuildContext context) {
-    final bg = widget.background ??
-        Theme.of(context).colorScheme.primary.withOpacity(0.08);
+    // PATCH_V54_THUMB: no tinted tile behind the icon in dark mode
+    final bg = Theme.of(context).brightness == Brightness.dark
+        ? Colors.transparent
+        : (widget.background ??
+            Theme.of(context).colorScheme.primary.withOpacity(0.08));
     return ClipRRect(
       borderRadius: BorderRadius.circular(widget.radius),
       child: Container(
