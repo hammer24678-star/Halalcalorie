@@ -13,6 +13,7 @@ import '../../core/theme.dart';
 import '../../core/fx.dart';
 import '../../core/fx2.dart';
 import '../../core/motion.dart';
+import '../../core/fx8.dart';
 import '../../core/providers.dart';
 import '../../data/models/user_profile.dart';
 import '../../core/fx6.dart';
@@ -31,11 +32,6 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
 
   final _pageCtrl = PageController();
   int _page = 0;
-
-  // ── Page transition animations ──────────────────────────
-  late AnimationController _enterCtrl;
-  late Animation<double>   _enterFade;
-  late Animation<Offset>   _enterSlide;
 
   // ── Background orb animation ────────────────────────────
   late AnimationController _orbCtrl;
@@ -60,23 +56,13 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
   @override
   void initState() {
     super.initState();
-    _enterCtrl = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 550));
-    _enterFade  = CurvedAnimation(parent: _enterCtrl, curve: Curves.easeOut);
-    _enterSlide = Tween<Offset>(
-      begin: const Offset(0.06, 0), end: Offset.zero)
-      .animate(CurvedAnimation(parent: _enterCtrl, curve: Curves.easeOutCubic));
-
     _orbCtrl = AnimationController(
       vsync: this, duration: const Duration(seconds: 6))..repeat(reverse: true);
-
-    _enterCtrl.forward();
   }
 
   @override
   void dispose() {
     _pageCtrl.dispose();
-    _enterCtrl.dispose();
     _orbCtrl.dispose();
     _ageCtrl.dispose();
     _heightCtrl.dispose();
@@ -182,20 +168,13 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
               child: PageView.builder(
                 controller: _pageCtrl,
                 physics: const NeverScrollableScrollPhysics(),
-                onPageChanged: (i) {
-                  setState(() => _page = i);
-                  _enterCtrl.forward(from: 0);
-                },
+                onPageChanged: (i) => setState(() => _page = i),
                 itemCount: _kTotalPages,
-                itemBuilder: (ctx, i) {
-                  return FadeTransition(
-                    opacity: _enterFade,
-                    child: SlideTransition(
-                      position: _enterSlide,
-                      child: _buildPage(i, isDark, lang),
-                    ),
-                  );
-                },
+                itemBuilder: (ctx, i) => PageSlideFx(
+                  controller: _pageCtrl,
+                  index: i,
+                  child: _buildPage(i, isDark, lang),
+                ),
               ),
             ),
 
@@ -231,13 +210,13 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
 
       // ── Q0: Gender ──────────────────────────────────────
       case 0: return _QuestionShell(
-        emoji: '🧑',
+        glyph: GlyphKind.person,
         title: 'من أنت؟',
         titleEn: 'Who are you?',
         isDark: isDark,
         child: Row(children: [
           _GenderCard(
-            emoji: '🧔', labelAr: 'رجل', labelEn: 'Man',
+            glyph: GlyphKind.man, labelAr: 'رجل', labelEn: 'Man',
             selected: _gender == 'brothers',
             color: AppColors.brandGreen,
             isDark: isDark,
@@ -245,7 +224,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
           ),
           const SizedBox(width: 14),
           _GenderCard(
-            emoji: '🧕', labelAr: 'بنت', labelEn: 'Female',
+            glyph: GlyphKind.woman, labelAr: 'بنت', labelEn: 'Female',
             selected: _gender == 'sisters',
             color: AppColors.accentGold,
             isDark: isDark,
@@ -256,7 +235,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
 
       // ── Q1: Goal ────────────────────────────────────────
       case 1: return _QuestionShell(
-        emoji: '🎯',
+        glyph: GlyphKind.target,
         title: 'ما هدفك؟',
         titleEn: 'What is your goal?',
         isDark: isDark,
@@ -267,7 +246,8 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
             return Padding(
               padding: const EdgeInsets.only(bottom: 10),
               child: _SelectTile(
-                emoji: goal.emoji(),
+                glyph: _goalGlyph(goal),
+                index: e.key,
                 title: goal.nameAr(),
                 titleEn: goal.nameEn(),
                 selected: selected,
@@ -281,7 +261,7 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
 
       // ── Q2: Activity ────────────────────────────────────
       case 2: return _QuestionShell(
-        emoji: '⚡',
+        glyph: GlyphKind.bolt,
         title: 'مستوى نشاطك؟',
         titleEn: 'Activity level?',
         isDark: isDark,
@@ -292,7 +272,8 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
             return Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: _SelectTile(
-                emoji: act.emoji(),
+                glyph: _activityGlyph(act),
+                index: e.key,
                 title: act.nameAr(),
                 titleEn: act.nameEn(),
                 selected: selected,
@@ -306,13 +287,14 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
 
       // ── Q3: Age ─────────────────────────────────────────
       case 3: return _QuestionShell(
-        emoji: '🎂',
+        glyph: GlyphKind.cake,
         title: 'كم عمرك؟',
         titleEn: 'How old are you?',
         isDark: isDark,
-        child: _NumberSlider(
+        child: RulerPicker(
           value: _age.toDouble(),
-          min: 10, max: 80,
+          min: 10, max: 80, step: 1, gap: 14,
+          midEvery: 1, majorEvery: 5, labelEvery: 5, nudge: 1,
           unit: 'سنة',
           unitEn: 'years',
           isAr: isAr,
@@ -324,13 +306,14 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
 
       // ── Q4: Height ──────────────────────────────────────
       case 4: return _QuestionShell(
-        emoji: '📏',
+        glyph: GlyphKind.ruler,
         title: 'كم طولك؟',
         titleEn: 'Your height?',
         isDark: isDark,
-        child: _NumberSlider(
+        child: RulerPicker(
           value: _height,
-          min: 140, max: 210,
+          min: 140, max: 210, step: 0.5, gap: 12,
+          midEvery: 2, majorEvery: 10, labelEvery: 10, nudge: 1,
           unit: 'سم',
           unitEn: 'cm',
           isAr: isAr,
@@ -342,13 +325,14 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
 
       // ── Q5: Weight ──────────────────────────────────────
       case 5: return _QuestionShell(
-        emoji: '⚖️',
+        glyph: GlyphKind.scale,
         title: 'كم وزنك؟',
         titleEn: 'Your weight?',
         isDark: isDark,
-        child: _NumberSlider(
+        child: RulerPicker(
           value: _weight,
-          min: 30, max: 180,
+          min: 30, max: 180, step: 0.1, gap: 7,
+          midEvery: 5, majorEvery: 10, labelEvery: 10, nudge: 0.5,
           unit: 'كجم',
           unitEn: 'kg',
           isAr: isAr,
@@ -399,7 +383,8 @@ class _OnboardingState extends ConsumerState<OnboardingScreen>
             duration: const Duration(milliseconds: 700),
             curve: Curves.elasticOut,
             builder: (_, v, child) => Transform.scale(scale: v, child: child),
-            child: const EmojiIcon('🌐', size: 72),
+            child: const PaintedGlyph(
+                kind: GlyphKind.globe, color: AppColors.brandGreen, size: 84),
           ),
           const SizedBox(height: 20),
           Text('اختر لغتك', style: TextStyle(
@@ -608,17 +593,19 @@ class _WelcomePage extends StatelessWidget {
 //  QUESTION SHELL
 // ═══════════════════════════════════════════════════════════
 class _QuestionShell extends ConsumerWidget {
-  final String emoji, title, titleEn;
+  final GlyphKind glyph;
+  final String title, titleEn;
   final bool isDark;
   final Widget child;
   const _QuestionShell({
-    required this.emoji, required this.title,
+    required this.glyph, required this.title,
     required this.titleEn, required this.isDark, required this.child,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isAr = ref.watch(languageProvider) == 'ar' || ref.watch(languageProvider) == 'ur';
+    final lang = ref.watch(languageProvider);
+    final isAr = lang == 'ar' || lang == 'ur';
     return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
       child: Column(
@@ -626,37 +613,31 @@ class _QuestionShell extends ConsumerWidget {
         children: [
           TweenAnimationBuilder<double>(
             tween: Tween<double>(begin: 0.7, end: 1.0),
-            duration: const Duration(milliseconds: 520),
+            duration: const Duration(milliseconds: 560),
             curve: Curves.easeOutBack,
             builder: (_, v, c) => Transform.scale(scale: v, child: c),
-            child: Container(
-              width: 64, height: 64,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft, end: Alignment.bottomRight,
-                  colors: [
-                    AppColors.halalGreen.withOpacity(0.28),
-                    AppColors.halalGreen.withOpacity(0.06),
-                  ],
-                ),
-                border: Border.all(
-                    color: AppColors.halalGreen.withOpacity(0.4), width: 0.8),
-              ),
-              child: Center(
-                  child: EmojiIcon(emoji, size: 32)),
+            child: GlyphTile(
+              glyph: glyph, color: AppColors.halalGreen, size: 72),
+          ),
+          const SizedBox(height: 14),
+          Reveal(
+            index: 1,
+            offset: 0.2,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(isAr ? title : titleEn, style: TextStyle(
+                  fontFamily: 'Aligarh', fontSize: 28, fontWeight: FontWeight.w900,
+                  color: isDark ? Colors.white : const Color(0xFF1F2A1F),
+                )),
+                Text(isAr ? titleEn : title, style: TextStyle(
+                  fontFamily: 'Aligarh', fontSize: 13,
+                  color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D),
+                )),
+              ],
             ),
           ),
-          const SizedBox(height: 10),
-          Text(isAr ? title : titleEn, style: TextStyle(
-            fontFamily: 'Aligarh', fontSize: 28, fontWeight: FontWeight.w900,
-            color: isDark ? Colors.white : const Color(0xFF1F2A1F),
-          )),
-          Text(isAr ? titleEn : title, style: TextStyle(
-            fontFamily: 'Aligarh', fontSize: 13,
-            color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D),
-          )),
-          const SizedBox(height: 24),
+          const SizedBox(height: 26),
           child,
         ],
       ),
@@ -668,52 +649,65 @@ class _QuestionShell extends ConsumerWidget {
 //  GENDER CARD
 // ═══════════════════════════════════════════════════════════
 class _GenderCard extends ConsumerWidget {
-  final String emoji, labelAr, labelEn;
+  final GlyphKind glyph;
+  final String labelAr, labelEn;
   final bool selected, isDark;
   final Color color;
   final VoidCallback onTap;
   const _GenderCard({
-    required this.emoji, required this.labelAr, required this.labelEn,
+    required this.glyph, required this.labelAr, required this.labelEn,
     required this.selected, required this.isDark, required this.color,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isAr = ref.watch(languageProvider) == 'ar' || ref.watch(languageProvider) == 'ur';
-    return Expanded(child: GestureDetector(
+    final lang = ref.watch(languageProvider);
+    final isAr = lang == 'ar' || lang == 'ur';
+    return Expanded(child: PressFx(
       onTap: onTap,
+      scale: 0.96,
       child: AnimatedContainer(
-        duration: const Duration(milliseconds: 250),
-        curve: Curves.easeOutBack,
-        height: 150,
+        duration: const Duration(milliseconds: 260),
+        curve: Curves.easeOutCubic,
+        height: 176,
         decoration: BoxDecoration(
           color: selected
             ? color.withOpacity(0.12)
             : (isDark ? AppColors.darkCard : Colors.white),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: BorderRadius.circular(24),
           border: Border.all(
             color: selected ? color : (isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF)),
-            width: selected ? 2 : 0.5,
+            width: selected ? 2 : 0.6,
           ),
+          boxShadow: selected
+            ? [BoxShadow(color: color.withOpacity(0.22),
+                blurRadius: 18, offset: const Offset(0, 6))]
+            : const [],
         ),
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text(emoji, style: TextStyle(
-            fontSize: selected ? 52 : 44)),
-          const SizedBox(height: 10),
+          AnimatedScale(
+            scale: selected ? 1.08 : 1.0,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOutBack,
+            child: GlyphTile(
+              glyph: glyph, color: color, size: 78, filled: selected),
+          ),
+          const SizedBox(height: 14),
           Text(isAr ? labelAr : labelEn, style: TextStyle(
             fontFamily: 'Aligarh', fontSize: 18, fontWeight: FontWeight.w800,
             color: selected ? color : (isDark ? Colors.white : const Color(0xFF1F2A1F)),
           )),
-          if (selected)
-            Padding(
-              padding: const EdgeInsets.only(top: 6),
-              child: Container(
-                width: 24, height: 24,
-                decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-                child: const Icon(Icons.check_rounded, color: Colors.white, size: 14),
-              ),
+          const SizedBox(height: 8),
+          AnimatedOpacity(
+            opacity: selected ? 1.0 : 0.0,
+            duration: const Duration(milliseconds: 220),
+            child: Container(
+              width: 22, height: 22,
+              decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+              child: const Icon(Icons.check_rounded, color: Colors.white, size: 14),
             ),
+          ),
         ]),
       ),
     ));
@@ -788,188 +782,75 @@ class _LangChoice extends StatelessWidget {
 //  SELECT TILE
 // ═══════════════════════════════════════════════════════════
 class _SelectTile extends ConsumerWidget {
-  final String emoji, title;
+  final GlyphKind glyph;
+  final String title;
   final String? titleEn;
   final bool selected, isDark;
+  final int index;
   final VoidCallback onTap;
   const _SelectTile({
-    required this.emoji, required this.title,
-    this.titleEn,
+    required this.glyph, required this.title,
+    this.titleEn, this.index = 0,
     required this.selected, required this.isDark, required this.onTap,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isAr = ref.watch(languageProvider) == 'ar' || ref.watch(languageProvider) == 'ur';
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 220),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
-        decoration: BoxDecoration(
-          color: selected
-            ? AppColors.halalGreen.withOpacity(0.1)
-            : (isDark ? AppColors.darkCard : Colors.white),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
+    final lang = ref.watch(languageProvider);
+    final isAr = lang == 'ar' || lang == 'ur';
+    return Reveal(
+      index: index,
+      offset: 0.14,
+      child: PressFx(
+        onTap: onTap,
+        scale: 0.98,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 240),
+          curve: Curves.easeOutCubic,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
             color: selected
-              ? AppColors.halalGreen
-              : (isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF)),
-            width: selected ? 2 : 0.5,
+              ? AppColors.halalGreen.withOpacity(0.10)
+              : (isDark ? AppColors.darkCard : Colors.white),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: selected
+                ? AppColors.halalGreen
+                : (isDark ? AppColors.darkBorder : const Color(0xFFE8E4DF)),
+              width: selected ? 2 : 0.6,
+            ),
           ),
-        ),
-        child: Row(children: [
-          EmojiIcon(emoji, size: 22),
-          const SizedBox(width: 12),
-          Expanded(child: Text((!isAr && titleEn != null) ? titleEn! : title, style: TextStyle(
-            fontFamily: 'Aligarh', fontSize: 14,
-            fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
-            color: selected
-              ? AppColors.halalGreen
-              : (isDark ? Colors.white : const Color(0xFF1F2A1F)),
-          ))),
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 220),
-            width: 22, height: 22,
-            decoration: BoxDecoration(
-              color: selected ? AppColors.halalGreen : Colors.transparent,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: selected
-                  ? AppColors.halalGreen
-                  : (isDark ? const Color(0xFF7D8590) : const Color(0xFFCCCCCC)),
-                width: 2,
+          child: Row(children: [
+            GlyphTile(
+              glyph: glyph, color: AppColors.halalGreen,
+              size: 44, filled: selected, animate: false),
+            const SizedBox(width: 12),
+            Expanded(child: Text((!isAr && titleEn != null) ? titleEn! : title, style: TextStyle(
+              fontFamily: 'Aligarh', fontSize: 14,
+              fontWeight: selected ? FontWeight.w800 : FontWeight.w500,
+              color: selected
+                ? AppColors.halalGreen
+                : (isDark ? Colors.white : const Color(0xFF1F2A1F)),
+            ))),
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              width: 22, height: 22,
+              decoration: BoxDecoration(
+                color: selected ? AppColors.halalGreen : Colors.transparent,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: selected
+                    ? AppColors.halalGreen
+                    : (isDark ? const Color(0xFF7D8590) : const Color(0xFFCCCCCC)),
+                  width: 2,
+                ),
               ),
+              child: selected
+                ? const Icon(Icons.check_rounded, color: Colors.white, size: 13)
+                : null,
             ),
-            child: selected
-              ? const Icon(Icons.check_rounded, color: Colors.white, size: 13)
-              : null,
-          ),
-        ]),
-      ),
-    );
-  }
-}
-
-// ═══════════════════════════════════════════════════════════
-//  NUMBER SLIDER
-// ═══════════════════════════════════════════════════════════
-class _NumberSlider extends StatelessWidget {
-  final double value, min, max;
-  final String unit, unitEn;
-  final Color color;
-  final bool isDark;
-  final bool isAr;
-  final void Function(double) onChanged;
-  const _NumberSlider({
-    required this.value, required this.min, required this.max,
-    required this.unit, required this.unitEn,
-    required this.color, required this.isDark,
-    this.isAr = true, required this.onChanged,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final pct = ((value - min) / (max - min)).clamp(0.0, 1.0);
-    return Column(children: [
-      // Big number display
-      TweenAnimationBuilder<double>(
-        tween: Tween(begin: value - 5, end: value),
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeOut,
-        builder: (_, v, __) => Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            Text(v.toStringAsFixed(v % 1 == 0 ? 0 : 1),
-              style: TextStyle(
-                fontFamily: 'Aligarh', fontSize: 72, fontWeight: FontWeight.w900,
-                color: color, height: 1,
-              )),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 12, left: 8),
-              child: Text(isAr ? unit : unitEn, style: TextStyle(
-                fontFamily: 'Aligarh', fontSize: 18,
-                fontWeight: FontWeight.w700, color: color.withOpacity(0.7),
-              )),
-            ),
-          ],
+          ]),
         ),
-      ),
-
-      const SizedBox(height: 32),
-
-      // Custom slider
-      SliderTheme(
-        data: SliderThemeData(
-          trackHeight: 6,
-          activeTrackColor: color,
-          inactiveTrackColor: color.withOpacity(0.15),
-          thumbColor: color,
-          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 14),
-          overlayShape: const RoundSliderOverlayShape(overlayRadius: 28),
-          overlayColor: color.withOpacity(0.15),
-        ),
-        child: Slider(
-          value: value.clamp(min, max),
-          min: min, max: max,
-          onChanged: (v) {
-            HapticFeedback.selectionClick();
-            onChanged(v);
-          },
-        ),
-      ),
-
-      const SizedBox(height: 8),
-
-      // Min / Max labels
-      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        Text('${min.toInt()} ${isAr ? unit : unitEn}',
-          style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
-            color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D))),
-        Text('${max.toInt()} ${isAr ? unit : unitEn}',
-          style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
-            color: isDark ? const Color(0xFF7D8590) : const Color(0xFF6B7A8D))),
-      ]),
-
-      const SizedBox(height: 24),
-
-      // Quick tap buttons
-      Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-        _AdjustBtn(label: '−5', onTap: () => onChanged((value - 5).clamp(min, max)), color: color),
-        const SizedBox(width: 10),
-        _AdjustBtn(label: '−1', onTap: () => onChanged((value - 1).clamp(min, max)), color: color),
-        const SizedBox(width: 10),
-        _AdjustBtn(label: '+1', onTap: () => onChanged((value + 1).clamp(min, max)), color: color),
-        const SizedBox(width: 10),
-        _AdjustBtn(label: '+5', onTap: () => onChanged((value + 5).clamp(min, max)), color: color),
-      ]),
-    ]);
-  }
-}
-
-class _AdjustBtn extends StatelessWidget {
-  final String label;
-  final VoidCallback onTap;
-  final Color color;
-  const _AdjustBtn({required this.label, required this.onTap, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () { HapticFeedback.lightImpact(); onTap(); },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-        decoration: BoxDecoration(
-          color: color.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: color.withOpacity(0.3)),
-        ),
-        child: Text(label, style: TextStyle(
-          fontFamily: 'Aligarh', fontSize: 14,
-          fontWeight: FontWeight.w800, color: color,
-        )),
       ),
     );
   }
@@ -1037,7 +918,8 @@ class _SummaryPage extends ConsumerWidget {
           builder: (_, v, child) => Opacity(opacity: v,
             child: Transform.translate(offset: Offset(0, 20 * (1 - v)), child: child)),
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            const EmojiIcon('🎉', size: 44),
+            const PaintedGlyph(
+              kind: GlyphKind.sparkle, color: AppColors.accentGold, size: 54),
             const SizedBox(height: 8),
             Text(t('كل شيء جاهز!', 'All Set!'), style: TextStyle(
               fontFamily: 'Aligarh', fontSize: 28, fontWeight: FontWeight.w900,
@@ -1060,13 +942,13 @@ class _SummaryPage extends ConsumerWidget {
           crossAxisSpacing: 10,
           childAspectRatio: 1.5,
           children: [
-            _SummaryTile('⚖️', t('الوزن', 'Weight'), weightStr,
+            _SummaryTile(GlyphKind.scale, t('الوزن', 'Weight'), weightStr,
               AppColors.halalGreen, card, border, isDark),
-            _SummaryTile('📏', t('الطول', 'Height'), heightStr,
+            _SummaryTile(GlyphKind.ruler, t('الطول', 'Height'), heightStr,
               AppColors.waterBlue, card, border, isDark),
-            _SummaryTile('🎂', t('العمر', 'Age'), ageStr,
+            _SummaryTile(GlyphKind.cake, t('العمر', 'Age'), ageStr,
               AppColors.accentGold, card, border, isDark),
-            _SummaryTile('📊', 'BMI', bmi.toStringAsFixed(1),
+            _SummaryTile(GlyphKind.bars, 'BMI', bmi.toStringAsFixed(1),
               bmiColor, card, border, isDark),
           ],
         ),
@@ -1088,7 +970,8 @@ class _SummaryPage extends ConsumerWidget {
             )],
           ),
           child: Row(children: [
-            const EmojiIcon('🔥', size: 36),
+            const PaintedGlyph(
+              kind: GlyphKind.flame, color: Colors.white, size: 40),
             const SizedBox(width: 14),
             Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(t('هدف السعرات اليومي',
@@ -1117,7 +1000,8 @@ class _SummaryPage extends ConsumerWidget {
             boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 22, offset: Offset(0, 8))],
           ),
           child: Row(children: [
-            Text(goal.emoji(), style: const TextStyle(fontSize: 28)),
+            PaintedGlyph(
+              kind: _goalGlyph(goal), color: AppColors.halalGreen, size: 32),
             const SizedBox(width: 12),
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
               Text(t('هدفك', 'Your Goal'), style: TextStyle(
@@ -1136,16 +1020,17 @@ class _SummaryPage extends ConsumerWidget {
 }
 
 class _SummaryTile extends StatelessWidget {
-  final String emoji, label, value;
+  final GlyphKind glyph;
+  final String label, value;
   final Color color, card, border;
   final bool isDark;
-  const _SummaryTile(this.emoji, this.label, this.value,
+  const _SummaryTile(this.glyph, this.label, this.value,
     this.color, this.card, this.border, this.isDark);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: card,
         borderRadius: BorderRadius.circular(22),
@@ -1153,7 +1038,7 @@ class _SummaryTile extends StatelessWidget {
         boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 22, offset: Offset(0, 8))],
       ),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        EmojiIcon(emoji, size: 22),
+        GlyphTile(glyph: glyph, color: color, size: 28),
         const Spacer(),
         Text(value, style: TextStyle(
           fontFamily: 'Aligarh', fontSize: 18,
@@ -1346,3 +1231,23 @@ class _GlowBar extends StatelessWidget {
     );
   }
 }
+
+
+// ═══════════════════════════════════════════════════════════
+//  GLYPH MAPPING (v56)
+// ═══════════════════════════════════════════════════════════
+GlyphKind _goalGlyph(FitnessGoal g) => switch (g) {
+  FitnessGoal.loseWeight    => GlyphKind.arrowDown,
+  FitnessGoal.gainMuscle    => GlyphKind.dumbbell,
+  FitnessGoal.maintain      => GlyphKind.balance,
+  FitnessGoal.improveHealth => GlyphKind.heart,
+  FitnessGoal.ramadanPrep   => GlyphKind.crescent,
+};
+
+GlyphKind _activityGlyph(ActivityLevel a) => switch (a) {
+  ActivityLevel.sedentary        => GlyphKind.chair,
+  ActivityLevel.lightlyActive    => GlyphKind.steps,
+  ActivityLevel.moderatelyActive => GlyphKind.pulse,
+  ActivityLevel.veryActive       => GlyphKind.flame,
+  ActivityLevel.extraActive      => GlyphKind.trophy,
+};

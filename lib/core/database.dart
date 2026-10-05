@@ -15,7 +15,7 @@ class AppDatabase {
     final dbPath = await getDatabasesPath();
     return openDatabase(
       p.join(dbPath, 'halalcalorie.db'),
-      version: 8,
+      version: 9,
       onCreate: _create,
       onUpgrade: _upgrade,
     );
@@ -36,6 +36,12 @@ class AppDatabase {
     }
     await _create(db, newV);
     if (oldV < 7) await _migrateLegacyProgress(db);
+    if (oldV < 9) {
+      // v9: real calories per workout (older rows stay NULL = minutes x 5)
+      try {
+        await db.execute('ALTER TABLE workout_log ADD COLUMN kcal REAL');
+      } catch (_) {}
+    }
   }
 
   // v7 renamed the progress table and added an xp column. Carry the old
@@ -90,6 +96,7 @@ class AppDatabase {
       'id INTEGER PRIMARY KEY AUTOINCREMENT,'
       'workout_id TEXT NOT NULL,'
       'minutes INTEGER NOT NULL,'
+      'kcal REAL,'
       'date_key TEXT NOT NULL,'
       'created TEXT NOT NULL)'
     );
@@ -124,6 +131,18 @@ class AppDatabase {
     await db.execute(
       'CREATE INDEX IF NOT EXISTS idx_lift_sets_exercise '
       'ON lift_sets(exercise_id)'
+    );
+    // ── Workout sessions — one row per finished / saved session ──
+    await db.execute(
+      'CREATE TABLE IF NOT EXISTS workout_sessions ('
+      'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+      'workout_id TEXT NOT NULL,'
+      'seconds INTEGER DEFAULT 0,'
+      'kcal REAL DEFAULT 0,'
+      'steps_done INTEGER DEFAULT 0,'
+      'steps_total INTEGER DEFAULT 0,'
+      'date_key TEXT NOT NULL,'
+      'created TEXT NOT NULL)'
     );
   }
 
@@ -204,9 +223,9 @@ class AppDatabase {
     if (u.isNotEmpty) await d.update('daily_summary', u, where:'date_key=?', whereArgs:[key]);
   }
 
-  static Future<void> logWorkout(String workoutId, int minutes) async {
+  static Future<void> logWorkout(String workoutId, int minutes, {double? kcal}) async {
     final d = await db;
-    await d.insert('workout_log', {'workout_id':workoutId,'minutes':minutes,'date_key':_today(),'created':DateTime.now().toIso8601String()});
+    await d.insert('workout_log', {'workout_id':workoutId,'minutes':minutes,'kcal':kcal,'date_key':_today(),'created':DateTime.now().toIso8601String()});
   }
 
   static Future<int> getTodayWorkoutMinutes() async {
@@ -218,11 +237,11 @@ class AppDatabase {
   // Calories burned today — estimated at 5 kcal per workout minute
   static Future<double> getTodayBurnedKcal() async {
     final d = await db;
+    // v57: real kcal when the session recorded it, else 5 kcal per minute
     final rows = await d.rawQuery(
-        'SELECT SUM(minutes) as total FROM workout_log WHERE date_key=?',
+        'SELECT SUM(COALESCE(kcal, minutes * 5.0)) as total FROM workout_log WHERE date_key=?',
         [_today()]);
-    final mins = (rows.first['total'] as int?) ?? 0;
-    return mins * 5.0;
+    return (rows.first['total'] as num?)?.toDouble() ?? 0.0;
   }
 
   // Distinct workout days in the past 7 days
@@ -232,6 +251,42 @@ class AppDatabase {
         'SELECT DISTINCT date_key FROM workout_log WHERE date_key >= ?',
         [_daysAgoKey(6)]);
     return rows.map((r) => r['date_key'] as String).toSet();
+  }
+
+  // ── v57: workout sessions ───────────────────────────────────
+  static Future<void> logSession({
+    required String workoutId,
+    required int seconds,
+    required double kcal,
+    required int stepsDone,
+    required int stepsTotal,
+  }) async {
+    final d = await db;
+    await d.insert('workout_sessions', {
+      'workout_id': workoutId, 'seconds': seconds, 'kcal': kcal,
+      'steps_done': stepsDone, 'steps_total': stepsTotal,
+      'date_key': _today(), 'created': DateTime.now().toIso8601String(),
+    });
+  }
+
+  static Future<List<Map<String, dynamic>>> getSessions({int limit = 40}) async {
+    final d = await db;
+    return d.query('workout_sessions', orderBy: 'id DESC', limit: limit);
+  }
+
+  static Future<Map<String, dynamic>?> getLastSession(String workoutId) async {
+    final d = await db;
+    final rows = await d.query('workout_sessions',
+        where: 'workout_id=?', whereArgs: [workoutId], orderBy: 'id DESC', limit: 1);
+    return rows.isNotEmpty ? rows.first : null;
+  }
+
+  static Future<List<Map<String, dynamic>>> getDailyWorkoutStats(int days) async {
+    final d = await db;
+    return d.rawQuery(
+      'SELECT date_key, SUM(seconds) AS s, SUM(kcal) AS k, COUNT(*) AS c '
+      'FROM workout_sessions WHERE date_key >= ? GROUP BY date_key',
+      [_daysAgoKey(days - 1)]);
   }
 
   // ── Ascent helpers ──────────────────────────────────────────

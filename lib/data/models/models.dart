@@ -28,10 +28,12 @@ class ScanResult {
   // Nutrition from Open Food Facts API (null = no data)
   final int? kcal;
   final double? proteinG, carbsG, fatG;
+  /// v57: ingredient flags, Nutri-Score, portion size, etc. (JSON-safe)
+  final Map<String, dynamic>? details;
   ScanResult({
     required this.barcode, required this.name, this.brand,
     required this.status, this.certs = const [], this.notes, DateTime? scannedAt,
-    this.kcal, this.proteinG, this.carbsG, this.fatG,
+    this.kcal, this.proteinG, this.carbsG, this.fatG, this.details,
   }) : scannedAt = scannedAt ?? DateTime.now();
 }
 

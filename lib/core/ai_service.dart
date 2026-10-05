@@ -58,6 +58,7 @@ class AIService {
     required String systemPrompt,
     required String userPrompt,
     int maxTokens = 1024,
+    bool rawText = false,
   }) async {
     if (_apiKey.isEmpty) throw const ApiKeyMissingException();
     final b64  = await _toBase64(imagePath);
@@ -95,6 +96,7 @@ class AIService {
     }
     final data = jsonDecode(resp.body) as Map<String, dynamic>;
     final raw  = _extractGroq(data);
+    if (rawText) return raw;
     final arrMatch = RegExp(r'\[[\s\S]*\]').firstMatch(raw);
     if (arrMatch != null) return arrMatch.group(0)!;
     final objMatch = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
@@ -145,6 +147,33 @@ class AIService {
   static String _extractJson(String raw) {
     final m = RegExp(r'\{[\s\S]*\}').firstMatch(raw);
     return m?.group(0) ?? '{}';
+  }
+
+  // ════════════════════════════════════════════════
+  //  INGREDIENT LABEL READER (v57)
+  // ════════════════════════════════════════════════
+  static Future<String> readIngredientLabel({
+    required String imagePath,
+    required String language,
+  }) async {
+    const system = 'You read food packaging. Return ONLY JSON like '
+        '{"ingredients":"<the complete ingredient list exactly as printed, '
+        'comma separated, original language; empty string if no ingredient '
+        'list is visible>"}';
+    final raw = await _callVision(
+      imagePath: imagePath,
+      systemPrompt: system,
+      userPrompt: 'Read the ingredient list on this package.',
+      maxTokens: 800,
+      rawText: true,
+    );
+    final obj = RegExp(r'\{[\s\S]*\}').firstMatch(raw)?.group(0) ?? '';
+    try {
+      final j = jsonDecode(obj);
+      if (j is Map) return ('${j['ingredients'] ?? ''}').trim();
+    } catch (_) {}
+    final m = RegExp(r'"ingredients"\s*:\s*"([^"]*)"').firstMatch(raw);
+    return (m?.group(1) ?? '').trim();
   }
 
   // ════════════════════════════════════════════════

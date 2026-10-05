@@ -1,6 +1,7 @@
 // providers.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart'; import'package:shared_preferences/shared_preferences.dart'; import'package:go_router/go_router.dart'; import'../data/models/models.dart'; import'../data/models/user_profile.dart'; import'router.dart'; import'revenuecat_service.dart'; import'database.dart'; import'health_service.dart'; import'ascent.dart'; import'strength.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'scan_store.dart';
 export 'ascent.dart';
 export 'strength.dart';
 
@@ -299,7 +300,7 @@ final stepTrackerProvider = Provider<StepTracker>((ref) => StepTracker(ref));
 final workoutMinutesProvider = StateNotifierProvider<WorkoutMinutesNotifier, int>((ref) => WorkoutMinutesNotifier());
 class WorkoutMinutesNotifier extends StateNotifier<int> { WorkoutMinutesNotifier() : super(0) { _init(); }
   Future<void> _init() async { state = await AppDatabase.getTodayWorkoutMinutes(); }
-  Future<void> add(String workoutId, int minutes) async { await AppDatabase.logWorkout(workoutId, minutes); state = state + minutes; }
+  Future<void> add(String workoutId, int minutes, {double? kcal}) async { await AppDatabase.logWorkout(workoutId, minutes, kcal: kcal); state = state + minutes; }
 }
 
 final caloriesBurnedTodayProvider =
@@ -354,7 +355,15 @@ class ScanState { final List<ScanResult> history; final int todayCount; ScanStat
 class ScanNotifier extends StateNotifier<ScanState> {
   static String _dateKey() => DateTime.now().toIso8601String().substring(0, 10);
 
-  ScanNotifier() : super(ScanState(history: [], todayCount: 0)) { _load(); }
+  ScanNotifier() : super(ScanState(history: [], todayCount: 0)) { _load(); _loadHistory(); }
+
+  // v57: history survives app restarts
+  Future<void> _loadHistory() async {
+    final h = await ScanStore.loadHistory();
+    if (h.isNotEmpty && state.history.isEmpty) {
+      state = ScanState(history: h, todayCount: state.todayCount);
+    }
+  }
 
   Future<void> _load() async {
     try {
@@ -386,7 +395,8 @@ class ScanNotifier extends StateNotifier<ScanState> {
   void addScan(ScanResult r) {
     refreshDay();
     final newCount = state.todayCount + 1;
-    state = ScanState(history: [r, ...state.history.take(49)], todayCount: newCount);
+    state = ScanState(history: [r, ...state.history.take(99)], todayCount: newCount);
+    ScanStore.saveHistory(state.history);
     // Persist asynchronously — fire-and-forget
     SharedPreferences.getInstance().then((p) {
       p.setString('scan_date',  _dateKey());

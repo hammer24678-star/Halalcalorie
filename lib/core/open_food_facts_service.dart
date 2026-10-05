@@ -1,5 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../data/models/models.dart';
+import 'halal_engine.dart';
 
 // ──────────────────────────────────────────────────────────────
 // Open Food Facts — free, open, 3M+ products
@@ -170,6 +172,141 @@ class OpenFoodFactsService {
     } catch (_) {
       return const [];
     }
+  }
+
+  // ── v55: rich barcode lookup ─────────────────────────────────
+  // Same endpoint as above plus the fields the smart scanner needs.
+  // [failed] = network/server problem (caller may use the offline cache);
+  // data == null && !failed = the product really isn't in the database.
+  static Future<({Map<String, dynamic>? data, bool failed})> lookupBarcodeFull(
+      String barcode) async {
+    if (barcode.trim().isEmpty) return (data: null, failed: false);
+    try {
+      final uri = Uri.parse(
+        'https://world.openfoodfacts.org/api/v2/product/${barcode.trim()}.json'
+        '?fields=product_name,product_name_ar,brands,nutriments,ingredients_text,'
+        'image_front_small_url,image_url,serving_size,serving_quantity,quantity,'
+        'nutriscore_grade,nova_group,allergens_tags,labels_tags,'
+        'ingredients_analysis_tags,categories_tags,additives_tags',
+      );
+      final resp = await http
+          .get(uri, headers: {'User-Agent': _ua})
+          .timeout(const Duration(seconds: 10));
+      if (resp.statusCode == 404) return (data: null, failed: false);
+      if (resp.statusCode != 200) return (data: null, failed: true);
+      final body = jsonDecode(resp.body) as Map<String, dynamic>;
+      if (body['status'] != 1) return (data: null, failed: false);
+
+      final p = body['product'] as Map<String, dynamic>;
+      final n = (p['nutriments'] ?? {}) as Map<String, dynamic>;
+      final nameEn = _str(p['product_name']);
+      final nameAr = _str(p['product_name_ar']);
+      List<String> tags(dynamic v) => v is List
+          ? [for (final e in v) '$e'.replaceFirst(RegExp(r'^[a-z]{2}:'), '')]
+          : <String>[];
+
+      double? servingG = _num(p, 'serving_quantity')?.toDouble();
+      if (servingG == null) {
+        final m = RegExp(r'(\d+(?:[.,]\d+)?)\s*g\b')
+            .firstMatch(_str(p['serving_size']).toLowerCase());
+        if (m != null) {
+          servingG = double.tryParse(m.group(1)!.replaceAll(',', '.'));
+        }
+      }
+      final nova = _num(p, 'nova_group')?.toInt();
+      final grade = _str(p['nutriscore_grade']).toLowerCase();
+
+      return (
+        failed: false,
+        data: {
+          'name': nameAr.isNotEmpty ? nameAr : nameEn,
+          'brand': _str(p['brands']),
+          'kcal': (_num(n, 'energy-kcal_100g') ??
+                  ((_num(n, 'energy_100g') ?? 0) / 4.184))
+              .round(),
+          'protein_g': (_num(n, 'proteins_100g') ?? 0).toDouble(),
+          'carbs_g': (_num(n, 'carbohydrates_100g') ?? 0).toDouble(),
+          'fat_g': (_num(n, 'fat_100g') ?? 0).toDouble(),
+          'sugar_g': _num(n, 'sugars_100g')?.toDouble(),
+          'salt_g': _num(n, 'salt_100g')?.toDouble(),
+          'satfat_g': _num(n, 'saturated-fat_100g')?.toDouble(),
+          'fiber_g': _num(n, 'fiber_100g')?.toDouble(),
+          'ingredients': _str(p['ingredients_text']),
+          'image_url': _str(p['image_front_small_url'])
+              .ifEmpty(() => _str(p['image_url'])),
+          'serving_g': servingG,
+          'quantity': _str(p['quantity']),
+          'nutri': ['a', 'b', 'c', 'd', 'e'].contains(grade) ? grade : '',
+          'nova': (nova != null && nova >= 1 && nova <= 4) ? nova : null,
+          'allergens': tags(p['allergens_tags']),
+          'labels': tags(p['labels_tags']),
+          'analysis': tags(p['ingredients_analysis_tags']),
+          'categories': p['categories_tags'] is List
+              ? [for (final e in p['categories_tags'] as List) '$e']
+              : <String>[],
+        },
+      );
+    } catch (_) {
+      return (data: null, failed: true);
+    }
+  }
+
+  // ── v55: better products from the same category ──────────────
+  // Nutri-Score A/B products in [categoryTag] whose ingredient list passes
+  // the halal check. Returns at most [limit] entries.
+  static Future<List<Map<String, dynamic>>> alternatives({
+    required String categoryTag,
+    String? excludeCode,
+    int limit = 4,
+  }) async {
+    if (categoryTag.isEmpty) return const [];
+    Future<List<Map<String, dynamic>>> one(String grade) async {
+      try {
+        final uri = Uri.parse(
+          'https://world.openfoodfacts.org/api/v2/search'
+          '?categories_tags=${Uri.encodeComponent(categoryTag)}'
+          '&nutrition_grades_tags=$grade&sort_by=unique_scans_n&page_size=20'
+          '&fields=code,product_name,brands,nutriscore_grade,ingredients_text,'
+          'ingredients_analysis_tags,labels_tags,nutriments',
+        );
+        final resp = await http
+            .get(uri, headers: {'User-Agent': _ua})
+            .timeout(const Duration(seconds: 10));
+        if (resp.statusCode != 200) return const [];
+        final body = jsonDecode(resp.body) as Map<String, dynamic>;
+        final list = body['products'] as List<dynamic>? ?? const [];
+        final out = <Map<String, dynamic>>[];
+        for (final raw in list) {
+          if (raw is! Map<String, dynamic>) continue;
+          final code = _str(raw['code']);
+          final name = _str(raw['product_name']);
+          if (code.isEmpty || name.isEmpty || code == excludeCode) continue;
+          final ing = _str(raw['ingredients_text']);
+          if (ing.isEmpty) continue; // can't verify → don't recommend
+          final analysis = raw['ingredients_analysis_tags'];
+          final vegan = analysis is List && analysis.contains('en:vegan');
+          final labels = raw['labels_tags'];
+          final cert = labels is List &&
+              labels.any((e) => '$e'.toLowerCase().contains('halal'));
+          final rep = HalalEngine.analyze(ing, vegan: vegan, certified: cert);
+          if (rep.status != HalalStatus.halal) continue;
+          final nut = (raw['nutriments'] ?? {}) as Map<String, dynamic>;
+          out.add({
+            'code': code,
+            'name': name,
+            'brand': _str(raw['brands']),
+            'grade': grade,
+            'kcal': (_num(nut, 'energy-kcal_100g') ?? 0).round(),
+          });
+        }
+        return out;
+      } catch (_) {
+        return const [];
+      }
+    }
+
+    final res = await Future.wait([one('a'), one('b')]);
+    return [...res[0], ...res[1]].take(limit).toList();
   }
 
   // ── Helpers ─────────────────────────────────────────────────
