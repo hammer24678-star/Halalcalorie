@@ -577,59 +577,74 @@ class _FoodThumbState extends State<FoodThumb> {
     });
   }
 
+  // PATCH_V55_MEDALLION
   @override
   Widget build(BuildContext context) {
-    // PATCH_V54_THUMB: no tinted tile behind the icon in dark mode
-    final bg = Theme.of(context).brightness == Brightness.dark
-        ? Colors.transparent
-        : (widget.background ??
-            Theme.of(context).colorScheme.primary.withOpacity(0.08));
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(widget.radius),
-      child: Container(
-        width: widget.size,
-        height: widget.size,
-        color: bg,
-        child: _content(),
+    final theme = Theme.of(context);
+    final dark = theme.brightness == Brightness.dark;
+    final primary = theme.colorScheme.primary;
+    final s = widget.size;
+    return Container(
+      width: s,
+      height: s,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: RadialGradient(
+          center: const Alignment(-0.35, -0.45),
+          radius: 1.05,
+          colors: dark
+              ? [primary.withOpacity(0.24), primary.withOpacity(0.05)]
+              : [primary.withOpacity(0.15), primary.withOpacity(0.04)],
+        ),
+        border: Border.all(
+            color: primary.withOpacity(dark ? 0.30 : 0.20), width: 0.8),
+        boxShadow: s >= 44
+            ? [
+                BoxShadow(
+                    color: primary.withOpacity(dark ? 0.20 : 0.12),
+                    blurRadius: s * 0.34,
+                    offset: Offset(0, s * 0.08)),
+              ]
+            : const <BoxShadow>[],
+      ),
+      child: ClipOval(
+        child: Padding(
+          padding: EdgeInsets.all(s * 0.16),
+          child: _content(s * 0.68),
+        ),
       ),
     );
   }
 
-  Widget _content() {
-    // PATCH_NEW_ASSET_PACKS: prefer the illustrated asset when this food
-    // has one; a broken/renamed asset just falls back to the old glyph.
+  Widget _content(double inner) {
+    final dark = Theme.of(context).brightness == Brightness.dark;
     if (_assetPath != null) {
-      // PATCH_V29_FOODTHUMB_DARK_SAFE: forest-plate composite kills the light PNG fringe
-      // in dark mode (same fix as mood faces / status glyphs).
       return darkSafeAsset(
         _assetPath!,
         fit: BoxFit.contain,
-        width: widget.size,
-        height: widget.size,
-        isDark: Theme.of(context).brightness == Brightness.dark,
-        radius: BorderRadius.circular(widget.radius),
-        errorChild: _glyphView(_glyph ?? kFoodGlyphFallback),
+        width: inner,
+        height: inner,
+        isDark: dark,
+        errorChild: _fallback(inner),
       );
     }
-    if (_glyph != null) return _glyphView(_glyph!);
     if (_url != null) {
       return Image.network(
         _url!,
         fit: BoxFit.cover,
-        width: widget.size,
-        height: widget.size,
-        // A missing or broken photo must never break the row.
-        errorBuilder: (_, __, ___) => _glyphView(kFoodGlyphFallback),
+        width: inner,
+        height: inner,
+        errorBuilder: (_, __, ___) => _fallback(inner),
         loadingBuilder: (_, child, progress) =>
-            progress == null ? child : _glyphView(kFoodGlyphFallback),
+            progress == null ? child : _fallback(inner),
       );
     }
-    if (_looking) return _glyphView(kFoodGlyphFallback);
-    return _glyphView(kFoodGlyphFallback);
+    return _fallback(inner);
   }
 
-  Widget _glyphView(String glyph) => Center(
-        child: Text(glyph,
-            style: TextStyle(fontSize: widget.size * 0.48)),
+  Widget _fallback(double inner) => Center(
+        child: Icon(Icons.restaurant_rounded,
+            size: inner * 0.62,
+            color: Theme.of(context).colorScheme.primary.withOpacity(0.85)),
       );
 }

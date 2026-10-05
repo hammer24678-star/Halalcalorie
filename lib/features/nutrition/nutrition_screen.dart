@@ -250,7 +250,8 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                           fontSize: 11, color: Colors.white70, height: 1.3)),
                   ])
                 : Row(children: [
-                    const Text('✅ ', style: TextStyle(fontSize: 16)),
+                    const Icon(Icons.check_circle_rounded, color: Colors.white, size: 18),
+                    const SizedBox(width: 8),
                     Text('$name ${isAr ? "أضيف" : "added"}',
                         style: const TextStyle(fontFamily: 'Aligarh',
                             fontWeight: FontWeight.w700)),
@@ -345,158 +346,233 @@ class _NutritionState extends ConsumerState<NutritionScreen>
                   color: Colors.grey.shade300,
                   borderRadius: BorderRadius.circular(2)))),
 
-              // Hero
-              Row(children: [
-                Container(
-                  width: 68, height: 68,
-                  // PATCH_V54_THUMB: no tile behind the food icon
-                  decoration: const BoxDecoration(),
-                  child: Center(child: FoodThumb(name: e.name, size: 56, radius: 16,
-                      background: Colors.transparent))),
-                const SizedBox(width: 14),
-                Expanded(child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                  Text(e.name, style: TextStyle(
-                      fontFamily: 'Aligarh', fontSize: 19,
-                      fontWeight: FontWeight.w900, color: textC)),
-                  const SizedBox(height: 6),
-                  if (tags.isNotEmpty) Wrap(spacing: 5, runSpacing: 4,
-                    children: tags.map((t) => Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
-                      decoration: BoxDecoration(
-                        color: (t['c'] as Color).withOpacity(0.12),
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                            color: (t['c'] as Color).withOpacity(0.3))),
-                      child: Text('${t["e"]} ${t["l"]}',
-                          style: TextStyle(fontFamily: 'Aligarh',
-                              fontSize: 9, fontWeight: FontWeight.w700,
-                              color: t['c'] as Color)),
-                    )).toList()),
-                ])),
-              ]),
+              // PATCH_V55_DETAIL
+              Center(child: FoodThumb(name: e.name, size: 104)),
+              const SizedBox(height: 12),
+              Text(e.name,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                      fontFamily: 'Aligarh',
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      color: textC)),
+              if (tags.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    alignment: WrapAlignment.center,
+                    children: tags
+                        .map((t) => _detailTag(t['l'] as String,
+                            t['c'] as Color, _tagIcon(t['e'] as String)))
+                        .toList()),
+              ],
               const SizedBox(height: 18),
 
-              // Calorie ring
+              // Calories + split
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: LinearGradient(colors: [
-                    AppColors.brandGreen.withOpacity(0.08),
-                    AppColors.brandGreen.withOpacity(0.02)]),
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(
-                      color: AppColors.brandGreen.withOpacity(0.15))),
-                child: Row(children: [
-                  SizedBox(width: 88, height: 88,
-                    child: Stack(alignment: Alignment.center, children: [
-                      SizedBox.expand(child: CircularProgressIndicator(
-                        value: pctKcal, strokeWidth: 9,
-                        backgroundColor: Colors.grey.withOpacity(0.15),
-                        valueColor: AlwaysStoppedAnimation(
-                            ref.read(ramadanModeProvider)
-                                ? AppColors.accentGold
-                                : AppColors.brandGreen),
-                        strokeCap: StrokeCap.round)),
-                      Column(mainAxisSize: MainAxisSize.min, children: [
-                        Text('${e.kcal}', style: const TextStyle(
-                            fontFamily: 'Aligarh', fontSize: 20,
-                            fontWeight: FontWeight.w900,
-                            color: AppColors.brandGreen)),
-                        Text(tLang(lang, 'سعرة', 'kcal', 'kcal', 'kcal', 'kcal', 'kkal'), style: TextStyle(
-                            fontFamily: 'Aligarh', fontSize: 9,
-                            color: muted)),
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      _acc.withOpacity(isDark ? 0.16 : 0.10),
+                      _acc.withOpacity(0.03),
+                    ],
+                  ),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: _acc.withOpacity(0.22)),
+                ),
+                child: Column(children: [
+                  Row(children: [
+                    SizedBox(
+                      width: 96,
+                      height: 96,
+                      child: Stack(alignment: Alignment.center, children: [
+                        SizedBox.expand(
+                            child: CircularProgressIndicator(
+                                value: pctKcal,
+                                strokeWidth: 9,
+                                backgroundColor: _acc.withOpacity(0.14),
+                                valueColor: AlwaysStoppedAnimation(_acc),
+                                strokeCap: StrokeCap.round)),
+                        Column(mainAxisSize: MainAxisSize.min, children: [
+                          Text('${e.kcal}',
+                              style: TextStyle(
+                                  fontFamily: 'Aligarh',
+                                  fontSize: 23,
+                                  fontWeight: FontWeight.w900,
+                                  color: textC)),
+                          Text(
+                              tLang(lang, 'سعرة', 'kcal', 'kcal', 'kcal',
+                                  'kcal', 'kkal'),
+                              style: TextStyle(
+                                  fontFamily: 'Aligarh',
+                                  fontSize: 10,
+                                  color: muted)),
+                        ]),
                       ]),
-                    ])),
-                  const SizedBox(width: 16),
-                  Expanded(child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                    Text('${(pctKcal*100).toInt()}％',
-                        style: const TextStyle(fontFamily: 'Aligarh',
-                            fontSize: 32, fontWeight: FontWeight.w900,
-                            color: AppColors.brandGreen)),
-                    Text(tLang(lang, 'من هدفك اليومي', 'of your daily goal', 'de votre objectif quotidien', 'günlük hedefinizin', 'daripada matlamat harian anda', 'dari target harian Anda'),
-                        style: TextStyle(fontFamily: 'Aligarh',
-                            fontSize: 11, color: muted)),
-                    const SizedBox(height: 4),
-                    Text('${goal.toInt()} ${isAr?"سعرة كهدف":"kcal goal"}',
-                        style: TextStyle(fontFamily: 'Aligarh',
-                            fontSize: 11,
-                            color: muted.withOpacity(0.7))),
-                  ])),
+                    ),
+                    const SizedBox(width: 18),
+                    Expanded(
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('${(pctKcal * 100).toInt()}％',
+                                style: TextStyle(
+                                    fontFamily: 'Aligarh',
+                                    fontSize: 34,
+                                    fontWeight: FontWeight.w900,
+                                    color: _acc)),
+                            Text(
+                                tLang(
+                                    lang,
+                                    'من هدفك اليومي',
+                                    'of your daily goal',
+                                    'de votre objectif quotidien',
+                                    'günlük hedefinizin',
+                                    'daripada matlamat harian anda',
+                                    'dari target harian Anda'),
+                                style: TextStyle(
+                                    fontFamily: 'Aligarh',
+                                    fontSize: 11.5,
+                                    color: muted)),
+                            const SizedBox(height: 3),
+                            Text(
+                                '${goal.toInt()} ${isAr ? "سعرة كهدف" : "kcal goal"}',
+                                style: TextStyle(
+                                    fontFamily: 'Aligarh',
+                                    fontSize: 11,
+                                    color: muted.withOpacity(0.7))),
+                          ]),
+                    ),
+                  ]),
+                  _splitBar(e, isAr, muted),
                 ]),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 22),
 
               // Macros
-              Text(tLang(lang, '🔬 المغذيات الكبرى', '🔬 Macronutrients', '🔬 Macronutriments', '🔬 Makrobesinler', '🔬 Makronutrien', '🔬 Makronutrien'),
-                  style: TextStyle(fontFamily: 'Aligarh',
-                      fontSize: 14, fontWeight: FontWeight.w800,
-                      color: textC)),
+              _sectionHead(
+                  Icons.pie_chart_rounded,
+                  AppColors.sleepPurple,
+                  tLang(lang, 'المغذيات الكبرى', 'Macronutrients',
+                      'Macronutriments', 'Makrobesinler', 'Makronutrien',
+                      'Makronutrien'),
+                  textC),
               const SizedBox(height: 10),
-              _detailBar(tLang(lang, 'بروتين', 'Protein', 'Protéines', 'Protein', 'Protein', 'Protein'), e.proteinG,
-                  pGoal, pctP, AppColors.halalGreen,
-                  tLang(lang, '💪 يبني العضلات', '💪 Builds muscle', '💪 Construit du muscle', '💪 Kas yapar', '💪 Membina otot', '💪 Membangun otot'), isDark),
-              const SizedBox(height: 8),
-              _detailBar(tLang(lang, 'كربوهيدرات', 'Carbs', 'Glucides', 'Karbonhidrat', 'Karbohidrat', 'Karbohidrat'), e.carbsG,
-                  cGoal, pctC, AppColors.waterBlue,
-                  tLang(lang, '⚡ طاقة سريعة', '⚡ Quick energy', '⚡ Énergie rapide', '⚡ Hızlı enerji', '⚡ Tenaga pantas', '⚡ Energi cepat'), isDark),
-              const SizedBox(height: 8),
-              _detailBar(tLang(lang, 'دهون', 'Fat', 'Lipides', 'Yağ', 'Lemak', 'Lemak'), e.fatG,
-                  fGoal, pctF, AppColors.accentGold,
-                  tLang(lang, '🧠 صحة الدماغ', '🧠 Brain health', '🧠 Santé cérébrale', '🧠 Beyin sağlığı', '🧠 Kesihatan otak', '🧠 Kesehatan otak'), isDark),
-              const SizedBox(height: 16),
+              _detailBar(
+                  tLang(lang, 'بروتين', 'Protein', 'Protéines', 'Protein',
+                      'Protein', 'Protein'),
+                  e.proteinG,
+                  pGoal,
+                  pctP,
+                  AppColors.halalGreen,
+                  tLang(lang, 'يبني العضلات', 'Builds muscle',
+                      'Construit du muscle', 'Kas yapar', 'Membina otot',
+                      'Membangun otot'),
+                  isDark,
+                  Icons.fitness_center_rounded),
+              const SizedBox(height: 10),
+              _detailBar(
+                  tLang(lang, 'كربوهيدرات', 'Carbs', 'Glucides',
+                      'Karbonhidrat', 'Karbohidrat', 'Karbohidrat'),
+                  e.carbsG,
+                  cGoal,
+                  pctC,
+                  AppColors.waterBlue,
+                  tLang(lang, 'طاقة سريعة', 'Quick energy', 'Énergie rapide',
+                      'Hızlı enerji', 'Tenaga pantas', 'Energi cepat'),
+                  isDark,
+                  Icons.bolt_rounded),
+              const SizedBox(height: 10),
+              _detailBar(
+                  tLang(lang, 'دهون', 'Fat', 'Lipides', 'Yağ', 'Lemak',
+                      'Lemak'),
+                  e.fatG,
+                  fGoal,
+                  pctF,
+                  AppColors.accentGold,
+                  tLang(lang, 'صحة الدماغ', 'Brain health', 'Santé cérébrale',
+                      'Beyin sağlığı', 'Kesihatan otak', 'Kesehatan otak'),
+                  isDark,
+                  Icons.psychology_rounded),
+              const SizedBox(height: 22),
 
               // Micronutrients
-              Text(tLang(lang, '🧪 مغذيات دقيقة (تقديرية)', '🧪 Micronutrients (estimated)', '🧪 Micronutrients (estimated)', '🧪 Micronutrients (estimated)', '🧪 Micronutrients (estimated)', '🧪 Micronutrients (estimated)'),
-                  style: TextStyle(fontFamily: 'Aligarh',
-                      fontSize: 14, fontWeight: FontWeight.w800,
-                      color: textC)),
+              _sectionHead(
+                  Icons.science_rounded,
+                  AppColors.accentGold,
+                  tLang(lang, 'مغذيات دقيقة (تقديرية)',
+                      'Micronutrients (estimated)'),
+                  textC),
               const SizedBox(height: 10),
               Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: AppColors.accentGold.withOpacity(
-                      isDark?0.07:0.05),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                      color: AppColors.accentGold.withOpacity(0.2))),
-                child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Wrap(spacing: 8, runSpacing: 12, children: [
-                      _microTile('🍊','Vit C', '–', muted),
-                      _microTile('🩸',tLang(lang, 'حديد', 'Iron', 'Fer', 'Demir', 'Zat Besi', 'Zat Besi'), '–', muted),
-                      _microTile('🥛',tLang(lang, 'كالسيوم', 'Ca', 'Ca', 'Ca', 'Ca', 'Ca'), '–', muted),
-                      _microTile('🍌',tLang(lang, 'بوتاسيوم', 'K', 'K', 'K', 'K', 'K'), '–', muted),
-                      _microTile('☀️',tLang(lang, 'فيت د', 'Vit D', 'Vit D', 'Vit D', 'Vit D', 'Vit D'), '–', muted),
-                      _microTile('🫁',tLang(lang, 'ماغنيسيوم', 'Mg', 'Mg', 'Mg', 'Mg', 'Mg'), '–', muted),
-                    ]),
-                    const SizedBox(height: 6),
-                    Text(
-                      tLang(lang, '* القيم التفصيلية متاحة عند التحليل بالكاميرا (مميزات مدفوعة)', '* Detailed values available via AI photo scan (premium)', '* Detailed values available via AI photo scan (premium)', '* Detailed values available via AI photo scan (premium)', '* Detailed values available via AI photo scan (premium)', '* Detailed values available via AI photo scan (premium)'),
-                      style: TextStyle(fontFamily: 'Aligarh', fontSize: 9.5, color: muted),
-                    ),
-                  ])),
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                      color: AppColors.accentGold
+                          .withOpacity(isDark ? 0.07 : 0.05),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                          color: AppColors.accentGold.withOpacity(0.2))),
+                  child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Wrap(spacing: 8, runSpacing: 14, children: [
+                          _microTile('C', 'Vit C', '–', muted),
+                          _microTile('Fe',
+                              tLang(lang, 'حديد', 'Iron', 'Fer', 'Demir',
+                                  'Zat Besi', 'Zat Besi'),
+                              '–', muted),
+                          _microTile('Ca',
+                              tLang(lang, 'كالسيوم', 'Calcium'), '–', muted),
+                          _microTile('K',
+                              tLang(lang, 'بوتاسيوم', 'Potassium'), '–',
+                              muted),
+                          _microTile('D', tLang(lang, 'فيتامين د', 'Vit D'),
+                              '–', muted),
+                          _microTile('Mg',
+                              tLang(lang, 'ماغنيسيوم', 'Magnesium'), '–',
+                              muted),
+                        ]),
+                        const SizedBox(height: 10),
+                        Text(
+                          tLang(
+                              lang,
+                              '* القيم التفصيلية متاحة عند التحليل بالكاميرا (مميزات مدفوعة)',
+                              '* Detailed values available via AI photo scan (premium)'),
+                          style: TextStyle(
+                              fontFamily: 'Aligarh',
+                              fontSize: 9.5,
+                              color: muted),
+                        ),
+                      ])),
               const SizedBox(height: 16),
 
               // Food note
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.06),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                      color: (ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.2))),
+                    color: _acc.withOpacity(0.07),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: _acc.withOpacity(0.22))),
                 child: Row(children: [
-                  const EmojiIcon('📖', size: 22),
-                  const SizedBox(width: 10),
-                  Expanded(child: Text(foodNote(),
-                      style: const TextStyle(fontFamily: 'Aligarh',
-                          fontSize: 12, color: AppColors.brandGreen,
-                          height: 1.6, fontStyle: FontStyle.italic))),
+                  Container(
+                    width: 34,
+                    height: 34,
+                    decoration: BoxDecoration(
+                        color: _acc.withOpacity(0.16), shape: BoxShape.circle),
+                    child: Icon(Icons.menu_book_rounded, size: 18, color: _acc),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                      child: Text(foodNote(),
+                          style: TextStyle(
+                              fontFamily: 'Aligarh',
+                              fontSize: 12,
+                              color: isDark ? AppColors.darkText : _acc,
+                              height: 1.6))),
                 ]),
               ),
               const SizedBox(height: 20),
@@ -550,72 +626,217 @@ class _NutritionState extends ConsumerState<NutritionScreen>
     );
   }
 
-  Widget _detailBar(String label, double val, double goal,
-      double pct, Color color, String note, bool isDark) {
-    final bg = isDark ? AppColors.darkCard : Colors.white;
+  // PATCH_V55_DETAIL helpers
+  Color get _acc =>
+      ref.read(ramadanModeProvider) ? AppColors.accentGold : AppColors.brandGreen;
+
+  IconData _tagIcon(String emoji) {
+    switch (emoji) {
+      case '💪': return Icons.fitness_center_rounded;
+      case '🥗': return Icons.grass_rounded;
+      case '✨': return Icons.auto_awesome_rounded;
+      case '🌿': return Icons.eco_rounded;
+      case '🔥': return Icons.local_fire_department_rounded;
+      default:   return Icons.label_rounded;
+    }
+  }
+
+  Widget _detailTag(String label, Color c, IconData ic) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: c.withOpacity(0.13),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: c.withOpacity(0.30)),
+        ),
+        child: Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(ic, size: 13, color: c),
+          const SizedBox(width: 5),
+          Text(label,
+              style: TextStyle(
+                  fontFamily: 'Aligarh',
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w800,
+                  color: c)),
+        ]),
+      );
+
+  Widget _sectionHead(IconData ic, Color c, String text, Color textC) =>
+      Row(children: [
+        Container(
+          width: 30,
+          height: 30,
+          decoration: BoxDecoration(
+              color: c.withOpacity(0.15), shape: BoxShape.circle),
+          child: Icon(ic, size: 16, color: c),
+        ),
+        const SizedBox(width: 10),
+        Text(text,
+            style: TextStyle(
+                fontFamily: 'Aligarh',
+                fontSize: 15,
+                fontWeight: FontWeight.w900,
+                color: textC)),
+      ]);
+
+  Widget _splitBar(MealEntry e, bool isAr, Color muted) {
+    final pK = e.proteinG * 4, cK = e.carbsG * 4, fK = e.fatG * 9;
+    final tot = pK + cK + fK;
+    if (tot <= 0) return const SizedBox.shrink();
+    int fl(double v) => (v * 100).round().clamp(1, 100000).toInt();
+    String pc(double v) => '${(v / tot * 100).round()}％';
+    Widget leg(String l, double v, Color c) =>
+        Row(mainAxisSize: MainAxisSize.min, children: [
+          Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(color: c, shape: BoxShape.circle)),
+          const SizedBox(width: 5),
+          Text('$l ${pc(v)}',
+              style: TextStyle(
+                  fontFamily: 'Aligarh',
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  color: muted)),
+        ]);
+    return Column(children: [
+      const SizedBox(height: 16),
+      ClipRRect(
+        borderRadius: BorderRadius.circular(6),
+        child: SizedBox(
+          height: 9,
+          child: Row(children: [
+            Expanded(flex: fl(pK), child: const ColoredBox(color: AppColors.halalGreen)),
+            const SizedBox(width: 2),
+            Expanded(flex: fl(cK), child: const ColoredBox(color: AppColors.waterBlue)),
+            const SizedBox(width: 2),
+            Expanded(flex: fl(fK), child: const ColoredBox(color: AppColors.accentGold)),
+          ]),
+        ),
+      ),
+      const SizedBox(height: 10),
+      Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        leg(isAr ? 'بروتين' : 'Protein', pK, AppColors.halalGreen),
+        leg(isAr ? 'كارب' : 'Carbs', cK, AppColors.waterBlue),
+        leg(isAr ? 'دهون' : 'Fat', fK, AppColors.accentGold),
+      ]),
+    ]);
+  }
+
+  Widget _detailBar(String label, double val, double goal, double pct,
+      Color color, String note, bool isDark, IconData icon) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: bg,
+        color: isDark ? Colors.white.withOpacity(0.04) : Colors.white,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: [BoxShadow(
-            color: color.withOpacity(0.08), blurRadius: 10)],
-        border: Border.all(color: color.withOpacity(0.15))),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+        border: Border.all(color: color.withOpacity(0.20)),
+        boxShadow: [BoxShadow(color: color.withOpacity(0.07), blurRadius: 12)],
+      ),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         Row(children: [
-          Text(label, style: TextStyle(fontFamily: 'Aligarh',
-              fontSize: 13, fontWeight: FontWeight.w700, color: color)),
+          Container(
+            width: 30,
+            height: 30,
+            decoration: BoxDecoration(
+                color: color.withOpacity(0.14), shape: BoxShape.circle),
+            child: Icon(icon, size: 16, color: color),
+          ),
+          const SizedBox(width: 10),
+          Text(label,
+              style: TextStyle(
+                  fontFamily: 'Aligarh',
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w800,
+                  color: color)),
           const Spacer(),
-          Text('${val.toStringAsFixed(1)}g / ${goal.toInt()}g',
-              style: TextStyle(fontFamily: 'Aligarh', fontSize: 11,
-                  color: color.withOpacity(0.8),
-                  fontWeight: FontWeight.w600)),
+          Text('${val.toStringAsFixed(1)}g',
+              style: TextStyle(
+                  fontFamily: 'Aligarh',
+                  fontSize: 15,
+                  fontWeight: FontWeight.w900,
+                  color: color)),
+          Text(' / ${goal.toInt()}g',
+              style: TextStyle(
+                  fontFamily: 'Aligarh',
+                  fontSize: 11,
+                  color: color.withOpacity(0.6))),
           const SizedBox(width: 8),
           Container(
-            padding: const EdgeInsets.symmetric(
-                horizontal: 8, vertical: 2),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(10)),
-            child: Text('${(pct*100).toInt()}％',
-                style: TextStyle(fontFamily: 'Aligarh',
-                    fontSize: 10, fontWeight: FontWeight.w800,
-                    color: color))),
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              decoration: BoxDecoration(
+                  color: color.withOpacity(0.13),
+                  borderRadius: BorderRadius.circular(10)),
+              child: Text('${(pct * 100).toInt()}％',
+                  style: TextStyle(
+                      fontFamily: 'Aligarh',
+                      fontSize: 10,
+                      fontWeight: FontWeight.w800,
+                      color: color))),
+        ]),
+        const SizedBox(height: 10),
+        Stack(children: [
+          Container(
+              height: 8,
+              decoration: BoxDecoration(
+                  color: color.withOpacity(0.10),
+                  borderRadius: BorderRadius.circular(6))),
+          LayoutBuilder(
+              builder: (_, c) => Container(
+                  height: 8,
+                  width: c.maxWidth * pct,
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                          colors: [color.withOpacity(0.6), color]),
+                      borderRadius: BorderRadius.circular(6),
+                      boxShadow: [
+                        BoxShadow(
+                            color: color.withOpacity(0.3), blurRadius: 4)
+                      ]))),
         ]),
         const SizedBox(height: 6),
-        Stack(children: [
-          Container(height: 8, decoration: BoxDecoration(
-            color: color.withOpacity(0.10),
-            borderRadius: BorderRadius.circular(6))),
-          LayoutBuilder(builder: (_, c) => Container(
-            height: 8, width: c.maxWidth * pct,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                  colors: [color.withOpacity(0.6), color]),
-              borderRadius: BorderRadius.circular(6),
-              boxShadow: [BoxShadow(
-                  color: color.withOpacity(0.3), blurRadius: 4)]))),
-        ]),
-        const SizedBox(height: 5),
-        Text(note, style: TextStyle(fontFamily: 'Aligarh',
-            fontSize: 10, color: color.withOpacity(0.75))),
+        Text(note,
+            style: TextStyle(
+                fontFamily: 'Aligarh',
+                fontSize: 10.5,
+                color: color.withOpacity(0.8))),
       ]),
     );
   }
 
-  Widget _microTile(String emoji, String label,
-      String val, Color muted) =>
-      SizedBox(width: 80, child: Column(
-          mainAxisSize: MainAxisSize.min, children: [
-        EmojiIcon(emoji, size: 22),
-        const SizedBox(height: 2),
-        Text(val, style: const TextStyle(fontFamily: 'Aligarh',
-            fontSize: 12, fontWeight: FontWeight.w800,
-            color: AppColors.accentGold)),
-        Text(label, style: TextStyle(
-            fontFamily: 'Aligarh', fontSize: 9, color: muted)),
-      ]));
+  Widget _microTile(String sym, String label, String val, Color muted) =>
+      SizedBox(
+          width: 82,
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+            Container(
+              width: 40,
+              height: 40,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: AppColors.accentGold.withOpacity(0.14),
+                border: Border.all(
+                    color: AppColors.accentGold.withOpacity(0.35), width: 0.8),
+              ),
+              child: Text(sym,
+                  style: const TextStyle(
+                      fontFamily: 'Aligarh',
+                      fontSize: 14,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.accentGold)),
+            ),
+            const SizedBox(height: 5),
+            Text(val,
+                style: const TextStyle(
+                    fontFamily: 'Aligarh',
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.accentGold)),
+            Text(label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                    fontFamily: 'Aligarh', fontSize: 9.5, color: muted)),
+          ]));
 
 
   Widget _macroCard(String emoji, String val, String label, Color color) =>
@@ -1875,6 +2096,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
   String get lang => ref.read(languageProvider);
   late TabController _tab;
   final _searchCtrl  = TextEditingController();
+  final _quickCtrl   = TextEditingController();
   final _nameCtrl    = TextEditingController();
   final _kcalCtrl    = TextEditingController();
   final _proteinCtrl = TextEditingController();
@@ -1890,12 +2112,13 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
   void initState() {
     super.initState();
     _tab = TabController(length: 3, vsync: this);
+    _tab.addListener(() { if (mounted) setState(() {}); });
   }
 
   @override
   void dispose() {
     _tab.dispose();
-    _searchCtrl.dispose(); _nameCtrl.dispose();
+    _searchCtrl.dispose(); _quickCtrl.dispose(); _nameCtrl.dispose();
     _kcalCtrl.dispose(); _proteinCtrl.dispose();
     _carbsCtrl.dispose(); _fatCtrl.dispose();
     super.dispose();
@@ -1960,221 +2183,473 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
     }
   }
 
+  // PATCH_V55_ADDFOOD
+  Widget _segTabs(bool isAr, bool isDark, Color muted) {
+    final items = <(IconData, String)>[
+      (Icons.auto_awesome_rounded, 'AI'),
+      (Icons.bolt_rounded, isAr ? 'سريع' : 'Quick'),
+      (Icons.edit_rounded, isAr ? 'يدوي' : 'Manual'),
+    ];
+    final ink = isDark ? Colors.white : Colors.black;
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 2, 16, 10),
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: ink.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: ink.withOpacity(0.07), width: 0.8),
+      ),
+      child: Row(
+        children: List.generate(3, (i) {
+          final sel = _tab.index == i;
+          return Expanded(
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => _tab.animateTo(i),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 240),
+                curve: Curves.easeOutCubic,
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(18),
+                  gradient: sel
+                      ? const LinearGradient(
+                          colors: [Color(0xFF2BB567), Color(0xFF1E9E52)])
+                      : null,
+                  boxShadow: sel
+                      ? [
+                          BoxShadow(
+                              color: const Color(0xFF1E9E52).withOpacity(0.35),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4))
+                        ]
+                      : const <BoxShadow>[],
+                ),
+                child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(items[i].$1,
+                          size: 16, color: sel ? Colors.white : muted),
+                      const SizedBox(width: 6),
+                      Text(items[i].$2,
+                          style: TextStyle(
+                              fontFamily: 'Aligarh',
+                              fontSize: 12.5,
+                              fontWeight: FontWeight.w800,
+                              color: sel ? Colors.white : muted)),
+                    ]),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _searchField({
+    required TextEditingController controller,
+    required String hint,
+    required bool isAr,
+    required bool isDark,
+    required Color textC,
+    required Color muted,
+    ValueChanged<String>? onSubmitted,
+    ValueChanged<String>? onChanged,
+    IconData icon = Icons.search_rounded,
+  }) {
+    return Container(
+      height: 52,
+      padding: const EdgeInsets.symmetric(horizontal: 14),
+      decoration: BoxDecoration(
+        color: textC.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: textC.withOpacity(0.10), width: 0.8),
+      ),
+      child: Row(children: [
+        Icon(icon, color: AppColors.brandGreen, size: 21),
+        const SizedBox(width: 10),
+        Expanded(
+          child: TextField(
+            controller: controller,
+            textDirection: isAr ? TextDirection.rtl : TextDirection.ltr,
+            textInputAction: TextInputAction.search,
+            onSubmitted: onSubmitted,
+            onChanged: onChanged,
+            style: TextStyle(
+                fontFamily: 'Aligarh', fontSize: 14.5, color: textC),
+            decoration: InputDecoration(
+              border: InputBorder.none,
+              isDense: true,
+              hintText: hint,
+              hintStyle: TextStyle(
+                  fontFamily: 'Aligarh', fontSize: 13.5, color: muted),
+            ),
+          ),
+        ),
+        ValueListenableBuilder<TextEditingValue>(
+          valueListenable: controller,
+          builder: (_, v, __) => v.text.isEmpty
+              ? const SizedBox.shrink()
+              : GestureDetector(
+                  onTap: () {
+                    controller.clear();
+                    if (onChanged != null) onChanged('');
+                  },
+                  child: Icon(Icons.close_rounded, size: 18, color: muted),
+                ),
+        ),
+      ]),
+    );
+  }
+
+  Widget _macroInline(num p, num c, num f, Color muted) {
+    Widget one(IconData ic, Color col, num v) =>
+        Row(mainAxisSize: MainAxisSize.min, children: [
+          Icon(ic, size: 12, color: col),
+          const SizedBox(width: 3),
+          Text('${v.toStringAsFixed(1)}g',
+              style: TextStyle(
+                  fontFamily: 'Aligarh',
+                  fontSize: 10.5,
+                  fontWeight: FontWeight.w700,
+                  color: muted)),
+        ]);
+    return Wrap(spacing: 10, runSpacing: 2, children: [
+      one(Icons.fitness_center_rounded, AppColors.halalGreen, p),
+      one(Icons.grain_rounded, AppColors.waterBlue, c),
+      one(Icons.water_drop_rounded, AppColors.accentGold, f),
+    ]);
+  }
+
+  Widget _foodRow({
+    required String name,
+    required String thumb,
+    String? imageUrl,
+    required num kcal,
+    required num protein,
+    required num carbs,
+    required num fat,
+    String sub = '',
+    String source = '',
+    required VoidCallback onTap,
+    required bool isDark,
+    required Color textC,
+    required Color muted,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
+          decoration: BoxDecoration(
+            color: isDark ? Colors.white.withOpacity(0.045) : Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+                color: isDark ? AppColors.darkBorder2 : AppColors.lightBorder2,
+                width: 0.9),
+            boxShadow: isDark
+                ? const <BoxShadow>[]
+                : [
+                    BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 12,
+                        offset: const Offset(0, 4))
+                  ],
+          ),
+          child: Row(children: [
+            FoodThumb(name: thumb, imageUrl: imageUrl, size: 52),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                            fontFamily: 'Aligarh',
+                            fontSize: 14,
+                            fontWeight: FontWeight.w800,
+                            color: textC)),
+                    const SizedBox(height: 4),
+                    _macroInline(protein, carbs, fat, muted),
+                    if (sub.isNotEmpty || source.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Row(children: [
+                        Flexible(
+                          child: Text(sub,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontFamily: 'Aligarh',
+                                  fontSize: 9.5,
+                                  color: muted.withOpacity(0.85))),
+                        ),
+                        if (source.isNotEmpty) ...[
+                          const SizedBox(width: 6),
+                          _sourceBadge(source),
+                        ],
+                      ]),
+                    ],
+                  ]),
+            ),
+            const SizedBox(width: 8),
+            Column(mainAxisSize: MainAxisSize.min, children: [
+              Text('${kcal.round()}',
+                  style: const TextStyle(
+                      fontFamily: 'Aligarh',
+                      fontSize: 17,
+                      fontWeight: FontWeight.w900,
+                      color: AppColors.halalGreen)),
+              Text('kcal',
+                  style: TextStyle(
+                      fontFamily: 'Aligarh', fontSize: 9, color: muted)),
+            ]),
+            const SizedBox(width: 10),
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [Color(0xFF2BB567), Color(0xFF1E9E52)]),
+                boxShadow: [
+                  BoxShadow(
+                      color: const Color(0xFF1E9E52).withOpacity(0.35),
+                      blurRadius: 10,
+                      offset: const Offset(0, 3)),
+                ],
+              ),
+              child: const Icon(Icons.add_rounded,
+                  color: Colors.white, size: 21),
+            ),
+          ]),
+        ),
+      ),
+    );
+  }
+
+  Widget _popular(bool isAr, bool isDark, Color textC, Color muted) {
+    const items = <(String, String, String)>[
+      ('تمر', 'Dates', 'date'),
+      ('عسل', 'Honey', 'honey'),
+      ('بيض', 'Egg', 'egg'),
+      ('دجاج', 'Chicken', 'chicken'),
+      ('حليب', 'Milk', 'milk'),
+      ('أرز', 'Rice', 'rice'),
+      ('زيتون', 'Olive oil', 'olive'),
+      ('شوفان', 'Oats', 'oat'),
+      ('حلوى', 'Sweets', 'candy'),
+      ('كيك', 'Cake', 'cake'),
+      ('شوكولاتة', 'Chocolate', 'chocolate'),
+    ];
+    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+      Row(children: [
+        const Icon(Icons.trending_up_rounded,
+            size: 16, color: AppColors.accentGold),
+        const SizedBox(width: 6),
+        Text(isAr ? 'شائع' : 'Popular',
+            style: TextStyle(
+                fontFamily: 'Aligarh',
+                fontSize: 12.5,
+                fontWeight: FontWeight.w800,
+                color: muted)),
+      ]),
+      const SizedBox(height: 10),
+      Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: [
+          for (final it in items)
+            GestureDetector(
+              onTap: () {
+                _searchCtrl.text = isAr ? it.$1 : it.$2;
+                _search();
+              },
+              child: Container(
+                padding: const EdgeInsetsDirectional.fromSTEB(6, 5, 14, 5),
+                decoration: BoxDecoration(
+                  color: textC.withOpacity(isDark ? 0.06 : 0.04),
+                  borderRadius: BorderRadius.circular(24),
+                  border: Border.all(color: textC.withOpacity(0.10), width: 0.8),
+                ),
+                child: Row(mainAxisSize: MainAxisSize.min, children: [
+                  FoodThumb(name: it.$3, size: 30, allowNetwork: false),
+                  const SizedBox(width: 8),
+                  Text(isAr ? it.$1 : it.$2,
+                      style: TextStyle(
+                          fontFamily: 'Aligarh',
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w700,
+                          color: textC)),
+                ]),
+              ),
+            ),
+        ],
+      ),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     final isAr   = widget.isAr;
-    final isDark  = widget.isDark;
-    final bg      = isDark ? AppColors.darkCard : Colors.white;
-    final muted   = isDark ? AppColors.darkMuted : const Color(0xFF9E9E9E);
+    final isDark = widget.isDark;
+    final textC  = isDark ? AppColors.darkText : AppColors.lightText;
+    final muted  = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     String tl(String ar, String en) => isAr ? ar : en;
+    final bodyH =
+        (MediaQuery.of(context).size.height * 0.56).clamp(320.0, 560.0).toDouble();
 
     return Container(
       decoration: BoxDecoration(
-        color: bg,
-        borderRadius: const BorderRadius.vertical(
-            top: Radius.circular(28)),
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: isDark
+              ? const [Color(0xFF12241B), Color(0xFF0A1511)]
+              : const [Colors.white, Color(0xFFF3F7F3)],
+        ),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(30)),
+        border: Border(
+            top: BorderSide(
+                color: AppColors.brandGreen.withOpacity(isDark ? 0.30 : 0.14),
+                width: 1)),
       ),
-      padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
       child: Column(mainAxisSize: MainAxisSize.min, children: [
-        // Handle
         Container(
-          margin: const EdgeInsets.only(top: 12, bottom: 4),
-          width: 40, height: 4,
+          margin: const EdgeInsets.only(top: 12, bottom: 6),
+          width: 40,
+          height: 4,
           decoration: BoxDecoration(
-              color: Colors.grey.shade300,
+              color: textC.withOpacity(0.18),
               borderRadius: BorderRadius.circular(2)),
         ),
-        // A one-line eating reminder above the search
         Container(
           margin: const EdgeInsets.fromLTRB(16, 4, 16, 0),
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 7),
-          decoration: BoxDecoration(
-            color: AppColors.brandGreen.withOpacity(0.07),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-                color: AppColors.brandGreen.withOpacity(0.2)),
-          ),
-          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            const EmojiIcon('🤲', size: 13),
-            const SizedBox(width: 8),
-            Text(
-              L.fromLang(lang).mindfulEatingTip,
-              style: const TextStyle(
-                fontFamily: 'Aligarh', fontSize: 11,
-                color: AppColors.brandGreen,
-                fontWeight: FontWeight.w700),
-            ),
-          ]),
-        ),
-        // Title row
-        Padding(
-          padding: const EdgeInsets.symmetric(
-              horizontal: 20, vertical: 10),
-          child: Row(children: [
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: AppColors.brandGreen.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: const Icon(Icons.search_rounded,
-                  color: AppColors.brandGreen, size: 20),
-            ),
-            const SizedBox(width: 10),
-            Text(tl('أضف طعام', 'Add Food'),
-                style: TextStyle(fontFamily: 'Aligarh',
-                    fontSize: 18, fontWeight: FontWeight.w800,
-                    color: isDark
-                        ? AppColors.darkText : AppColors.lightText)),
-            const Spacer(),
-            IconButton(
-                icon: const Icon(Icons.close_rounded),
-                color: muted,
-                onPressed: () { if (context.mounted) Navigator.pop(context); },
-            ),
-          ]),
-        ),
-        // Tabs
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             color: AppColors.brandGreen.withOpacity(0.08),
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(color: AppColors.brandGreen.withOpacity(0.20)),
           ),
-          child: TabBar(
-            controller: _tab,
-            indicator: BoxDecoration(
-              color: AppColors.brandGreen,
-              borderRadius: BorderRadius.circular(16),
+          child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            const Icon(Icons.volunteer_activism_rounded,
+                size: 15, color: AppColors.accentGold),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                L.fromLang(lang).mindfulEatingTip,
+                style: const TextStyle(
+                    fontFamily: 'Aligarh',
+                    fontSize: 11,
+                    color: AppColors.halalGreen,
+                    fontWeight: FontWeight.w700),
+              ),
             ),
-            indicatorSize: TabBarIndicatorSize.tab,
-            labelStyle: const TextStyle(fontFamily: 'Aligarh',
-                fontWeight: FontWeight.w700, fontSize: 12),
-            unselectedLabelStyle: const TextStyle(
-                fontFamily: 'Aligarh', fontSize: 12),
-            labelColor: Colors.white,
-            unselectedLabelColor: AppColors.brandGreen,
-            dividerColor: Colors.transparent,
-            padding: const EdgeInsets.all(4),
-            tabs: [
-              Tab(text: tl('🤖 AI', '🤖 AI')),
-              Tab(text: tl('⚡ سريع', '⚡ Quick')),
-              Tab(text: tl('✏️ يدوي', '✏️ Manual')),
-            ],
-          ),
+          ]),
         ),
-        const SizedBox(height: 8),
-        // Tab content
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 14, 16, 10),
+          child: Row(children: [
+            Container(
+              width: 38,
+              height: 38,
+              decoration: BoxDecoration(
+                color: AppColors.brandGreen.withOpacity(0.14),
+                borderRadius: BorderRadius.circular(13),
+              ),
+              child: const Icon(Icons.restaurant_menu_rounded,
+                  color: AppColors.halalGreen, size: 21),
+            ),
+            const SizedBox(width: 12),
+            Text(tl('أضف طعام', 'Add Food'),
+                style: TextStyle(
+                    fontFamily: 'Aligarh',
+                    fontSize: 20,
+                    fontWeight: FontWeight.w900,
+                    color: textC)),
+            const Spacer(),
+            GestureDetector(
+              onTap: () {
+                if (context.mounted) Navigator.pop(context);
+              },
+              child: Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: textC.withOpacity(0.07),
+                ),
+                child: Icon(Icons.close_rounded, size: 19, color: muted),
+              ),
+            ),
+          ]),
+        ),
+        _segTabs(isAr, isDark, muted),
         SizedBox(
-          height: 400,
+          height: bodyH,
           child: TabBarView(controller: _tab, children: [
             // ── AI SEARCH ────────────────────────────────
             SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 18),
               child: Column(children: [
-                // Search bar
                 Row(children: [
-                  Expanded(child: TextField(
-                    controller: _searchCtrl,
-                    textDirection: isAr
-                        ? TextDirection.rtl : TextDirection.ltr,
-                    style: const TextStyle(
-                        fontFamily: 'Aligarh', fontSize: 14),
-                    onSubmitted: (_) => _search(),
-                    textInputAction: TextInputAction.search,
-                    decoration: InputDecoration(
-                      hintText: tl(
-                          'تفاحة، دجاج، أرز...',
-                          'apple, chicken, rice...'),
-                      hintStyle: TextStyle(fontFamily: 'Aligarh',
-                          fontSize: 13, color: muted),
-                      prefixIcon: const Icon(Icons.search_rounded,
-                          color: AppColors.brandGreen),
-                      filled: true,
-                      fillColor: AppColors.brandGreen.withOpacity(0.05),
-                      border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: BorderSide.none),
-                      focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(16),
-                          borderSide: const BorderSide(
-                              color: AppColors.brandGreen,
-                              width: 2)),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 14, horizontal: 16),
+                  Expanded(
+                    child: _searchField(
+                      controller: _searchCtrl,
+                      hint: tl('تفاحة، دجاج، أرز...', 'apple, chicken, rice...'),
+                      isAr: isAr,
+                      isDark: isDark,
+                      textC: textC,
+                      muted: muted,
+                      onSubmitted: (_) => _search(),
                     ),
-                  )),
-                  const SizedBox(width: 8),
+                  ),
+                  const SizedBox(width: 10),
                   GestureDetector(
                     onTap: _searching ? null : _search,
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.all(14),
+                      width: 52,
+                      height: 52,
                       decoration: BoxDecoration(
-                        color: _searching
-                            ? Colors.grey
-                            : AppColors.brandGreen,
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [BoxShadow(
-                            color: AppColors.brandGreen.withOpacity(0.3),
-                            blurRadius: 8, offset: const Offset(0, 3))],
+                        borderRadius: BorderRadius.circular(18),
+                        gradient: _searching
+                            ? null
+                            : const LinearGradient(
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                                colors: [Color(0xFF2BB567), Color(0xFF1E9E52)]),
+                        color: _searching ? Colors.grey : null,
+                        boxShadow: [
+                          BoxShadow(
+                              color: const Color(0xFF1E9E52).withOpacity(0.35),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4)),
+                        ],
                       ),
                       child: _searching
-                          ? const SizedBox(width: 22, height: 22,
+                          ? const Padding(
+                              padding: EdgeInsets.all(15),
                               child: CircularProgressIndicator(
                                   color: Colors.white, strokeWidth: 2))
                           : const Icon(Icons.search_rounded,
-                              color: Colors.white, size: 22),
+                              color: Colors.white, size: 24),
                     ),
                   ),
                 ]),
-                const SizedBox(height: 14),
-                // Popular food chips
-                if (_results.isEmpty && !_searching) ...[
+                const SizedBox(height: 18),
+                if (_results.isEmpty && !_searching)
                   Align(
-                    alignment: isAr
-                        ? Alignment.centerRight : Alignment.centerLeft,
-                    child: Text(tl('شائع:', 'Popular:'),
-                        style: TextStyle(fontFamily: 'Aligarh',
-                            fontSize: 12, color: muted,
-                            fontWeight: FontWeight.w600)),
+                    alignment: AlignmentDirectional.centerStart,
+                    child: _popular(isAr, isDark, textC, muted),
                   ),
-                  const SizedBox(height: 8),
-                  Wrap(spacing: 8, runSpacing: 8,
-                    children: (isAr
-                        ? ['🌴 تمر', '🍯 عسل', '🥚 بيض',
-                           '🍗 دجاج', '🥛 حليب', '🍚 أرز',
-                           '🫒 زيتون', '🌾 شوفان', '🍬 حلوى',
-                           '🎂 كيك', '🍫 شوكولاتة']
-                        : ['🌴 Dates', '🍯 Honey', '🥚 Egg',
-                           '🍗 Chicken', '🥛 Milk', '🍚 Rice',
-                           '🫒 Olive oil', '🌾 Oats', '🍬 Sweets',
-                           '🎂 Cake', '🍫 Chocolate'])
-                        .map((s) => GestureDetector(
-                      onTap: () {
-                        _searchCtrl.text = s.substring(2).trim();
-                        _search();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 7),
-                        decoration: BoxDecoration(
-                          color: AppColors.brandGreen.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                              color: AppColors.brandGreen
-                                  .withOpacity(0.2)),
-                        ),
-                        child: Text(s, style: const TextStyle(
-                            fontFamily: 'Aligarh', fontSize: 12,
-                            color: AppColors.brandGreen,
-                            fontWeight: FontWeight.w600)),
-                      ),
-                    )).toList(),
-                  ),
-                ],
-                // AI Result
                 if (_searching)
                   Padding(
                     padding: const EdgeInsets.only(top: 26),
@@ -2182,10 +2657,11 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                       const CircularProgressIndicator(
                           color: AppColors.brandGreen, strokeWidth: 2.5),
                       const SizedBox(height: 12),
-                      Text(tl('نبحث في كل المصادر...',
-                              'Searching every source...'),
-                          style: TextStyle(fontFamily: 'Aligarh',
-                              fontSize: 11.5, color: muted)),
+                      Text(tl('نبحث في كل المصادر...', 'Searching every source...'),
+                          style: TextStyle(
+                              fontFamily: 'Aligarh',
+                              fontSize: 11.5,
+                              color: muted)),
                     ]),
                   ),
                 if (!_searching && _results.isNotEmpty)
@@ -2198,86 +2674,46 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
             // ── QUICK ADD ────────────────────────────────
             Column(children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-                child: TextField(
-                  onChanged: (v) =>
-                      setState(() => _filter = v.toLowerCase()),
-                  style: const TextStyle(
-                      fontFamily: 'Aligarh', fontSize: 13),
-                  decoration: InputDecoration(
-                    hintText: tl('بحث سريع...', 'Quick search...'),
-                    prefixIcon: const Icon(Icons.filter_list_rounded,
-                        size: 18, color: AppColors.brandGreen),
-                    filled: true,
-                    fillColor: AppColors.brandGreen.withOpacity(0.05),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide.none),
-                    focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(
-                            color: AppColors.brandGreen)),
-                    isDense: true,
-                    contentPadding: const EdgeInsets.symmetric(
-                        vertical: 10, horizontal: 12),
-                  ),
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+                child: _searchField(
+                  controller: _quickCtrl,
+                  hint: tl('بحث سريع...', 'Quick search...'),
+                  isAr: isAr,
+                  isDark: isDark,
+                  textC: textC,
+                  muted: muted,
+                  icon: Icons.filter_list_rounded,
+                  onChanged: (v) => setState(() => _filter = v.toLowerCase()),
                 ),
               ),
-              Expanded(child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                // PATCH_V23: nameEn first so illustrated food logos resolve
-                children: kQuickFoods
-                    .where((f) => _filter.isEmpty ||
+              Expanded(
+                child: ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+                  children: [
+                    for (final food in kQuickFoods.where((f) =>
+                        _filter.isEmpty ||
                         f.name.toLowerCase().contains(_filter) ||
-                        f.nameEn.toLowerCase().contains(_filter))
-                    .map((food) => ListTile(
-                  dense: true,
-                  contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 4, vertical: 6),
-                  leading: FoodThumb(
-                      name: '${food.nameEn} ${food.name}',
-                      size: 52, radius: 14,
-                      background: AppColors.brandGreen.withOpacity(0.10)),
-                  title: Text(isAr ? food.name : food.nameEn,
-                      style: const TextStyle(fontFamily: 'Aligarh',
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700)),
-                  subtitle: Text(
-                      '💪 ${food.proteinG}g  '
-                      '🍚 ${food.carbsG}g  '
-                      '🥑 ${food.fatG}g',
-                      style: TextStyle(fontFamily: 'Aligarh',
-                          fontSize: 10, color: muted)),
-                  trailing: Row(mainAxisSize: MainAxisSize.min,
-                      children: [
-                    Column(mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                      Text('${food.kcal}',
-                          style: const TextStyle(fontFamily: 'Aligarh',
-                              fontSize: 15,
-                              fontWeight: FontWeight.w900,
-                              color: AppColors.brandGreen)),
-                      const Text('kcal',
-                          style: TextStyle(fontFamily: 'Aligarh',
-                              fontSize: 8,
-                              color: AppColors.lightMuted)),
-                    ]),
-                    const SizedBox(width: 8),
-                    GestureDetector(
-                      onTap: () => _showUnitPicker(name: isAr ? food.name : food.nameEn, kcal100: food.kcal.toDouble(), protein100: food.proteinG, carbs100: food.carbsG, fat100: food.fatG),
-                      child: Container(
-                        width: 34, height: 34,
-                        decoration: BoxDecoration(
-                          color: AppColors.brandGreen,
-                          borderRadius: BorderRadius.circular(17),
-                        ),
-                        child: const Icon(Icons.add_rounded,
-                            color: Colors.white, size: 20),
+                        f.nameEn.toLowerCase().contains(_filter)))
+                      _foodRow(
+                        name: isAr ? food.name : food.nameEn,
+                        thumb: '${food.nameEn} ${food.name}',
+                        kcal: food.kcal,
+                        protein: food.proteinG,
+                        carbs: food.carbsG,
+                        fat: food.fatG,
+                        isDark: isDark,
+                        textC: textC,
+                        muted: muted,
+                        onTap: () => _showUnitPicker(
+                            name: isAr ? food.name : food.nameEn,
+                            kcal100: food.kcal.toDouble(),
+                            protein100: food.proteinG,
+                            carbs100: food.carbsG,
+                            fat100: food.fatG),
                       ),
-                    ),
-                  ]),
-                )).toList(),
-              )),
+                  ],
+                ),
+              ),
             ]),
 
             // ── MANUAL ENTRY ─────────────────────────────
@@ -2383,6 +2819,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
       ]),
     );
   }
+
 
   // ── Unit Picker ─────────────────────────────────────────────────────────────
 
@@ -2507,8 +2944,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
 
                 // Food row
                 Row(children: [
-                  FoodThumb(name: name, size: 52, radius: 14,
-                      background: AppColors.brandGreen.withOpacity(0.1)),
+                  FoodThumb(name: name, size: 58),
                   const SizedBox(width: 12),
                   Expanded(child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -2746,11 +3182,16 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
 
   Widget _gramMacro(String val, String label, Color color) =>
     Column(mainAxisSize: MainAxisSize.min, children: [
-      Text(val, style: TextStyle(fontFamily: 'Aligarh', fontSize: 13,
+      Text(val, style: TextStyle(fontFamily: 'Aligarh', fontSize: 15,
           fontWeight: FontWeight.w900, color: color)),
-      const SizedBox(height: 1),
-      Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 9,
-          color: color.withOpacity(0.75))),
+      const SizedBox(height: 3),
+      Row(mainAxisSize: MainAxisSize.min, children: [
+        Container(width: 6, height: 6,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
+        const SizedBox(width: 4),
+        Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 9.5,
+            color: color.withOpacity(0.85))),
+      ]),
     ]);
 
   Widget _vDivider() => Container(
@@ -2759,125 +3200,82 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
 
 
   // ── SEARCH RESULTS ───────────────────────────────────────
+  // PATCH_V55_ADDFOOD
   Widget _buildResultList(bool isAr, Color muted) {
     String tl(String ar, String en) => tLang(lang, ar, en);
+    final isDark = widget.isDark;
+    final textC = isDark ? AppColors.darkText : AppColors.lightText;
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       Padding(
-        padding: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.only(bottom: 10),
         child: Row(children: [
           Text(tl('النتائج', 'Results'),
-              style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
-                  fontWeight: FontWeight.w700, color: muted)),
-          const Spacer(),
-          Text('${_results.length}',
-              style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
-                  fontWeight: FontWeight.w800, color: muted)),
+              style: TextStyle(
+                  fontFamily: 'Aligarh',
+                  fontSize: 13,
+                  fontWeight: FontWeight.w800,
+                  color: muted)),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: AppColors.brandGreen.withOpacity(0.14),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text('${_results.length}',
+                style: const TextStyle(
+                    fontFamily: 'Aligarh',
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.halalGreen)),
+          ),
         ]),
       ),
-      ..._results.map((r) => _resultTile(r, isAr, muted)),
-      const SizedBox(height: 10),
-      // Nothing quite right? go straight to manual entry.
-      TextButton.icon(
-        onPressed: () {
-          _nameCtrl.text = _searchCtrl.text.trim();
-          _tab.animateTo(2);
-        },
-        icon: const Icon(Icons.edit_rounded,
-            size: 16, color: AppColors.brandGreen),
-        label: Text(tl('لم تجد طعامك؟ أدخله يدوياً',
-                'Not listed? Enter it manually'),
-            style: const TextStyle(fontFamily: 'Aligarh', fontSize: 11.5,
-                fontWeight: FontWeight.w700,
-                color: AppColors.brandGreen)),
+      ..._results.map((r) => _resultTile(r, isAr, muted, isDark, textC)),
+      const SizedBox(height: 6),
+      Center(
+        child: TextButton.icon(
+          onPressed: () {
+            _nameCtrl.text = _searchCtrl.text.trim();
+            _tab.animateTo(2);
+          },
+          icon: const Icon(Icons.edit_rounded,
+              size: 16, color: AppColors.halalGreen),
+          label: Text(
+              tl('لم تجد طعامك؟ أدخله يدوياً', 'Not listed? Enter it manually'),
+              style: const TextStyle(
+                  fontFamily: 'Aligarh',
+                  fontSize: 11.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.halalGreen)),
+        ),
       ),
     ]);
   }
 
-  Widget _resultTile(Map<String, dynamic> r, bool isAr, Color muted) {
+  Widget _resultTile(Map<String, dynamic> r, bool isAr, Color muted,
+      bool isDark, Color textC) {
     final name = (isAr
             ? (r['name_ar'] ?? r['name_en'] ?? '')
             : (r['name_en'] ?? r['name_ar'] ?? ''))
         .toString();
-    final kcal    = (r['kcal'] as num? ?? 0);
-    final protein = (r['protein_g'] as num? ?? 0);
-    final carbs   = (r['carbs_g'] as num? ?? 0);
-    final fat     = (r['fat_g'] as num? ?? 0);
-    final basis   = r['basis'] == 'portion'
+    final basis = r['basis'] == 'portion'
         ? (r['serving_size']?.toString() ?? '')
         : '100g';
-    final source  = r['source']?.toString() ?? '';
-
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: GestureDetector(
-        onTap: () => _openResult(r),
-        behavior: HitTestBehavior.opaque,
-        child: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-            color: AppColors.brandGreen.withOpacity(0.04),
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-                color: AppColors.brandGreen.withOpacity(0.16)),
-          ),
-          child: Row(children: [
-            FoodThumb(
-              name: name,
-              imageUrl: r['image_url'] as String?,
-              size: 46, radius: 12,
-              background: AppColors.brandGreen.withOpacity(0.10),
-            ),
-            const SizedBox(width: 11),
-            Expanded(child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-              Text(name,
-                  style: const TextStyle(fontFamily: 'Aligarh',
-                      fontSize: 13, fontWeight: FontWeight.w700),
-                  maxLines: 1, overflow: TextOverflow.ellipsis),
-              const SizedBox(height: 2),
-              Row(children: [
-                Flexible(child: Text(
-                    '💪 ${protein.toStringAsFixed(1)}g  '
-                    '🍚 ${carbs.toStringAsFixed(1)}g  '
-                    '🥑 ${fat.toStringAsFixed(1)}g',
-                    style: TextStyle(fontFamily: 'Aligarh',
-                        fontSize: 9.5, color: muted),
-                    maxLines: 1, overflow: TextOverflow.ellipsis)),
-              ]),
-              const SizedBox(height: 2),
-              Row(children: [
-                Text(basis,
-                    style: TextStyle(fontFamily: 'Aligarh',
-                        fontSize: 9, color: muted),
-                    maxLines: 1, overflow: TextOverflow.ellipsis),
-                if (source.isNotEmpty) ...[
-                  const SizedBox(width: 6),
-                  _sourceBadge(source),
-                ],
-              ]),
-            ])),
-            const SizedBox(width: 8),
-            Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              Text('${kcal.round()}',
-                  style: const TextStyle(fontFamily: 'Aligarh',
-                      fontSize: 15, fontWeight: FontWeight.w900,
-                      color: AppColors.brandGreen)),
-              const Text('kcal',
-                  style: TextStyle(fontFamily: 'Aligarh',
-                      fontSize: 8, color: AppColors.lightMuted)),
-            ]),
-            const SizedBox(width: 8),
-            Container(
-              width: 32, height: 32,
-              decoration: const BoxDecoration(
-                color: AppColors.brandGreen, shape: BoxShape.circle),
-              child: const Icon(Icons.add_rounded,
-                  color: Colors.white, size: 19),
-            ),
-          ]),
-        ),
-      ),
+    return _foodRow(
+      name: name,
+      thumb: name,
+      imageUrl: r['image_url'] as String?,
+      kcal: (r['kcal'] as num? ?? 0),
+      protein: (r['protein_g'] as num? ?? 0),
+      carbs: (r['carbs_g'] as num? ?? 0),
+      fat: (r['fat_g'] as num? ?? 0),
+      sub: basis,
+      source: r['source']?.toString() ?? '',
+      isDark: isDark,
+      textC: textC,
+      muted: muted,
+      onTap: () => _openResult(r),
     );
   }
 
@@ -2980,8 +3378,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                     color: Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(2)))),
               Row(children: [
-                FoodThumb(name: name, size: 52, radius: 14,
-                    background: AppColors.brandGreen.withOpacity(0.1)),
+                FoodThumb(name: name, size: 58),
                 const SizedBox(width: 12),
                 Expanded(child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
