@@ -302,3 +302,43 @@ if os.path.exists(manifest_path):
         print("AndroidManifest: notification permissions + receivers added")
     else:
         print("AndroidManifest: notification setup already present")
+
+
+# PATCH_V59_STEPCARD ─ live step card: Kotlin sources, layouts, service, permissions
+import shutil as _sh
+_kt_dst = "android/app/src/main/kotlin/com.ihsanstudio.halalcalorie"
+os.makedirs(_kt_dst, exist_ok=True)
+if os.path.isdir("android_extra/kotlin"):
+    for _n in os.listdir("android_extra/kotlin"):
+        _sh.copy("android_extra/kotlin/" + _n, _kt_dst + "/" + _n)   # includes the new MainActivity.kt
+    print("StepCard: Kotlin sources copied")
+_lay_dst = "android/app/src/main/res/layout"
+os.makedirs(_lay_dst, exist_ok=True)
+if os.path.isdir("android_extra/res/layout"):
+    for _n in os.listdir("android_extra/res/layout"):
+        _sh.copy("android_extra/res/layout/" + _n, _lay_dst + "/" + _n)
+    print("StepCard: layouts copied")
+if os.path.exists(manifest_path):
+    with open(manifest_path, "r") as _f: _m = _f.read()
+    _ch = False
+    for _perm in ("FOREGROUND_SERVICE", "FOREGROUND_SERVICE_HEALTH"):
+        if 'android.permission.' + _perm + '"' not in _m:
+            _m = _m.replace("<application",
+                '    <uses-permission android:name="android.permission.' + _perm + '" />\n    <application', 1)
+            _ch = True
+    if "StepCardService" not in _m:
+        _svc = (
+            '    <service android:name="com.ihsanstudio.halalcalorie.StepCardService" android:exported="false" android:foregroundServiceType="health" />\n'
+            '    <receiver android:name="com.ihsanstudio.halalcalorie.StepCardBootReceiver" android:exported="true">\n'
+            '        <intent-filter>\n'
+            '            <action android:name="android.intent.action.BOOT_COMPLETED"/>\n'
+            '            <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>\n'
+            '        </intent-filter>\n'
+            '    </receiver>\n')
+        _m = _m.replace("</application>", _svc + "    </application>", 1)
+        _ch = True
+    if _ch:
+        with open(manifest_path, "w") as _f: _f.write(_m)
+        print("AndroidManifest: step card service + permissions added")
+    else:
+        print("AndroidManifest: step card already present")

@@ -11,6 +11,7 @@ import 'core/database.dart';
 import 'core/auth_service.dart';
 import 'core/revenuecat_service.dart';
 import 'core/prayer_provider.dart'; // PATCH_V58
+import 'core/step_card_service.dart'; // PATCH_V59
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -89,6 +90,7 @@ class _HalalCalorieAppState extends ConsumerState<HalalCalorieApp>
     // Start counting steps at launch when the permission is already granted.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(stepTrackerProvider).ensureStarted(askPermissions: false).catchError((_) {});
+      StepCardService.bootstrap().catchError((_) {}); // PATCH_V59
     });
   }
 
@@ -101,13 +103,14 @@ class _HalalCalorieAppState extends ConsumerState<HalalCalorieApp>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) { _rollDayIfNeeded(); _refreshSmart(); }
+    if (state == AppLifecycleState.resumed) { _rollDayIfNeeded(); _refreshSmart(); StepCardService.onResume(); }
   }
 
   // PATCH_V58_NOTIF: the permission prompt + the premium smart reminders.
   Future<void> _afterOnboarding() async {
     await Future.delayed(const Duration(milliseconds: 1500));
     try { await NotificationService.askPermissionOnce(); } catch (e) { debugPrint('Notif ask: $e'); }
+    try { await StepCardService.bootstrap(); } catch (e) { debugPrint('StepCard: $e'); } // PATCH_V59
     await _refreshSmart();
   }
 
@@ -156,6 +159,7 @@ class _HalalCalorieAppState extends ConsumerState<HalalCalorieApp>
     final isDark    = ref.watch(themeProvider);
     final isRamadan = ref.watch(ramadanModeProvider);
     final lang      = ref.watch(languageProvider);
+    StepCardService.setAppContext(isDark: isDark, lang: lang, ramadan: isRamadan); // PATCH_V59
     ref.listen<bool>(onboardingDoneProvider, (prev, next) { if (next) _afterOnboarding(); });
     ref.listen<bool>(premiumProvider, (prev, next) { _refreshSmart(); });
     return MaterialApp.router(

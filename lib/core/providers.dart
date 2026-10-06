@@ -1,6 +1,7 @@
 // providers.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart'; import'package:shared_preferences/shared_preferences.dart'; import'package:go_router/go_router.dart'; import'../data/models/models.dart'; import'../data/models/user_profile.dart'; import'router.dart'; import'revenuecat_service.dart'; import'database.dart'; import'health_service.dart'; import'ascent.dart'; import'strength.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'step_card_service.dart'; // PATCH_V59
 import 'scan_store.dart';
 export 'ascent.dart';
 export 'strength.dart';
@@ -254,7 +255,7 @@ class HealthNotifier extends StateNotifier<HealthState> {
     final row = await AppDatabase.getTodaySummary(); if (row == null) return;
     state = HealthState(steps: (row['steps'] as int?) ?? 0, stepsGoal: state.stepsGoal, heartRate: state.heartRate, mood: row['mood'] as String?);
   }
-  Future<void> setSteps(int n) async { state = HealthState(steps: n.clamp(0, 99999), stepsGoal: state.stepsGoal, heartRate: state.heartRate, mood: state.mood, quickBmi: state.quickBmi); await AppDatabase.upsertSummary(steps: n.clamp(0, 99999)); }
+  Future<void> setSteps(int n) async { state = HealthState(steps: n.clamp(0, 99999), stepsGoal: state.stepsGoal, heartRate: state.heartRate, mood: state.mood, quickBmi: state.quickBmi); await AppDatabase.upsertSummary(steps: n.clamp(0, 99999)); StepCardService.pushSteps(n.clamp(0, 99999)); }
   Future<void> addSteps(int n) => setSteps(state.steps + n);
   void setHeartRate(int hr) => state = HealthState(steps: state.steps, stepsGoal: state.stepsGoal, heartRate: hr.clamp(30, 250), mood: state.mood, quickBmi: state.quickBmi);
   Future<void> setMood(String m) async { state = HealthState(steps: state.steps, stepsGoal: state.stepsGoal, heartRate: state.heartRate, mood: m, quickBmi: state.quickBmi); await AppDatabase.upsertSummary(mood: m); }

@@ -1,6 +1,6 @@
 name: halalcalorie
 description: HalalCalorie
-version: 1.16.0+30
+version: 1.17.0+31
 publish_to: none
 
 environment:

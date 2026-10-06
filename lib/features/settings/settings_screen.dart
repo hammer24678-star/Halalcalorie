@@ -324,6 +324,27 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
 
                 // ── NOTIFICATIONS ──────────────────────────────
                 section(t('الإشعارات', 'NOTIFICATIONS')),
+// PATCH_V59_STEPCARD_LINK
+                GestureDetector(
+                  onTap: () => context.push('/step-card'),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                    decoration: BoxDecoration(
+                      color: AppColors.halalGreen.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: AppColors.halalGreen.withOpacity(0.45), width: 0.8),
+                    ),
+                    child: Row(children: [
+                      const Icon(Icons.directions_walk_rounded, color: AppColors.halalGreen, size: 22),
+                      const SizedBox(width: 12),
+                      Expanded(child: Text(t('بطاقة الخطوات الحيّة — ألوان وحركة وإعدادات', 'Live Step Card — themes, animation & settings'),
+                          style: TextStyle(fontFamily: 'Aligarh', fontSize: 13.5,
+                              fontWeight: FontWeight.w800, color: text))),
+                      Icon(Icons.chevron_right_rounded, color: muted),
+                    ]),
+                  ),
+                ),
 // PATCH_V58_NOTIF_LINK
                 GestureDetector(
                   onTap: () => context.push('/notifications'),

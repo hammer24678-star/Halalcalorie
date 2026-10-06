@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/hc_card_img"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:scaleType="fitCenter"
+        android:contentDescription="@null" />
+</FrameLayout>

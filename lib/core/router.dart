@@ -27,6 +27,7 @@ import '../features/premium/meal_plan_screen.dart';
 import '../features/premium/insights_screen.dart';
 import '../features/premium/fasting_planner_screen.dart';
 import '../features/premium/notification_center_screen.dart';
+import '../features/health/step_card_screen.dart'; // PATCH_V59
 import 'motion.dart';
 import 'providers.dart';
 import 'shell.dart';
@@ -85,6 +86,7 @@ class AppRouter {
         _page('/insights', (_, __) => const InsightsScreen()),
         _page('/fasting', (_, __) => const FastingPlannerScreen()),
         _page('/notifications', (_, __) => const NotificationCenterScreen()),
+        _page('/step-card', (_, __) => const StepCardScreen()),
       ],
       errorBuilder: (_, state) => Scaffold(
         body: Center(
