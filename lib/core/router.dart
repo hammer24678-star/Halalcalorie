@@ -21,6 +21,12 @@ import '../features/profile/profile_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/paywall/paywall_screen.dart';
 import '../features/ascent/ascent_screen.dart';
+import '../features/premium/premium_hub_screen.dart'; // PATCH_V58
+import '../features/premium/coach_screen.dart';
+import '../features/premium/meal_plan_screen.dart';
+import '../features/premium/insights_screen.dart';
+import '../features/premium/fasting_planner_screen.dart';
+import '../features/premium/notification_center_screen.dart';
 import 'motion.dart';
 import 'providers.dart';
 import 'shell.dart';
@@ -73,6 +79,12 @@ class AppRouter {
         _page('/food-photo', (_, __) => const FoodPhotoScreen()),
         _page('/body-photo', (_, __) => const BodyPhotoScreen()),
         _page('/settings', (_, __) => const SettingsScreen()),
+        _page('/premium', (_, __) => const PremiumHubScreen()),
+        _page('/coach', (_, __) => const CoachScreen()),
+        _page('/meal-plan', (_, __) => const MealPlanScreen()),
+        _page('/insights', (_, __) => const InsightsScreen()),
+        _page('/fasting', (_, __) => const FastingPlannerScreen()),
+        _page('/notifications', (_, __) => const NotificationCenterScreen()),
       ],
       errorBuilder: (_, state) => Scaffold(
         body: Center(

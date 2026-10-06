@@ -257,3 +257,48 @@ if os.path.exists(settings_gradle):
         print("settings.gradle: Kotlin already 1.9.0 or key line not found")
 else:
     print("WARNING: android/settings.gradle not found — Kotlin not patched")
+
+
+# PATCH_V58_NOTIF ─ make local notifications actually work on Android
+# 1. a monochrome status-bar icon (the launcher icon renders as a white square)
+_icon_xml = (
+    '<vector xmlns:android="http://schemas.android.com/apk/res/android"\n'
+    '    android:width="24dp" android:height="24dp"\n'
+    '    android:viewportWidth="24" android:viewportHeight="24">\n'
+    '    <path android:fillColor="#FFFFFFFF"\n'
+    '        android:pathData="M21,12.79A9,9 0 1,1 11.21,3 7,7 0 0,0 21,12.79z"/>\n'
+    '</vector>\n')
+_drawable_dir = "android/app/src/main/res/drawable"
+os.makedirs(_drawable_dir, exist_ok=True)
+with open(_drawable_dir + "/ic_stat_halal.xml", "w", encoding="utf-8") as _f:
+    _f.write(_icon_xml)
+print("Notification icon written: drawable/ic_stat_halal.xml")
+
+# 2. permissions + receivers (the plugin's own manifest declares them too; an
+#    identical explicit declaration merges cleanly and removes any doubt)
+if os.path.exists(manifest_path):
+    with open(manifest_path, "r") as _f: _m = _f.read()
+    _changed = False
+    for _perm in ("RECEIVE_BOOT_COMPLETED", "VIBRATE"):
+        if "android.permission." + _perm not in _m:
+            _m = _m.replace("<application",
+                '    <uses-permission android:name="android.permission.' + _perm + '" />\n    <application', 1)
+            _changed = True
+    if "ScheduledNotificationReceiver" not in _m:
+        _recv = (
+            '    <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationReceiver" />\n'
+            '    <receiver android:exported="false" android:name="com.dexterous.flutterlocalnotifications.ScheduledNotificationBootReceiver">\n'
+            '        <intent-filter>\n'
+            '            <action android:name="android.intent.action.BOOT_COMPLETED"/>\n'
+            '            <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>\n'
+            '            <action android:name="android.intent.action.QUICKBOOT_POWERON"/>\n'
+            '            <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>\n'
+            '        </intent-filter>\n'
+            '    </receiver>\n')
+        _m = _m.replace("</application>", _recv + "    </application>", 1)
+        _changed = True
+    if _changed:
+        with open(manifest_path, "w") as _f: _f.write(_m)
+        print("AndroidManifest: notification permissions + receivers added")
+    else:
+        print("AndroidManifest: notification setup already present")

@@ -22,6 +22,7 @@ import '../../data/models/models.dart';
 import '../../data/models/user_profile.dart';
 import '../../data/icon_assets.dart';
 import '../../core/fx6.dart';
+import '../premium/premium_hub_screen.dart'; // PATCH_V58
 
 
 // Cycle to next language in the supported list
@@ -321,6 +322,10 @@ Builder(builder: (_) {
     mosqueScale: _mosqueScale,
   ));
 }),
+const SizedBox(height: 12),
+
+// ── PREMIUM STUDIO (PATCH_V58) ──
+_anim(1, const PremiumHomeCard()),
 const SizedBox(height: 12),
 
 // ── RAMADAN HERO ──
@@ -1534,7 +1539,7 @@ _Q('📷', tLang(lang, 'باركود', 'Barcode', 'Code-barres', 'Barkod', 'Kod 
 tLang(lang, 'فحص الحلال', 'Halal check', 'Vérification halal', 'Helal kontrol', 'Semakan halal', 'Cek halal'), '/scanner',
 const Color(0xFF1F6FEB)),
 _Q('🏃', tLang(lang, 'تمارين', 'Workouts', 'Entraînements', 'Antrenmanlar', 'Senaman', 'Olahraga'),
-tLang(lang, '١٨٠ خطة', '180 plans', '180 plans', '180 plan', '180 rancangan', '180 rencana'), '/fitness',
+tLang(lang, '${kWorkouts.length} خطة', '${kWorkouts.length} plans'), '/fitness',
 const Color(0xFF8957E5)),
 _Q('💪', tLang(lang, 'مقاييس', 'Body', 'Corps', 'Vücut', 'Badan', 'Tubuh'),
 tLang(lang, 'BMI وأكثر', 'BMI & more', 'IMC & plus', 'VKİ & daha fazlası', 'BMI & lagi', 'IMT & lebih'), '/body',

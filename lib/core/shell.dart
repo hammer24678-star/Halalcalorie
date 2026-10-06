@@ -8,6 +8,7 @@ import 'l10n.dart';
 import 'fx.dart';
 import 'motion.dart';
 import 'providers.dart';
+import 'notifications.dart'; // PATCH_V58
 
 class AppShell extends ConsumerStatefulWidget {
   final Widget child;
@@ -23,8 +24,26 @@ class _AppShellState extends ConsumerState<AppShell>
     duration: const Duration(milliseconds: 520),
   )..forward();
 
+  // PATCH_V58_NOTIF_TAP
+  @override
+  void initState() {
+    super.initState();
+    NotificationService.pendingRoute.addListener(_openNotifRoute);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _openNotifRoute());
+  }
+
+  void _openNotifRoute() {
+    final r = NotificationService.pendingRoute.value;
+    if (r == null || r.isEmpty || !mounted) return;
+    NotificationService.pendingRoute.value = null;
+    const tabPaths = ['/home', '/nutrition', '/fitness', '/ascent', '/health', '/profile'];
+    if (r == '/ascent' && !ref.read(premiumProvider)) { context.push('/paywall'); return; }
+    if (tabPaths.contains(r)) { context.go(r); } else { context.push(r); }
+  }
+
   @override
   void dispose() {
+    NotificationService.pendingRoute.removeListener(_openNotifRoute);
     _slideIn.dispose();
     super.dispose();
   }

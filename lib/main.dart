@@ -10,6 +10,7 @@ import 'core/notifications.dart';
 import 'core/database.dart';
 import 'core/auth_service.dart';
 import 'core/revenuecat_service.dart';
+import 'core/prayer_provider.dart'; // PATCH_V58
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -100,7 +101,23 @@ class _HalalCalorieAppState extends ConsumerState<HalalCalorieApp>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) _rollDayIfNeeded();
+    if (state == AppLifecycleState.resumed) { _rollDayIfNeeded(); _refreshSmart(); }
+  }
+
+  // PATCH_V58_NOTIF: the permission prompt + the premium smart reminders.
+  Future<void> _afterOnboarding() async {
+    await Future.delayed(const Duration(milliseconds: 1500));
+    try { await NotificationService.askPermissionOnce(); } catch (e) { debugPrint('Notif ask: $e'); }
+    await _refreshSmart();
+  }
+
+  Future<void> _refreshSmart() async {
+    try {
+      final times = await ref.read(prayerTimesProvider.future)
+          .timeout(const Duration(seconds: 8), onTimeout: () => null);
+      await NotificationService.refreshSmart(
+          times: times, ramadan: ref.read(ramadanModeProvider));
+    } catch (e) { debugPrint('Smart notif: $e'); }
   }
 
   void _armMidnightTimer() {
@@ -139,6 +156,8 @@ class _HalalCalorieAppState extends ConsumerState<HalalCalorieApp>
     final isDark    = ref.watch(themeProvider);
     final isRamadan = ref.watch(ramadanModeProvider);
     final lang      = ref.watch(languageProvider);
+    ref.listen<bool>(onboardingDoneProvider, (prev, next) { if (next) _afterOnboarding(); });
+    ref.listen<bool>(premiumProvider, (prev, next) { _refreshSmart(); });
     return MaterialApp.router(
       title: 'HalalCalorie',
       debugShowCheckedModeBanner: false,

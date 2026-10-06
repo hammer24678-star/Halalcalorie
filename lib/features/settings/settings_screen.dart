@@ -215,8 +215,8 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                             isPrem
                                 ? t('شكراً لدعمك — كل الميزات مفتوحة',
                                     'Thank you — every feature is unlocked')
-                                : t('ماسحات غير محدودة • ١٨٠ تمرين • مخطط AI',
-                                    'Unlimited scans • 180 workouts • AI planner'),
+                                : t('مدرّب AI • مخطط وجبات • رؤى • ماسحات بلا حدود',
+                                    'AI coach • meal planner • insights • unlimited scans'),
                             style: const TextStyle(
                                 fontFamily: 'Aligarh', fontSize: 12,
                                 height: 1.4, color: Colors.white70)),
@@ -239,6 +239,27 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                 ),
 
                 // ── APPEARANCE ─────────────────────────────────
+// PATCH_V58_STUDIO_LINK
+                GestureDetector(
+                  onTap: () => context.push('/premium'),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                    decoration: BoxDecoration(
+                      color: AppColors.accentGold.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: AppColors.accentGold.withOpacity(0.45), width: 0.8),
+                    ),
+                    child: Row(children: [
+                      const Icon(Icons.workspace_premium_rounded, color: AppColors.accentGold, size: 22),
+                      const SizedBox(width: 12),
+                      Expanded(child: Text(t('استوديو بريميوم — مدرّب • مخطط وجبات • رؤى • صيام', 'Premium Studio — coach • meal planner • insights • fasting'),
+                          style: TextStyle(fontFamily: 'Aligarh', fontSize: 13.5,
+                              fontWeight: FontWeight.w800, color: text))),
+                      Icon(Icons.chevron_right_rounded, color: muted),
+                    ]),
+                  ),
+                ),
                 section(t('المظهر', 'APPEARANCE')),
                 group([
                   tog(
@@ -303,6 +324,27 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
 
                 // ── NOTIFICATIONS ──────────────────────────────
                 section(t('الإشعارات', 'NOTIFICATIONS')),
+// PATCH_V58_NOTIF_LINK
+                GestureDetector(
+                  onTap: () => context.push('/notifications'),
+                  child: Container(
+                    margin: const EdgeInsets.only(bottom: 10),
+                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+                    decoration: BoxDecoration(
+                      color: AppColors.accentGold.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: AppColors.accentGold.withOpacity(0.45), width: 0.8),
+                    ),
+                    child: Row(children: [
+                      const Icon(Icons.notifications_active_rounded, color: AppColors.accentGold, size: 22),
+                      const SizedBox(width: 12),
+                      Expanded(child: Text(t('مركز الإشعارات — اختبار وإصلاح وتذكيرات ذكية', 'Notification Center — test, fix & smart reminders'),
+                          style: TextStyle(fontFamily: 'Aligarh', fontSize: 13.5,
+                              fontWeight: FontWeight.w800, color: text))),
+                      Icon(Icons.chevron_right_rounded, color: muted),
+                    ]),
+                  ),
+                ),
                 group([
                   tog(
                     icon: Icons.notifications_rounded, color: AppColors.doubtOrange,
