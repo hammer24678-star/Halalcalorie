@@ -9,20 +9,21 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:http/http.dart' as http;
 import '../data/models/models.dart';
+import 'ai_config.dart'; // PATCH_V61_AI
 import 'open_food_facts_service.dart';
 
 class ApiKeyMissingException implements Exception {
   final String message;
   const ApiKeyMissingException([this.message =
-    'GROQ_API_KEY is not set. Add it to your GitHub Secrets and rebuild.']);
+    'GEMINI_API_KEY is not set. Add it to your GitHub Secrets and rebuild.']);
   @override String toString() => message;
 }
 
 class AIService {
-  static const _endpoint    = 'https://api.groq.com/openai/v1/chat/completions';
-  static const _visionModel = 'meta-llama/llama-4-scout-17b-16e-instruct';
-  static const _textModel   = 'llama-3.1-8b-instant';
-  static const _apiKey      = String.fromEnvironment('GROQ_API_KEY', defaultValue: '');
+  static const _endpoint    = AiConfig.endpoint;
+  static const _visionModel = AiConfig.visionModel;
+  static const _textModel   = AiConfig.textModel;
+  static const _apiKey      = AiConfig.apiKey;
   /// Maps language code → human-readable name for AI prompts
   static String _langName(String code) => const {
     'ar': 'Arabic',
@@ -66,7 +67,8 @@ class AIService {
 
     final body = jsonEncode({
       'model': _visionModel,
-      'max_tokens': maxTokens,
+      'max_tokens': AiConfig.cap(maxTokens),
+      if (AiConfig.reasoning.isNotEmpty) 'reasoning_effort': AiConfig.reasoning,
       'messages': [
         {'role': 'system', 'content': systemPrompt},
         {
@@ -112,7 +114,8 @@ class AIService {
     if (_apiKey.isEmpty) throw const ApiKeyMissingException();
     final body = jsonEncode({
       'model': _textModel,
-      'max_tokens': maxTokens,
+      'max_tokens': AiConfig.cap(maxTokens),
+      if (AiConfig.reasoning.isNotEmpty) 'reasoning_effort': AiConfig.reasoning,
       'messages': [
         {'role': 'system', 'content': systemPrompt},
         {'role': 'user',   'content': userPrompt},

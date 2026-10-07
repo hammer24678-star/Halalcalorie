@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../core/ai_config.dart'; // PATCH_V61_AI
 import '../../core/fasting_calendar.dart';
 import '../../core/hijri.dart';
 import '../../core/l10n.dart';
@@ -63,8 +64,8 @@ class MealPlanScreen extends ConsumerStatefulWidget {
 }
 
 class _MealPlanState extends ConsumerState<MealPlanScreen> {
-  static const _endpoint = 'https://api.groq.com/openai/v1/chat/completions';
-  static const _apiKey = String.fromEnvironment('GROQ_API_KEY', defaultValue: '');
+  static const _endpoint = AiConfig.endpoint;
+  static const _apiKey = AiConfig.apiKey;
   static const _dailyCap = 5;
 
   List<PlanMeal> _plan = [];
@@ -176,7 +177,7 @@ class _MealPlanState extends ConsumerState<MealPlanScreen> {
 
     List<PlanMeal> parsed = [];
     String? err;
-    for (final model in const ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant']) {
+    for (final model in <String>[AiConfig.textModel]) {
       try {
         final resp = await http
             .post(
@@ -187,7 +188,8 @@ class _MealPlanState extends ConsumerState<MealPlanScreen> {
               },
               body: jsonEncode({
                 'model': model,
-                'max_tokens': 1100,
+                'max_tokens': AiConfig.cap(1100),
+                if (AiConfig.reasoning.isNotEmpty) 'reasoning_effort': AiConfig.reasoning,
                 'temperature': 0.6,
                 'response_format': {'type': 'json_object'},
                 'messages': [

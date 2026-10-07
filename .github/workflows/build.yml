@@ -54,11 +54,13 @@ jobs:
           STORE_PASSWORD:    ${{ secrets.STORE_PASSWORD }}
           KEYSTORE_PATH:        keystore.jks
           GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY:       ${{ secrets.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY:    ${{ secrets.ANTHROPIC_API_KEY }}
           RC_GOOGLE_KEY:        ${{ secrets.RC_GOOGLE_KEY }}
         run: >-
           flutter build apk --release --no-tree-shake-icons
           --dart-define=GROQ_API_KEY=$GROQ_API_KEY
+          --dart-define=GEMINI_API_KEY=$GEMINI_API_KEY
           --dart-define=ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
           --dart-define=RC_GOOGLE_KEY=$RC_GOOGLE_KEY
 
@@ -69,11 +71,13 @@ jobs:
           STORE_PASSWORD:    ${{ secrets.STORE_PASSWORD }}
           KEYSTORE_PATH:        keystore.jks
           GROQ_API_KEY:         ${{ secrets.GROQ_API_KEY }}
+          GEMINI_API_KEY:       ${{ secrets.GEMINI_API_KEY }}
           ANTHROPIC_API_KEY:    ${{ secrets.ANTHROPIC_API_KEY }}
           RC_GOOGLE_KEY:        ${{ secrets.RC_GOOGLE_KEY }}
         run: >-
           flutter build appbundle --release --no-tree-shake-icons
           --dart-define=GROQ_API_KEY=$GROQ_API_KEY
+          --dart-define=GEMINI_API_KEY=$GEMINI_API_KEY
           --dart-define=ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY
           --dart-define=RC_GOOGLE_KEY=$RC_GOOGLE_KEY
 

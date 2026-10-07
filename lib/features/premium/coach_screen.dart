@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/ai_config.dart'; // PATCH_V61_AI
 import '../../core/fasting_calendar.dart';
 import '../../core/l10n.dart';
 import '../../core/providers.dart';
@@ -16,9 +17,9 @@ import '../../data/models/user_profile.dart';
 import 'premium_ui.dart';
 
 class CoachService {
-  static const _endpoint = 'https://api.groq.com/openai/v1/chat/completions';
-  static const _apiKey = String.fromEnvironment('GROQ_API_KEY', defaultValue: '');
-  static const _models = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant'];
+  static const _endpoint = AiConfig.endpoint;
+  static const _apiKey = AiConfig.apiKey;
+  static const _models = [AiConfig.textModel];
 
   static bool get available => _apiKey.isNotEmpty;
 
@@ -69,7 +70,8 @@ class CoachService {
               },
               body: jsonEncode({
                 'model': model,
-                'max_tokens': 450,
+                'max_tokens': AiConfig.cap(450),
+                if (AiConfig.reasoning.isNotEmpty) 'reasoning_effort': AiConfig.reasoning,
                 'temperature': 0.5,
                 'messages': msgs,
               }),

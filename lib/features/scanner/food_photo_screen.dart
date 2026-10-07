@@ -147,7 +147,7 @@ class _FoodPhotoState extends ConsumerState<FoodPhotoScreen>
         lower.contains('clientexception')) {
       return tLang(lang, '⚠️ لا يوجد اتصال بالإنترنت', '⚠️ No internet connection');
     }
-    if (status == '401' || status == '403' || raw.contains('GROQ_API_KEY')) {
+    if (status == '401' || status == '403' || raw.contains('API_KEY')) {
       return tLang(
           lang,
           'تحليل الصور غير متاح حالياً. حاول لاحقاً.',
