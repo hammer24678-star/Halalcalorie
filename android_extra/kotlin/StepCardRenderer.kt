@@ -349,7 +349,8 @@ class StepCardRenderer(private val ctx: Context) {
         val bob = if (st.anim >= 1) (1f + 0.025f * Math.sin(st.t * 2.2).toFloat()) else 1f
         c.save()
         c.translate(cx, cy)
-        c.scale(bob, bob)
+        // PATCH_V60: the emblem is drawn inside the RTL mirror; flip the logo back
+        c.scale(if (rtl) -bob else bob, bob)
         path.reset()
         if (squircle) { rect.set(-r, -r, r, r); path.addRoundRect(rect, r * 0.42f, r * 0.42f, Path.Direction.CW) }
         else path.addCircle(0f, 0f, r, Path.Direction.CW)

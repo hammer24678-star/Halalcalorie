@@ -21,6 +21,7 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.os.IBinder
 import android.os.PowerManager
+import android.os.SystemClock
 import android.provider.Settings
 import android.widget.RemoteViews
 
@@ -90,9 +91,14 @@ class StepCardService : Service(), SensorEventListener {
 
     private val ticker = object : Runnable {
         override fun run() {
+            // PATCH_V60: fixed-rate. The next frame is due one interval after this one
+            // STARTED, so render time no longer stretches the cadence.
+            val t0 = SystemClock.uptimeMillis()
             frame()
             val ms = frameInterval()
-            if (ms > 0 && screenOn && !dismissed) bg.postDelayed(this, ms)
+            if (ms > 0 && screenOn && !dismissed) {
+                bg.postAtTime(this, maxOf(t0 + ms, SystemClock.uptimeMillis() + 60L))
+            }
         }
     }
 
@@ -198,7 +204,7 @@ class StepCardService : Service(), SensorEventListener {
         }
     }
 
-    fun onPushed() { bg.post { frame() } }
+    fun onPushed() { bg.post { if (!screenOn || frameInterval() <= 0L) frame() } }
 
     // ── sensor ────────────────────────────────────────────────
     private fun registerSensor() {
@@ -219,7 +225,7 @@ class StepCardService : Service(), SensorEventListener {
         if (changed) {
             checkGoal()
             // With animation off (or the screen off) a step is the only reason to repaint.
-            if (!screenOn || frameInterval() <= 0L) frame() else if (!dismissed) { bg.removeCallbacks(ticker); bg.post(ticker) }
+            if (!screenOn || frameInterval() <= 0L) frame() // else: the running ticker picks the step up on its next frame
         }
     }
 
@@ -230,7 +236,7 @@ class StepCardService : Service(), SensorEventListener {
 
     private fun animLevel(): Int = if (reducedMotion() || !screenOn) 0 else cfg.anim
 
-    private fun frameInterval(): Long = when (animLevel()) { 1 -> 1000L; 2 -> 500L; 3 -> 340L; else -> 0L }
+    private fun frameInterval(): Long = when (animLevel()) { 1 -> 700L; 2 -> 330L; 3 -> 250L; else -> 0L } // PATCH_V60: Android allows ~5 notification updates/s
 
     private fun kick() {
         bg.removeCallbacks(ticker)

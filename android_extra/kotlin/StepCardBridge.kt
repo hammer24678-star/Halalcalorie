@@ -15,6 +15,7 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.ByteArrayOutputStream
+import java.nio.ByteBuffer
 import java.util.concurrent.Executors
 
 // ─────────────────────────────────────────────────────────────
@@ -67,6 +68,7 @@ object StepCardBridge {
                         }
                     }
                     e.apply()
+                    rawCfg = null // PATCH_V60
                     val cfg = CardConfig.load(ctx)
                     if (cfg.theme == "random" && cfg.shuffle == "day" && StepState.randDay != StepState.dayKey()) {
                         StepState.shuffle(Palettes.poolSize())
@@ -136,6 +138,21 @@ object StepCardBridge {
                         }
                     }
                 }
+                "previewBoth" -> {
+                    val args = call.arguments as? Map<*, *> ?: emptyMap<Any, Any>()
+                    val tMs = (args["t"] as? Number)?.toDouble() ?: 0.0
+                    val fake = (args["steps"] as? Number)?.toInt() ?: -1
+                    val sinceCeleb = (args["sinceCelebMs"] as? Number)?.toLong() ?: 99999L
+                    val sinceStep = (args["sinceStepMs"] as? Number)?.toLong() ?: 99999L
+                    io.execute {
+                        try {
+                            val out = renderPreviewRaw(ctx, tMs, fake, sinceCeleb, sinceStep)
+                            main.post { result.success(out) }
+                        } catch (e: Exception) {
+                            main.post { result.error("preview", e.toString(), null) }
+                        }
+                    }
+                }
                 else -> result.notImplemented()
             }
         } catch (e: Exception) {
@@ -158,6 +175,42 @@ object StepCardBridge {
         val out = ByteArrayOutputStream()
         previewBmp!!.compress(Bitmap.CompressFormat.PNG, 100, out)
         return out.toByteArray()
+    }
+
+    // PATCH_V60: raw-pixel preview (no PNG round trip), both cards in one call.
+    private var rawCfg: CardConfig? = null
+    private var rawSmall: Bitmap? = null
+    private var rawBig: Bitmap? = null
+    private var rawSmallBytes: ByteArray? = null
+    private var rawBigBytes: ByteArray? = null
+
+    private fun pixelsOf(b: Bitmap, reuse: ByteArray?): ByteArray {
+        val n = b.byteCount
+        val arr = if (reuse != null && reuse.size == n) reuse else ByteArray(n)
+        b.copyPixelsToBuffer(ByteBuffer.wrap(arr))
+        return arr
+    }
+
+    @Synchronized
+    private fun renderPreviewRaw(ctx: Context, tMs: Double, fake: Int,
+                                 sinceCeleb: Long, sinceStep: Long): HashMap<String, Any> {
+        val r = previewRenderer ?: StepCardRenderer(ctx).also { previewRenderer = it }
+        val cfg = rawCfg ?: CardConfig.load(ctx).also { rawCfg = it }
+        val steps = if (fake >= 0) fake else StepState.steps()
+        val week = StepState.week()
+        if (fake >= 0) week[6] = fake
+        val state = StepRenderHelper.state(cfg, StepState.randIdx, steps.toFloat(), steps,
+            (tMs / 1000.0).toFloat(), sinceStep, sinceCeleb, week, cfg.anim)
+        val sb = r.render(false, state, rawSmall); rawSmall = sb
+        val bb = r.render(true, state, rawBig); rawBig = bb
+        rawSmallBytes = pixelsOf(sb, rawSmallBytes)
+        rawBigBytes = pixelsOf(bb, rawBigBytes)
+        val out = HashMap<String, Any>()
+        out["small"] = rawSmallBytes!!
+        out["big"] = rawBigBytes!!
+        out["sw"] = sb.width; out["sh"] = sb.height
+        out["bw"] = bb.width; out["bh"] = bb.height
+        return out
     }
 }
 

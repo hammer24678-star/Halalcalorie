@@ -303,6 +303,25 @@ class StepCardService {
     }
   }
 
+  /// PATCH_V60: both cards in one call, as raw RGBA (no PNG round trip).
+  static Future<Map<String, dynamic>?> previewBoth({
+    required int tMs,
+    int steps = -1,
+    int sinceCelebMs = 99999,
+    int sinceStepMs = 99999,
+  }) async {
+    try {
+      return await _ch.invokeMapMethod<String, dynamic>('previewBoth', <String, Object>{
+        't': tMs,
+        'steps': steps,
+        'sinceCelebMs': sinceCelebMs,
+        'sinceStepMs': sinceStepMs,
+      });
+    } catch (_) {
+      return null;
+    }
+  }
+
   static Future<void> shuffleNow() async {
     try {
       await _ch.invokeMethod('shuffle');

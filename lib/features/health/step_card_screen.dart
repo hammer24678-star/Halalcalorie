@@ -4,7 +4,9 @@
 // exactly what appears in the shade.
 import 'dart:async';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart' show Ticker;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart' show openAppSettings;
 import '../../core/l10n.dart';
@@ -731,57 +733,103 @@ class _PreviewBox extends StatefulWidget {
   State<_PreviewBox> createState() => _PreviewBoxState();
 }
 
-class _PreviewBoxState extends State<_PreviewBox> with WidgetsBindingObserver {
-  Timer? _timer;
+class _PreviewBoxState extends State<_PreviewBox>
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
+  // PATCH_V60: one native call per frame (both cards, raw pixels, no PNG), paced
+  // by a vsync Ticker, so the preview animates smoothly instead of ~3 fps.
+  late final Ticker _ticker;
   bool _busy = false;
   bool _active = true;
-  Uint8List? _small;
-  Uint8List? _big;
+  int _lastReq = -1000;
+  ui.Image? _small;
+  ui.Image? _big;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _timer = Timer.periodic(const Duration(milliseconds: 220), (_) => _tick());
-    _tick();
+    _ticker = createTicker((_) => _tick())..start();
   }
 
   @override
   void dispose() {
-    _timer?.cancel();
     WidgetsBinding.instance.removeObserver(this);
+    _ticker.dispose();
+    _small?.dispose();
+    _big?.dispose();
     super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     _active = state == AppLifecycleState.resumed;
+    if (_active) {
+      if (!_ticker.isActive) _ticker.start();
+    } else {
+      _ticker.stop();
+    }
+  }
+
+  Future<ui.Image> _decode(Uint8List px, int w, int h) {
+    final c = Completer<ui.Image>();
+    ui.decodeImageFromPixels(px, w, h, ui.PixelFormat.rgba8888, c.complete);
+    return c.future;
   }
 
   Future<void> _tick() async {
     if (_busy || !_active || !mounted) return;
+    final now = widget.clock.elapsedMilliseconds;
+    if (now - _lastReq < 24) return;
     _busy = true;
+    _lastReq = now;
     try {
-      final now = widget.clock.elapsedMilliseconds;
       final since = widget.walkAt == 0 ? 99999 : now - widget.walkAt;
       final celeb = widget.celebAt == 0 ? 99999 : now - widget.celebAt;
-      final s = await StepCardService.preview(
-          expanded: false, tMs: now, steps: widget.demoSteps, sinceCelebMs: celeb, sinceStepMs: since);
-      final b = await StepCardService.preview(
-          expanded: true, tMs: now, steps: widget.demoSteps, sinceCelebMs: celeb, sinceStepMs: since);
-      if (mounted) setState(() { _small = s ?? _small; _big = b ?? _big; });
+      final m = await StepCardService.previewBoth(
+          tMs: now, steps: widget.demoSteps, sinceCelebMs: celeb, sinceStepMs: since);
+      if (m == null) return;
+      final sb = m['small'];
+      final bb = m['big'];
+      if (sb is! Uint8List || bb is! Uint8List) return;
+      final s = await _decode(sb, (m['sw'] as num).toInt(), (m['sh'] as num).toInt());
+      final b = await _decode(bb, (m['bw'] as num).toInt(), (m['bh'] as num).toInt());
+      if (!mounted) {
+        s.dispose();
+        b.dispose();
+        return;
+      }
+      final oldS = _small;
+      final oldB = _big;
+      setState(() {
+        _small = s;
+        _big = b;
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        oldS?.dispose();
+        oldB?.dispose();
+      });
+    } catch (_) {
+      // a dropped preview frame is fine
     } finally {
       _busy = false;
     }
+  }
+
+  Widget _frame(ui.Image? im) {
+    if (im == null) {
+      return const SizedBox(
+          height: 120, child: Center(child: CircularProgressIndicator(strokeWidth: 2)));
+    }
+    return AspectRatio(
+      aspectRatio: im.width / im.height,
+      child: RawImage(image: im, fit: BoxFit.fill, filterQuality: FilterQuality.medium),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final th = widget.th;
     final shade = widget.isDark ? const Color(0xFF1C1F24) : const Color(0xFFE6E9ED);
-    Widget img(Uint8List? b) => b == null
-        ? const SizedBox(height: 120, child: Center(child: CircularProgressIndicator(strokeWidth: 2)))
-        : Image.memory(b, gaplessPlayback: true, fit: BoxFit.fitWidth, filterQuality: FilterQuality.medium);
     return Column(children: [
       Container(
         padding: const EdgeInsets.all(12),
@@ -791,9 +839,9 @@ class _PreviewBoxState extends State<_PreviewBox> with WidgetsBindingObserver {
           border: Border.all(color: th.border, width: 0.8),
         ),
         child: Column(children: [
-          img(_small),
+          _frame(_small),
           const SizedBox(height: 10),
-          img(_big),
+          _frame(_big),
         ]),
       ),
       const SizedBox(height: 8),

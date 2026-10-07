@@ -11,7 +11,10 @@
 //  a neutral plate glyph when there is no connection or no photo.
 // ════════════════════════════════════════════════════════════════════
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'food_art.dart'; // PATCH_V60_FOODART
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'open_food_facts_service.dart';
 import '../data/icon_assets.dart'; // PATCH_V29_FOODTHUMB_DARK_SAFE
@@ -288,12 +291,45 @@ const Map<String, String> kFoodGlyphs = {
 final List<String> _sortedGlyphKeys = kFoodGlyphs.keys.toList()
   ..sort((a, b) => b.length.compareTo(a.length));
 
+// PATCH_V60_FOODART — Arabic-aware matching
+String _normFood(String s) {
+  var t = s.toLowerCase().trim();
+  if (t.isEmpty) return t;
+  t = t.replaceAll(RegExp('[ً-ٰٟـ]'), '');
+  t = t.replaceAll(RegExp('[آأإ]'), 'ا');
+  t = t.replaceAll('ى', 'ي');
+  t = t.replaceAll('ة', 'ه');
+  return t;
+}
+
+Set<String> _foodTokens(String needle) {
+  final out = <String>{};
+  for (final w in needle.split(RegExp(r'[^\p{L}\p{N}]+', unicode: true))) {
+    if (w.isEmpty) continue;
+    out.add(w);
+    if (w.length > 3 && w.endsWith('s')) out.add(w.substring(0, w.length - 1));
+    if (w.length > 3 && w.startsWith('ال')) out.add(w.substring(2));
+  }
+  return out;
+}
+
+/// Short keys ("su", "tea", "egg", "خل") only match whole words, so "steamed"
+/// is not tea and "sausage" is not water.
+bool _foodHas(String needle, Set<String> tokens, String key) =>
+    key.length <= 3 ? tokens.contains(key) : needle.contains(key);
+
+final List<MapEntry<String, String>> _glyphIndex = (<MapEntry<String, String>>[
+  for (final k in kFoodGlyphs.keys) MapEntry<String, String>(_normFood(k), kFoodGlyphs[k]!),
+])
+  ..sort((a, b) => b.key.length.compareTo(a.key.length));
+
 /// Best-matching glyph for [name], or null when nothing matches.
 String? lookupFoodGlyph(String name) {
-  final needle = name.toLowerCase().trim();
+  final needle = _normFood(name);
   if (needle.isEmpty) return null;
-  for (final key in _sortedGlyphKeys) {
-    if (needle.contains(key)) return kFoodGlyphs[key];
+  final tokens = _foodTokens(needle);
+  for (final e in _glyphIndex) {
+    if (_foodHas(needle, tokens, e.key)) return e.value;
   }
   return null;
 }
@@ -437,17 +473,60 @@ const Map<String, String> kFoodAssetOverrides = {
   'water':       'assets/icons/pantry_and_dishes/water_glass.png',
 };
 
-final List<String> _sortedAssetKeys = kFoodAssetOverrides.keys.toList()
-  ..sort((a, b) => b.length.compareTo(a.length));
+// PATCH_V60_FOODART — Arabic names for the curated illustrations
+const Map<String, String> kFoodAssetAliases = {
+  'تفاح': 'apple', 'موز': 'banana', 'برتقال': 'orange', 'فراولة': 'strawberry',
+  'بطيخ': 'watermelon', 'كرز': 'cherry', 'طماطم': 'tomato', 'بندورة': 'tomato',
+  'بروكلي': 'broccoli', 'دجاج': 'chicken', 'فراخ': 'chicken', 'جمبري': 'shrimp',
+  'روبيان': 'shrimp', 'بيض': 'egg', 'بيتزا': 'pizza', 'برجر': 'burger',
+  'بطاطس مقلية': 'fries', 'دونات': 'donut', 'آيس كريم': 'ice cream',
+  'ميلك شيك': 'milkshake', 'كب كيك': 'cupcake', 'مافن': 'muffin',
+  'أفوكادو': 'avocado', 'جوز الهند': 'coconut', 'تمر': 'date', 'عنب': 'grape',
+  'جوافة': 'guava', 'كيوي': 'kiwi', 'ليمون': 'lemon', 'مانجو': 'mango',
+  'شمام': 'melon', 'خوخ': 'peach', 'كمثرى': 'pear', 'أناناس': 'pineapple',
+  'رمان': 'pomegranate', 'شمندر': 'beetroot', 'جزر': 'carrot',
+  'قرنبيط': 'cauliflower', 'فلفل': 'pepper', 'شطة': 'chili', 'خيار': 'cucumber',
+  'باذنجان': 'eggplant', 'ثوم': 'garlic', 'فاصوليا خضراء': 'green bean',
+  'خس': 'lettuce', 'بصل': 'onion', 'بازلاء': 'pea', 'بطاطس': 'potato',
+  'بطاطا': 'potato', 'فجل': 'radish', 'سبانخ': 'spinach',
+  'بطاطا حلوة': 'sweet potato', 'كوسة': 'zucchini', 'مشروم': 'mushroom',
+  'لحم بقري': 'beef', 'لحمة': 'beef', 'ستيك': 'steak', 'جبن': 'cheese',
+  'جبنة': 'cheese', 'خروف': 'lamb', 'ضأن': 'lamb', 'سلمون': 'salmon',
+  'تونة': 'tuna', 'سجق': 'sausage', 'سوشي': 'sushi', 'حمص': 'hummus',
+  'بابا غنوج': 'baba ghanoush', 'فلافل': 'falafel', 'طعمية': 'falafel',
+  'شاورما': 'shawarma', 'كباب': 'kebab', 'تبولة': 'tabbouleh', 'فتوش': 'fattoush',
+  'بقلاوة': 'baklava', 'بسبوسة': 'basbousa', 'كنافة': 'kunafa',
+  'مهلبية': 'mahalabia', 'مجبوس': 'majboos', 'منسف': 'mansaf',
+  'سمك مشوي': 'grilled fish', 'أم علي': 'om ali', 'إدامامي': 'edamame',
+  'كسكس': 'couscous', 'نودلز': 'noodle', 'خبز': 'bread', 'عيش': 'bread',
+  'بيتا': 'pita', 'بسكويت': 'cookie', 'كيك': 'cake', 'شوكولاتة': 'chocolate',
+  'شوكولاته': 'chocolate', 'قهوة': 'coffee', 'شاي': 'tea', 'زبدة': 'butter',
+  'كريمة': 'cream', 'مربى': 'jam', 'كاتشب': 'ketchup', 'خردل': 'mustard',
+  'مايونيز': 'mayonnaise', 'صويا': 'soy sauce', 'خل': 'vinegar',
+  'زيت زيتون': 'olive oil', 'فول سوداني': 'peanut', 'سمسم': 'sesame',
+  'طحينة': 'tahini', 'توفو': 'tofu', 'تمر هندي': 'tamarind', 'زعفران': 'saffron',
+  'قرفة': 'cinnamon', 'كمون': 'cumin', 'زنجبيل': 'ginger', 'كركم': 'turmeric',
+  'نعنع': 'mint', 'بقدونس': 'parsley', 'ملح': 'salt', 'سكر': 'sugar',
+  'أرز': 'rice', 'رز': 'rice', 'ماء': 'water', 'مياه': 'water',
+};
+
+final List<MapEntry<String, String>> _assetIndex = (<MapEntry<String, String>>[
+  for (final e in kFoodAssetOverrides.entries) MapEntry<String, String>(_normFood(e.key), e.value),
+  for (final e in kFoodAssetAliases.entries)
+    if (kFoodAssetOverrides.containsKey(e.value))
+      MapEntry<String, String>(_normFood(e.key), kFoodAssetOverrides[e.value]!),
+])
+  ..sort((a, b) => b.key.length.compareTo(a.key.length));
 
 /// Best-matching illustrated asset for [name], or null when this food
-/// isn't in the curated table -- callers should fall back to
-/// [lookupFoodGlyph].
+/// isn't in the curated table -- callers fall back to a photo, then to the
+/// painted illustration in food_art.dart.
 String? lookupFoodAsset(String name) {
-  final needle = name.toLowerCase().trim();
+  final needle = _normFood(name);
   if (needle.isEmpty) return null;
-  for (final key in _sortedAssetKeys) {
-    if (needle.contains(key)) return kFoodAssetOverrides[key];
+  final tokens = _foodTokens(needle);
+  for (final e in _assetIndex) {
+    if (_foodHas(needle, tokens, e.key)) return e.value;
   }
   return null;
 }
@@ -496,6 +575,81 @@ class FoodImageCache {
         return null;
       } finally {
         _inFlight.remove(key);
+      }
+    });
+  }
+
+  // PATCH_V60_FOODART — real photos for foods, from Wikipedia (best effort).
+  static final Map<String, String?> _photos = {};
+  static final Map<String, Future<String?>> _photoFlight = {};
+  static int _photoActive = 0;
+
+  static String _photoQuery(String name) {
+    const skip = {
+      'full', 'fat', 'low', 'with', 'and', 'the', 'of', 'ml', 'g', 'kg', 'cup',
+      'piece', 'slice', 'plain', 'raw', 'cooked', 'fresh', 'big', 'small', 'large',
+    };
+    final words = RegExp(r"[A-Za-z][A-Za-z'\-]+")
+        .allMatches(name)
+        .map((m) => m.group(0)!)
+        .where((w) => !skip.contains(w.toLowerCase()))
+        .take(3)
+        .toList();
+    return words.join(' ');
+  }
+
+  static Future<String?> _wikiThumb(String title) async {
+    try {
+      final t = title.isEmpty
+          ? title
+          : title[0].toUpperCase() + title.substring(1).toLowerCase();
+      final uri = Uri.parse('https://en.wikipedia.org/api/rest_v1/page/summary/' +
+          Uri.encodeComponent(t.replaceAll(' ', '_')));
+      final resp = await http.get(uri, headers: {
+        'User-Agent': 'HalalCalorie/1.0 (Android; food thumbnails)',
+        'Accept': 'application/json',
+      }).timeout(const Duration(seconds: 8));
+      if (resp.statusCode != 200) return null;
+      final j = jsonDecode(resp.body);
+      if (j is! Map || j['type'] == 'disambiguation') return null;
+      final th = j['thumbnail'];
+      final src = th is Map ? th['source'] : null;
+      return (src is String && src.startsWith('http')) ? src : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  /// A photo for [name]: Open Food Facts first when the food is unknown to the
+  /// glyph table ([useOff]), otherwise Wikipedia. Null when offline / not found.
+  static Future<String?> resolvePhoto(String name, {bool useOff = false}) {
+    final key = name.toLowerCase().trim();
+    if (key.isEmpty) return Future.value(null);
+    if (_photos.containsKey(key)) return Future.value(_photos[key]);
+    return _photoFlight.putIfAbsent(key, () async {
+      while (_photoActive >= 4) {
+        await Future<void>.delayed(const Duration(milliseconds: 90));
+      }
+      _photoActive++;
+      try {
+        if (!await isOnline()) return null;
+        String? url;
+        if (useOff) url = await resolve(name);
+        if (url == null) {
+          final q = _photoQuery(name);
+          if (q.isNotEmpty) {
+            url = await _wikiThumb(q);
+            final first = q.split(' ').first;
+            if (url == null && first != q) url = await _wikiThumb(first);
+          }
+        }
+        _photos[key] = url;
+        return url;
+      } catch (_) {
+        return null;
+      } finally {
+        _photoActive--;
+        _photoFlight.remove(key);
       }
     });
   }
@@ -565,11 +719,13 @@ class _FoodThumbState extends State<FoodThumb> {
       return;
     }
     _url = null;
-    // Only reach for a photo when the glyph table came up empty.
-    if (_glyph != null || !widget.allowNetwork) return;
+    // PATCH_V60_FOODART: curated PNG wins; otherwise try a real photo and keep the
+    // painted illustration underneath until it arrives (or if there is none).
+    if (!widget.allowNetwork || _assetPath != null) return;
     _looking = true;
-    FoodImageCache.resolve(widget.name).then((url) {
-      if (!mounted) return;
+    final want = widget.name;
+    FoodImageCache.resolvePhoto(widget.name, useOff: _glyph == null).then((url) {
+      if (!mounted || want != widget.name) return;
       setState(() {
         _url = url;
         _looking = false;
@@ -643,8 +799,6 @@ class _FoodThumbState extends State<FoodThumb> {
   }
 
   Widget _fallback(double inner) => Center(
-        child: Icon(Icons.restaurant_rounded,
-            size: inner * 0.62,
-            color: Theme.of(context).colorScheme.primary.withOpacity(0.85)),
+        child: FoodArt(spec: foodArtForGlyph(_glyph), size: inner),
       );
 }
