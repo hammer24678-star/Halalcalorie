@@ -395,12 +395,18 @@ IMPORTANT:
       final raw   = await _callVision(imagePath: imagePath, systemPrompt: system, userPrompt: prompt, maxTokens: 1000);
       final clean = raw.replaceAll(RegExp(r'```json|```'), '').trim();
       final json  = jsonDecode(clean) as Map<String, dynamic>;
+      final bf     = (json['estimatedBodyFatPct'] as num?)?.toDouble();
+      final muscle = (json['estimatedMuscleMassKg'] as num?)?.toDouble();
+      final typeEn = json['bodyType'] as String?;
+      if (bf == null || muscle == null || typeEn == null || bf < 3 || bf > 60) {
+        throw const FormatException('incomplete body analysis');
+      }
       return BodyPhotoResult(
-        bodyFatPercent: (json['estimatedBodyFatPct'] as num?)?.toDouble() ?? 20.0,
-        muscleMassKg: (json['estimatedMuscleMassKg'] as num?)?.toDouble() ?? weightKg * 0.4,
-        leanBodyMassKg: weightKg * (1 - ((json['estimatedBodyFatPct'] as num?)?.toDouble() ?? 20.0) / 100),
-        bodyType: json['bodyTypeAr'] as String? ?? 'متوازن',
-        bodyTypeEn: json['bodyType'] as String? ?? 'mesomorph',
+        bodyFatPercent: bf,
+        muscleMassKg: muscle,
+        leanBodyMassKg: weightKg * (1 - bf / 100),
+        bodyType: (json['bodyTypeAr'] as String?) ?? typeEn,
+        bodyTypeEn: typeEn,
         recommendationsAr: List<String>.from(json['recommendationsAr'] ?? []),
         recommendationsEn: List<String>.from(json['recommendations'] ?? []),
         rawAnalysis: '',
@@ -409,24 +415,10 @@ IMPORTANT:
         postureNoteAr: json['postureNoteAr'] as String? ?? '',
       );
     } catch (e) {
-      return _fallbackBodyResult(isMale, weightKg, language);
+      rethrow; // PATCH_V62: never invent body-composition numbers
     }
   }
 
-  static BodyPhotoResult _fallbackBodyResult(bool isMale, double weightKg, String lang) {
-    final bf = isMale ? 18.0 : 28.0;
-    return BodyPhotoResult(
-      bodyFatPercent: bf,
-      muscleMassKg: weightKg * (1 - bf / 100) * 0.85,
-      leanBodyMassKg: weightKg * (1 - bf / 100),
-      bodyType: lang == 'ar' ? 'متوازن' : 'mesomorph',
-      bodyTypeEn: 'mesomorph',
-      recommendationsAr: ['زِد البروتين اليومي', 'امشِ ٣٠ دقيقة يومياً', 'نم ٨ ساعات'],
-      recommendationsEn: ['Increase protein intake', 'Walk 30 min daily', 'Sleep 8 hours'],
-      rawAnalysis: '',
-      confidence: 0.55,
-    );
-  }
 
   // ════════════════════════════════════════════════
   //  QUICK TEXT-ONLY MEAL SUGGESTION (no image)

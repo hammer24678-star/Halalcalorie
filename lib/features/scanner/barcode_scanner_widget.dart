@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import '../../core/theme.dart';
+import '../../core/barcode_util.dart'; // PATCH_V62
 
 class BarcodeScannerWidget extends StatefulWidget {
   final bool isActive;
@@ -22,6 +23,8 @@ class _BarcodeScannerWidgetState extends State<BarcodeScannerWidget> {
     _ctrl = MobileScannerController(
       detectionSpeed: DetectionSpeed.normal,
       facing: CameraFacing.back,
+      // PATCH_V62: product codes only - no stray QR codes or Code128 labels.
+      formats: const [BarcodeFormat.ean13, BarcodeFormat.ean8, BarcodeFormat.upcA],
     );
   }
 
@@ -29,8 +32,14 @@ class _BarcodeScannerWidgetState extends State<BarcodeScannerWidget> {
   void dispose() { _ctrl.dispose(); super.dispose(); }
 
   void _onDetect(BarcodeCapture capture) {
-    final barcode = capture.barcodes.firstOrNull;
-    if (barcode?.rawValue != null) widget.onDetected(barcode!.rawValue!);
+    // PATCH_V62: only a code whose check digit adds up is reported; a misread frame is ignored.
+    for (final b in capture.barcodes) {
+      final v = b.rawValue;
+      if (v != null && BarcodeUtil.isValid(v)) {
+        widget.onDetected(BarcodeUtil.clean(v));
+        return;
+      }
+    }
   }
 
   Future<void> _toggleTorch() async {

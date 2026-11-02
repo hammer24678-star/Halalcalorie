@@ -5,6 +5,7 @@ import '../../core/motion.dart';
 import '../../core/fx5.dart';
 import '../../core/ai_service.dart';
 import '../../core/halal_engine.dart';
+import '../../core/barcode_util.dart'; // PATCH_V62
 import '../../core/scan_store.dart';
 import '../../core/open_food_facts_service.dart';
 import 'package:image_picker/image_picker.dart';
@@ -112,7 +113,12 @@ class _ScannerState extends ConsumerState<ScannerScreen>
     final analysis = [for (final a in (d['analysis'] as List? ?? const [])) '$a'];
     final certified = labels.any((l) => l.contains('halal'));
     final vegan = analysis.contains('vegan');
-    final rep = HalalEngine.analyze(ing, vegan: vegan ? true : null, certified: certified);
+    final rep = HalalEngine.analyze(ing,
+        vegan: vegan ? true : null,
+        certified: certified,
+        englishText: (d['ingredients_en'] ?? '') as String,
+        lang: (d['ingredients_lc'] ?? '') as String,
+        tags: [for (final e in (d['ing_tags'] as List? ?? const [])) '$e']);
     final kcal = (_numOf(d['kcal']) ?? 0).round();
     final prot = (_numOf(d['protein_g']) ?? 0).toDouble();
     final carbs = (_numOf(d['carbs_g']) ?? 0).toDouble();
@@ -128,9 +134,13 @@ class _ScannerState extends ConsumerState<ScannerScreen>
       proteinG: prot > 0 ? prot : null,
       carbsG: carbs > 0 ? carbs : null,
       fatG: fat > 0 ? fat : null,
-      notes: ing.trim().isEmpty
+      notes: (ing.trim().isEmpty && (d['ing_tags'] as List? ?? const []).isEmpty)
           ? '📡 Open Food Facts · ' + _t('لا توجد بيانات مكونات — راجع الملصق', 'No ingredient data — check the label')
-          : '📡 Open Food Facts',
+          : (!rep.reliable
+              ? '📡 Open Food Facts · ' + _t('قائمة المكونات بلغة لا نستطيع فحصها بدقة — اقرأ الملصق', 'Ingredients are in a language we cannot check reliably — read the label')
+              : (certified
+                  ? '📡 Open Food Facts'
+                  : '📡 Open Food Facts · ' + _t('الحكم مبني على قائمة المكونات فقط وليس شهادة حلال', 'Based on the ingredient list only, not a halal certificate'))),
       details: _detailsOf(rep, d, vegan: vegan, certified: certified),
     );
   }
@@ -176,6 +186,13 @@ class _ScannerState extends ConsumerState<ScannerScreen>
     if (local != null) {
       ref.read(scanProvider.notifier).addScan(local);
       _showResult(local);
+      return;
+    }
+
+    // PATCH_V62: a code whose check digit does not add up is a misread or a typo.
+    if (!BarcodeUtil.isValid(barcode)) {
+      _snack(_t('تأكد من الباركود — الأرقام غير صحيحة', 'Check the barcode — the digits do not add up'),
+          color: AppColors.doubtOrange);
       return;
     }
 

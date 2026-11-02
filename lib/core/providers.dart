@@ -214,12 +214,12 @@ class WaterNotifier extends StateNotifier<WaterState> {
 }
 
 final sleepProvider = StateNotifierProvider<SleepNotifier, SleepState>((ref) => SleepNotifier(ref));
-class SleepState { final double hours, goal; SleepState({required this.hours, required this.goal}); double get percent => goal > 0 ? (hours / goal).clamp(0, 1) : 0; String qualityAr() { if (hours >= 8) return 'ممتاز'; if (hours >= 6) return 'كافٍ'; return 'غير كافٍ'; } String qualityEn() { if (hours >= 8) return 'Ideal'; if (hours >= 6) return 'Adequate'; return 'Insufficient'; } }
+class SleepState { final double hours, goal; SleepState({required this.hours, required this.goal}); double get percent => goal > 0 ? (hours / goal).clamp(0, 1) : 0; bool get logged => hours > 0; String qualityAr() { if (hours <= 0) return 'غير مسجّل'; if (hours >= 8) return 'ممتاز'; if (hours >= 6) return 'كافٍ'; return 'غير كافٍ'; } String qualityEn() { if (hours <= 0) return 'Not logged'; if (hours >= 8) return 'Ideal'; if (hours >= 6) return 'Adequate'; return 'Insufficient'; } }
 class SleepNotifier extends StateNotifier<SleepState> {
   final Ref _ref;
   static const _kGoalPref = 'sleep_goal_override';
   double? _override; // goal typed in Settings; wins over the profile's
-  SleepNotifier(this._ref) : super(SleepState(hours: 7, goal: 8)) {
+  SleepNotifier(this._ref) : super(SleepState(hours: 0, goal: 8)) {
     _ref.listen(userProfileProvider, (_, profile) {
       if (profile != null && _override == null) {
         state = SleepState(hours: state.hours, goal: profile.sleepHours);
@@ -234,7 +234,7 @@ class SleepNotifier extends StateNotifier<SleepState> {
     final logged = (row?['sleep_hrs'] as num?)?.toDouble() ?? 0.0;
     // Any other write (a water tap, steps) creates today's row with sleep_hrs = 0,
     // so 0 means "nothing logged", not "slept 0 hours".
-    final hrs = logged > 0 ? logged : 7.0;
+    final hrs = logged; // PATCH_V62: 0 = not logged (no assumed 7 h)
     final goal = _override ?? _ref.read(userProfileProvider)?.sleepHours ?? state.goal;
     state = SleepState(hours: hrs, goal: goal);
   }
@@ -248,16 +248,30 @@ class SleepNotifier extends StateNotifier<SleepState> {
 }
 
 final healthProvider = StateNotifierProvider<HealthNotifier, HealthState>((ref) => HealthNotifier());
-class HealthState { final int steps, stepsGoal, heartRate; final String? mood; final double? quickBmi; HealthState({this.steps = 0, this.stepsGoal = 10000, this.heartRate = 72, this.mood, this.quickBmi}); }
+class HealthState { final int steps, stepsGoal; final int? heartRate; /* null = nothing entered (PATCH_V62) */ final String? mood; final double? quickBmi; HealthState({this.steps = 0, this.stepsGoal = 10000, this.heartRate, this.mood, this.quickBmi}); }
 class HealthNotifier extends StateNotifier<HealthState> {
   HealthNotifier() : super(HealthState()) { _init(); }
+  static String _hrDay() { final n = DateTime.now(); return '${n.year}-${n.month}-${n.day}'; }
   Future<void> _init() async {
-    final row = await AppDatabase.getTodaySummary(); if (row == null) return;
-    state = HealthState(steps: (row['steps'] as int?) ?? 0, stepsGoal: state.stepsGoal, heartRate: state.heartRate, mood: row['mood'] as String?);
+    int? hr; // PATCH_V62: only a reading entered today counts - never a default
+    try {
+      final sp = await SharedPreferences.getInstance();
+      if (sp.getString('hr_date') == _hrDay()) hr = sp.getInt('hr_value');
+    } catch (_) {}
+    final row = await AppDatabase.getTodaySummary();
+    state = HealthState(steps: (row?['steps'] as int?) ?? 0, stepsGoal: state.stepsGoal, heartRate: hr, mood: row?['mood'] as String?, quickBmi: state.quickBmi);
   }
   Future<void> setSteps(int n) async { state = HealthState(steps: n.clamp(0, 99999), stepsGoal: state.stepsGoal, heartRate: state.heartRate, mood: state.mood, quickBmi: state.quickBmi); await AppDatabase.upsertSummary(steps: n.clamp(0, 99999)); StepCardService.pushSteps(n.clamp(0, 99999)); }
   Future<void> addSteps(int n) => setSteps(state.steps + n);
-  void setHeartRate(int hr) => state = HealthState(steps: state.steps, stepsGoal: state.stepsGoal, heartRate: hr.clamp(30, 250), mood: state.mood, quickBmi: state.quickBmi);
+  Future<void> setHeartRate(int hr) async {
+    final v = hr.clamp(30, 250).toInt();
+    state = HealthState(steps: state.steps, stepsGoal: state.stepsGoal, heartRate: v, mood: state.mood, quickBmi: state.quickBmi);
+    try { final sp = await SharedPreferences.getInstance(); await sp.setString('hr_date', _hrDay()); await sp.setInt('hr_value', v); } catch (_) {}
+  }
+  Future<void> clearHeartRate() async {
+    state = HealthState(steps: state.steps, stepsGoal: state.stepsGoal, heartRate: null, mood: state.mood, quickBmi: state.quickBmi);
+    try { final sp = await SharedPreferences.getInstance(); await sp.remove('hr_value'); await sp.remove('hr_date'); } catch (_) {}
+  }
   Future<void> setMood(String m) async { state = HealthState(steps: state.steps, stepsGoal: state.stepsGoal, heartRate: state.heartRate, mood: m, quickBmi: state.quickBmi); await AppDatabase.upsertSummary(mood: m); }
   void setBMI(double w, double h) { if (h <= 0) return; final bmi = w / ((h / 100) * (h / 100)); state = HealthState(steps: state.steps, stepsGoal: state.stepsGoal, heartRate: state.heartRate, mood: state.mood, quickBmi: bmi); }
 }

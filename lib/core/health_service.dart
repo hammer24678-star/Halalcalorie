@@ -10,8 +10,8 @@ class HealthService {
   static StreamSubscription<int>? _sub;
   static bool   _ready      = false;
   static int    _stepsToday = 0;
-  static double _heartRate  = 72;
-  static double _sleepHours = 7;
+  static double _heartRate  = 0; // PATCH_V62: 0 = no reading (was an invented 72)
+  static double _sleepHours = 0; // PATCH_V62: 0 = not logged (was an assumed 7)
   static void Function(int)? _onStep;
 
   static Future<bool> requestPermissions() async {

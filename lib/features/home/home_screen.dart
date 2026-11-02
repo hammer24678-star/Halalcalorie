@@ -1176,7 +1176,7 @@ onLongPress: onRemoveWater,
 const SizedBox(width: 10),
 _Stat(
 emoji: '😴',
-value: '${sleep.hours.toInt()}', total: '/${sleep.goal.toInt()}h',
+value: sleep.logged ? '${sleep.hours.toInt()}' : '--', total: '/${sleep.goal.toInt()}h',
 label: tLang(lang, 'نوم', 'Sleep', 'Sommeil', 'Uyku', 'Tidur', 'Tidur'),
 color: AppColors.sleepPurple,
 pct: sleep.percent,

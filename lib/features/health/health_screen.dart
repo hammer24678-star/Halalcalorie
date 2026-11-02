@@ -446,7 +446,9 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   Widget _sleepCard(SleepState sleep, bool isAr, bool isDark) {
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
     const c = AppColors.sleepPurple;
-    final IconData face = sleep.hours >= 8
+    final IconData face = !sleep.logged
+        ? Icons.bedtime_outlined
+        : sleep.hours >= 8
         ? Icons.sentiment_very_satisfied_rounded
         : (sleep.hours >= 6
             ? Icons.sentiment_neutral_rounded
@@ -464,14 +466,14 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
                     children: [
-                      CountUp(
+                      if (sleep.logged) CountUp(
                           value: sleep.hours.toInt(),
                           style: const TextStyle(
                               fontFamily: 'Aligarh',
                               fontSize: 42,
                               fontWeight: FontWeight.w900,
                               height: 1.0,
-                              color: c)),
+                              color: c)) else Text('--', style: const TextStyle(fontFamily: 'Aligarh', fontSize: 42, fontWeight: FontWeight.w900, height: 1.0, color: c)),
                       const SizedBox(width: 6),
                       Text(isAr ? 'ساعات' : 'hours',
                           style: TextStyle(
@@ -734,14 +736,24 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
   }
 
   Widget _hrCard(HealthState health, bool isAr, bool isDark) {
+    // PATCH_V62: no default value and no random "measure" - the number is
+    // whatever the person typed in from their watch, cuff or a pulse count.
     final muted = isDark ? AppColors.darkMuted : AppColors.lightMuted;
-    final hrCol = health.heartRate > 100
-        ? AppColors.haramRed
-        : (health.heartRate < 60 ? AppColors.waterBlue : AppColors.halalGreen);
-    final hrLbl = isAr
-        ? (health.heartRate > 100 ? 'مرتفع' : (health.heartRate < 60 ? 'منخفض' : 'طبيعي'))
-        : (health.heartRate > 100 ? 'High' : (health.heartRate < 60 ? 'Low' : 'Normal'));
-    final hrPct = ((health.heartRate - 40) / 120).clamp(0.0, 1.0);
+    final int? hr = health.heartRate;
+    final hrCol = hr == null
+        ? muted
+        : (hr > 100
+            ? AppColors.haramRed
+            : (hr < 60 ? AppColors.waterBlue : AppColors.halalGreen));
+    final hrLbl = hr == null
+        ? (isAr ? 'لا توجد قراءة' : 'No reading yet')
+        : (isAr
+            ? (hr > 100 ? 'مرتفع' : (hr < 60 ? 'منخفض' : 'طبيعي'))
+            : (hr > 100 ? 'High' : (hr < 60 ? 'Low' : 'Normal')));
+    final double hrPct =
+        hr == null ? 0.0 : ((hr - 40) / 120).clamp(0.0, 1.0).toDouble();
+    const bigStyle = TextStyle(
+        fontFamily: 'Aligarh', fontSize: 42, fontWeight: FontWeight.w900, height: 1.0);
 
     return _card(hrCol, isDark, Column(children: [
       Row(children: [
@@ -755,14 +767,10 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                     crossAxisAlignment: CrossAxisAlignment.baseline,
                     textBaseline: TextBaseline.alphabetic,
                     children: [
-                      CountUp(
-                          value: health.heartRate,
-                          style: TextStyle(
-                              fontFamily: 'Aligarh',
-                              fontSize: 42,
-                              fontWeight: FontWeight.w900,
-                              height: 1.0,
-                              color: hrCol)),
+                      if (hr == null)
+                        Text('--', style: bigStyle.copyWith(color: hrCol))
+                      else
+                        CountUp(value: hr, style: bigStyle.copyWith(color: hrCol)),
                       const SizedBox(width: 6),
                       Text(
                           tLang(lang, 'نبضة/دقيقة', 'bpm', 'bpm', 'bpm', 'bpm', 'bpm'),
@@ -785,7 +793,11 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
                 ),
                 const SizedBox(height: 6),
                 Text(
-                    tLang(lang, 'المعدل الطبيعي: 60-100', 'Normal: 60-100 bpm'),
+                    hr == null
+                        ? tLang(lang, 'أدخل قراءة من ساعتك أو جهاز القياس. ليس جهازاً طبياً.',
+                            'Enter a reading from your watch or a pulse count. Not a medical device.')
+                        : tLang(lang, 'المعدل الطبيعي: 60-100 · أُدخلت يدوياً',
+                            'Normal: 60-100 bpm · entered by you'),
                     style: TextStyle(
                         fontFamily: 'Aligarh', fontSize: 11, color: muted)),
               ]),
@@ -793,29 +805,39 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       ]),
       const SizedBox(height: 14),
       Row(children: [
-        Expanded(
-          child: _pillBtn('−1', Icons.remove_rounded, hrCol,
-              () => ref.read(healthProvider.notifier)
-                  .setHeartRate(health.heartRate - 1)),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: _pillBtn('+1', Icons.add_rounded, hrCol,
-              () => ref.read(healthProvider.notifier)
-                  .setHeartRate(health.heartRate + 1)),
-        ),
-        const SizedBox(width: 8),
+        if (hr != null) ...[
+          Expanded(
+            child: _pillBtn('−1', Icons.remove_rounded, hrCol,
+                () => ref.read(healthProvider.notifier).setHeartRate(hr - 1)),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _pillBtn('+1', Icons.add_rounded, hrCol,
+                () => ref.read(healthProvider.notifier).setHeartRate(hr + 1)),
+          ),
+          const SizedBox(width: 8),
+        ],
         Expanded(
           flex: 2,
           child: _pillBtn(
-              tLang(lang, 'قياس', 'Measure', 'Mesurer', 'Ölç', 'Ukur', 'Ukur'),
-              Icons.favorite_rounded, hrCol,
-              () => ref.read(healthProvider.notifier)
-                  .setHeartRate(60 + (DateTime.now().millisecond % 40)),
+              isAr ? 'إدخال قراءة' : 'Enter reading',
+              Icons.edit_rounded,
+              hr == null ? AppColors.haramRed : hrCol,
+              () => _enterHeartRate(isAr),
               filled: true),
         ),
       ]),
     ]));
+  }
+
+  Future<void> _enterHeartRate(bool isAr) async {
+    final cur = ref.read(healthProvider).heartRate;
+    final v = await showDialog<int>(
+        context: context,
+        builder: (_) => _HrEntryDialog(isAr: isAr, initial: cur));
+    if (v != null && mounted) {
+      await ref.read(healthProvider.notifier).setHeartRate(v);
+    }
   }
 
   // ── CALCULATORS TAB ───────────────────────────────────────
@@ -1217,5 +1239,63 @@ class _HealthScreenState extends ConsumerState<HealthScreen>
       if (bmi < 30)   return 'Overweight';
       return 'Obese';
     }
+  }
+}
+
+
+// PATCH_V62: manual heart-rate entry (owns and disposes its controller).
+class _HrEntryDialog extends StatefulWidget {
+  final bool isAr;
+  final int? initial;
+  const _HrEntryDialog({required this.isAr, this.initial});
+  @override
+  State<_HrEntryDialog> createState() => _HrEntryDialogState();
+}
+
+class _HrEntryDialogState extends State<_HrEntryDialog> {
+  late final TextEditingController _c =
+      TextEditingController(text: widget.initial?.toString() ?? '');
+  String? _err;
+
+  @override
+  void dispose() {
+    _c.dispose();
+    super.dispose();
+  }
+
+  void _save() {
+    final v = int.tryParse(_c.text.trim());
+    if (v == null || v < 30 || v > 250) {
+      setState(() => _err = widget.isAr
+          ? 'أدخل رقماً بين 30 و 250'
+          : 'Enter a number between 30 and 250');
+      return;
+    }
+    Navigator.pop(context, v);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    const f = TextStyle(fontFamily: 'Aligarh');
+    return AlertDialog(
+      title: Text(widget.isAr ? 'قراءة النبض' : 'Heart rate reading', style: f),
+      content: TextField(
+        controller: _c,
+        autofocus: true,
+        keyboardType: TextInputType.number,
+        onSubmitted: (_) => _save(),
+        decoration: InputDecoration(
+            hintText: widget.isAr ? 'نبضة/دقيقة' : 'beats per minute',
+            errorText: _err),
+      ),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(widget.isAr ? 'إلغاء' : 'Cancel', style: f)),
+        TextButton(
+            onPressed: _save,
+            child: Text(widget.isAr ? 'حفظ' : 'Save', style: f)),
+      ],
+    );
   }
 }

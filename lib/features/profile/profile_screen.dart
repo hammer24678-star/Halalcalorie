@@ -239,7 +239,7 @@ class ProfileScreen extends ConsumerWidget {
                     '${water.cups}/${water.goal}', t('الماء', 'Water')),
                 const SizedBox(width: 10),
                 vital(VitalKind.sleep, sleep.percent, AppColors.sleepPurple,
-                    '${sleep.hours.toInt()}h', t('النوم', 'Sleep')),
+                    (sleep.logged ? '${sleep.hours.toInt()}h' : '--'), t('النوم', 'Sleep')),
               ])),
               const SizedBox(height: 14),
 
@@ -265,7 +265,7 @@ class ProfileScreen extends ConsumerWidget {
                         t('اليوم', 'Today'), AppColors.halalGreen, muted),
                     _lifeStat(Icons.water_drop_rounded, '${water.cups}/${water.goal}',
                         t('ماء اليوم', 'Water'), AppColors.waterBlue, muted),
-                    _lifeStat(Icons.bedtime_rounded, '${sleep.hours.toInt()}h',
+                    _lifeStat(Icons.bedtime_rounded, (sleep.logged ? '${sleep.hours.toInt()}h' : '--'),
                         t('نوم اليوم', 'Sleep'), AppColors.sleepPurple, muted),
                   ]),
                 ]),

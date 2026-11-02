@@ -32,7 +32,12 @@ class HalalReport {
   final HalalStatus status;
   final List<IngredientFlag> flags;
   final bool certified; // carries a halal label on Open Food Facts
-  const HalalReport(this.status, this.flags, {this.certified = false});
+  /// PATCH_V62: false when the ingredient text could not be checked properly
+  /// (a language or script the rules do not cover and no language-neutral
+  /// tags to fall back on). An unreliable report never says "halal".
+  final bool reliable;
+  const HalalReport(this.status, this.flags,
+      {this.certified = false, this.reliable = true});
 }
 
 class _Rule {
@@ -103,6 +108,42 @@ class HalalEngine {
     _Rule(r'wine vinegar', HalalStatus.doubtful,
         'خل النبيذ — أجازه كثير من العلماء بعد التحوّل',
         'Wine vinegar — many scholars permit it after transformation'),
+
+    // ── PATCH_V62: the same checks for French, Spanish, German, Turkish,
+    //    Malay/Indonesian and Arabic labels. Open Food Facts returns the
+    //    ingredient text in the product's own language, so English-only
+    //    rules let "saindoux" or "domuz yağı" through as halal.
+    _Rule(r'\b(?:porcs?|cochons?|jambons?|lardons?|saindoux|couenne|cerdo|puerco|panceta|tocino|porco|presunto|maiale|domuz|babi)(?![a-z])|\bschwein|\bschinken|jam[oó]n|خنزير',
+        HalalStatus.haram, 'يحتوي على لحم الخنزير أو أحد مشتقاته',
+        'Contains pork or a pork product'),
+    _Rule(r'\b(?:vins?|vino|vinho|wein|bi[eè]re|bier|cerveza|cerveja|birra|bira|rhum|şarap|sarap|anggur|arak|likör|licor)(?![a-z])|نبيذ|خمر|بيرة|ويسكي|فودكا',
+        HalalStatus.haram, 'يحتوي على كحول أو مشروب كحولي',
+        'Contains alcohol or an alcoholic drink'),
+    _Rule(r'\b(?:sang|sangre|blut|darah)(?![a-z])',
+        HalalStatus.haram, 'الدم محرّم', 'Blood is prohibited'),
+    _Rule(r'\b(?:carmin|cochenille|cochinilla|ko[sş]enil)',
+        HalalStatus.haram, 'صبغة حمراء مستخرجة من حشرة القرمز (كارمين)',
+        'Red dye crushed from cochineal insects (carmine)'),
+    _Rule(r'g[eé]latin[ea]?(?![a-z])|\bgelatina|\bjelatin|جيلاتين|جلاتين',
+        HalalStatus.doubtful,
+        'الجيلاتين غالباً من خنزير أو ذبيحة غير مذكّاة',
+        'Gelatin is often pork- or non-halal-slaughter-derived', animal: true),
+    _Rule(r'(?<!sans )(?<!sin )\b(?:alcool|alkol|alkohol|etanol)(?![a-z])|كحول',
+        HalalStatus.doubtful, 'مصطلح كحولي في قائمة المكونات — راجع الملصق',
+        'Alcohol-related term in a non-English label — check it'),
+    _Rule(r'\b(?:poulet|poule|b[oœ]uf|agneau|mouton|veau|dinde|canard|viande|volaille|pollo|carne|ternera|cordero|pavo|pato|rindfleisch|h[uü]hnchen|huhn|lamm|fleisch|tavuk|kuzu|ayam|daging|sapi|kambing|bebek)(?![a-z])|لحم|لحوم|دجاج|بقر|ضأن',
+        HalalStatus.doubtful,
+        'لحوم (قائمة بلغة أخرى) — تأكد من الذبح الحلال',
+        'Meat (non-English label) — check it is halal-slaughtered', animal: true),
+    _Rule(r'graisse animale|graisse de b[oœ]uf|\bsuif\b|grasa animal|\bsebo\b|tierisches fett|hayvansal ya[gğ]|lemak hewani|شحم',
+        HalalStatus.doubtful, 'دهن حيواني — يجب أن يكون من ذبيحة حلال',
+        'Animal fat — must come from halal slaughter', animal: true),
+    _Rule(r'pr[eé]sure|cuajo|peynir mayas',
+        HalalStatus.doubtful, 'إنفحة/إنزيم قد يكون حيواني المصدر',
+        'Rennet or enzyme that may be animal-derived', animal: true),
+    _Rule(r'vinaigre de vin|vinagre de vino|weinessig',
+        HalalStatus.doubtful, 'خل النبيذ — أجازه كثير من العلماء بعد التحوّل',
+        'Wine vinegar — many scholars permit it after transformation'),
   ];
 
   static const Map<String, _E> _eTable = {
@@ -143,19 +184,54 @@ class HalalEngine {
 
   static final RegExp _eRe = RegExp(r'\be-?(\d{3,4}[a-f]?)\b');
 
+  // Languages the rules above cover. Anything else needs language-neutral
+  // tags (en:...) to be judged at all.
+  static const Set<String> _supportedLangs = {
+    'en', 'fr', 'es', 'de', 'tr', 'id', 'ms', 'ar',
+  };
+  static final RegExp _otherScript = RegExp(
+      r'[\u0400-\u04FF\u0590-\u05FF\u0900-\u097F\u0E00-\u0E7F\u3040-\u30FF\u4E00-\u9FFF\uAC00-\uD7AF]');
+  // Phrases judged on their own, so "vinaigre de vin" is not read as "vin".
+  static const List<String> _vinegars = [
+    'wine vinegar', 'vinaigre de vin', 'vinagre de vino', 'weinessig',
+  ];
+
+  /// Open Food Facts tags ("en:sunflower-oil", "fr:saindoux") as plain words.
+  static String _tagWords(List<String> tags) => tags
+      .map((t) => t.replaceFirst(RegExp(r'^[a-z]{2,3}:'), '').replaceAll('-', ' ').trim())
+      .where((t) => t.isNotEmpty)
+      .join(' | ');
+
   /// [vegan]: true when Open Food Facts says the product is vegan (animal
   /// sources are then ruled out). [certified]: a halal label is on the pack.
+  /// [englishText], [lang] and [tags] (PATCH_V62) carry what Open Food Facts
+  /// knows beyond the raw text: its English rendering, the text's language
+  /// and the canonical ingredient tags. A pack with nothing flagged is only
+  /// called halal when the text could actually be checked; otherwise the
+  /// report is "unknown" with [HalalReport.reliable] false.
   static HalalReport analyze(String ingredients,
-      {bool? vegan, bool certified = false}) {
+      {bool? vegan,
+      bool certified = false,
+      String englishText = '',
+      String lang = '',
+      List<String> tags = const []}) {
     final raw = ingredients.trim();
-    if (raw.isEmpty) {
+    final en = englishText.trim();
+    final tagWords = _tagWords(tags);
+    if (raw.isEmpty && en.isEmpty && tagWords.isEmpty) {
       return HalalReport(
           certified ? HalalStatus.halal : HalalStatus.unknown, const [],
           certified: certified);
     }
-    final lower = raw.toLowerCase();
-    // "wine vinegar" is judged on its own, not as wine.
-    final forHaram = lower.replaceAll('wine vinegar', ' ');
+    final lower = [raw, en, tagWords]
+        .where((s) => s.isNotEmpty)
+        .join(' | ')
+        .toLowerCase();
+    // Wine vinegar is judged on its own, not as wine.
+    var forHaram = lower;
+    for (final v in _vinegars) {
+      forHaram = forHaram.replaceAll(v, ' ');
+    }
     final flags = <IngredientFlag>[];
     final seen = <String>{};
 
@@ -200,12 +276,30 @@ class HalalEngine {
         ? 0
         : (a.level == HalalStatus.haram ? -1 : 1));
 
-    HalalStatus status = HalalStatus.halal;
+    // Could the text be checked? Known language, an English rendering, enough
+    // language-neutral tags - or (no language given) at least not a script the
+    // rules know nothing about.
+    final lc = lang.trim().toLowerCase();
+    final enTags = tags.where((t) => t.startsWith('en:')).length;
+    final understood = enTags >= 3 ||
+        en.isNotEmpty ||
+        (lc.isEmpty
+            ? !_otherScript.hasMatch(raw)
+            : _supportedLangs.contains(lc));
+
+    HalalStatus status;
     if (flags.any((f) => f.level == HalalStatus.haram)) {
       status = HalalStatus.haram;
     } else if (flags.any((f) => f.level == HalalStatus.doubtful)) {
       status = certified ? HalalStatus.halal : HalalStatus.doubtful;
+    } else if (certified) {
+      status = HalalStatus.halal;
+    } else if (understood) {
+      status = HalalStatus.halal; // nothing flagged in a list we can read
+    } else {
+      status = HalalStatus.unknown; // nothing flagged, but we cannot read it
     }
-    return HalalReport(status, flags, certified: certified);
+    return HalalReport(status, flags,
+        certified: certified, reliable: understood || certified || flags.isNotEmpty);
   }
 }

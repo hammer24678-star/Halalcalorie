@@ -187,7 +187,8 @@ class OpenFoodFactsService {
         '?fields=product_name,product_name_ar,brands,nutriments,ingredients_text,'
         'image_front_small_url,image_url,serving_size,serving_quantity,quantity,'
         'nutriscore_grade,nova_group,allergens_tags,labels_tags,'
-        'ingredients_analysis_tags,categories_tags,additives_tags',
+        'ingredients_analysis_tags,categories_tags,additives_tags,'
+        'ingredients_text_en,ingredients_lc,ingredients_tags',
       );
       final resp = await http
           .get(uri, headers: {'User-Agent': _ua})
@@ -232,6 +233,11 @@ class OpenFoodFactsService {
           'satfat_g': _num(n, 'saturated-fat_100g')?.toDouble(),
           'fiber_g': _num(n, 'fiber_100g')?.toDouble(),
           'ingredients': _str(p['ingredients_text']),
+          'ingredients_en': _str(p['ingredients_text_en']),
+          'ingredients_lc': _str(p['ingredients_lc']),
+          'ing_tags': p['ingredients_tags'] is List
+              ? [for (final e in p['ingredients_tags'] as List) '$e']
+              : <String>[],
           'image_url': _str(p['image_front_small_url'])
               .ifEmpty(() => _str(p['image_url'])),
           'serving_g': servingG,
@@ -267,6 +273,7 @@ class OpenFoodFactsService {
           '?categories_tags=${Uri.encodeComponent(categoryTag)}'
           '&nutrition_grades_tags=$grade&sort_by=unique_scans_n&page_size=20'
           '&fields=code,product_name,brands,nutriscore_grade,ingredients_text,'
+          'ingredients_text_en,ingredients_lc,ingredients_tags,'
           'ingredients_analysis_tags,labels_tags,nutriments',
         );
         final resp = await http
@@ -288,7 +295,14 @@ class OpenFoodFactsService {
           final labels = raw['labels_tags'];
           final cert = labels is List &&
               labels.any((e) => '$e'.toLowerCase().contains('halal'));
-          final rep = HalalEngine.analyze(ing, vegan: vegan, certified: cert);
+          final rep = HalalEngine.analyze(ing,
+              vegan: vegan,
+              certified: cert,
+              englishText: _str(raw['ingredients_text_en']),
+              lang: _str(raw['ingredients_lc']),
+              tags: raw['ingredients_tags'] is List
+                  ? [for (final e in raw['ingredients_tags'] as List) '$e']
+                  : const <String>[]);
           if (rep.status != HalalStatus.halal) continue;
           final nut = (raw['nutriments'] ?? {}) as Map<String, dynamic>;
           out.add({
