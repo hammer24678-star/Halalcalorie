@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 import '../data/models/models.dart';
 import 'ai_config.dart'; // PATCH_V61_AI
 import 'open_food_facts_service.dart';
+import 'mena_foods.dart'; // PATCH_V64_MENA_FOODS
 
 class ApiKeyMissingException implements Exception {
   final String message;
@@ -597,6 +598,25 @@ Request: $prompt
       if (!seen.add(key)) return false;
       results.add(item);
       return true;
+    }
+
+    // ── 0. Arabic kitchen (Egyptian / Levantine / Gulf / Maghreb) ──
+    // Offline, with local servings; shown first because it is the most
+    // relevant list for this app's users.
+    for (final m in MenaFoods.search(q, limit: 10)) {
+      final sv = m.defaultServing;
+      add({
+        'name_ar': m.ar,
+        'name_en': m.en,
+        'kcal': m.kcal.round(),
+        'protein_g': m.protein,
+        'carbs_g': m.carbs,
+        'fat_g': m.fat,
+        'serving_size': language == 'ar' ? sv.ar : sv.en,
+        'basis': '100g',
+        'source': 'mena',
+        'mena_id': m.id,
+      });
     }
 
     // ── 1. Built-in portion list ──

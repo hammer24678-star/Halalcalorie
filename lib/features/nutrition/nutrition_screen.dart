@@ -11,6 +11,8 @@ import '../../core/providers.dart';
 import '../../core/l10n.dart';
 import '../../core/num_input.dart';
 import '../../core/food_emoji.dart';
+import '../../core/mena_foods.dart'; // PATCH_V64_MENA_FOODS
+import 'food_detail_screen.dart'; // PATCH_V64_FOOD_DETAIL
 import '../../data/models/models.dart';
 import 'widgets/leaf_progress_ring.dart';
 import '../../data/icon_assets.dart';
@@ -2107,6 +2109,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
   bool _searched     = false;
   List<Map<String, dynamic>> _results = const [];
   String _filter     = '';
+  String _menaCat    = ''; // '' = every category
 
   @override
   void initState() {
@@ -2159,13 +2162,35 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
     final carbs   = (r['carbs_g'] as num? ?? 0).toDouble();
     final fat     = (r['fat_g'] as num? ?? 0).toDouble();
 
-    if (r['basis'] == 'portion') {
-      _showPortionPicker(name: name, kcal: kcal,
-          protein: protein, carbs: carbs, fat: fat);
-    } else {
-      _showUnitPicker(name: name, kcal100: kcal,
-          protein100: protein, carbs100: carbs, fat100: fat);
+    final menaId = r['mena_id'];
+    if (menaId is String) {
+      final m = MenaFoods.byId(menaId);
+      if (m != null) {
+        _openDetail(FoodDetailSpec.fromMena(m, isAr: isAr));
+        return;
+      }
     }
+    final altRaw = (isAr ? r['name_en'] : r['name_ar'])?.toString() ?? '';
+    _openDetail(FoodDetailSpec(
+      name: name,
+      altName: altRaw == name ? '' : altRaw,
+      thumbKey: name,
+      imageUrl: r['image_url'] as String?,
+      kcal: kcal,
+      protein: protein,
+      carbs: carbs,
+      fat: fat,
+      perServing: r['basis'] == 'portion',
+      source: r['source']?.toString() ?? '',
+    ));
+  }
+
+  /// Opens the full-screen food page; logging closes it, then [_doAdd] runs.
+  void _openDetail(FoodDetailSpec spec) {
+    openFoodDetail(context,
+        spec: spec,
+        isDark: widget.isDark,
+        onLog: (n, k, p, c, f) => _doAdd(n, k, p, c, f));
   }
 
     Future<void> _doAdd(String name, int kcal,
@@ -2331,6 +2356,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
     required num fat,
     String sub = '',
     String source = '',
+    bool thumbNetwork = true,
     required VoidCallback onTap,
     required bool isDark,
     required Color textC,
@@ -2359,7 +2385,11 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                   ],
           ),
           child: Row(children: [
-            FoodThumb(name: thumb, imageUrl: imageUrl, size: 52),
+            FoodThumb(
+                name: thumb,
+                imageUrl: imageUrl,
+                size: 52,
+                allowNetwork: thumbNetwork),
             const SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -2434,7 +2464,9 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
   }
 
   Widget _popular(bool isAr, bool isDark, Color textC, Color muted) {
-    const items = <(String, String, String)>[
+    final items = <(String, String, String)>[
+      for (final m in MenaFoods.featured())
+        (m.ar.split(' (').first, m.en.split(' (').first, '${m.en} ${m.ar}'),
       ('تمر', 'Dates', 'date'),
       ('عسل', 'Honey', 'honey'),
       ('بيض', 'Egg', 'egg'),
@@ -2603,7 +2635,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                   Expanded(
                     child: _searchField(
                       controller: _searchCtrl,
-                      hint: tl('تفاحة، دجاج، أرز...', 'apple, chicken, rice...'),
+                      hint: tl('كشري، كبسة، شاورما، تفاح...', 'koshari, kabsa, shawarma, apple...'),
                       isAr: isAr,
                       isDark: isDark,
                       textC: textC,
@@ -2671,7 +2703,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
               ]),
             ),
 
-            // ── QUICK ADD ────────────────────────────────
+            // ── BROWSE: Arabic kitchen + basics ──────────
             Column(children: [
               Padding(
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
@@ -2686,34 +2718,19 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
                   onChanged: (v) => setState(() => _filter = v.toLowerCase()),
                 ),
               ),
-              Expanded(
+              SizedBox(
+                height: 42,
                 child: ListView(
-                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                   children: [
-                    for (final food in kQuickFoods.where((f) =>
-                        _filter.isEmpty ||
-                        f.name.toLowerCase().contains(_filter) ||
-                        f.nameEn.toLowerCase().contains(_filter)))
-                      _foodRow(
-                        name: isAr ? food.name : food.nameEn,
-                        thumb: '${food.nameEn} ${food.name}',
-                        kcal: food.kcal,
-                        protein: food.proteinG,
-                        carbs: food.carbsG,
-                        fat: food.fatG,
-                        isDark: isDark,
-                        textC: textC,
-                        muted: muted,
-                        onTap: () => _showUnitPicker(
-                            name: isAr ? food.name : food.nameEn,
-                            kcal100: food.kcal.toDouble(),
-                            protein100: food.proteinG,
-                            carbs100: food.carbsG,
-                            fat100: food.fatG),
-                      ),
+                    _catChip('', tl('الكل', 'All'), textC),
+                    for (final c in kMenaCategories)
+                      _catChip(c.$1, isAr ? c.$2 : c.$3, textC),
                   ],
                 ),
               ),
+              Expanded(child: _browseList(isAr, isDark, textC, muted)),
             ]),
 
             // ── MANUAL ENTRY ─────────────────────────────
@@ -2821,386 +2838,128 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
   }
 
 
-  // ── Unit Picker ─────────────────────────────────────────────────────────────
-
-  /// Smart grams-per-piece lookup based on food name keywords
-  double _pieceToGrams(String name) {
-    final n = name.toLowerCase();
-    if (n.contains('تمر')    || n.contains('date'))     return 7;
-    if (n.contains('موز')    || n.contains('banana'))   return 120;
-    if (n.contains('تفاح')   || n.contains('apple'))    return 182;
-    if (n.contains('برتقال') || n.contains('orange'))   return 131;
-    if (n.contains('بيض')    || n.contains('egg'))      return 55;
-    if (n.contains('كيوي')   || n.contains('kiwi'))     return 70;
-    if (n.contains('خيار')   || n.contains('cucumber')) return 200;
-    if (n.contains('طماطم')  || n.contains('tomato'))   return 123;
-    if (n.contains('فلفل')   || n.contains('pepper'))   return 90;
-    if (n.contains('خوخ')    || n.contains('peach'))    return 150;
-    if (n.contains('إجاص')   || n.contains('pear'))     return 166;
-    if (n.contains('مانجو')  || n.contains('mango'))    return 200;
-    if (n.contains('بطيخ')   || n.contains('watermelon')) return 280;
-    return 50;
-  }
-
-  /// Smart grams-per-cup lookup (liquids ~240ml, solids ~150g)
-  double _cupToGrams(String name) {
-    final n = name.toLowerCase();
-    if (n.contains('حليب')   || n.contains('milk'))    return 244;
-    if (n.contains('عصير')   || n.contains('juice'))   return 248;
-    if (n.contains('ماء')    || n.contains('water'))   return 240;
-    if (n.contains('شاي')    || n.contains('tea'))     return 240;
-    if (n.contains('قهوة')   || n.contains('coffee'))  return 240;
-    if (n.contains('زبادي')  || n.contains('yogurt'))  return 245;
-    if (n.contains('دبس')    || n.contains('molasses')) return 340;
-    return 150;
-  }
-
-  /// Opens the unit picker bottom sheet — called instead of _doAdd directly
-  void _showUnitPicker({
-    required String name,
-    required double kcal100,
-    required double protein100,
-    required double carbs100,
-    required double fat100,
-  }) {
-    final isAr   = widget.isAr;
-    final isDark = widget.isDark;
-    final amtCtrl = TextEditingController(text: '100');
-    int unitIdx   = 0; // 0=g 1=piece 2=cup 3=tbsp 4=tsp 5=ml
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => StatefulBuilder(
-        builder: (ctx, setS) {
-          // ── Config per unit ───────────────────────────────────
-          final unitLabels = isAr
-              ? ['جرام', 'حبة', 'كوب', 'م.ك', 'م.ص', 'مل']
-              : ['g', 'piece', 'cup', 'tbsp', 'tsp', 'ml'];
-          final unitDefaults = [100.0, 1.0, 1.0, 1.0, 1.0, 100.0];
-          final chipSets = [
-            [25, 50, 100, 150, 200, 300],
-            [1, 2, 3, 4, 5],
-            [0.25, 0.5, 1.0, 1.5, 2.0],
-            [1, 2, 3, 4, 5, 6],
-            [1, 2, 3, 4, 5],
-            [50, 100, 150, 200, 250, 300],
-          ];
-
-          // ── Convert selected amount to grams ──────────────────
-          double toGrams(int ui, double amt) {
-            switch (ui) {
-              case 0:  return amt;
-              case 1:  return amt * _pieceToGrams(name);
-              case 2:  return amt * _cupToGrams(name);
-              case 3:  return amt * 15.0;
-              case 4:  return amt * 5.0;
-              case 5:  return amt;
-              default: return amt;
-            }
-          }
-
-          // ── Live macro calculation ─────────────────────────────
-          final raw   = parseDouble(amtCtrl.text) ?? unitDefaults[unitIdx];
-          final grams = toGrams(unitIdx, raw).clamp(0.1, 10000.0);
-          final scale = grams / 100.0;
-          final kcal  = (kcal100    * scale).round();
-          final prot  = protein100  * scale;
-          final carb  = carbs100    * scale;
-          final fat   = fat100      * scale;
-
-          // ── Theme ─────────────────────────────────────────────
-          final bg    = isDark ? AppColors.darkCard  : Colors.white;
-          final muted = isDark ? AppColors.darkMuted : const Color(0xFF9E9E9E);
-          final textC = isDark ? AppColors.darkText  : AppColors.lightText;
-          String tl(String ar, String en) => isAr ? ar : en;
-
-          // ── Step size per unit ────────────────────────────────
-          final step = unitIdx == 2
-              ? 0.25
-              : (unitIdx == 0 || unitIdx == 5 ? 10.0 : 1.0);
-          final minV = unitIdx == 2 ? 0.25 : 1.0;
-
-          return Padding(
-            padding: EdgeInsets.only(
-                bottom: MediaQuery.of(ctx).viewInsets.bottom),
-            child: Container(
-              decoration: BoxDecoration(
-                  color: bg,
-                  borderRadius: const BorderRadius.vertical(
-                      top: Radius.circular(28))),
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 36),
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-
-                // Handle bar
-                Center(child: Container(
-                  width: 40, height: 4,
-                  margin: const EdgeInsets.symmetric(vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2)))),
-
-                // Food row
-                Row(children: [
-                  FoodThumb(name: name, size: 58),
-                  const SizedBox(width: 12),
-                  Expanded(child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(name,
-                        style: TextStyle(fontFamily: 'Aligarh', fontSize: 15,
-                            fontWeight: FontWeight.w800, color: textC),
-                        maxLines: 1, overflow: TextOverflow.ellipsis),
-                      Text(
-                        '${tl("أساس 100ج — ", "Base 100g — ")}${kcal100.round()} ${tl("سعرة", "kcal")}',
-                        style: TextStyle(fontFamily: 'Aligarh',
-                            fontSize: 10, color: muted)),
-                    ])),
-                ]),
-                const SizedBox(height: 18),
-
-                // ── Unit selector ─────────────────────────────────
-                Container(
-                  decoration: BoxDecoration(
-                    color: AppColors.brandGreen.withOpacity(0.07),
-                    borderRadius: BorderRadius.circular(20)),
-                  padding: const EdgeInsets.all(4),
-                  child: Row(children: List.generate(
-                    unitLabels.length, (i) => Expanded(
-                      child: GestureDetector(
-                        onTap: () {
-                          final d = unitDefaults[i];
-                          amtCtrl.text = d % 1 == 0
-                              ? d.toInt().toString()
-                              : d.toString();
-                          setS(() => unitIdx = i);
-                        },
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 180),
-                          padding: const EdgeInsets.symmetric(vertical: 8),
-                          decoration: BoxDecoration(
-                            color: unitIdx == i
-                                ? AppColors.brandGreen
-                                : Colors.transparent,
-                            borderRadius: BorderRadius.circular(10)),
-                          child: Center(child: Text(unitLabels[i],
-                            style: TextStyle(fontFamily: 'Aligarh',
-                              fontSize: 11, fontWeight: FontWeight.w700,
-                              color: unitIdx == i
-                                  ? Colors.white
-                                  : AppColors.brandGreen))),
-                        ),
-                      )),
-                  )),
-                ),
-                const SizedBox(height: 16),
-
-                // ── Amount row: minus / field / plus ──────────────
-                Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                  _gramBtn(Icons.remove_rounded, () {
-                    final v  = parseDouble(amtCtrl.text)
-                        ?? unitDefaults[unitIdx];
-                    final nv = (v - step).clamp(minV, 9999.0);
-                    amtCtrl.text = nv % 1 == 0
-                        ? nv.toInt().toString()
-                        : nv.toStringAsFixed(2);
-                    setS(() {});
-                  }),
-                  const SizedBox(width: 14),
-                  SizedBox(width: 110, child: TextField(
-                    controller: amtCtrl,
-                    keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true),
-                    textAlign: TextAlign.center,
-                    onChanged: (_) => setS(() {}),
-                    style: const TextStyle(fontFamily: 'Aligarh',
-                        fontSize: 24, fontWeight: FontWeight.w900),
-                    decoration: InputDecoration(
-                      suffixText: ' ${unitLabels[unitIdx]}',
-                      suffixStyle: TextStyle(fontFamily: 'Aligarh',
-                          fontSize: 13, color: muted,
-                          fontWeight: FontWeight.w600),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(
-                            color: AppColors.brandGreen, width: 1.5)),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(
-                            color: AppColors.brandGreen.withOpacity(0.4),
-                            width: 1.5)),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: const BorderSide(
-                            color: AppColors.brandGreen, width: 2)),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 14, horizontal: 8),
-                    ),
-                  )),
-                  const SizedBox(width: 14),
-                  _gramBtn(Icons.add_rounded, () {
-                    final v  = parseDouble(amtCtrl.text)
-                        ?? unitDefaults[unitIdx];
-                    final nv = (v + step).clamp(minV, 9999.0);
-                    amtCtrl.text = nv % 1 == 0
-                        ? nv.toInt().toString()
-                        : nv.toStringAsFixed(2);
-                    setS(() {});
-                  }),
-                ]),
-                const SizedBox(height: 10),
-
-                // ── Quick-pick chips ──────────────────────────────
-                Wrap(spacing: 6, runSpacing: 6,
-                  children: chipSets[unitIdx].map((chip) {
-                    final cv    = (chip as num).toDouble();
-                    final curV  = parseDouble(amtCtrl.text) ?? 0;
-                    final active = (curV - cv).abs() < 0.001;
-                    final lbl   = cv % 1 == 0
-                        ? '${cv.toInt()} ${unitLabels[unitIdx]}'
-                        : '$cv ${unitLabels[unitIdx]}';
-                    return GestureDetector(
-                      onTap: () {
-                        amtCtrl.text = cv % 1 == 0
-                            ? cv.toInt().toString()
-                            : cv.toString();
-                        setS(() {});
-                      },
-                      child: AnimatedContainer(
-                        duration: const Duration(milliseconds: 150),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 12, vertical: 6),
-                        decoration: BoxDecoration(
-                          color: active
-                              ? AppColors.brandGreen
-                              : AppColors.brandGreen.withOpacity(0.08),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                              color: AppColors.brandGreen.withOpacity(0.3))),
-                        child: Text(lbl, style: TextStyle(
-                          fontFamily: 'Aligarh', fontSize: 12,
-                          fontWeight: FontWeight.w700,
-                          color: active
-                              ? Colors.white
-                              : AppColors.brandGreen)),
-                      ),
-                    );
-                  }).toList(),
-                ),
-
-                // ── Grams-equivalent badge (hidden for g and ml) ──
-                if (unitIdx != 0 && unitIdx != 5) ...[
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 14, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.accentGold.withOpacity(0.08),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                          color: AppColors.accentGold.withOpacity(0.25))),
-                    child: Text(
-                      '= ${grams.toStringAsFixed(unitIdx == 2 ? 1 : 0)} ${tl("جرام", "g")}',
-                      style: const TextStyle(fontFamily: 'Aligarh',
-                          fontSize: 12, fontWeight: FontWeight.w700,
-                          color: AppColors.accentGold)),
-                  ),
-                ],
-                const SizedBox(height: 14),
-
-                // ── Live macro preview card ────────────────────────
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 12, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: AppColors.brandGreen.withOpacity(
-                        isDark ? 0.06 : 0.04),
-                    borderRadius: BorderRadius.circular(18),
-                    border: Border.all(
-                        color: AppColors.brandGreen.withOpacity(0.15))),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                    _gramMacro('$kcal',
-                        tl('سعرة', 'kcal'),      AppColors.haramRed),
-                    _vDivider(),
-                    _gramMacro('${prot.toStringAsFixed(1)}g',
-                        tl('بروتين', 'Protein'),  AppColors.halalGreen),
-                    _vDivider(),
-                    _gramMacro('${carb.toStringAsFixed(1)}g',
-                        tl('كارب', 'Carbs'),      AppColors.waterBlue),
-                    _vDivider(),
-                    _gramMacro('${fat.toStringAsFixed(1)}g',
-                        tl('دهون', 'Fat'),        AppColors.accentGold),
-                  ]),
-                ),
-                const SizedBox(height: 18),
-
-                // ── Add button ────────────────────────────────────
-                SizedBox(width: double.infinity, child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(ctx);
-                    final unitLabel = unitIdx == 0
-                        ? '${raw.toInt()}${tl("ج", "g")}'
-                        : '${amtCtrl.text} ${unitLabels[unitIdx]}';
-                    _doAdd('$name ($unitLabel)', kcal, prot, carb, fat);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.brandGreen,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    elevation: 2,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16))),
-                  child: Text(tl('أضف للعداد', 'Add to Tracker'),
-                    style: const TextStyle(fontFamily: 'Aligarh',
-                        fontSize: 15, color: Colors.white,
-                        fontWeight: FontWeight.w800)),
-                )),
-              ]),
-            ),
-          );
-        },
+  Widget _catChip(String id, String label, Color textC) {
+    final active = _menaCat == id;
+    return GestureDetector(
+      onTap: () => setState(() => _menaCat = id),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 160),
+        height: 34,
+        margin: const EdgeInsetsDirectional.only(end: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: active ? AppColors.brandGreen : textC.withOpacity(0.06),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Text(label,
+            style: TextStyle(
+                fontFamily: 'Aligarh',
+                fontSize: 12.5,
+                fontWeight: FontWeight.w800,
+                color: active ? Colors.white : textC)),
       ),
-      // The controller outlives the builder, so it is disposed with the
-      // sheet rather than leaking one per open.
-    ).whenComplete(amtCtrl.dispose);
+    );
   }
 
-  Widget _gramBtn(IconData icon, VoidCallback onTap) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      width: 46, height: 46,
-      decoration: BoxDecoration(
-        color: AppColors.brandGreen.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(23),
-        border: Border.all(
-            color: AppColors.brandGreen.withOpacity(0.3))),
-      child: Icon(icon, color: AppColors.brandGreen, size: 22)),
-  );
+  /// A food from the Arabic-kitchen database, priced at its usual serving.
+  Widget _menaRow(MenaFood m, bool isAr, bool isDark, Color textC, Color muted) {
+    final sv = m.defaultServing;
+    final scale = sv.grams / 100.0;
+    final unit = isAr ? (m.isLiquid ? 'مل' : 'جم') : (m.isLiquid ? 'ml' : 'g');
+    return _foodRow(
+      name: isAr ? m.ar : m.en,
+      thumb: '${m.en} ${m.ar}',
+      kcal: m.kcal * scale,
+      protein: m.protein * scale,
+      carbs: m.carbs * scale,
+      fat: m.fat * scale,
+      sub: '${isAr ? sv.ar : sv.en} · ${sv.grams.round()} $unit',
+      source: 'mena',
+      thumbNetwork: false,
+      isDark: isDark,
+      textC: textC,
+      muted: muted,
+      onTap: () => _openDetail(FoodDetailSpec.fromMena(m, isAr: isAr)),
+    );
+  }
 
-  Widget _gramMacro(String val, String label, Color color) =>
-    Column(mainAxisSize: MainAxisSize.min, children: [
-      Text(val, style: TextStyle(fontFamily: 'Aligarh', fontSize: 15,
-          fontWeight: FontWeight.w900, color: color)),
-      const SizedBox(height: 3),
-      Row(mainAxisSize: MainAxisSize.min, children: [
-        Container(width: 6, height: 6,
-            decoration: BoxDecoration(color: color, shape: BoxShape.circle)),
-        const SizedBox(width: 4),
-        Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 9.5,
-            color: color.withOpacity(0.85))),
-      ]),
-    ]);
+  Widget _browseList(bool isAr, bool isDark, Color textC, Color muted) {
+    String tl(String ar, String en) => isAr ? ar : en;
+    final q = _filter.trim();
+    final foldedQ = MenaFoods.fold(q);
+    final List<MenaFood> mena = q.isNotEmpty
+        ? MenaFoods.search(q, limit: 40)
+        : (_menaCat.isEmpty ? kMenaFoods : MenaFoods.inCategory(_menaCat));
+    final List<QuickFood> quick = (_menaCat.isEmpty || q.isNotEmpty)
+        ? [
+            for (final f in kQuickFoods)
+              if (q.isEmpty ||
+                  MenaFoods.fold(f.name).contains(foldedQ) ||
+                  f.nameEn.toLowerCase().contains(q))
+                f
+          ]
+        : const <QuickFood>[];
+    final items = <Object>[
+      if (mena.isNotEmpty) tl('المطبخ العربي', 'Arabic kitchen'),
+      ...mena,
+      if (quick.isNotEmpty) tl('أساسيات', 'Basics'),
+      ...quick,
+    ];
+    if (items.isEmpty) {
+      return Center(
+        child: Text(tl('لا نتائج', 'No matches'),
+            style: TextStyle(fontFamily: 'Aligarh', fontSize: 13, color: muted)),
+      );
+    }
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 18),
+      itemCount: items.length,
+      itemBuilder: (_, i) {
+        final it = items[i];
+        if (it is String) {
+          return Padding(
+            padding: const EdgeInsets.only(top: 6, bottom: 10),
+            child: Text(it,
+                style: TextStyle(
+                    fontFamily: 'Aligarh',
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w800,
+                    color: muted)),
+          );
+        }
+        if (it is MenaFood) return _menaRow(it, isAr, isDark, textC, muted);
+        final food = it as QuickFood;
+        final name = isAr ? food.name : food.nameEn;
+        return _foodRow(
+          name: name,
+          thumb: '${food.nameEn} ${food.name}',
+          kcal: food.kcal,
+          protein: food.proteinG,
+          carbs: food.carbsG,
+          fat: food.fatG,
+          sub: tl('لكل حصة', 'Per serving'),
+          source: 'builtin',
+          thumbNetwork: false,
+          isDark: isDark,
+          textC: textC,
+          muted: muted,
+          onTap: () => _openDetail(FoodDetailSpec(
+            name: name,
+            altName: isAr ? food.nameEn : food.name,
+            thumbKey: '${food.nameEn} ${food.name}',
+            kcal: food.kcal.toDouble(),
+            protein: food.proteinG,
+            carbs: food.carbsG,
+            fat: food.fatG,
+            perServing: true,
+            source: 'builtin',
+          )),
+        );
+      },
+    );
+  }
 
-  Widget _vDivider() => Container(
-    width: 1, height: 32,
-    color: Colors.grey.withOpacity(0.2));
-
-
-  // ── SEARCH RESULTS ───────────────────────────────────────
-  // PATCH_V55_ADDFOOD
   Widget _buildResultList(bool isAr, Color muted) {
     String tl(String ar, String en) => tLang(lang, ar, en);
     final isDark = widget.isDark;
@@ -3255,6 +3014,11 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
 
   Widget _resultTile(Map<String, dynamic> r, bool isAr, Color muted,
       bool isDark, Color textC) {
+    final menaId = r['mena_id'];
+    if (menaId is String) {
+      final m = MenaFoods.byId(menaId);
+      if (m != null) return _menaRow(m, isAr, isDark, textC, muted);
+    }
     final name = (isAr
             ? (r['name_ar'] ?? r['name_en'] ?? '')
             : (r['name_en'] ?? r['name_ar'] ?? ''))
@@ -3283,7 +3047,7 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
   Widget _sourceBadge(String source) {
     final (label, color) = switch (source) {
       'openfoodfacts' => ('OFF',  AppColors.waterBlue),
-      'builtin'       => ('★',    AppColors.brandGreen),
+      'builtin' || 'mena' => ('★', AppColors.brandGreen),
       'offline'       => ('⌂',    AppColors.brandGreen),
       'ai'            => ('AI',   AppColors.sleepPurple),
       _               => ('',     AppColors.lightMuted),
@@ -3334,145 +3098,6 @@ class _AddFoodSheetState extends ConsumerState<_AddFoodSheet>
           ),
         ),
       ]),
-    );
-  }
-
-  /// Quantity picker for entries measured per listed portion rather than
-  /// per 100 g — multiplies whole servings instead of grams.
-  void _showPortionPicker({
-    required String name,
-    required double kcal,
-    required double protein,
-    required double carbs,
-    required double fat,
-  }) {
-    final isAr   = widget.isAr;
-    final isDark = widget.isDark;
-    var count    = 1.0;
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      useSafeArea: true,
-      backgroundColor: Colors.transparent,
-      builder: (_) => StatefulBuilder(builder: (ctx, setS) {
-        final bg    = isDark ? AppColors.darkCard  : Colors.white;
-        final muted = isDark ? AppColors.darkMuted : const Color(0xFF9E9E9E);
-        final textC = isDark ? AppColors.darkText  : AppColors.lightText;
-        String tl(String ar, String en) => tLang(lang, ar, en);
-
-        return Padding(
-          padding: EdgeInsets.only(
-              bottom: MediaQuery.of(ctx).viewInsets.bottom),
-          child: Container(
-            decoration: BoxDecoration(
-                color: bg,
-                borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(28))),
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 36),
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
-              Center(child: Container(
-                width: 40, height: 4,
-                margin: const EdgeInsets.symmetric(vertical: 12),
-                decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2)))),
-              Row(children: [
-                FoodThumb(name: name, size: 58),
-                const SizedBox(width: 12),
-                Expanded(child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                  Text(name,
-                      style: TextStyle(fontFamily: 'Aligarh', fontSize: 15,
-                          fontWeight: FontWeight.w800, color: textC),
-                      maxLines: 2, overflow: TextOverflow.ellipsis),
-                  Text('${tl("لكل حصة — ", "Per serving — ")}'
-                       '${kcal.round()} ${tl("سعرة", "kcal")}',
-                      style: TextStyle(fontFamily: 'Aligarh',
-                          fontSize: 10, color: muted)),
-                ])),
-              ]),
-              const SizedBox(height: 20),
-              Text(tl('عدد الحصص', 'Servings'),
-                  style: TextStyle(fontFamily: 'Aligarh', fontSize: 11,
-                      fontWeight: FontWeight.w700, color: muted)),
-              const SizedBox(height: 10),
-              Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                _gramBtn(Icons.remove_rounded,
-                    () => setS(() => count = (count - 0.5).clamp(0.5, 50.0))),
-                const SizedBox(width: 18),
-                SizedBox(width: 96, child: Text(
-                    count % 1 == 0
-                        ? count.toInt().toString()
-                        : count.toStringAsFixed(1),
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontFamily: 'Aligarh', fontSize: 30,
-                        fontWeight: FontWeight.w900))),
-                const SizedBox(width: 18),
-                _gramBtn(Icons.add_rounded,
-                    () => setS(() => count = (count + 0.5).clamp(0.5, 50.0))),
-              ]),
-              const SizedBox(height: 16),
-              Wrap(spacing: 6, runSpacing: 6,
-                alignment: WrapAlignment.center,
-                children: [1, 2, 3, 4, 5, 6].map((n) {
-                  final active = (count - n).abs() < 0.001;
-                  return GestureDetector(
-                    onTap: () => setS(() => count = n.toDouble()),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 7),
-                      decoration: BoxDecoration(
-                        color: active
-                            ? AppColors.brandGreen
-                            : AppColors.brandGreen.withOpacity(0.08),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text('$n',
-                          style: TextStyle(fontFamily: 'Aligarh', fontSize: 12,
-                              fontWeight: FontWeight.w700,
-                              color: active
-                                  ? Colors.white
-                                  : AppColors.brandGreen)),
-                    ),
-                  );
-                }).toList()),
-              const SizedBox(height: 18),
-              Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-                _gramMacro('${(kcal * count).round()}',
-                    tl('سعرة', 'kcal'), AppColors.haramRed),
-                _vDivider(),
-                _gramMacro('${(protein * count).toStringAsFixed(1)}g',
-                    tl('بروتين', 'Protein'), AppColors.halalGreen),
-                _vDivider(),
-                _gramMacro('${(carbs * count).toStringAsFixed(1)}g',
-                    tl('كارب', 'Carbs'), AppColors.waterBlue),
-                _vDivider(),
-                _gramMacro('${(fat * count).toStringAsFixed(1)}g',
-                    tl('دهون', 'Fat'), AppColors.accentGold),
-              ]),
-              const SizedBox(height: 20),
-              SizedBox(width: double.infinity, child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(ctx);
-                  _doAdd(name, (kcal * count).round(),
-                      protein * count, carbs * count, fat * count);
-                },
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.brandGreen,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16))),
-                child: Text(tl('أضف للعداد', 'Add to Tracker'),
-                    style: const TextStyle(fontFamily: 'Aligarh',
-                        fontSize: 15, color: Colors.white,
-                        fontWeight: FontWeight.w800)),
-              )),
-            ]),
-          ),
-        );
-      }),
     );
   }
 
