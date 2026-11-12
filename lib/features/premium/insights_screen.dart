@@ -631,11 +631,11 @@ class _Heatmap extends StatelessWidget {
     final today = DateTime(now.year, now.month, now.day);
     // 12 columns of weeks, the last column ends on today's weekday.
     const weeks = 12;
-    final lastWeekStart = today.subtract(Duration(days: today.weekday - 1));
+    final lastWeekStart = DateTime(today.year, today.month, today.day - (today.weekday - 1));
     var loggedDays = 0;
     final cols = <Widget>[];
     for (var w = weeks - 1; w >= 0; w--) {
-      final start = lastWeekStart.subtract(Duration(days: w * 7));
+      final start = DateTime(lastWeekStart.year, lastWeekStart.month, lastWeekStart.day - (w * 7));
       final cells = <Widget>[];
       for (var i = 0; i < 7; i++) {
         final d = DateTime(start.year, start.month, start.day + i);

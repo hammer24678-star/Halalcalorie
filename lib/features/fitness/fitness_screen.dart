@@ -694,7 +694,7 @@ class _FitActivity extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: List.generate(7, (i) {
-            final d = today.subtract(Duration(days: 6 - i));
+            final d = DateTime(today.year, today.month, today.day - (6 - i));
             final on = week.contains(_fitKey(d));
             final isToday = i == 6;
             final label = pal.isAr ? dayAr[d.weekday - 1] : dayEn[d.weekday - 1];

@@ -983,7 +983,7 @@ class WorkoutStatsCard extends ConsumerWidget {
         if (s.sessions.isEmpty) return const SizedBox.shrink();
         String t(String ar, String en) => isAr ? ar : en;
         final today = DateTime.now();
-        final days = [for (var i = 6; i >= 0; i--) today.subtract(Duration(days: i))];
+        final days = [for (var i = 6; i >= 0; i--) DateTime(today.year, today.month, today.day - i)];
         num sumS = 0, sumK = 0, sumC = 0, maxS = 1;
         for (final d in days) {
           final m = s.byDay[_dayKey(d)];

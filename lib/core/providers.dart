@@ -69,7 +69,7 @@ class StreakNotifier extends StateNotifier<int> { StreakNotifier() : super(0) { 
     state = newStreak; await p.setInt('streak', newStreak); await p.setString('streak_last_date', today);
   }
   String _dateKey() { final n = DateTime.now(); return '${n.year}-${n.month.toString().padLeft(2,'0')}-${n.day.toString().padLeft(2,'0')}'; }
-  String _yesterday() { final y = DateTime.now().subtract(const Duration(days: 1)); return '${y.year}-${y.month.toString().padLeft(2,'0')}-${y.day.toString().padLeft(2,'0')}'; }
+  String _yesterday() { final n = DateTime.now(); final y = DateTime(n.year, n.month, n.day - 1); return '${y.year}-${y.month.toString().padLeft(2,'0')}-${y.day.toString().padLeft(2,'0')}'; }
 }
 
 final caloriesProvider = StateNotifierProvider<CaloriesNotifier, CaloriesState>((ref) => CaloriesNotifier(ref));
@@ -462,12 +462,12 @@ class FastingNotifier extends StateNotifier<FastingState> {
     // Still a live streak if today isn't logged yet — count back from yesterday.
     DateTime d = fastedToday
         ? DateTime.now()
-        : DateTime.now().subtract(const Duration(days: 1));
+        : DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 1);
     while (true) {
       final key = '${d.year}-${d.month.toString().padLeft(2,'0')}-${d.day.toString().padLeft(2,'0')}';
       if (!dates.contains(key)) break;
       streak++;
-      d = d.subtract(const Duration(days: 1));
+      d = DateTime(d.year, d.month, d.day - 1);
     }
     state = FastingState(
       fastedToday: fastedToday, streak: streak,
@@ -689,14 +689,14 @@ class AscentNotifier extends StateNotifier<AscentState> {
   Future<int> _chainLength() async {
     final days = (await AppDatabase.getQualifyingDays()).toSet();
     var count = 0;
-    var cursor = DateTime.now().subtract(const Duration(days: 1));
+    var cursor = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - 1);
     while (count < 400) {
       final key = '${cursor.year}-'
           '${cursor.month.toString().padLeft(2, '0')}-'
           '${cursor.day.toString().padLeft(2, '0')}';
       if (!days.contains(key)) break;
       count++;
-      cursor = cursor.subtract(const Duration(days: 1));
+      cursor = DateTime(cursor.year, cursor.month, cursor.day - 1);
     }
     return count;
   }

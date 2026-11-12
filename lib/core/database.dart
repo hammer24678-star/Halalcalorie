@@ -156,7 +156,11 @@ class AppDatabase {
   /// SQLite's date('now') is UTC, which shifted the window by a day for
   /// anyone far enough from it, so the bound is calculated here instead.
   static String _daysAgoKey(int days) =>
-      _dateKey(DateTime.now().subtract(Duration(days: days)));
+      _dateKey(_calendarDaysAgo(DateTime.now(), days));
+
+  /// Calendar arithmetic, not 24h arithmetic: immune to DST days of 23/25h.
+  static DateTime _calendarDaysAgo(DateTime from, int days) =>
+      DateTime(from.year, from.month, from.day - days);
 
   static Future<List<Map<String,dynamic>>> getTodayMeals() async {
     final d = await db;

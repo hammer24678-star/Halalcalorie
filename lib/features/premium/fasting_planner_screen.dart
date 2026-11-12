@@ -50,7 +50,7 @@ class _FastingState extends ConsumerState<FastingPlannerScreen> {
     final today = DateTime(now.year, now.month, now.day);
     var streak = 0;
     for (var i = 0; i < 120; i++) {
-      final d = today.subtract(Duration(days: i));
+      final d = DateTime(today.year, today.month, today.day - i);
       if (!FastingCalendar.isSunnahFast(d)) continue;
       final k = FastingCalendar.dateKey(d);
       if (_done.contains(k)) {

@@ -84,6 +84,10 @@ class HalalEngine {
         HalalStatus.doubtful,
         'لحوم — تأكد من الذبح الحلال',
         'Meat — check it is halal-slaughtered', animal: true),
+    _Rule(r'\b(?:chorizo|pepperoni|salami|mortadella|speck|saucisson|cervelas)\b',
+        HalalStatus.doubtful,
+        'نقانق/لحوم مصنّعة — غالباً من لحم الخنزير ما لم تكن مرخّصة حلال',
+        'Cured or sausage meat — usually pork unless certified halal', animal: true),
     _Rule(r'\bcollagen|\bbone\b', HalalStatus.doubtful,
         'مصدر حيواني غير محدد', 'Unspecified animal source', animal: true),
     _Rule(r'isinglass|cysteine', HalalStatus.doubtful,
@@ -113,7 +117,7 @@ class HalalEngine {
     //    Malay/Indonesian and Arabic labels. Open Food Facts returns the
     //    ingredient text in the product's own language, so English-only
     //    rules let "saindoux" or "domuz yağı" through as halal.
-    _Rule(r'\b(?:porcs?|cochons?|jambons?|lardons?|saindoux|couenne|cerdo|puerco|panceta|tocino|porco|presunto|maiale|domuz|babi)(?![a-z])|\bschwein|\bschinken|jam[oó]n|خنزير',
+    _Rule(r'\b(?:porcs?|cochons?|jambons?|lardons?|saindoux|couenne|cerdo|puerco|panceta|tocino|porco|presunto|maiale|domuz|babi|strutto|lardo|banha|suino|su[ií]na|varkens\w*|wieprzow\w*)(?![a-z])|\bjambonn\w*|\bcochonn\w*|\bschwein|\bschinken|jam[oó]n|خنزير',
         HalalStatus.haram, 'يحتوي على لحم الخنزير أو أحد مشتقاته',
         'Contains pork or a pork product'),
     _Rule(r'\b(?:vins?|vino|vinho|wein|bi[eè]re|bier|cerveza|cerveja|birra|bira|rhum|şarap|sarap|anggur|arak|likör|licor)(?![a-z])|نبيذ|خمر|بيرة|ويسكي|فودكا',

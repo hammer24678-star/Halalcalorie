@@ -329,7 +329,7 @@ if os.path.exists(manifest_path):
     if "StepCardService" not in _m:
         _svc = (
             '    <service android:name="com.ihsanstudio.halalcalorie.StepCardService" android:exported="false" android:foregroundServiceType="health" />\n'
-            '    <receiver android:name="com.ihsanstudio.halalcalorie.StepCardBootReceiver" android:exported="true">\n'
+            '    <receiver android:name="com.ihsanstudio.halalcalorie.StepCardBootReceiver" android:exported="false">\n'
             '        <intent-filter>\n'
             '            <action android:name="android.intent.action.BOOT_COMPLETED"/>\n'
             '            <action android:name="android.intent.action.MY_PACKAGE_REPLACED"/>\n'

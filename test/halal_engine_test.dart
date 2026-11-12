@@ -70,6 +70,28 @@ void main() {
     });
   });
 
+  group('HalalEngine: v63 pork/lard terms in more languages', () {
+    test('French jambonneau and cochonnaille', () {
+      expect(HalalEngine.analyze('Jambonneau, eau, sel', lang: 'fr').status, HalalStatus.haram);
+      expect(HalalEngine.analyze('Cochonnaille, sel', lang: 'fr').status, HalalStatus.haram);
+    });
+    test('Italian, Portuguese, Dutch, Polish lard/pork with no language given', () {
+      expect(HalalEngine.analyze('farina, strutto, sale').status, HalalStatus.haram);
+      expect(HalalEngine.analyze('farinha, banha, sal').status, HalalStatus.haram);
+      expect(HalalEngine.analyze('water, varkensvlees, zout').status, HalalStatus.haram);
+      expect(HalalEngine.analyze('woda, wieprzowina, sol').status, HalalStatus.haram);
+    });
+    test('porcini and porcelain-like words are still not pork', () {
+      expect(HalalEngine.analyze('Porcini mushrooms, cream', lang: 'en').status, HalalStatus.halal);
+    });
+    test('sausage products are doubtful; halal label clears them', () {
+      expect(HalalEngine.analyze('Chorizo, paprika', lang: 'en').status, HalalStatus.doubtful);
+      expect(HalalEngine.analyze('Beef pepperoni', lang: 'en').status, HalalStatus.doubtful);
+      expect(HalalEngine.analyze('Chorizo, paprika', lang: 'en', certified: true).status, HalalStatus.halal);
+      expect(HalalEngine.analyze('Chorizo, paprika', lang: 'en', vegan: true).status, HalalStatus.halal);
+    });
+  });
+
   group('HalalEngine: unreadable lists never say halal', () {
     test('Russian text without tags is unknown and unreliable', () {
       final r = HalalEngine.analyze('сахар, мука, соль', lang: 'ru');

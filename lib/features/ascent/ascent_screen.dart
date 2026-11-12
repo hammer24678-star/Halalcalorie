@@ -813,7 +813,7 @@ class _WeeklyReview extends StatelessWidget {
     }
     final days = <DateTime>[
       for (var i = 6; i >= 0; i--)
-        DateTime.now().subtract(Duration(days: i)),
+        DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day - i),
     ];
     final scores = days.map((d) => byDate[_key(d)] ?? 0).toList();
     final logged = scores.where((s) => s > 0).toList();
