@@ -23,6 +23,7 @@ import '../../data/models/user_profile.dart';
 import '../../data/icon_assets.dart';
 import '../../core/fx6.dart';
 import '../premium/premium_hub_screen.dart'; // PATCH_V58
+import 'today_card.dart'; // PATCH_V65
 
 
 // Cycle to next language in the supported list
@@ -352,18 +353,19 @@ if (_now.weekday == DateTime.monday ||
 ],
 
 // ── 2 CALORIE RING ──────────────────────────
-_anim(1, _CalRing(
-eaten: cals.total, goal: cals.goal,
-remaining: cals.remaining,
-pct: pct, calCol: calCol,
-proteinTotal: cals.proteinTotal,
-carbsTotal: cals.carbsTotal,
-fatTotal: cals.fatTotal,
-profile: profile,
-ringAnim: _ringVal,
-isAr: isAr, isDark: isDark, isRamadan: isRamadan, lang: lang,
+_anim(1, TodayCard(
+eaten: cals.total, goal: cals.goal, remaining: cals.remaining, pct: pct,
+proteinTotal: cals.proteinTotal, carbsTotal: cals.carbsTotal, fatTotal: cals.fatTotal,
+proteinGoal: (profile?.proteinGrams ?? 50).toDouble(),
+carbsGoal: (profile?.calorieGoalKcal ?? 2000) / 4,
+fatGoal: (profile?.calorieGoalKcal ?? 2000) / 9 * 0.3,
+entries: cals.entries,
+prayers: ref.watch(prayerTimesProvider).maybeWhen(data: (v) => v, orElse: () => null),
+now: _now, ringAnim: _ringVal, calCol: calCol,
 card: card, border: border, muted: muted, text: text,
-onAdd: () => context.push('/food-photo'),
+isAr: isAr, isDark: isDark, isRamadan: isRamadan, lang: lang,
+onLog: () => context.push('/food-photo'),
+onSearch: () => context.go('/nutrition'),
 )),
 const SizedBox(height: 12),
 
@@ -858,127 +860,6 @@ borderRadius: BorderRadius.circular(2),
 }
 
 // ════════════════════════════════════════════════════════════
-// CALORIE RING
-// ════════════════════════════════════════════════════════════
-class _CalRing extends StatelessWidget {
-final int eaten, goal, remaining;
-final double pct, proteinTotal, carbsTotal, fatTotal;
-final Color calCol, card, border, muted, text;
-final bool isAr, isDark, isRamadan;
-final String lang;
-final UserProfile? profile;
-final Animation<double> ringAnim;
-final VoidCallback onAdd;
-const _CalRing({
-required this.eaten, required this.goal, required this.remaining,
-required this.pct, required this.calCol,
-required this.proteinTotal, required this.carbsTotal,
-required this.fatTotal, required this.profile,
-required this.ringAnim, required this.isAr, required this.isDark,
-required this.isRamadan, required this.lang,
-required this.card, required this.border, required this.muted,
-required this.text, required this.onAdd,
-});
-
-@override
-Widget build(BuildContext context) {
-String t(String ar, String en) => tLang(lang, ar, en);
-return Container(
-padding: const EdgeInsets.all(18),
-decoration: BoxDecoration(
-color: card,
-borderRadius: BorderRadius.circular(22),
-border: Border.all(color: border, width: 0.5),
-boxShadow: const [BoxShadow(color: Color(0x1A000000), blurRadius: 22, offset: Offset(0, 8))],
-),
-child: Column(children: [
-// Header
-Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-Text(t('سعرات اليوم', "Today's Calories"),
-style: TextStyle(fontFamily: 'Aligarh',
-fontSize: 13, fontWeight: FontWeight.w700, color: text)),
-GestureDetector(
-onTap: onAdd,
-child: Container(
-padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 5),
-decoration: BoxDecoration(
-color: AppColors.brandGreen,
-borderRadius: BorderRadius.circular(20),
-),
-child: Row(mainAxisSize: MainAxisSize.min, children: [
-const Icon(Icons.add_rounded, color: Colors.white, size: 13),
-const SizedBox(width: 3),
-Text(t('أضف', 'Add'), style: const TextStyle(
-fontFamily: 'Aligarh', fontSize: 11,
-fontWeight: FontWeight.w800, color: Colors.white,
-)),
- ]),
-),
-),
-]),
-const SizedBox(height: 18),
-
-Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-// ── Animated ring ──
-HeroRing(
-pct: pct,
-ringAnim: ringAnim,
-color: calCol,
-eaten: eaten,
-isDark: isDark,
-muted: muted,
-label: t('\u0645\u0623\u0643\u0648\u0644', 'kcal eaten'),
-),
-
-const SizedBox(width: 20),
-
-// ── Right column ──
-Expanded(child: Column(
-crossAxisAlignment: CrossAxisAlignment.start,
-children: [
-_KvRow(t('المتبقي','Left'), '$remaining', calCol, muted),
-const SizedBox(height: 14),
-// Macro bars
-_MacroBar(t('P','P'), proteinTotal,
-profile?.proteinGrams ?? 50, AppColors.halalGreen),
-const SizedBox(height: 5),
-_MacroBar(t('C','C'), carbsTotal,
-(profile?.calorieGoalKcal ?? 2000) / 4, AppColors.waterBlue),
-const SizedBox(height: 5),
-_MacroBar(t('F','F'), fatTotal,
-(profile?.calorieGoalKcal ?? 2000) / 9 * 0.3, AppColors.accentGold),
- ],
-)),
-]),
-// ── Prophet's 1/3 rule hint ───────────────────────────
-if (pct >= 0.90)
-  Padding(
-    padding: const EdgeInsets.only(top: 10),
-    child: Container(
-      padding: const EdgeInsets.symmetric(
-          horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: (isRamadan ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.07),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-            color: (isRamadan ? AppColors.accentGold : AppColors.brandGreen).withOpacity(0.2)),
-      ),
-      child: Text(
-        t('اترك في معدتك مساحة — ثلث طعام وثلث شراب وثلث فراغ',
-          'Leave room in the stomach: a third food, a third drink, a third air'),
-        style: const TextStyle(fontFamily: 'Aligarh', fontSize: 10,
-          color: AppColors.brandGreen,
-          fontWeight: FontWeight.w600, height: 1.4),
-        textAlign: TextAlign.center,
-      ),
-    ),
-  ),
-]),
-);
-}
-}
-
-// ════════════════════════════════════════════════════════════
 // SUNNAH FAST BANNER
 // ════════════════════════════════════════════════════════════
 class _FastingDayBanner extends ConsumerWidget {
@@ -1033,46 +914,6 @@ class _FastingDayBanner extends ConsumerWidget {
   }
 }
 
-
-class _KvRow extends StatelessWidget {
-final String label, value;
-final Color valueColor, muted;
-const _KvRow(this.label, this.value, this.valueColor, this.muted);
-@override
-Widget build(BuildContext context) => Row(
-mainAxisAlignment: MainAxisAlignment.spaceBetween,
-children: [
-Text(label, style: TextStyle(fontFamily: 'Aligarh', fontSize: 11, color: muted)),
-Text(value, style: TextStyle(
-fontFamily: 'Aligarh', fontSize: 16, fontWeight: FontWeight.w900, color: valueColor)),
- ],
-);
-}
-
-class _MacroBar extends StatelessWidget {
-final String label;
-final double val, max;
-final Color color;
-const _MacroBar(this.label, this.val, this.max, this.color);
-@override
-Widget build(BuildContext context) => Row(children: [
-SizedBox(width: 14, child: Text(label, style: TextStyle(
-fontFamily: 'Aligarh', fontSize: 9, fontWeight: FontWeight.w800, color: color))),
-const SizedBox(width: 6),
-Expanded(child: ClipRRect(
-borderRadius: BorderRadius.circular(3),
-child: LinearProgressIndicator(
-value: max > 0 ? (val / max).clamp(0.0, 1.0) : 0,
-minHeight: 4,
-color: color,
-backgroundColor: color.withOpacity(0.1),
-),
-)),
-const SizedBox(width: 6),
-Text('${val.toInt()}g', style: TextStyle(
-fontFamily: 'Aligarh', fontSize: 9, color: color, fontWeight: FontWeight.w700)),
- ]);
-}
 
 // Custom ring painter with glow
 class _RingPainter extends CustomPainter {
