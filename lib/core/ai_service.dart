@@ -236,6 +236,10 @@ Rules:
       final List<dynamic> items = decoded is List
           ? decoded
           : [decoded];
+      // Same guard as quickTextEntry: anything that is not a non-empty map is
+      // not a food, and an empty answer must not look like a successful scan.
+      items.removeWhere((e) => e is! Map || e.isEmpty);
+      if (items.isEmpty) throw const FormatException('no food items in reply');
 
       return items.map((j) {
         final m = j as Map<String, dynamic>;
@@ -257,20 +261,12 @@ Rules:
         );
       }).toList();
     } on FormatException {
-      return [_fallbackFoodResult(language)];
+      // The reply was not a JSON meal list. Let the screen show its "try again"
+      // state. The old fallback logged an invented 350 kcal "Mixed Meal" as if
+      // it had been analysed (quickTextEntry already behaves this way).
+      throw Exception('Could not read the AI reply — please try again');
     }
   }
-
-  static FoodPhotoResult _fallbackFoodResult(String lang) => FoodPhotoResult(
-    foodName: lang == 'ar' ? 'وجبة مختلطة' : 'Mixed Meal',
-    foodNameEn: 'Mixed Meal',
-    kcal: 350, proteinG: 20, carbsG: 40, fatG: 12,
-    halalStatus: HalalStatus.unknown,
-    halalExplanation: lang == 'ar' ? 'التحليل غير متاح' : 'Analysis unavailable',
-    halalExplanationEn: 'Analysis unavailable',
-    tipNote: '',
-    tipNoteEn: '',
-  );
 
   // ════════════════════════════════════════════════
   //  QUICK TEXT ENTRY (no image needed)

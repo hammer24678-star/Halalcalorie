@@ -62,7 +62,8 @@ class HalalEngine {
     _Rule(r'\bpork\b|porcine|\bpigs?\b|\bswine\b|bacon|\bham\b|prosciutto|pancetta|\blard\b|gammon',
         HalalStatus.haram, 'يحتوي على لحم الخنزير أو أحد مشتقاته',
         'Contains pork or a pork product'),
-    _Rule(r'(?<!sugar )(?<!fatty )(?<!non-)(?<!cetyl )(?<!stearyl )(?<!benzyl )\balcohol(?!-free| free)|ethanol|\bwine\b|\bbeer\b|\brum\b|whisky|whiskey|brandy|liqueur|vodka|\bsake\b|\bmirin\b|cognac|sherry',
+    // v66: "non alcoholic" (with a space) and root beer are not alcohol.
+    _Rule(r'(?<!sugar )(?<!fatty )(?<!non-)(?<!non )(?<!cetyl )(?<!stearyl )(?<!benzyl )\balcohol(?!-free| free)|ethanol|\bwine\b|(?<!root )\bbeer\b|\brum\b|whisky|whiskey|brandy|liqueur|vodka|\bsake\b|\bmirin\b|cognac|sherry',
         HalalStatus.haram, 'يحتوي على كحول أو مشروب كحولي',
         'Contains alcohol or an alcoholic drink'),
     _Rule(r'\bblood(?! orange)', HalalStatus.haram,
@@ -80,17 +81,20 @@ class HalalEngine {
     _Rule(r'animal fat|animal oil|tallow|suet|\bdripping', HalalStatus.doubtful,
         'دهن حيواني — يجب أن يكون من ذبيحة حلال',
         'Animal fat — must come from halal slaughter', animal: true),
-    _Rule(r'\b(beef|chicken|lamb|mutton|turkey|duck|veal|goat|poultry|meat)\b',
+    // v66: plurals and meatballs were read as halal; goat milk/cheese is dairy,
+    // not meat. (\x27 = apostrophe - a raw Dart string cannot hold a quote.)
+    _Rule(r'\b(?:beef|chickens?|lambs?|mutton|turkeys?|ducks?|veal|poultry|meats?|meatballs?)\b|\bgoat\b(?![\x27’]?s? (?:milk|cheese|yogh?urt|butter|cream|whey|curd|kefir))',
         HalalStatus.doubtful,
         'لحوم — تأكد من الذبح الحلال',
         'Meat — check it is halal-slaughtered', animal: true),
-    _Rule(r'\b(?:chorizo|pepperoni|salami|mortadella|speck|saucisson|cervelas)\b',
+    // v66: plain "sausage" / frankfurter / hot dog were read as halal.
+    _Rule(r'\b(?:chorizo|pepperoni|salami|mortadella|speck|saucisson|cervelas|sausages?|frankfurters?|bratwurst|hot ?dogs?|bologna)\b',
         HalalStatus.doubtful,
         'نقانق/لحوم مصنّعة — غالباً من لحم الخنزير ما لم تكن مرخّصة حلال',
         'Cured or sausage meat — usually pork unless certified halal', animal: true),
     _Rule(r'\bcollagen|\bbone\b', HalalStatus.doubtful,
         'مصدر حيواني غير محدد', 'Unspecified animal source', animal: true),
-    _Rule(r'isinglass|cysteine', HalalStatus.doubtful,
+    _Rule(r'isinglass|cyst(?:e?i)ne', HalalStatus.doubtful,
         'مشتق حيواني (سمك/ريش/شعر) — المصدر غير معروف',
         'Animal-derived aid (fish / feathers / hair) — source unknown', animal: true),
     _Rule(r'shellac|confectioner.?s glaze', HalalStatus.doubtful,
@@ -156,6 +160,7 @@ class HalalEngine {
     'e542': _E('Bone phosphate', HalalStatus.doubtful, true),
     'e904': _E('Shellac', HalalStatus.doubtful, true),
     'e920': _E('L-cysteine', HalalStatus.doubtful, true),
+    'e921': _E('L-cystine', HalalStatus.doubtful, true),
     'e422': _E('Glycerol', HalalStatus.doubtful, true),
     'e470a': _E('Fatty acid salts', HalalStatus.doubtful, true),
     'e470b': _E('Fatty acid salts', HalalStatus.doubtful, true),
@@ -181,12 +186,24 @@ class HalalEngine {
     'e627': _E('Disodium guanylate', HalalStatus.doubtful, true),
     'e631': _E('Disodium inosinate', HalalStatus.doubtful, true),
     'e635': _E('Disodium ribonucleotides', HalalStatus.doubtful, true),
+    // v66: the rest of the guanylate / inosinate / ribonucleotide family, which
+    // is judged the same way as E627, E631 and E635 above.
+    'e626': _E('Guanylic acid', HalalStatus.doubtful, true),
+    'e628': _E('Dipotassium guanylate', HalalStatus.doubtful, true),
+    'e629': _E('Calcium guanylate', HalalStatus.doubtful, true),
+    'e630': _E('Inosinic acid', HalalStatus.doubtful, true),
+    'e632': _E('Dipotassium inosinate', HalalStatus.doubtful, true),
+    'e633': _E('Calcium inosinate', HalalStatus.doubtful, true),
+    'e634': _E('Calcium ribonucleotides', HalalStatus.doubtful, true),
     'e913': _E('Lanolin', HalalStatus.doubtful, true),
+    'e1000': _E('Cholic acid', HalalStatus.doubtful, true),
     'e1105': _E('Lysozyme', HalalStatus.doubtful, true),
     'e1510': _E('Ethanol', HalalStatus.doubtful, false),
   };
 
-  static final RegExp _eRe = RegExp(r'\be-?(\d{3,4}[a-f]?)\b');
+  // v66: also "E 120" - EU labels often put a space after the E, and that
+  // spelling slipped past the old "E120" / "E-120" pattern as halal.
+  static final RegExp _eRe = RegExp(r'\be[- ]?(\d{3,4}[a-f]?)\b');
 
   // Languages the rules above cover. Anything else needs language-neutral
   // tags (en:...) to be judged at all.
@@ -265,7 +282,8 @@ class HalalEngine {
           (e.name == 'Gelatin' && f.whyEn.startsWith('Gelatin')) ||
           (e.name == 'Carmine' && f.whyEn.contains('carmine')) ||
           (e.name == 'Glycerol' && f.whyEn.startsWith('Glycerin')) ||
-          (e.name.startsWith('Mono- &') && f.whyEn.startsWith('Emulsifier')));
+          (e.name.startsWith('Mono- &') && f.whyEn.startsWith('Emulsifier')) ||
+          (e.name.contains('cyst') && f.whyEn.startsWith('Animal-derived aid')));
       if (dup || !seen.add(why)) continue;
       flags.add(IngredientFlag(
         term: code.toUpperCase(), level: e.level,

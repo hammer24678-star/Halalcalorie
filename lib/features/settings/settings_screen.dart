@@ -2,6 +2,8 @@
 import 'package:flutter/material.dart'; import'package:flutter_riverpod/flutter_riverpod.dart'; import'package:go_router/go_router.dart'; import'package:shared_preferences/shared_preferences.dart'; import'../../core/theme.dart'; import'../../core/providers.dart';
 import '../../core/l10n.dart'; import'../../core/notifications.dart';
 import '../../core/num_input.dart';
+import 'package:share_plus/share_plus.dart';
+import '../../core/data_export.dart';
 import '../../core/motion.dart';
 import '../../core/fx.dart';
 import '../../core/fx6.dart';
@@ -458,6 +460,13 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
                     onTap: () { context.pop(); context.go('/body'); },
                   ),
                   row(
+                    icon: Icons.ios_share_rounded, color: AppColors.waterBlue,
+                    title: tLang(lang, 'تصدير بياناتي', 'Export my data', 'Exporter mes données', 'Verilerimi dışa aktar', 'Eksport data saya', 'Ekspor data saya', 'میرا ڈیٹا برآمد کریں'),
+                    subtitle: tLang(lang, 'الوجبات والوزن والماء والنوم والتمارين بصيغة CSV (آخر 12 شهراً)', 'Meals, weight, water, sleep & workouts as CSV (last 12 months)', 'Repas, poids, eau, sommeil et séances en CSV (12 derniers mois)', 'Öğünler, kilo, su, uyku ve antrenmanlar CSV olarak (son 12 ay)', 'Makanan, berat, air, tidur & senaman dalam CSV (12 bulan lepas)', 'Makanan, berat badan, air, tidur & latihan dalam CSV (12 bulan terakhir)', 'کھانے، وزن، پانی، نیند اور ورزش CSV میں (پچھلے 12 مہینے)'),
+                    trailing: chev(),
+                    onTap: () => _exportData(context),
+                  ),
+                  row(
                     icon: Icons.delete_outline_rounded, color: AppColors.haramRed,
                     title: t('مسح سجل اليوم', "Clear today's data"),
                     subtitle: t('الوجبات والخطوات والماء', 'Meals, steps, water'),
@@ -765,6 +774,25 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
     ));
   }
 
+  /// Hands the user's own logs to the share sheet as CSV text.
+  Future<void> _exportData(BuildContext context) async {
+    void toast(String msg) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(msg, style: const TextStyle(fontFamily: 'Aligarh'))));
+    }
+    try {
+      final bundle = await DataExport.build();
+      if (bundle.rows == 0) {
+        toast(tLang(lang, 'لا توجد بيانات للتصدير بعد', 'Nothing to export yet', 'Rien à exporter pour l’instant', 'Henüz dışa aktarılacak veri yok', 'Belum ada data untuk dieksport', 'Belum ada data untuk diekspor', 'ابھی برآمد کرنے کے لیے کوئی ڈیٹا نہیں'));
+        return;
+      }
+      await Share.share(bundle.csv);
+    } catch (_) {
+      toast(tLang(lang, 'تعذّر التصدير، حاول مجدداً', 'Export failed, please try again', 'Échec de l’export, réessayez', 'Dışa aktarma başarısız, tekrar deneyin', 'Eksport gagal, cuba lagi', 'Ekspor gagal, coba lagi', 'برآمد ناکام، دوبارہ کوشش کریں'));
+    }
+  }
+
   void _confirmClearDay(BuildContext context, bool isAr) {
     showDialog(context: context, builder: (_) => AlertDialog( title: Text(tLang(lang, 'مسح سجل اليوم؟', 'Clear Today Log?', 'Effacer le journal?', 'Bugünkü Veriyi Sil?', 'Padam Log Hari Ini?', 'Hapus Log Hari Ini?'), style: const TextStyle(fontFamily:'Aligarh', fontWeight: FontWeight.w700)),
       content: Text(
@@ -775,6 +803,9 @@ class _SettingsState extends ConsumerState<SettingsScreen> {
           style: ElevatedButton.styleFrom(backgroundColor: AppColors.haramRed),
           onPressed: () async {
             if (context.mounted) Navigator.pop(context);
+            // The dialog and the row both promise meals, steps and water; the
+            // meals were never actually deleted before.
+            await ref.read(caloriesProvider.notifier).clearToday();
             await ref.read(waterProvider.notifier).set(0);
             await ref.read(healthProvider.notifier).setSteps(0);
             if (context.mounted) {

@@ -132,4 +132,45 @@ void main() {
       expect(HalalEngine.analyze('Sucre, E441', lang: 'fr').status, HalalStatus.doubtful);
     });
   });
+
+  // v66: wrong "halal" verdicts are the costly kind for this app, so each of
+  // these used to come back halal (or, for the last group, wrongly haram).
+  group('HalalEngine: v66 false-halal fixes', () {
+    test('E-numbers with a space are read: E 120 is haram, E 471 doubtful', () {
+      expect(HalalEngine.analyze('Sugar, colour (E 120)', lang: 'en').status, HalalStatus.haram);
+      expect(HalalEngine.analyze('Sugar, Emulgator (E 471), Salz', lang: 'de').status, HalalStatus.doubtful);
+    });
+    test('L-cystine, E921 and the nucleotide family are doubtful', () {
+      expect(HalalEngine.analyze('Sugar, L-cystine', lang: 'en').status, HalalStatus.doubtful);
+      expect(HalalEngine.analyze('Flour, E921', lang: 'en').status, HalalStatus.doubtful);
+      expect(HalalEngine.analyze('Soup, E634', lang: 'en').status, HalalStatus.doubtful);
+      expect(HalalEngine.analyze('Stock, E 626, E 630', lang: 'en').status, HalalStatus.doubtful);
+      expect(HalalEngine.analyze('Sauce, E1000', lang: 'en').status, HalalStatus.doubtful);
+    });
+    test('plurals, meatballs and sausages are no longer halal by default', () {
+      expect(HalalEngine.analyze('Chickens, water', lang: 'en').status, HalalStatus.doubtful);
+      expect(HalalEngine.analyze('Meatballs, tomato sauce', lang: 'en').status, HalalStatus.doubtful);
+      expect(HalalEngine.analyze('Wheat flour, sausage, onion', lang: 'en').status, HalalStatus.doubtful);
+      expect(HalalEngine.analyze('Frankfurter, mustard', lang: 'en').status, HalalStatus.doubtful);
+      expect(HalalEngine.analyze('Wheat flour, sausage, onion', lang: 'en', certified: true).status, HalalStatus.halal);
+    });
+  });
+
+  group('HalalEngine: v66 false alarms', () {
+    test('goat dairy is not meat, goat meat is', () {
+      expect(HalalEngine.analyze('Goat milk, salt, cultures', lang: 'en').status, HalalStatus.halal);
+      expect(HalalEngine.analyze('Goat’s milk cheese, salt', lang: 'en').status, HalalStatus.halal);
+      expect(HalalEngine.analyze('Goat\'s milk, salt', lang: 'en').status, HalalStatus.halal);
+      expect(HalalEngine.analyze('Goat meat, salt', lang: 'en').status, HalalStatus.doubtful);
+    });
+    test('root beer and "non alcoholic" are not alcohol; real alcohol still is', () {
+      expect(HalalEngine.analyze('Carbonated water, sugar, root beer flavour', lang: 'en').status, isNot(HalalStatus.haram));
+      expect(HalalEngine.analyze('Water, non alcoholic malt, sugar', lang: 'en').status, isNot(HalalStatus.haram));
+      expect(HalalEngine.analyze('Water, beer, malt', lang: 'en').status, HalalStatus.haram);
+      expect(HalalEngine.analyze('Water, sugar, alcohol', lang: 'en').status, HalalStatus.haram);
+    });
+    test('chickpeas are not chicken', () {
+      expect(HalalEngine.analyze('Chickpeas, tahini, lemon', lang: 'en').status, HalalStatus.halal);
+    });
+  });
 }

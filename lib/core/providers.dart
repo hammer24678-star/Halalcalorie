@@ -116,6 +116,11 @@ class CaloriesNotifier extends StateNotifier<CaloriesState> {
     await AppDatabase.deleteMeal(id);
     state = CaloriesState(goal: state.goal, entries: state.entries.where((x) => x.id != id).toList());
   }
+  /// Deletes today's meals from the database and the screen together.
+  Future<void> clearToday() async {
+    await AppDatabase.clearTodayMeals();
+    state = CaloriesState(goal: state.goal, entries: const []);
+  }
 }
 
 final weeklyKcalProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {

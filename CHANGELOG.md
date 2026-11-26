@@ -1,5 +1,40 @@
 # HalalCalorie Changelog
 
+## Unreleased — review pass
+*2026-11-26*
+
+### 🕌 Halal engine
+- **Spaced E-numbers are read.** "E 120" (carmine) used to come back
+  *halal*: only "E120" and "E-120" matched, and EU labels often write the
+  space. Same for "E 471" and every other table entry
+- **Plurals and compounds no longer slip through.** Chickens, meatballs,
+  sausage, frankfurter, hot dog and bologna were read as halal and now ask
+  for a halal-slaughter check (a halal label still clears them)
+- L-cystine (E921), cholic acid (E1000) and the rest of the guanylate /
+  inosinate / ribonucleotide family (E626, E628-E630, E632-E634) join the
+  doubtful E-numbers beside E627, E631 and E635
+- **Fewer false alarms:** root beer and "non alcoholic" are no longer
+  *haram*, and goat milk / cheese is dairy rather than meat
+
+### 🐛 Fixes
+- **"Clear today's data" now clears meals.** The row and its confirmation
+  dialog promised meals, steps and water, but only water and steps were
+  reset and the meals stayed in the log
+- **A photo the AI could not read no longer logs an invented meal.** An
+  unparseable reply used to come back as a "Mixed Meal, 350 kcal" that could
+  be added to the day. It now shows the "try a clearer photo" state, as the
+  text-entry path already did, and an empty answer is refused the same way
+
+### ✨ New
+- **Export my data** (Settings > Data): meals, weight, daily summaries and
+  workouts from the last 12 months as CSV text through the share sheet. Text
+  fields are guarded against spreadsheet-formula injection, since product
+  names come from third-party databases
+
+### ♿ Accessibility
+- The bottom navigation tabs are announced to screen readers as labelled,
+  selectable buttons. They were an unlabelled icon over a text with no role
+
 ## v1.2.0+12 — Ranked lifting, animation pass
 *2026-08-19*
 

@@ -238,6 +238,20 @@ class _NavItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // The tab was a bare GestureDetector over an icon and a text: a screen
+    // reader saw no button, no selected state and an unlabelled glyph. One
+    // semantics node now says "<label>, button, selected" and owns the tap.
+    return Semantics(
+      button: true,
+      selected: active,
+      label: label,
+      onTap: onTap,
+      excludeSemantics: true,
+      child: _tile(),
+    );
+  }
+
+  Widget _tile() {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,

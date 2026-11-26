@@ -179,6 +179,13 @@ class AppDatabase {
     await d.delete('meal_entries', where:'id=?', whereArgs:[id]);
   }
 
+  /// Removes every meal logged today. Backs the "Clear today's data" action,
+  /// which used to reset water and steps but leave the meals in place.
+  static Future<int> clearTodayMeals() async {
+    final d = await db;
+    return d.delete('meal_entries', where: 'date_key=?', whereArgs: [_today()]);
+  }
+
   static Future<List<_DailyKcal>> getWeeklyKcal() async {
     final d = await db;
     final rows = await d.rawQuery(
